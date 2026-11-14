@@ -24,7 +24,7 @@ export function buildScientificPlot(
   result: SimulationResult,
   kind: PlotKind,
   cursorTimeHours: number,
-  options: { showTargetSite?: boolean } = {},
+  options: { showTargetSite?: boolean; cursor?: boolean } = {},
 ): ScientificPlotSpec {
   const horizon = result.configuration.duration_h;
   const xDays = result.time_h.map((hour) => hour / 24);
@@ -77,10 +77,12 @@ export function buildScientificPlot(
     type: "line", xref: "x", yref: "paper", x0: time / 24, x1: time / 24, y0: 0, y1: 1,
     line: { color: "#c8cdd1", width: 1, dash: "dot" },
   }));
-  shapes.push({
-    type: "line", xref: "x", yref: "paper", x0: cursor, x1: cursor, y0: 0, y1: 1,
-    line: { color: "#2d3748", width: 1.5, dash: "dash" },
-  });
+  if (options.cursor !== false) {
+    shapes.push({
+      type: "line", xref: "x", yref: "paper", x0: cursor, x1: cursor, y0: 0, y1: 1,
+      line: { color: "#2d3748", width: 1.5, dash: "dash" },
+    });
+  }
   if (kind === "occupancy") {
     const thresholdPercent = result.configuration.occupancy_threshold * 100;
     shapes.push({

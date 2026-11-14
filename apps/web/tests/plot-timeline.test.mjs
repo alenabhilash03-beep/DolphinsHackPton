@@ -62,6 +62,14 @@ test("target-site series are explicitly labeled as prescribed exposure", () => {
   assert.equal(withSite.data[1].line.dash, "dash");
 });
 
+test("overlay cursor mode keeps Plotly curves independent of playback time", () => {
+  const early = buildScientificPlot(result, "concentration", 0, { cursor: false });
+  const late = buildScientificPlot(result, "concentration", 3000, { cursor: false });
+  assert.deepEqual(early.data, late.data);
+  assert.deepEqual(early.layout, late.layout);
+  assert.ok(!early.layout.shapes.some((shape) => shape.line?.color === "#2d3748"));
+});
+
 test("concentration lines break at a hypothetical bolus while occupancy stays continuous", () => {
   const edited = structuredClone(result);
   const bolusTime = edited.time_h[20];

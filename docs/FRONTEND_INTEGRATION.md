@@ -88,6 +88,8 @@ Import `useSimulationTimeline` from `apps/web/hooks/useSimulationTimeline.ts`, a
 
 `ScientificPlot` accepts `className`, an optional `showTargetSite` concentration overlay, and an optional `onSeekTime` callback so chart clicks scrub the timeline. It renders Plotly only in the browser. The x-axis is days (backend hours divided by 24); central concentration is nM, and occupancy is percent (backend fraction multiplied by 100). Colors are stable across both charts. Dose starts and event boundaries are marked. The occupancy graph marks the selected analytical threshold. Concentration lines break at a hypothetical bolus; binding occupancy remains continuous.
 
+During playback, `ScientificPlot` keeps the Plotly trace arrays and layout stable. A positioned cursor overlay follows the shared timeline and recalculates its pixel position after zoom or resize. Preserve this separation when changing chart styling; rebuilding the Plotly traces on every frame causes visible stutter.
+
 ## Local checks
 
 ```sh

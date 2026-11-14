@@ -61,7 +61,28 @@ The same-origin routes are `POST /api/simulations` and `POST /api/simulations/ad
 
 The adjustable route accepts `{experiment, scenario_id, field, value, client_revision, output_points}` and returns a complete `SimulationResult`. Its `configuration` is the updated authoritative experiment. A validation failure returns HTTP 422 and leaves the hook's last valid configuration/result in place. A network/server failure returns a retryable error. Parameter edits call no LLM.
 
-For graphs in 2B, use `result.time_h` as the only x-axis. Every scenario's `central_concentration_nM`, `target_site_concentration_nM`, and `occupancy` arrays are aligned to it. `result.diagnostics.event_boundaries_h` identifies dosing boundaries. `result.scenarios[*].metrics.threshold.above_threshold_intervals_h` identifies threshold spans. The output contains early-time samples and a pre-bolus sample, but dose/affinity changes do not alter PDB geometry.
+For graphs, use `result.time_h` as the only x-axis. Every scenario's `central_concentration_nM`, `target_site_concentration_nM`, and `occupancy` arrays are aligned to it. `result.diagnostics.event_boundaries_h` identifies dosing boundaries. `result.scenarios[*].metrics.threshold.above_threshold_intervals_h` identifies threshold spans. The output contains early-time samples and a pre-bolus sample, but dose/affinity changes do not alter PDB geometry.
+
+## Plots and synchronized timeline (2B)
+
+The functional chart and timeline components are separate from the root page design. See `/preview/plots` while both local services are running. It mounts the real 0B fixture and demonstrates the following composition:
+
+```tsx
+const workspace = useExperimentWorkspace(example, 600);
+const timeline = useSimulationTimeline(workspace.result);
+
+{workspace.result && <>
+  <TimelineControls timeline={timeline} />
+  <ScientificPlot result={workspace.result} kind="concentration"
+    cursorTimeHours={timeline.timeHours} onSeekTime={timeline.seekTime} />
+  <ScientificPlot result={workspace.result} kind="occupancy"
+    cursorTimeHours={timeline.timeHours} onSeekTime={timeline.seekTime} />
+</>}
+```
+
+Import `useSimulationTimeline` from `apps/web/hooks/useSimulationTimeline.ts`, and `ScientificPlot` and `TimelineControls` from `apps/web/components`. The hook exposes `play`, `pause`, `toggle`, `seekTime`, `seekIndex`, `playing`, `timeHours`, `timeDays`, `progress`, and `readout`. Its readout values come from the exact selected sample index; both charts use the same cursor time. The native controls can be styled or replaced with the UI team's design. The range input represents physical elapsed time, then snaps to the nearest returned sample.
+
+`ScientificPlot` accepts `className`, an optional `showTargetSite` concentration overlay, and an optional `onSeekTime` callback so chart clicks scrub the timeline. It renders Plotly only in the browser. The x-axis is days (backend hours divided by 24); central concentration is nM, and occupancy is percent (backend fraction multiplied by 100). Colors are stable across both charts. Dose starts and event boundaries are marked. The occupancy graph marks the selected analytical threshold. Concentration lines break at a hypothetical bolus; binding occupancy remains continuous.
 
 ## Local checks
 

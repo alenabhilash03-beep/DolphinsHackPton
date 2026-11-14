@@ -11,12 +11,12 @@ export interface ScientificPlotSpec {
   config: Partial<Config>;
 }
 
-const PALETTE = ["#65594F", "#72383D", "#9A7550", "#5C7766", "#8E6879"] as const;
+const PALETTE = ["#456f83", "#7b65a3", "#bb713f", "#43856c", "#a45479"] as const;
 
 export function scenarioColor(scenarioId: string, index: number): string {
-  if (scenarioId === "baseline") return "#65594F";
-  if (scenarioId === "half_life_x3") return "#72383D";
-  if (scenarioId === "affinity_x10") return "#9A7550";
+  if (scenarioId === "baseline") return "#456f83";
+  if (scenarioId === "half_life_x3") return "#7b65a3";
+  if (scenarioId === "affinity_x10") return "#bb713f";
   return PALETTE[index % PALETTE.length];
 }
 
@@ -75,19 +75,19 @@ export function buildScientificPlot(
   const cursor = Math.max(0, Math.min(horizon, cursorTimeHours)) / 24;
   const shapes: NonNullable<Layout["shapes"]> = boundaryTimes.slice(0, 64).map((time) => ({
     type: "line", xref: "x", yref: "paper", x0: time / 24, x1: time / 24, y0: 0, y1: 1,
-    line: { color: "#D1C7BD", width: 1, dash: "dot" },
+    line: { color: "#c8cdd1", width: 1, dash: "dot" },
   }));
   if (options.cursor !== false) {
     shapes.push({
       type: "line", xref: "x", yref: "paper", x0: cursor, x1: cursor, y0: 0, y1: 1,
-      line: { color: "#322D29", width: 1.5, dash: "dash" },
+      line: { color: "#2d3748", width: 1.5, dash: "dash" },
     });
   }
   if (kind === "occupancy") {
     const thresholdPercent = result.configuration.occupancy_threshold * 100;
     shapes.push({
       type: "line", xref: "paper", yref: "y", x0: 0, x1: 1, y0: thresholdPercent, y1: thresholdPercent,
-      line: { color: "#AC9C8D", width: 1, dash: "dot" },
+      line: { color: "#8c9198", width: 1, dash: "dot" },
     });
   }
   if (eventTimes.length > 0) {
@@ -95,7 +95,7 @@ export function buildScientificPlot(
       type: "scatter", mode: "markers", name: "Dose starts",
       x: eventTimes.map((time) => time / 24),
       y: eventTimes.map(() => 0),
-      marker: { color: "#77665A", size: 8, symbol: "triangle-up" },
+      marker: { color: "#68727a", size: 8, symbol: "triangle-up" },
       text: eventTimes.map((time) => {
         const names = result.configuration.scenarios
           .filter((scenario) => scenario.administration.some((event) => event.start_h === time))
@@ -110,9 +110,9 @@ export function buildScientificPlot(
     data,
     layout: {
       autosize: true,
-      paper_bgcolor: "#FFFDFA",
-      plot_bgcolor: "#FFFDFA",
-      font: { family: "Arial, Helvetica, sans-serif", color: "#65594F", size: 10 },
+      paper_bgcolor: "#ffffff",
+      plot_bgcolor: "#ffffff",
+      font: { family: "Arial, Helvetica, sans-serif", color: "#56677c", size: 10 },
       height: 355,
       margin: { l: 55, r: 10, t: 12, b: 112 },
       legend: { orientation: "h", x: 0, y: -0.28, xanchor: "left", yanchor: "top", font: { size: 9 } },

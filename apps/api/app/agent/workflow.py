@@ -107,6 +107,9 @@ def scope_request(request: HypothesisRequest) -> SupportAssessment | None:
     has_affinity = bool(re.search(r"affinity|\bkd\b|binding", text) and re.search(r"tenfold|10[- ]?fold|10x|times 10", text))
     if not (has_half and has_affinity):
         return SupportAssessment(status="unsupported", reasons=["The 3B agent currently supports the registered half-life ×3 versus affinity ×10 comparison only; other interventions require a new validated configuration."])
+    vocabulary = set("would will could can does do if what happens happen when we i a an the s its it of for to in on at by and or versus vs than longer long maintain retain preserve improve improving improved increase increasing increased tripling triple tripled threefold tenfold fold times x half life trastuzumab herceptin her2 erbb2 occupancy target binding affinity compare comparison with how affect affects effective elimination ten three 3 10".split())
+    if any(token not in vocabulary for token in re.findall(r"[a-z]+\d*|\d+", text)):
+        return SupportAssessment(status="unsupported", reasons=["The request contains additional terms outside the reviewed primary comparison. Submit the trastuzumab–HER2 half-life ×3 versus affinity ×10 question alone; use explicit custom controls for other assumptions."])
     return None
 
 

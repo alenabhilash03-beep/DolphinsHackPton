@@ -8,7 +8,7 @@ An evidence-aware scientific hypothesis exploration platform.
 
 ## Current progress
 
-**Phases 0–3 and subphases 4A–4B are complete.** The repository has the evidence audit, canonical scientific contracts, exact one-compartment PK, adaptive mass-action binding, numerical comparisons, direct simulation API, functional technical workspace, audited trastuzumab evidence registry, and a guarded LangChain agent. Research jobs now connect the hypothesis form to validated experiments, factual progress events, plots, and result-linked interpretation. The [3B review](docs/subphase-reviews/3B.md) records the verified remote LangSmith trace; the [3C review](docs/subphase-reviews/3C.md) records the end-to-end workspace check.
+**Phases 0–4 are complete.** The repository has the evidence audit, canonical scientific contracts, exact one-compartment PK, adaptive mass-action binding, numerical comparisons, direct simulation API, functional technical workspace, audited trastuzumab evidence registry, and a guarded LangChain agent. Research jobs now connect the hypothesis form to validated experiments, factual progress events, plots, and result-linked interpretation. The [3B review](docs/subphase-reviews/3B.md) records the verified remote LangSmith trace; the [3C review](docs/subphase-reviews/3C.md) records the end-to-end workspace check.
 
 The web preview and API can be run locally now using the commands below. Python computation is independent of the agent; no AI credentials are needed to run the numerical engine.
 
@@ -117,4 +117,4 @@ The script prints capability status and error categories, not secrets or raw HTT
 
 ## Next development step and when the app becomes visible
 
-**4B is complete.** The workspace now includes scenario cards, evidence provenance and source links, numerical metric comparisons, and current-result conclusions that respect censored threshold times. The [demo walkthrough](docs/DEMO_WALKTHROUGH.md) and [4B review](docs/subphase-reviews/4B.md) record the complete flow. Next is **4C**, the scientific review and core acceptance gate, after the next green light.
+**Phase 4 is complete.** The [scientific acceptance review](docs/subphase-reviews/4C.md) records audited units, dosing, binding, provenance, scope boundaries, and live trace verification. Next are the bounded schematic animation, resilience/deployment, performance, and reproducible demo phases.

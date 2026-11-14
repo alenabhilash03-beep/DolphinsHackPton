@@ -51,4 +51,11 @@ def validate_model_scope(experiment: ExperimentConfig) -> ModelDefinition:
             raise ValueError("Administration kind is unsupported by this model")
         if experiment.mode != "custom" and any(event.kind == "hypothetical_bolus" for event in scenario.administration):
             raise ValueError("Hypothetical bolus requires custom mode")
+    if experiment.mode == "reviewed_preset":
+        # Schema consistency alone cannot confer scientific review on caller-supplied values.
+        from app.research.registry import load_curated_profile
+        reviewed = load_curated_profile().experiment
+        excluded = {"experiment_id", "title"}
+        if experiment.model_dump(exclude=excluded) != reviewed.model_dump(exclude=excluded):
+            raise ValueError("Reviewed preset differs from the audited registry; use explicit custom mode for hypothetical changes")
     return definition

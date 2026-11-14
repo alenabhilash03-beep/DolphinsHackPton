@@ -2,7 +2,7 @@
 
 Subphase: **0A — Scientific scope and evidence audit**  
 Audit date: **2026-11-13, America/New_York**  
-Status: **Documentation complete; numerical implementation and empirical validation have not begun.**  
+Status: **Core numerical implementation and scientific acceptance complete (4C, 2026-11-14); empirical tissue/clinical validation is outside this MVP.**
 Repository destination: `docs/model.md`  
 Companion specification: [Evidence policy](evidence-policy.md)
 
@@ -220,3 +220,9 @@ These limitations were anticipated by the roadmap. They do not justify adding ad
 **Plan assessment: Keep the plan.** Selecting intact-antibody evidence and defining the experiment details are within 0A. Existing approximation, exposure, saturation, and unsupported-drug provisions cover the findings. No material risk requires a roadmap change and no verified capacity supports scope expansion.
 
 Next proposed chunk: **0B — Schemas and service skeleton**. It should encode provenance versus applicability, the conditional preset, explicit dosing events, linked derivations, support outcomes, and threshold-censoring states. Model ID and numeric examples here are specifications, not deployed features. Stop for the user's green light before 0B.
+
+## Runtime acceptance update — 4C
+
+The analytical PK and Radau binding engine, linked controls, dense-solution metrics, evidence registry, guarded research agent, and experimental structure viewer are implemented. See [the 4C acceptance review](subphase-reviews/4C.md). Reviewed-preset scientific content must match the audited runtime registry, including drug/target identity and evidence. Explicit custom mode remains a conditional mathematical experiment and receives an unvalidated-input warning. The fixed primary research workflow rejects extra drug, target, route, dose, and numerical interventions rather than silently discarding them.
+
+The original audit and proposed next steps above are retained as historical scientific specification. They are superseded for implementation status by the subphase reviews.

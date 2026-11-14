@@ -95,6 +95,8 @@ def run_simulation(request: SimulationRequest, *, deadline: float | None = None)
         "solver_version": solver_version,
     })
     warnings = list(definition.limitations)
+    if configuration.mode == "custom":
+        warnings.append("Custom inputs are hypothetical; drug identity and supplied parameters are not independently validated by running this model.")
     if any(item.metrics.threshold.status == "still_above_at_horizon" for item in results):
         warnings.append("At least one scenario remains above the analytical occupancy threshold at the horizon; its retention time is censored.")
     if any(event.kind == "hypothetical_bolus" for scenario in configuration.scenarios for event in scenario.administration):

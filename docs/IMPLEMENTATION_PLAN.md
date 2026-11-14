@@ -1,12 +1,12 @@
 # Hypothesim — implementation roadmap
 
-Status: planning only. Phase 0 has not started.
+Status: Phases 0–4 complete. Phases 5–6 remain planned for the local demo; Phase 7 adds evidence-gated support for additional drugs. No later subphase is authorized to start by this plan revision.
 
 Canonical repository document: `docs/IMPLEMENTATION_PLAN.md` in `alenabhilash03-beep/DolphinsHackPton`.
 
 ## Execution policy: review after every subphase
 
-This checkpoint applies to every subphase from 0A through 6B, including optional work. It is part of the existing subphase time budget rather than an additional implementation phase. This planning commit does not start or complete Subphase 0A.
+This checkpoint applies to every subphase from 0A through 7D, including optional work. It is part of the existing subphase time budget rather than an additional implementation phase. A roadmap revision does not itself authorize implementation of the next subphase.
 
 At the end of every subphase, before beginning another, Codex will report:
 
@@ -37,13 +37,14 @@ A review that concludes **Keep the plan** does not require a roadmap-only GitHub
 
 | Revision | Trigger | Decision and impact |
 | --- | --- | --- |
-| Initial planning commit | User requested the full roadmap in GitHub and a review after every subphase | Preserve the original technical roadmap and add conditional risk/opportunity reassessment, documented revisions, GitHub commits for agreed changes, and a green-light boundary between chunks. Phase 0 remains unstarted. |
+| Initial planning commit | User requested the full roadmap in GitHub and a review after every subphase | Preserve the original technical roadmap and add conditional risk/opportunity reassessment, documented revisions, GitHub commits for agreed changes, and a green-light boundary between chunks. Phase 0 remained unstarted at that historical revision. |
+| 2026-11-14 — drug support expansion | User requested support for additional drug names after clarifying that Phase 5 does not provide it | Add Phase 7A–7D after the reproducible local-demo gates. Accept arbitrary names for assessment, but allow simulations only through reviewed drug/model profiles or explicit hypothetical custom inputs. Budget additional work beyond the original 36 hours; preserve existing subphase IDs and the primary demo. User also selected a local demo package, so hosted deployment is no longer a mandatory Phase 5/6 gate. This revision authorizes planning only. |
 
 Hypothesim is feasible in 36 hours if the MVP centers on one carefully documented trastuzumab–HER2 experiment. The strongest demo combines a trustworthy numerical model, immediate scenario comparison, a real molecular structure, and an agent that shows its evidence.
 
-The full specification exceeds a reliable 36-hour build. Arbitrary drug support, automatic validation of newly discovered models, detailed tissue distribution, and downstream biological predictions should remain outside the MVP.
+The full specification exceeds a reliable 36-hour build. Additional drug support is now planned as a separately estimated Phase 7 after the core local demo. Automatic validation of newly discovered models, detailed tissue distribution, and downstream biological predictions remain outside the MVP.
 
-No implementation has begun. The roadmap below defines the subphases we can execute individually.
+Implementation through Phase 4 is recorded in `docs/subphase-reviews/`. The roadmap below preserves the original MVP sequence and adds the agreed expansion as Phase 7.
 
 The planned scientific claim is deliberately bounded: Hypothesim explores how specified PK and binding assumptions change predicted target occupancy. It does not establish tumor response, clinical efficacy, or an appropriate treatment regimen.
 
@@ -64,7 +65,7 @@ Assume three contributors: one on scientific computation, one on the frontend, a
 | Evidence, assumptions, and limitations | Essential |
 | Synchronized Canvas binding animation | First stretch; strictly time-boxed |
 | Custom parameters in supported models | Essential, explicitly labeled hypothetical |
-| Imatinib–Abl | Stretch after all core acceptance tests pass |
+| Additional drug assessment and supported profiles | Phase 7 expansion, beyond the original 36-hour MVP; imatinib–Abl is a candidate pending evidence/model audit |
 | Sensitivity analysis and reports | Defer |
 | Advanced PK, tissue penetration, downstream PD | Defer |
 
@@ -470,7 +471,7 @@ Phase deliverable: A complete demonstrable MVP. This is the gate for adding stre
 | Subphase | Tasks and files | Interface, verification, and completion |
 | --- | --- | --- |
 | 5A — Optional Canvas schematic; maximum 2 hours | Implement BindingCanvas, deterministic target states, fixed concentration scale, timeline sampling, and reduced-motion support. | Occupancy agrees within one illustrative target site; scrubbing and replay are stable. Cut this feature if it threatens core reliability. |
-| 5B — Failure recovery and deployment; about 2 hours | Configure deployment, local fallback, evidence/cache behavior, research deadlines, backend restart handling, asset loading, and trace verification. | Hosted and local smoke checks pass; source/LLM failure produces a truthful fallback state. |
+| 5B — Failure recovery and deployment; about 2 hours | Configure deployment, local fallback, evidence/cache behavior, research deadlines, backend restart handling, asset loading, and trace verification. | Local smoke checks pass; source/LLM failure produces a truthful fallback state. Prepare hosting instructions, but public deployment requires a separately selected destination and is not a completion gate for the agreed local demo. |
 | 5C — End-to-end and performance checks; about 2 hours | Implement focused browser/API integration tests and profile chart updates, solver latency, memory, and rendering. | Core test matrix passes on the actual demonstration machine and browser. |
 
 
@@ -483,11 +484,28 @@ Phase deliverable: A resilient release candidate, with schematic animation only 
 | Subphase | Tasks and files | Interface, verification, and completion |
 | --- | --- | --- |
 | 6A — Reproducible demo package; about 2 hours | Finalize demo.json, evidence snapshots, cached structure, README, environment instructions, and demo-runbook.md. | A clean startup reproduces the primary experiment; saved and live runs are visibly distinguished. |
-| 6B — Rehearsal, fixes, and buffer; about 4 hours | Rehearse live and fallback paths; fix acceptance failures; verify final deployment and LangSmith trace. | Two consecutive successful rehearsals, including one with literature connectivity disabled. |
+| 6B — Rehearsal, fixes, and buffer; about 4 hours | Rehearse live and fallback paths; fix acceptance failures; verify final local startup and LangSmith trace. | Two consecutive successful rehearsals, including one with literature connectivity disabled. |
 
 
 
 Phase deliverable: A frozen build, reproducible demonstration, and practiced recovery path.
+
+### Phase 7 — Evidence-gated additional drug support; estimated 8–13 additional engineering hours.
+
+This is an expansion beyond the original 36-hour schedule, not a promise that arbitrary drugs can all be simulated. Depends on 4C scientific acceptance and the Phase 5–6 local release gates. Reassess the estimate after 7A; stop for the normal review and green light after every chunk. Do not consume the original rehearsal buffer to fit this expansion.
+
+The intended product accepts any drug name and returns an evidence-backed support assessment. A numerical run requires an applicable, reviewed model and parameter profile, or explicit user-supplied hypothetical values in a supported mathematical model. Missing evidence, an unsuitable route, or an unsupported biological mechanism produces limitations and required inputs rather than fabricated curves. Custom output must not be labeled as drug-specific validated prediction.
+
+| Subphase | Concrete tasks, files, and interfaces | Tests and completion criterion |
+| --- | --- | --- |
+| **7A — Drug identity and model eligibility; 2–3 hours** | Add typed identity and eligibility schemas, normalized drug/target identifiers, aliases, molecular form, requested route, endpoint, and profile-version fields. Add `app/research/drug_identity.py`, a profile catalog under `data/drugs/`, and an assessment API/agent tool. Retrieve candidate identities/evidence from primary databases using bounded clients and cached fixtures. Separate candidate retrieval from scientific approval. Keep the original hypothesis intact and detect ambiguous identities or conflicting targets. | Registered aliases resolve consistently; ambiguous names return clarification needs; unknown names return unsupported or needs-parameters outcomes. No unreviewed candidate reaches the solver. Deliverable: arbitrary-name intake with an explainable support assessment and missing-input list. |
+| **7B — Audit a second drug–target profile; 3–5 hours** | Choose one candidate after 7A, initially considering imatinib–Abl. Audit PK, molecular weight, compatible kon/koff or an explicitly approved equilibrium-only model, units, assay context, exposure assumptions, route, and endpoint. Create a versioned evidence package, profile-specific model capabilities, and source checks. Add a structure reference only after checking the actual molecular entities; cache it when available. Keep the mathematical engine independent of the agent. Do not force every profile into the antibody model. | Require a scientific review record, unit/provenance checks, analytical or numerical reference checks, and explicit applicability limits. A hypothetical IV input alone does not establish intracellular Abl exposure or account for ATP competition. If the candidate fails, report the blocking evidence and select a better-supported candidate at the review rather than inventing values. Deliverable: one additional scientifically supportable profile, or a documented evidence block and revised candidate plan; a blocked candidate does not count as completed additional-drug support. |
+| **7C — Generalize the guarded experiment agent; 2–3 hours** | Replace the primary-question vocabulary gate with structured parsing plus deterministic validation against each reviewed profile's intervention/route/model capabilities. Extend `app/agent/workflow.py`, research tools, and experiment configuration services. Resolve every requested intervention before simulation; reject or clarify unsupported extra instructions. Keep profile selection allowlisted and numerical execution deterministic. Trace identity, assessment, evidence, model choice, configuration, and simulation with LangSmith. | Test both reviewed drugs, unsupported routes/endpoints, ambiguous requests, mixed-drug requests, prompt injection in retrieved content, missing kinetics, retrieval outages, and mismatched profile evidence. No instruction is silently omitted or converted into the primary trastuzumab comparison. Deliverable: supported natural-language requests produce profile-specific validated scenarios; unsupported requests return actionable limitations. |
+| **7D — Workspace integration and regression; 1–2 hours** | Add supported-drug selection/status, per-profile control capabilities and ranges, evidence presentation, and explicit custom-mode handoff. Pass structure identity to the viewer; reload geometry only when the selected structure changes, preserve camera during parameter edits, and show an honest no-structure state when necessary. Add frontend integration documentation and demo examples for both supported profiles. | End-to-end tests for primary drug, second drug, unknown drug, missing evidence, no bound structure, and explicit custom values. Confirm controls never invoke the LLM, graphs/schematic use the same current result, previous-drug results/explanations cannot overwrite the new workspace, and the original antibody demo remains reproducible. Deliverable: multiple reviewed drug profiles plus honest assessment of arbitrary names. |
+
+Phase deliverable: drug-agnostic intake with bounded scientific support, at least two reviewed runnable drug–target profiles, profile-specific evidence/model selection, and explicit unsupported/custom outcomes. This phase does not add automatic approval of new scientific models, unrestricted combinations, clinical recommendations, or support for every drug.
+
+Scope cutoff: establish the assessment and evidence gates before adding connectors or extra drugs. If the second profile needs a major PK/PD model beyond the estimated budget, revise the phase at its review. Do not mark support complete using assumed drug-specific values. Phase 7D ends with a regression rehearsal and a saved example for each supported profile; hosting remains optional under the local-demo preference.
 
 ## 8. Team parallelization and ownership
 
@@ -571,4 +589,4 @@ The primary demo should take roughly four minutes:
 9. Briefly show that an unsupported drug produces a limitation response.
 Prepare a saved experiment containing the exact configuration, reviewed evidence, structure asset, model version, and expected metrics. The fallback must remain interactive and clearly identify saved research. The live LangChain integration should also have a verified trace available for inspection.
 
-The first execution unit is Subphase 0A: scientific scope and evidence audit. Execution is paused until the user gives the green light.
+Phases 0–4 are complete. The next execution unit remains 5A unless the user explicitly reprioritizes the roadmap. Phase 7 is agreed planned scope; no Phase 7 implementation begins without its subphase green light.

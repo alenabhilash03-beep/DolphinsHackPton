@@ -16,6 +16,10 @@ The [frontend integration handoff](docs/FRONTEND_INTEGRATION.md) documents same-
 
 The [3B agent contract](docs/RESEARCH_AGENT.md) explains the supported research request, LangChain tools, result validation, and local versus remote trace checks. The [research job contract](docs/RESEARCH_JOBS.md) describes the asynchronous API, SSE progress, failure behavior, and frontend handoff.
 
+## Planned additional drug support
+
+The [roadmap now includes Phase 7](docs/IMPLEMENTATION_PLAN.md): arbitrary drug-name assessment, scientific/model eligibility checks, a second reviewed drug profile, a generalized guarded agent, and workspace integration. This expansion is planned beyond the original 36-hour MVP and is not implemented yet. Unsupported drugs will continue to receive explicit limitations; custom assumptions will remain labeled hypothetical.
+
 ## Requirements and installation
 
 - Python 3.12 (3.13 is also allowed by the project).

@@ -511,6 +511,11 @@ export interface components {
         };
         /** ThresholdOutcome */
         ThresholdOutcome: {
+            /** Above Threshold Intervals H */
+            above_threshold_intervals_h?: [
+                number,
+                number
+            ][];
             /** First Subsequent Downward Crossing H */
             first_subsequent_downward_crossing_h: number | null;
             /** First Upward Crossing H */

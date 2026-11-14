@@ -11,6 +11,8 @@ dependencies = [
   "langchain>=1,<2",
   "langchain-nvidia-ai-endpoints>=1,<2",
   "langsmith>=0.4,<1",
+  "numpy>=2,<3",
+  "scipy>=1.15,<2",
 ]
 
 [dependency-groups]

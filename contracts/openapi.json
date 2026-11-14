@@ -1265,6 +1265,25 @@
       "ThresholdOutcome": {
         "additionalProperties": false,
         "properties": {
+          "above_threshold_intervals_h": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "minimum": 0,
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Above Threshold Intervals H",
+            "type": "array"
+          },
           "first_subsequent_downward_crossing_h": {
             "anyOf": [
               {

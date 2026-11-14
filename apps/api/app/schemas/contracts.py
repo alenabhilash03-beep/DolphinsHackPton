@@ -284,6 +284,15 @@ class ThresholdOutcome(Contract):
     total_time_above_h: Nonnegative
     first_upward_crossing_h: Nonnegative | None
     first_subsequent_downward_crossing_h: Nonnegative | None
+    above_threshold_intervals_h: list[tuple[Nonnegative, Nonnegative]] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def interval_consistency(self) -> Self:
+        if any(end <= start for start, end in self.above_threshold_intervals_h):
+            raise ValueError("Above-threshold intervals must have positive duration")
+        if any(b[0] < a[1] for a, b in zip(self.above_threshold_intervals_h, self.above_threshold_intervals_h[1:])):
+            raise ValueError("Above-threshold intervals must be ordered and non-overlapping")
+        return self
 
 
 class ScenarioMetrics(Contract):

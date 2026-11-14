@@ -7,6 +7,7 @@ from app.schemas.experiment_preparation import PreparationRequest, Text, Digest
 from app.schemas.preparation_workflow import PreparationUpdate, PreparationRecord
 from app.schemas.experiment_preparation import PreparationSource
 from app.schemas.evidence_extraction import ParameterExtractionResult
+from app.schemas.synthesis import ScientificSynthesis, require_current
 
 class ResearchPaperReview(Contract):
     """Actual inspected snapshot and extraction, independent of simulation input selection."""
@@ -47,6 +48,7 @@ class AgentTurn(Contract):
     preparation: PreparationRecord | None = None
     result: SimulationResult | None = None
     interpretation: Interpretation | None = None
+    synthesis: ScientificSynthesis | None = None
     research_papers: list[ResearchPaperReview] = Field(default_factory=list)
     questions: list[str] = Field(default_factory=list)
     applied_changes: list[str] = Field(default_factory=list)
@@ -56,3 +58,13 @@ class AgentTurn(Contract):
     execution_events: Annotated[list[ExecutionEvent], Field(max_length=128)] = Field(default_factory=list)
     trace_id: str | None = None
     trace_status: str = 'not_collected'
+
+    @model_validator(mode='after')
+    def synthesis_matches_this_turn(self):
+        if self.synthesis is not None:
+            require_current(self.synthesis, self.result)
+            inspected = {paper.document_id for paper in self.research_papers}
+            if any(item.extraction_status != 'not_attempted' and item.document_id not in inspected
+                    for item in self.synthesis.source_access):
+                raise ValueError('Synthesis cites a source review that is not part of this turn')
+        return self

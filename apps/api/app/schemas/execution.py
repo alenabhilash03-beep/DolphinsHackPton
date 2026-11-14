@@ -90,7 +90,7 @@ class ExecutionEvent(Contract):
     tool_name: Literal['search_hypothesis_evidence','retrieve_evidence_source','extract_cited_parameters',
         'start_experiment_preparation','read_experiment_preparation','update_experiment_preparation',
         'configure_prepared_experiment','prepare_reviewed_comparison','simulate_current_comparison',
-        'interpret_current_result','read_current_experiment','apply_requested_edit'] | None = None
+        'interpret_current_result','synthesize_grounded_answer','read_current_experiment','apply_requested_edit'] | None = None
     stage: Literal['run','preparation','literature','extraction','configuration','simulation','interpretation','editing']
     state: Literal['started','succeeded','rejected','needs_inputs','unsupported','failed','interrupted']
     timestamp: datetime

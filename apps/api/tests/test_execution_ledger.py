@@ -101,7 +101,7 @@ def script(actions):
 
 def test_rejected_tool_then_recovery_has_distinct_execution_ids_without_raw_errors(tmp_path):
     model=script([('simulate_current_comparison',{}),('read_current_experiment',{}),('apply_requested_edit',{}),
-        ('simulate_current_comparison',{}),('interpret_current_result',{}),('AgentDecision',{'status':'completed'})])
+        ('simulate_current_comparison',{}),('interpret_current_result',{}),('synthesize_grounded_answer',{}),('AgentDecision',{'status':'completed'})])
     agent,req,_=edit_service(tmp_path,model)
     turn=agent.run(req,edit=True)
     attempts=[e for e in turn.execution_events if e.tool_name=='simulate_current_comparison']

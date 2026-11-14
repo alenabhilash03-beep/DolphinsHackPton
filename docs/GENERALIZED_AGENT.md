@@ -64,12 +64,18 @@ The interpretation tool returns solver-linked endpoint occupancy, occupancy AUC 
 
 7D connects `turn.result` directly to the existing aligned plots/timeline/schematic, display `applied_changes`, questions, provenance and interpretation, and retain all base/hash/client revision fields. No molecular coordinate deformation is introduced. Guided molecular inspection is implemented in [7E](MOLECULAR_INSPECTION.md). The current primary dashboard remains usable while this integration is pending.
 
+### Grounded synthesis — 8B.1
+
+After `interpret_current_result`, and before a research turn may conclude without a numerical result once source text has been inspected, the agent must call `synthesize_grounded_answer` (no arguments). The server withholds the final-decision schema until that attempt exists. The tool makes one separate, reasoning-disabled structured Nemotron call over this turn's inspected passages and accepted result, validates it and stores `AgentTurn.synthesis`. The deterministic `Interpretation` is unchanged. See [GROUNDED_SYNTHESIS.md](GROUNDED_SYNTHESIS.md).
+
 ## Verification
 
 ```sh
 .venv/bin/python -m pytest apps/api/tests/test_generalized_agent.py
 .venv/bin/python scripts/run_generalized_agent.py --mode research --require-tracing
 .venv/bin/python scripts/run_generalized_agent.py --mode edit --require-tracing
+.venv/bin/python scripts/run_generalized_agent.py --mode primary --require-tracing
+.venv/bin/python scripts/check_grounded_synthesis.py
 ```
 
 Offline checks use a scripted chat provider with the actual LangChain graph and scientific tools, plus clearly synthetic source/extraction fixtures. They test research-to-run, missing-rate continuation, invented-assumption rejection, edit equivalence, fixed-kon affinity alternatives, unsupported/additional wording, stale bases and fabricated completion. These are software checks, not a new reviewed real-drug model.

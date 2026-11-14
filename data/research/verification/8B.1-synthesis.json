@@ -1,0 +1,192 @@
+{
+  "verification_kind": "8B.1 grounded synthesis",
+  "date": "2026-11-14",
+  "environment_note": "Run in a cloud verification environment. Its network policy blocks www.ebi.ac.uk (Europe PMC), and its proxy ends any single provider request after 30 seconds; the application limit is 45 seconds. No live paper retrieval was possible here.",
+  "offline_tests": {
+    "backend_passed": 365,
+    "backend_new": 27,
+    "backend_failed": 1,
+    "backend_failure": "test_saved_demo_matches_current_solver_and_public_asset: saved demo arrays differ from this machine's solver output by at most 8.8e-9 relative; present before this subphase and unrelated to it",
+    "frontend_passed": 45,
+    "typecheck": "passed",
+    "contracts_check": "passed",
+    "production_build": "passed"
+  },
+  "live_agent_edit": {
+    "description": "Live pinned Nemotron agent and live synthesizer; parameter-only edit \"Run this comparison for 120 days\"; no literature search is part of an edit.",
+    "trace_status": "remote_verified",
+    "trace_id": "01a1dc62-a884-7325-aa5b-cb61cf4fe412",
+    "turn_id": "turn-bc5129fdef824259b528783bd86d5a0f",
+    "tool_calls": [
+      "read_current_experiment",
+      "apply_requested_edit",
+      "simulate_current_comparison",
+      "interpret_current_result",
+      "synthesize_grounded_answer"
+    ],
+    "tool_outcomes": [
+      {
+        "tool": "read_current_experiment",
+        "state": "succeeded",
+        "elapsed_ms": 1
+      },
+      {
+        "tool": "apply_requested_edit",
+        "state": "succeeded",
+        "elapsed_ms": 5
+      },
+      {
+        "tool": "simulate_current_comparison",
+        "state": "succeeded",
+        "elapsed_ms": 110
+      },
+      {
+        "tool": "interpret_current_result",
+        "state": "succeeded",
+        "elapsed_ms": 1
+      },
+      {
+        "tool": "synthesize_grounded_answer",
+        "state": "succeeded",
+        "elapsed_ms": 7444
+      },
+      {
+        "tool": "run",
+        "state": "succeeded",
+        "elapsed_ms": 25016
+      }
+    ],
+    "synthesis": {
+      "status": "grounded",
+      "basis": "simulation_only",
+      "result_id": "sim-63acf448c4b0bdb3e6e81fc7",
+      "answer": {
+        "verdict": "undetermined",
+        "basis": "none",
+        "statement": "The requested 120-day comparison ran as a single-dose simulation with no literature sources supplied, so no experimental evidence can support or contradict the hypothesis."
+      },
+      "evidence_findings": [],
+      "simulation_implications": [
+        {
+          "statement": "Baseline endpoint occupancy remains above the 90% threshold at the 120-day horizon.",
+          "solver_fields": [
+            "baseline.endpoint_occupancy = 0.9688 (96.88%)",
+            "baseline.threshold_status = still above at horizon"
+          ]
+        },
+        {
+          "statement": "Tripling half-life raises endpoint occupancy above baseline while affinity remains unchanged.",
+          "solver_fields": [
+            "half_life_x3.endpoint_occupancy = 0.9993 (99.93%)",
+            "baseline.endpoint_occupancy = 0.9688 (96.88%)"
+          ]
+        },
+        {
+          "statement": "Improving affinity tenfold raises endpoint occupancy above baseline while half-life remains unchanged.",
+          "solver_fields": [
+            "affinity_x10.endpoint_occupancy = 0.9968 (99.68%)",
+            "baseline.endpoint_occupancy = 0.9688 (96.88%)"
+          ]
+        }
+      ],
+      "model_missing_evidence_count": 1,
+      "next_experiment_kinds": [
+        "literature_review"
+      ],
+      "notes": []
+    }
+  },
+  "live_synthesizer_on_synthetic_source": {
+    "description": "scripts/check_grounded_synthesis.py: offline scripted agent driver, SYNTHETIC software-test abstract, live pinned Nemotron synthesizer through the agent tool. Software verification only; not evidence about any real drug.",
+    "cases": {
+      "research_and_simulation": {
+        "passed": true,
+        "turn_status": "completed",
+        "tool_state": "succeeded",
+        "tool_elapsed_ms": 6598,
+        "synthesis": {
+          "status": "grounded",
+          "basis": "research_and_simulation",
+          "result_id": "sim-64db8d14ae50f4dd2136717d",
+          "answer": {
+            "verdict": "not_supported",
+            "basis": "paper_evidence_and_conditional_simulation",
+            "statement": "The baseline simulation never reaches the 0.9 occupancy threshold, so it does not support the hypothesis that Compound X achieves sustained target occupancy."
+          },
+          "evidence_findings": [
+            {
+              "finding_id": "F1",
+              "stance": "context",
+              "abstract_only": true,
+              "statement": "The synthetic abstract reports Compound X Target Y human purified protein cell-free iv_infusion extracellular parameters including volume, clearance, association, dissociation, molecular weight, body mass, and exposure factor.",
+              "citation_count": 1
+            }
+          ],
+          "simulation_implications": [
+            {
+              "statement": "With zero administered drug, baseline occupancy remains below the 0.9 threshold throughout the 24 h window.",
+              "solver_fields": [
+                "baseline.threshold_status = never reached",
+                "baseline.endpoint_occupancy = 0.04536 (4.536%)",
+                "baseline.total_time_above_h = 0 h (0 days)"
+              ]
+            }
+          ],
+          "model_missing_evidence_count": 2,
+          "next_experiment_kinds": [
+            "simulation_change",
+            "measurement"
+          ],
+          "notes": []
+        }
+      },
+      "research_only": {
+        "passed": true,
+        "turn_status": "needs_inputs",
+        "tool_state": "succeeded",
+        "tool_elapsed_ms": 9565,
+        "synthesis": {
+          "status": "grounded",
+          "basis": "research_only",
+          "result_id": null,
+          "answer": {
+            "verdict": "undetermined",
+            "basis": "none",
+            "statement": "The supplied material cannot answer whether Compound X occupies Target Y because no simulation result is available and the source passage reports only parameter values without any occupancy measurement."
+          },
+          "evidence_findings": [
+            {
+              "finding_id": "F1",
+              "stance": "context",
+              "abstract_only": true,
+              "statement": "The abstract reports synthetic parameter values for Compound X and Target Y, including volume, clearance, association rate, molecular weight, body mass, and exposure factor.",
+              "citation_count": 1
+            },
+            {
+              "finding_id": "F2",
+              "stance": "context",
+              "abstract_only": true,
+              "statement": "The same abstract reports clearance, association rate, molecular weight, body mass, and exposure factor values.",
+              "citation_count": 1
+            }
+          ],
+          "simulation_implications": [],
+          "model_missing_evidence_count": 3,
+          "next_experiment_kinds": [
+            "simulation_change"
+          ],
+          "notes": []
+        }
+      }
+    }
+  },
+  "live_observations_during_development": [
+    "Earlier live proposals were rejected for quotes joined across sentences, simulation facts placed under paper citations, quantities spelled out in words, an invalid stance value and oversized lists; validation and bounded shape normalization were extended accordingly and each case has an offline regression test.",
+    "One no-result synthesis succeeded only on its second, feedback-corrected attempt; one earlier attempt ended unavailable when a retry exceeded the 30-second environment proxy limit."
+  ],
+  "not_verified": [
+    "Live paper search, retrieval and extraction feeding synthesis for the reviewed primary question or any real drug (Europe PMC unreachable from the verification environment).",
+    "Live agent tool selection on the no-result research path (the live generalized research run fails here on a pre-existing provider call that exceeds the 30-second proxy limit, with and without this change).",
+    "Semantic entailment of a qualitative statement by its quoted passage; only verbatim quoting, numeric support and shared key terms are machine-checked."
+  ]
+}

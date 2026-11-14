@@ -335,6 +335,16 @@
             "title": "Status",
             "type": "string"
           },
+          "synthesis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScientificSynthesis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "tool_calls": {
             "items": {
               "type": "string"
@@ -1627,6 +1637,101 @@
         "title": "EvidenceContext",
         "type": "object"
       },
+      "EvidenceDisagreement": {
+        "additionalProperties": false,
+        "properties": {
+          "finding_ids": {
+            "items": {
+              "pattern": "^F[0-9]{1,2}$",
+              "type": "string"
+            },
+            "title": "Finding Ids",
+            "type": "array"
+          },
+          "origin": {
+            "enum": [
+              "synthesis",
+              "extraction_conflict"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "parameter_ids": {
+            "items": {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            "title": "Parameter Ids",
+            "type": "array"
+          },
+          "statement": {
+            "maxLength": 700,
+            "minLength": 1,
+            "title": "Statement",
+            "type": "string"
+          }
+        },
+        "required": [
+          "origin",
+          "statement"
+        ],
+        "title": "EvidenceDisagreement",
+        "type": "object"
+      },
+      "EvidenceFinding": {
+        "additionalProperties": false,
+        "properties": {
+          "abstract_only": {
+            "title": "Abstract Only",
+            "type": "boolean"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/SynthesisCitation"
+            },
+            "maxItems": 3,
+            "minItems": 1,
+            "title": "Citations",
+            "type": "array"
+          },
+          "claim_kind": {
+            "const": "paper_finding",
+            "default": "paper_finding",
+            "title": "Claim Kind",
+            "type": "string"
+          },
+          "finding_id": {
+            "pattern": "^F[0-9]{1,2}$",
+            "title": "Finding Id",
+            "type": "string"
+          },
+          "stance": {
+            "enum": [
+              "supports",
+              "contradicts",
+              "context"
+            ],
+            "title": "Stance",
+            "type": "string"
+          },
+          "statement": {
+            "maxLength": 700,
+            "minLength": 1,
+            "title": "Statement",
+            "type": "string"
+          }
+        },
+        "required": [
+          "finding_id",
+          "statement",
+          "stance",
+          "citations",
+          "abstract_only"
+        ],
+        "title": "EvidenceFinding",
+        "type": "object"
+      },
       "EvidenceProfile": {
         "additionalProperties": false,
         "properties": {
@@ -1964,6 +2069,7 @@
                   "prepare_reviewed_comparison",
                   "simulate_current_comparison",
                   "interpret_current_result",
+                  "synthesize_grounded_answer",
                   "read_current_experiment",
                   "apply_requested_edit"
                 ],
@@ -2817,6 +2923,45 @@
         "title": "MetricSnapshot",
         "type": "object"
       },
+      "MissingEvidence": {
+        "additionalProperties": false,
+        "properties": {
+          "origin": {
+            "enum": [
+              "synthesis",
+              "extraction",
+              "preparation"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "parameter": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parameter"
+          },
+          "statement": {
+            "maxLength": 700,
+            "minLength": 1,
+            "title": "Statement",
+            "type": "string"
+          }
+        },
+        "required": [
+          "origin",
+          "statement"
+        ],
+        "title": "MissingEvidence",
+        "type": "object"
+      },
       "MissingPreparationInput": {
         "additionalProperties": false,
         "properties": {
@@ -3024,6 +3169,56 @@
           "maximum_events_per_scenario"
         ],
         "title": "ModelPreparationRequirements",
+        "type": "object"
+      },
+      "NextExperiment": {
+        "additionalProperties": false,
+        "properties": {
+          "addresses": {
+            "enum": [
+              "missing_evidence",
+              "disagreement",
+              "model_assumption",
+              "prediction_validation"
+            ],
+            "title": "Addresses",
+            "type": "string"
+          },
+          "claim_kind": {
+            "const": "hypothesis_needing_validation",
+            "default": "hypothesis_needing_validation",
+            "title": "Claim Kind",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "measurement",
+              "simulation_change",
+              "literature_review"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "proposal": {
+            "maxLength": 700,
+            "minLength": 1,
+            "title": "Proposal",
+            "type": "string"
+          },
+          "rationale": {
+            "maxLength": 700,
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "proposal",
+          "rationale",
+          "addresses"
+        ],
+        "title": "NextExperiment",
         "type": "object"
       },
       "PKParameters": {
@@ -5328,6 +5523,177 @@
         "title": "ScheduleSnapshot",
         "type": "object"
       },
+      "ScientificSynthesis": {
+        "additionalProperties": false,
+        "properties": {
+          "answer": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SynthesisAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "basis": {
+            "enum": [
+              "research_and_simulation",
+              "research_only",
+              "simulation_only",
+              "none"
+            ],
+            "title": "Basis",
+            "type": "string"
+          },
+          "client_revision": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Revision"
+          },
+          "configuration_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Configuration Sha256"
+          },
+          "disagreements": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceDisagreement"
+            },
+            "maxItems": 12,
+            "title": "Disagreements",
+            "type": "array"
+          },
+          "evidence_findings": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceFinding"
+            },
+            "maxItems": 8,
+            "title": "Evidence Findings",
+            "type": "array"
+          },
+          "experiment_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Id"
+          },
+          "limitations": {
+            "items": {
+              "maxLength": 700,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 40,
+            "title": "Limitations",
+            "type": "array"
+          },
+          "missing_evidence": {
+            "items": {
+              "$ref": "#/components/schemas/MissingEvidence"
+            },
+            "maxItems": 40,
+            "title": "Missing Evidence",
+            "type": "array"
+          },
+          "next_experiments": {
+            "items": {
+              "$ref": "#/components/schemas/NextExperiment"
+            },
+            "maxItems": 5,
+            "title": "Next Experiments",
+            "type": "array"
+          },
+          "notes": {
+            "items": {
+              "maxLength": 700,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 12,
+            "title": "Notes",
+            "type": "array"
+          },
+          "original_text": {
+            "maxLength": 12000,
+            "minLength": 1,
+            "title": "Original Text",
+            "type": "string"
+          },
+          "result_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Id"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "simulation_implications": {
+            "items": {
+              "$ref": "#/components/schemas/SimulationImplication"
+            },
+            "maxItems": 6,
+            "title": "Simulation Implications",
+            "type": "array"
+          },
+          "source_access": {
+            "items": {
+              "$ref": "#/components/schemas/SourceAccess"
+            },
+            "maxItems": 6,
+            "title": "Source Access",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "grounded",
+              "unavailable",
+              "rejected"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "basis",
+          "original_text"
+        ],
+        "title": "ScientificSynthesis",
+        "type": "object"
+      },
       "SimulationDiagnostics": {
         "additionalProperties": false,
         "properties": {
@@ -5376,6 +5742,38 @@
           "output_point_count"
         ],
         "title": "SimulationDiagnostics",
+        "type": "object"
+      },
+      "SimulationImplication": {
+        "additionalProperties": false,
+        "properties": {
+          "claim_kind": {
+            "const": "conditional_simulation_prediction",
+            "default": "conditional_simulation_prediction",
+            "title": "Claim Kind",
+            "type": "string"
+          },
+          "quantities": {
+            "items": {
+              "$ref": "#/components/schemas/SolverQuantity"
+            },
+            "maxItems": 9,
+            "minItems": 1,
+            "title": "Quantities",
+            "type": "array"
+          },
+          "statement": {
+            "maxLength": 700,
+            "minLength": 1,
+            "title": "Statement",
+            "type": "string"
+          }
+        },
+        "required": [
+          "statement",
+          "quantities"
+        ],
+        "title": "SimulationImplication",
         "type": "object"
       },
       "SimulationRequest": {
@@ -5478,6 +5876,82 @@
         "title": "SimulationResult",
         "type": "object"
       },
+      "SolverQuantity": {
+        "additionalProperties": false,
+        "description": "One solver field of one accepted result; the value is copied by the server, never by the model.",
+        "properties": {
+          "display": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Display",
+            "type": "string"
+          },
+          "metric": {
+            "enum": [
+              "endpoint_occupancy",
+              "occupancy_auc_h",
+              "concentration_auc_nM_h",
+              "threshold_status",
+              "total_time_above_h"
+            ],
+            "title": "Metric",
+            "type": "string"
+          },
+          "result_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Result Id",
+            "type": "string"
+          },
+          "scenario_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "unit": {
+            "enum": [
+              "fraction",
+              "h",
+              "nM*h",
+              "status"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "result_id",
+          "scenario_id",
+          "metric",
+          "unit",
+          "display"
+        ],
+        "title": "SolverQuantity",
+        "type": "object"
+      },
       "SolverReceipt": {
         "additionalProperties": false,
         "properties": {
@@ -5538,6 +6012,85 @@
           "metrics"
         ],
         "title": "SolverReceipt",
+        "type": "object"
+      },
+      "SourceAccess": {
+        "additionalProperties": false,
+        "properties": {
+          "content_kind": {
+            "enum": [
+              "full_text",
+              "abstract",
+              "database_record",
+              "product_label"
+            ],
+            "title": "Content Kind",
+            "type": "string"
+          },
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "extraction_status": {
+            "enum": [
+              "candidates",
+              "no_values",
+              "unavailable",
+              "rejected",
+              "not_attempted"
+            ],
+            "title": "Extraction Status",
+            "type": "string"
+          },
+          "limitation": {
+            "anyOf": [
+              {
+                "maxLength": 700,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limitation"
+          },
+          "passages_supplied": {
+            "minimum": 0.0,
+            "title": "Passages Supplied",
+            "type": "integer"
+          },
+          "retrieval_status": {
+            "enum": [
+              "live",
+              "cached",
+              "unavailable"
+            ],
+            "title": "Retrieval Status",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Source Id",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 500,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_id",
+          "source_id",
+          "title",
+          "content_kind",
+          "retrieval_status",
+          "extraction_status",
+          "passages_supplied"
+        ],
+        "title": "SourceAccess",
         "type": "object"
       },
       "SourcePassage": {
@@ -5777,6 +6330,105 @@
           "reasons"
         ],
         "title": "SupportAssessment",
+        "type": "object"
+      },
+      "SynthesisAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "enum": [
+              "paper_evidence",
+              "conditional_simulation",
+              "paper_evidence_and_conditional_simulation",
+              "none"
+            ],
+            "title": "Basis",
+            "type": "string"
+          },
+          "finding_ids": {
+            "items": {
+              "pattern": "^F[0-9]{1,2}$",
+              "type": "string"
+            },
+            "title": "Finding Ids",
+            "type": "array"
+          },
+          "quantities": {
+            "items": {
+              "$ref": "#/components/schemas/SolverQuantity"
+            },
+            "title": "Quantities",
+            "type": "array"
+          },
+          "statement": {
+            "maxLength": 700,
+            "minLength": 1,
+            "title": "Statement",
+            "type": "string"
+          },
+          "verdict": {
+            "enum": [
+              "supported",
+              "not_supported",
+              "mixed",
+              "undetermined"
+            ],
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "required": [
+          "verdict",
+          "statement",
+          "basis"
+        ],
+        "title": "SynthesisAnswer",
+        "type": "object"
+      },
+      "SynthesisCitation": {
+        "additionalProperties": false,
+        "properties": {
+          "content_kind": {
+            "enum": [
+              "full_text",
+              "abstract",
+              "database_record",
+              "product_label"
+            ],
+            "title": "Content Kind",
+            "type": "string"
+          },
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "locator": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Locator",
+            "type": "string"
+          },
+          "quote": {
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Quote",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Source Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_id",
+          "source_id",
+          "locator",
+          "quote",
+          "content_kind"
+        ],
+        "title": "SynthesisCitation",
         "type": "object"
       },
       "ThresholdOutcome": {

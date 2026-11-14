@@ -41,7 +41,7 @@ INSTRUCTION_PATTERN = re.compile(r'ignore\s+(?:all\s+|the\s+)?(?:previous|prior|
     r'(?:reveal|print|send|exfiltrate)\s+(?:the\s+)?(?:api\s*key|secret|credentials)', re.I)
 
 
-def _contains_number(passage: str, value: float) -> bool:
+def _numbers(passage: str) -> list[float]:
     normalized = unicodedata.normalize('NFKC', passage).replace('−', '-')
     # Recognize scientific products before plain numbers so 2 x 10^-3 cannot support 2.
     number = r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)'
@@ -54,7 +54,11 @@ def _contains_number(passage: str, value: float) -> bool:
     normalized = scientific.sub(' ', normalized)
     tokens = re.findall(r'(?<![\w.])' + number + r'(?:[eE][+-]?\d+)?(?!\w|\.\d)', normalized)
     values.extend(float(token) for token in tokens)
-    return any(candidate == value for candidate in values)
+    return values
+
+
+def _contains_number(passage: str, value: float) -> bool:
+    return any(candidate == value for candidate in _numbers(passage))
 
 
 def _contains_unit(passage: str, unit: str) -> bool:

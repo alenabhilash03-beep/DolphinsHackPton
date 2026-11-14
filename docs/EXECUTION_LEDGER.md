@@ -25,6 +25,8 @@ All new payloads use closed schemas and bounded lists: 128 records/run, 48 main 
 
 New ledger payloads exclude raw tool arguments, prompts, paper passages, source URLs/titles, free-text configuration labels, arbitrary exception text and private reasoning. Exceptions are classified by a fixed error code. The surrounding existing job/turn still contains the scientist's submitted request and accepted scientific evidence; the ledger does not change those APIs' existing visibility.
 
+`synthesize_grounded_answer` (8B.1) is recorded in the `interpretation` stage. Its summary carries the inspected-source count and, when a result exists, the same solver receipt; an unavailable synthesis is a `failed` tool record and a rejected one is `rejected`, while the run itself can still succeed. No synthesis prose or source quotes enter the ledger; they are in `AgentTurn.synthesis`.
+
 ## Verification and consumer handoff
 
 `apps/api/tests/test_execution_ledger.py` exercises the real LangChain graph with a scripted offline provider and the actual SciPy solver. It covers research/configure/run and missing inputs; baseline/previous-result deltas and linked KD/koff; source metadata; rejection/recovery; provider/solver/commit failures; stale bases; active polling; durable queue and turn/API reads; interrupted-owner recovery; bounded projections; legacy records; and receipt integrity.

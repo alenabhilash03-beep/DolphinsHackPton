@@ -512,6 +512,7 @@ export interface components {
              * @enum {string}
              */
             status: "completed" | "needs_inputs" | "unsupported" | "unavailable";
+            synthesis?: components["schemas"]["ScientificSynthesis"] | null;
             /** Tool Calls */
             tool_calls?: string[];
             /** Trace Id */
@@ -992,6 +993,42 @@ export interface components {
              */
             target_identifier: string | null;
         };
+        /** EvidenceDisagreement */
+        EvidenceDisagreement: {
+            /** Finding Ids */
+            finding_ids?: string[];
+            /**
+             * Origin
+             * @enum {string}
+             */
+            origin: "synthesis" | "extraction_conflict";
+            /** Parameter Ids */
+            parameter_ids?: string[];
+            /** Statement */
+            statement: string;
+        };
+        /** EvidenceFinding */
+        EvidenceFinding: {
+            /** Abstract Only */
+            abstract_only: boolean;
+            /** Citations */
+            citations: components["schemas"]["SynthesisCitation"][];
+            /**
+             * Claim Kind
+             * @default paper_finding
+             * @constant
+             */
+            claim_kind: "paper_finding";
+            /** Finding Id */
+            finding_id: string;
+            /**
+             * Stance
+             * @enum {string}
+             */
+            stance: "supports" | "contradicts" | "context";
+            /** Statement */
+            statement: string;
+        };
         /** EvidenceProfile */
         EvidenceProfile: {
             experiment: components["schemas"]["ExperimentConfig"];
@@ -1118,7 +1155,7 @@ export interface components {
             /** Tool Call Id */
             tool_call_id?: string | null;
             /** Tool Name */
-            tool_name?: ("search_hypothesis_evidence" | "retrieve_evidence_source" | "extract_cited_parameters" | "start_experiment_preparation" | "read_experiment_preparation" | "update_experiment_preparation" | "configure_prepared_experiment" | "prepare_reviewed_comparison" | "simulate_current_comparison" | "interpret_current_result" | "read_current_experiment" | "apply_requested_edit") | null;
+            tool_name?: ("search_hypothesis_evidence" | "retrieve_evidence_source" | "extract_cited_parameters" | "start_experiment_preparation" | "read_experiment_preparation" | "update_experiment_preparation" | "configure_prepared_experiment" | "prepare_reviewed_comparison" | "simulate_current_comparison" | "interpret_current_result" | "synthesize_grounded_answer" | "read_current_experiment" | "apply_requested_edit") | null;
         };
         /** ExecutionSummary */
         ExecutionSummary: {
@@ -1416,6 +1453,18 @@ export interface components {
             /** Total Time Above H */
             total_time_above_h: number;
         };
+        /** MissingEvidence */
+        MissingEvidence: {
+            /**
+             * Origin
+             * @enum {string}
+             */
+            origin: "synthesis" | "extraction" | "preparation";
+            /** Parameter */
+            parameter?: string | null;
+            /** Statement */
+            statement: string;
+        };
         /** MissingPreparationInput */
         MissingPreparationInput: {
             /**
@@ -1484,6 +1533,29 @@ export interface components {
              * @constant
              */
             scientific_approval: false;
+        };
+        /** NextExperiment */
+        NextExperiment: {
+            /**
+             * Addresses
+             * @enum {string}
+             */
+            addresses: "missing_evidence" | "disagreement" | "model_assumption" | "prediction_validation";
+            /**
+             * Claim Kind
+             * @default hypothesis_needing_validation
+             * @constant
+             */
+            claim_kind: "hypothesis_needing_validation";
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "measurement" | "simulation_change" | "literature_review";
+            /** Proposal */
+            proposal: string;
+            /** Rationale */
+            rationale: string;
         };
         /** PKParameters */
         PKParameters: {
@@ -2269,6 +2341,52 @@ export interface components {
             /** Scenario Id */
             scenario_id: string;
         };
+        /** ScientificSynthesis */
+        ScientificSynthesis: {
+            answer?: components["schemas"]["SynthesisAnswer"] | null;
+            /**
+             * Basis
+             * @enum {string}
+             */
+            basis: "research_and_simulation" | "research_only" | "simulation_only" | "none";
+            /** Client Revision */
+            client_revision?: number | null;
+            /** Configuration Sha256 */
+            configuration_sha256?: string | null;
+            /** Disagreements */
+            disagreements?: components["schemas"]["EvidenceDisagreement"][];
+            /** Evidence Findings */
+            evidence_findings?: components["schemas"]["EvidenceFinding"][];
+            /** Experiment Id */
+            experiment_id?: string | null;
+            /** Limitations */
+            limitations?: string[];
+            /** Missing Evidence */
+            missing_evidence?: components["schemas"]["MissingEvidence"][];
+            /** Next Experiments */
+            next_experiments?: components["schemas"]["NextExperiment"][];
+            /** Notes */
+            notes?: string[];
+            /** Original Text */
+            original_text: string;
+            /** Result Id */
+            result_id?: string | null;
+            /**
+             * Schema Version
+             * @default 1.0
+             * @constant
+             */
+            schema_version: "1.0";
+            /** Simulation Implications */
+            simulation_implications?: components["schemas"]["SimulationImplication"][];
+            /** Source Access */
+            source_access?: components["schemas"]["SourceAccess"][];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "grounded" | "unavailable" | "rejected";
+        };
         /** SimulationDiagnostics */
         SimulationDiagnostics: {
             /** Absolute Tolerance */
@@ -2286,6 +2404,19 @@ export interface components {
             solver_method: "Radau";
             /** Total Solver Knots */
             total_solver_knots: number;
+        };
+        /** SimulationImplication */
+        SimulationImplication: {
+            /**
+             * Claim Kind
+             * @default conditional_simulation_prediction
+             * @constant
+             */
+            claim_kind: "conditional_simulation_prediction";
+            /** Quantities */
+            quantities: components["schemas"]["SolverQuantity"][];
+            /** Statement */
+            statement: string;
         };
         /** SimulationRequest */
         SimulationRequest: {
@@ -2319,6 +2450,32 @@ export interface components {
             /** Warnings */
             warnings: string[];
         };
+        /**
+         * SolverQuantity
+         * @description One solver field of one accepted result; the value is copied by the server, never by the model.
+         */
+        SolverQuantity: {
+            /** Display */
+            display: string;
+            /**
+             * Metric
+             * @enum {string}
+             */
+            metric: "endpoint_occupancy" | "occupancy_auc_h" | "concentration_auc_nM_h" | "threshold_status" | "total_time_above_h";
+            /** Result Id */
+            result_id: string;
+            /** Scenario Id */
+            scenario_id: string;
+            /** Status */
+            status?: string | null;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "fraction" | "h" | "nM*h" | "status";
+            /** Value */
+            value?: number | null;
+        };
         /** SolverReceipt */
         SolverReceipt: {
             /** Client Revision */
@@ -2337,6 +2494,34 @@ export interface components {
             result_id: string;
             /** Solver Version */
             solver_version: string;
+        };
+        /** SourceAccess */
+        SourceAccess: {
+            /**
+             * Content Kind
+             * @enum {string}
+             */
+            content_kind: "full_text" | "abstract" | "database_record" | "product_label";
+            /** Document Id */
+            document_id: string;
+            /**
+             * Extraction Status
+             * @enum {string}
+             */
+            extraction_status: "candidates" | "no_values" | "unavailable" | "rejected" | "not_attempted";
+            /** Limitation */
+            limitation?: string | null;
+            /** Passages Supplied */
+            passages_supplied: number;
+            /**
+             * Retrieval Status
+             * @enum {string}
+             */
+            retrieval_status: "live" | "cached" | "unavailable";
+            /** Source Id */
+            source_id: string;
+            /** Title */
+            title: string;
         };
         /** SourcePassage */
         SourcePassage: {
@@ -2403,6 +2588,41 @@ export interface components {
              * @enum {string}
              */
             status: "supported" | "conditional" | "needs_parameters" | "unsupported";
+        };
+        /** SynthesisAnswer */
+        SynthesisAnswer: {
+            /**
+             * Basis
+             * @enum {string}
+             */
+            basis: "paper_evidence" | "conditional_simulation" | "paper_evidence_and_conditional_simulation" | "none";
+            /** Finding Ids */
+            finding_ids?: string[];
+            /** Quantities */
+            quantities?: components["schemas"]["SolverQuantity"][];
+            /** Statement */
+            statement: string;
+            /**
+             * Verdict
+             * @enum {string}
+             */
+            verdict: "supported" | "not_supported" | "mixed" | "undetermined";
+        };
+        /** SynthesisCitation */
+        SynthesisCitation: {
+            /**
+             * Content Kind
+             * @enum {string}
+             */
+            content_kind: "full_text" | "abstract" | "database_record" | "product_label";
+            /** Document Id */
+            document_id: string;
+            /** Locator */
+            locator: string;
+            /** Quote */
+            quote: string;
+            /** Source Id */
+            source_id: string;
         };
         /** ThresholdOutcome */
         ThresholdOutcome: {

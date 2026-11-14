@@ -11,7 +11,8 @@ STAGES = {
     'search_hypothesis_evidence':'literature', 'retrieve_evidence_source':'literature',
     'extract_cited_parameters':'extraction', 'configure_prepared_experiment':'configuration',
     'prepare_reviewed_comparison':'configuration', 'simulate_current_comparison':'simulation',
-    'interpret_current_result':'interpretation', 'read_current_experiment':'editing',
+    'interpret_current_result':'interpretation', 'synthesize_grounded_answer':'interpretation',
+    'read_current_experiment':'editing',
     'apply_requested_edit':'editing',
 }
 FIELDS = {
@@ -170,7 +171,8 @@ class ExecutionLedger:
             if key not in self.snapshots:
                 summary.experiment=snapshot(config,base.configuration if base else None)
                 self.snapshots.add(key)
-        if name in {'simulate_current_comparison','interpret_current_result'} and scientific['result']:
+        if name=='synthesize_grounded_answer': summary.source_count=output.get('source_count')
+        if name in {'simulate_current_comparison','interpret_current_result','synthesize_grounded_answer'} and scientific['result']:
             result=scientific['result']
             config=scientific['config']
             if config is None or result.configuration!=config or result.configuration_hash!=_canonical_hash(config.model_dump(mode='json')):

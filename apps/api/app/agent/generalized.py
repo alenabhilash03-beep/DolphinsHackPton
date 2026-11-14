@@ -21,6 +21,7 @@ from app.research.preparation_store import StalePreparation
 from app.schemas.contracts import HypothesisRequest, SimulationRequest, SimulationResult, Interpretation, PaperSummary
 from app.schemas.generalized_agent import AgentDecision, AgentTurn, ResearchPaperReview
 from app.schemas.execution import ExecutionSummary
+from app.research.synthesis import Grounding, configured_synthesizer, synthesize
 from app.research.execution_ledger import ExecutionLedger, error_code
 from app.simulation.service import _canonical_hash
 
@@ -58,9 +59,15 @@ the request or identity fields into those tool calls. Only choose their remainin
 For edits: read_current_experiment then apply_requested_edit. Its conservative whole-request parser
 rejects ambiguity and unsupported clauses. Do not replace or rephrase the user's edit. Parameter-only
 edits need no literature search. Drug/target/route changes require a new research preparation.
-After configuration, call simulate_current_comparison with no arguments, then interpret_current_result. Never copy a full configuration into tool arguments. A result requires these actual tools. Numerical conclusions
+After configuration, call simulate_current_comparison with no arguments, then interpret_current_result, then
+synthesize_grounded_answer (no arguments, exactly once). Never copy a full configuration into tool arguments. A result requires these actual tools. Numerical conclusions
 are returned by that tool; never calculate or invent your own. Return only the bounded decision schema
-with a status only. The server supplies all preparation/result IDs from actual tool execution. Occupancy is not clinical efficacy or safety.'''
+with a status only. The server supplies all preparation/result IDs from actual tool execution. Occupancy is not clinical efficacy or safety.
+synthesize_grounded_answer writes the cited scientific answer server-side from this turn's retrieved passages
+and accepted result; you never write that answer or its numbers yourself. When research ends WITHOUT a
+numerical result but source text was retrieved and extraction attempted, call synthesize_grounded_answer once
+before the final decision so the scientist still receives a cited evidence answer. Its status may be grounded,
+unavailable or rejected: never retry it, and it never changes the numerical result or the decision status.'''
 
 
 def interpretation(result):
@@ -107,11 +114,12 @@ def configuration_receipt(config):
 
 
 class GeneralizedAgentService:
-    def __init__(self, preparation=None, settings=None, model=None, extractor=None):
+    def __init__(self, preparation=None, settings=None, model=None, extractor=None, synthesizer=None):
         self.preparation = preparation or PreparationService()
         self.settings = settings or Settings()
         self.model = model
         self.extractor = extractor
+        self.synthesizer = synthesizer
         self.turns = AgentTurnStore(self.preparation.store)
         from app.research.demo import load_demo
         try: self.turns.seed(load_demo().result)
@@ -158,7 +166,7 @@ class GeneralizedAgentService:
         prep = PreparationService(store=parent.store, assessment=parent.assessment,
             documents=SourceDocumentService(literature=parent.documents.literature, fetch=parent.documents.fetch, cache_dir=parent.documents.cache_dir))
         evidence = ParameterResearchService(documents=prep.documents, extractor=self.extractor)
-        ledger = {'record':None, 'config':None, 'result':None, 'interpretation':None}
+        ledger = {'record':None, 'config':None, 'result':None, 'interpretation':None, 'synthesis':None}
         calls, questions, changes = [], [], []
         search_available = []
         paper_reviews = {}
@@ -187,6 +195,11 @@ class GeneralizedAgentService:
                 and any(p.extraction.status in {'candidates','no_values'} for p in paper_reviews.values())
                 and all(p.extraction.status in {'candidates','no_values'} or extraction_attempts.get(key,0)>=2
                     for key,p in paper_reviews.items()))
+        def synthesis_due():
+            # The grounded answer must describe the final result, or the inspected papers when none exists.
+            current = ledger['synthesis'] is not None and ledger['synthesis'].result_id == (
+                ledger['result'].result_id if ledger['result'] else None)
+            return not current and bool(ledger['interpretation'] or (not ledger['result'] and paper_reviews))
         def guard(name):
             if monotonic() > deadline: raise TimeoutError('Agent deadline exhausted')
             if len(calls) >= 24: raise RuntimeError('Agent tool budget exhausted')
@@ -300,6 +313,31 @@ class GeneralizedAgentService:
             return ledger['interpretation'].model_dump(mode='json',include={'experiment_id','result_id','client_revision','claims','follow_up_experiments'})
 
         @tool
+        def synthesize_grounded_answer() -> dict:
+            """Write the grounded scientific answer for this turn server-side: cited paper findings from retrieved passages, conditional simulation implications bound to solver fields, missing evidence, limitations and next experiments. Call once, after interpret_current_result, or before finishing research that produced no numerical result. Takes no arguments."""
+            guard('synthesize_grounded_answer')
+            result = ledger['result']
+            if result is not None and ledger['interpretation'] is None: raise ValueError('Interpret the numerical result first')
+            if result is None and not evidence.documents.documents:
+                raise ValueError('Nothing to synthesize: retrieve source text or produce a numerical result first')
+            grounding = Grounding(text=text, mode='edit' if edit else 'research',
+                drug=base.configuration.drug if edit else request.request.drug_name,
+                target=base.configuration.target if edit else request.request.target,
+                documents=evidence.documents.documents.values(), reviews=paper_reviews, result=result, record=ledger['record'],
+                lineage=None if result is None or not paper_reviews else 'reviewed_reference_separate'
+                    if result.configuration.mode == 'reviewed_preset' else 'see_parameter_lineage')
+            # Reserve time for the final decision call: a slow synthesis must never cost an accepted result.
+            remaining = lambda: deadline - monotonic() - 18
+            def call(messages):
+                return (self.synthesizer or configured_synthesizer(self.settings, remaining()))(messages)
+            synthesis = ledger['synthesis'] = synthesize(grounding, call, remaining)
+            return {'status':synthesis.status, 'basis':synthesis.basis, 'result_id':synthesis.result_id,
+                'answer_verdict':synthesis.answer.verdict if synthesis.answer else None,
+                'source_count':len(synthesis.source_access), 'evidence_finding_count':len(synthesis.evidence_findings),
+                'simulation_implication_count':len(synthesis.simulation_implications), 'notes':synthesis.notes[:3],
+                'next_action':'Return the final decision now. Do not retry synthesis.'}
+
+        @tool
         def read_current_experiment() -> dict:
             """Read the exact stored experiment/result selected for editing, including scenario IDs and base hash."""
             guard('read_current_experiment')
@@ -318,9 +356,9 @@ class GeneralizedAgentService:
                 questions.append(str(exc))
                 return {'status':'needs_inputs','question':str(exc)}
 
-        tools = [read_current_experiment, apply_requested_edit, simulate_current_comparison, interpret_current_result] if edit else [
+        tools = [read_current_experiment, apply_requested_edit, simulate_current_comparison, interpret_current_result, synthesize_grounded_answer] if edit else [
             *[bind(t) for t in build_evidence_tools(evidence)], *[bind(t) for t in build_preparation_tools(prep) if t.name != "simulate_prepared_experiment"],
-            prepare_reviewed_comparison, simulate_current_comparison, interpret_current_result]
+            prepare_reviewed_comparison, simulate_current_comparison, interpret_current_result, synthesize_grounded_answer]
         if reviewed_available:
             tools = [t for t in tools if t.name not in {'update_experiment_preparation','configure_prepared_experiment'}]
         from threading import RLock
@@ -359,10 +397,26 @@ class GeneralizedAgentService:
         @wrap_model_call
         def retry_model_timeout(model_request, handler):
             nonlocal retries_left
+            due = synthesis_due()
+            if due:
+                # Server-observed workflow state, so the missing final-decision option is never a puzzle.
+                from langchain_core.messages import SystemMessage
+                model_request = model_request.override(system_message=SystemMessage(content=SYSTEM_PROMPT +
+                    '\nSERVER STATE: no grounded answer exists yet for this turn. The final decision is unavailable until '
+                    'synthesize_grounded_answer has been called once (no arguments)'
+                    + ('; call it now.' if ledger['interpretation'] else '; call it as soon as your research is finished.')))
             if reviewed_available:
                 # Keep the agent on the audited comparison after actual research; generic draft
                 # reconstruction is a different workflow and can consume the whole time budget.
-                available = ({'interpret_current_result'} if ledger['result'] else {'simulate_current_comparison'}
+                blocked = bool(not ledger['config'] and not research_ready() and (
+                    evidence.search_calls>=4 or evidence.extraction_calls>=4
+                    or (evidence.search_calls>=2 and not any(search_available))
+                    or (not research_ready() and any(p.extraction.status in {'rejected','unavailable'}
+                        and extraction_attempts.get(key,0)>=2 for key,p in paper_reviews.items()))
+                    or ('prepare_reviewed_comparison' in calls and ledger['config'] is None)
+                    or (ledger['record'] and ledger['record'].preparation.state in {'unsupported','identity_clarification','source_unavailable'})))
+                available = ({'synthesize_grounded_answer'} if due and (ledger['interpretation'] or blocked) else
+                    {'interpret_current_result'} if ledger['result'] else {'simulate_current_comparison'}
                     if ledger['config'] else {'start_experiment_preparation'} if ledger['record'] is None else
                     {'prepare_reviewed_comparison'} if research_ready() else
                     {'extract_cited_parameters'} if any(p.extraction.status in {'rejected','unavailable'}
@@ -370,17 +424,17 @@ class GeneralizedAgentService:
                     {'search_hypothesis_evidence',
                      'retrieve_evidence_source','extract_cited_parameters'})
                 model_request = model_request.override(tools=[t for t in model_request.tools if t.name in available])
-                can_finish = bool(ledger['interpretation'] or (not ledger['config'] and not research_ready() and (
-                    evidence.search_calls>=4 or evidence.extraction_calls>=4
-                    or (evidence.search_calls>=2 and not any(search_available))
-                    or (not research_ready() and any(p.extraction.status in {'rejected','unavailable'}
-                        and extraction_attempts.get(key,0)>=2 for key,p in paper_reviews.items()))
-                    or ('prepare_reviewed_comparison' in calls and ledger['config'] is None)
-                    or (ledger['record'] and ledger['record'].preparation.state in {'unsupported','identity_clarification','source_unavailable'}))))
+                can_finish = bool(ledger['interpretation'] or blocked) and not due
                 if not can_finish:
                     # A generic missing-input draft is not a completed research investigation.
                     # Offer the final decision only after execution or a real research block.
                     model_request = model_request.override(response_format=None,tool_choice='any')
+            elif due:
+                # After interpretation only the grounded answer remains; without a result the agent may
+                # keep researching, but cannot conclude before the cited evidence answer is attempted.
+                if ledger['interpretation']:
+                    model_request = model_request.override(tools=[t for t in model_request.tools if t.name == 'synthesize_grounded_answer'])
+                model_request = model_request.override(response_format=None,tool_choice='any')
             try:
                 return handler(model_request)
             except Exception as exc:
@@ -419,6 +473,8 @@ class GeneralizedAgentService:
             raise ValueError('Retrieved sources must undergo cited parameter extraction before concluding')
         if record and not result:
             questions.extend(item.question for item in record.preparation.missing_inputs)
+        if decision.status == 'completed' and ledger['synthesis'] is None:
+            raise ValueError('Agent final decision lacks the grounded synthesis attempt for its result')
         if not result and not questions:
             questions.append('Specify the intended intervention and compatible structured model inputs; no simulation was performed.')
         root = next((r for r in collector.traced_runs if r.name=='Hypothesim generalized experiment'), None)
@@ -435,5 +491,5 @@ class GeneralizedAgentService:
                 else 'see_parameter_lineage') if result else 'not_selected'
         return AgentTurn(turn_id='turn-'+uuid4().hex, status=decision.status, original_text=text,
             research_papers=list(paper_reviews.values()),
-            preparation=record,result=result,interpretation=ledger['interpretation'],questions=list(dict.fromkeys(questions)),
+            preparation=record,result=result,interpretation=ledger['interpretation'],synthesis=ledger['synthesis'],questions=list(dict.fromkeys(questions)),
             applied_changes=changes,parent_result_id=base.result_id if edit else None,tool_calls=calls,trace_id=trace_id,trace_status=trace_status)

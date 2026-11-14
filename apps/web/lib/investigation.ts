@@ -17,6 +17,7 @@ const TOOL_NAMES:Record<string,string> = {
   configure_prepared_experiment:"Configure the supported experiment", prepare_reviewed_comparison:"Load the reviewed comparison",
   read_current_experiment:"Read the current experiment", apply_requested_edit:"Configure the requested change",
   simulate_current_comparison:"Run the numerical simulator", interpret_current_result:"Interpret the numerical result",
+  synthesize_grounded_answer:"Write the grounded scientific answer",
 };
 export const toolLabel=(event:ExecutionEvent)=>TOOL_NAMES[event.tool_name ?? ""] ?? "Scientific tool";
 export const stateLabel=(state:string)=>({started:"Running",succeeded:"Completed",rejected:"Rejected",needs_inputs:"Needs input",unsupported:"Unsupported",failed:"Failed",interrupted:"Interrupted"}[state] ?? state);

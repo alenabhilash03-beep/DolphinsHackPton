@@ -68,6 +68,8 @@ class DrivingModel(BaseChatModel):
         else:
             result = outputs.get('simulate_current_comparison') or outputs.get('simulate_prepared_experiment')
             name,args = 'AgentDecision',{'status':'completed' if result else 'needs_inputs'}
+            if 'synthesize_grounded_answer' not in outputs and (result or 'extract_cited_parameters' in outputs):
+                name,args = 'synthesize_grounded_answer',{}
         self._step += 1
         return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':name,'args':args,'id':f'call-{self._step}'}]))])
 
@@ -86,7 +88,7 @@ class ReviewedResearchModel(DrivingModel):
             ('retrieve_evidence_source',{'source_handle':next(iter(outputs.get('search_hypothesis_evidence',{}).get('source_handles',{})),'pending')}),
             ('extract_cited_parameters',{'document_id':source.get('document_id','pending')}),
             ('prepare_reviewed_comparison',{}),('simulate_current_comparison',{}),('interpret_current_result',{}),
-            ('AgentDecision',{'status':'completed'})]
+            ('synthesize_grounded_answer',{}),('AgentDecision',{'status':'completed'})]
         name,args=order[self._step];self._step+=1
         return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':name,'args':args,'id':f'primary-{self._step}'}]))])
 
@@ -393,7 +395,8 @@ def test_unavailable_or_rejected_extraction_cannot_silently_run_preset(tmp_path,
         def _generate(self,messages,**kwargs):
             outputs={m.name:json.loads(m.content) for m in messages if isinstance(m,ToolMessage)}
             if outputs.get('prepare_reviewed_comparison',{}).get('status')=='rejected':
-                return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':'AgentDecision','args':{'status':'needs_inputs'},'id':'stop'}]))])
+                name,args=('AgentDecision',{'status':'needs_inputs'}) if 'synthesize_grounded_answer' in outputs else ('synthesize_grounded_answer',{})
+                return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':name,'args':args,'id':'stop-'+name}]))])
             return super()._generate(messages,**kwargs)
     agent,_=research_service(tmp_path)
     agent.model=StopOnRejection()
@@ -460,7 +463,8 @@ def test_partial_research_is_explicit_when_a_separate_paper_extraction_fails(tmp
                 ('extract_cited_parameters',{'document_id':docs[0] if docs else 'pending'}),
                 ('extract_cited_parameters',{'document_id':docs[1] if len(docs)>1 else 'pending'}),
                 ('extract_cited_parameters',{'document_id':docs[1] if len(docs)>1 else 'pending'}),
-                ('prepare_reviewed_comparison',{}),('simulate_current_comparison',{}),('interpret_current_result',{}),('AgentDecision',{'status':'completed'})]
+                ('prepare_reviewed_comparison',{}),('simulate_current_comparison',{}),('interpret_current_result',{}),
+                ('synthesize_grounded_answer',{}),('AgentDecision',{'status':'completed'})]
             name,args=order[self._step];self._step+=1
             return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':name,'args':args,'id':f'partial-{self._step}'}]))])
     agent,_=research_service(tmp_path)

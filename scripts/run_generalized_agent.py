@@ -12,11 +12,14 @@ from app.research.demo import load_demo
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--mode',choices=['research','edit'],default='research')
+    parser.add_argument('--mode',choices=['research','primary','edit'],default='research')
     parser.add_argument('--require-tracing',action='store_true')
     args=parser.parse_args()
     agent=GeneralizedAgentService()
-    if args.mode=='research':
+    if args.mode=='primary':
+        request=AgentResearchRequest(request={'drug_name':'trastuzumab','target':'HER2','route':'iv_infusion',
+            'original_hypothesis':"Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?"})
+    elif args.mode=='research':
         request=AgentResearchRequest(request={'drug_name':'imatinib','target':'ABL1','route':'hypothetical_iv_bolus',
             'original_hypothesis':'How would hypothetical bloodstream imatinib input change ABL1 occupancy? Research the evidence and identify missing PK, binding and target-site exposure data. Do not assume missing values.'})
     else:
@@ -41,6 +44,11 @@ def main():
         print(json.dumps({'status':'failed','reason':'Expected edited numerical result was not produced'})); return 1
     if args.mode=='research' and (turn.status!='needs_inputs' or turn.result is not None):
         print(json.dumps({'status':'failed','reason':'Expected honest missing-input outcome'})); return 1
+    if args.mode=='primary' and (turn.status!='completed' or not turn.result or not turn.research_papers):
+        print(json.dumps({'status':'failed','reason':'Expected researched primary comparison','turn_status':turn.status,'questions':turn.questions})); return 1
+    synthesis=turn.synthesis
+    if turn.result and (synthesis is None or synthesis.result_id!=turn.result.result_id):
+        print(json.dumps({'status':'failed','reason':'Result lacks a linked synthesis attempt'})); return 1
     events=turn.execution_events
     if not events or events[0].state!='started' or events[-1].state not in {'succeeded','needs_inputs','unsupported'}:
         print(json.dumps({'status':'failed','reason':'Missing completed execution ledger'})); return 1
@@ -53,6 +61,10 @@ def main():
         'trace_id':turn.trace_id,'trace_status':turn.trace_status,'result_id':turn.result.result_id if turn.result else None,
         'preparation_id':turn.preparation.preparation.preparation_id if turn.preparation else None,
         'questions':turn.questions,'applied_changes':turn.applied_changes,
+        'research_papers':[{'document_id':p.document_id,'title':p.source.title,'content_kind':p.source.content_kind,
+            'extraction_status':p.extraction.status,'candidate_count':len(p.extraction.parameters)} for p in turn.research_papers],
+        # The complete validated synthesis: quotes are bounded excerpts of public source text.
+        'synthesis':synthesis.model_dump(mode='json') if synthesis else None,
         'execution_run_id':turn.execution_run_id,'execution_event_count':len(events),
         'execution_events':[{'sequence':e.sequence,'kind':e.kind,'tool_name':e.tool_name,'state':e.state,
             'elapsed_ms':e.elapsed_ms} for e in events],

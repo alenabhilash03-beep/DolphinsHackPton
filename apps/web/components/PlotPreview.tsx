@@ -8,6 +8,7 @@ import { ScientificPlot } from "./ScientificPlot";
 import { TimelineControls } from "./TimelineControls";
 import { PreviewControls } from "./PreviewControls";
 import { EvidencePanel } from "./EvidencePanel";
+import { ScenarioComparison } from "./ScenarioComparison";
 
 /** Isolated functional preview; product styling belongs to the UI contributor. */
 export function PlotPreview({ initialExperiment, initialResult = null, onResultIdChange }: {
@@ -18,11 +19,12 @@ export function PlotPreview({ initialExperiment, initialResult = null, onResultI
   useEffect(() => onResultIdChange?.(workspace.result?.result_id ?? null), [workspace.result?.result_id, onResultIdChange]);
   const timeline = useSimulationTimeline(workspace.result);
   return <main style={{ maxWidth: 1100, margin: "0 auto", padding: 24 }}>
-    <h1>Hypothesim plot integration preview</h1>
+    <h1>Hypothesis simulation workspace</h1>
     <p>Conditional mathematical simulation · 90% is an analytical threshold, not a therapeutic cutoff.</p>
     <PreviewControls workspace={workspace} />
     {workspace.error && <p role="alert">{workspace.error}</p>}
     {workspace.result ? <>
+      <ScenarioComparison result={workspace.result} busy={workspace.busy} />
       <TimelineControls timeline={timeline} />
       <section aria-label="Concentration comparison">
         <h2>Central concentration</h2>

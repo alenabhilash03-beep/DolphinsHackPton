@@ -115,3 +115,7 @@ Keep the experiment's `review_status` and `provenance` separate from `retrieval_
 ## Structure viewer handoff (4A)
 
 `StructureViewer` in `apps/web/components/StructureViewer.tsx` is a client component with no simulation props. Keep it mounted outside any result-keyed subtree to preserve the camera during control edits or research completion. It uses local `/structures/1N8Z.pdb` and `/vendor/3Dmol-2.5.5.min.js` assets, with chain identities and colors defined in the component. Its controls can be restyled independently. The panel documents the Fab/soluble HER2 scope and the geometric meaning of the interface selection. See the [4A review](subphase-reviews/4A.md) for asset provenance and verification.
+
+## Comparison presentation (4B)
+
+`ScenarioComparison` takes a validated `SimulationResult` and `busy` flag. Its cards, evidence links, metric table, and qualified conclusions all use that result's configuration and solver metrics. `comparison-summary.ts` supplies deterministic endpoint and threshold text without an LLM. Keep the component independent of playback cursor state and preserve the last-completed-result label while edits are pending. See [the primary demo walkthrough](DEMO_WALKTHROUGH.md).

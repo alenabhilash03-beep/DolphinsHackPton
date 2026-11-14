@@ -678,3 +678,7 @@ Generalized research, evidence review, typed researcher answers, explicit hypoth
 ### 7E outcome
 
 The four-stop molecular camera tour and coordinate inspection sidebar are implemented for the two verified cached complexes. Independent NumPy distance references, strict atom/residue handling, asset checksums, reduced motion and browser selection checks pass. Dose/affinity edits leave inspected geometry unchanged. See `docs/MOLECULAR_INSPECTION.md` and `docs/subphase-reviews/7E.md`. No material plan revision is required. Phase 7 feature work is complete; 5C final integration/performance and 6A–6B local packaging/rehearsal remain. Stop for the next green light.
+
+### Workspace theme integration outcome
+
+The teammate’s frontend branch is integrated into the functional workspace, including the 7E molecular tour/sidebar. The main route now opens that workspace directly. See `docs/local-workspace-ui.md` and `docs/subphase-reviews/UI-theme-integration.md`. No material plan revision is needed; **5C → 6A → 6B** remain.

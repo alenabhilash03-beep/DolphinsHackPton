@@ -66,7 +66,7 @@ export function DrugSupportPanel() {
   }
 
   return <section id="drug-support" className="drug-support-panel" aria-label="Drug support assessment">
-    <div className="section-heading"><div><p className="eyebrow">DRUG & MODEL READINESS · 7A</p><h2>Check what we can model</h2></div><span className="scope-badge">Identity + eligibility</span></div>
+    <div className="section-heading"><div><p className="eyebrow">Model scope</p><h2>Drug identity and model scope</h2></div><span className="scope-badge">Identity + eligibility</span></div>
     <p>Check a drug name, molecular form, target, and route before preparing an experiment. This panel assesses support; it does not run or replace the simulation below.</p>
     <div className="support-examples"><span>Try a test case:</span>{EXAMPLES.map((item) => <button key={item.label} type="button" onClick={() => example(item.request)}>{item.label}</button>)}</div>
     <form onSubmit={submit}>

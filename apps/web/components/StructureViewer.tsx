@@ -86,7 +86,7 @@ export function StructureViewer({kind="trastuzumab"}:{kind?:StructureKind}) {
       const digest=Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",bytes)),b=>b.toString(16).padStart(2,"0")).join("");
       if(digest!==profile.sha256)throw new Error("Experimental coordinate checksum mismatch");
       const pdb=new TextDecoder().decode(bytes),parsed=parseCoordinates(pdb);if(abort.signal.aborted)return;
-      lib.setSyncSurface(true);instance=lib.createViewer(element,{backgroundColor:"#f4f7f2",antialias:true});instance.addModel(pdb,"pdb");
+      lib.setSyncSurface(true);instance=lib.createViewer(element,{backgroundColor:"#f7f3ed",antialias:true});instance.addModel(pdb,"pdb");
       const bySerial=new Map(parsed.atoms.map(a=>[a.serial,a]));
       const click=(atom:AtomSpec)=>{const ref=bySerial.get(atom.serial ?? -1);if(ref&&role(ref,kind))choose(ref);};
       instance.setClickable({hetflag:false},true,click);
@@ -112,7 +112,7 @@ export function StructureViewer({kind="trastuzumab"}:{kind?:StructureKind}) {
       v.addStyle({serial:pair.a.serial},{sphere:{radius:.32,color:"#e36536"}});
       v.addStyle({serial:pair.b.serial},{sphere:{radius:.32,color:"#18a4ad"}});
       v.addLine({start:{x:pair.a.x,y:pair.a.y,z:pair.a.z},end:{x:pair.b.x,y:pair.b.y,z:pair.b.z},color:"#283d34",linewidth:3});
-      v.addLabel(`${pair.distance.toFixed(2)} Å`,{position:{x:(pair.a.x+pair.b.x)/2,y:(pair.a.y+pair.b.y)/2,z:(pair.a.z+pair.b.z)/2},fontSize:15,inFront:true,backgroundColor:"#ffffff",fontColor:"#183c30",backgroundOpacity:.9});
+      v.addLabel(`${pair.distance.toFixed(2)} Å`,{position:{x:(pair.a.x+pair.b.x)/2,y:(pair.a.y+pair.b.y)/2,z:(pair.a.z+pair.b.z)/2},fontSize:15,inFront:true,backgroundColor:"#ffffff",fontColor:"#322d29",backgroundOpacity:.9});
     }
     v.render();
   },[loaded,visible,surface,contacts,selected,pair,interfacePairs,profile,imatinib]);
@@ -128,7 +128,7 @@ export function StructureViewer({kind="trastuzumab"}:{kind?:StructureKind}) {
   const entity=selected&&own.length?(role(own[0],kind)==="drug"?imatinib?"Imatinib ligand (STI)":"Trastuzumab Fab":"Target protein"):null;
   return <section id="structure" className="structure-panel" aria-label="Experimental molecular structure">
     <Script key={attempt} src={`/vendor/3Dmol-2.5.5.min.js?attempt=${attempt}`} onReady={()=>setScriptReady(true)} onError={()=>setError("Molecular renderer unavailable. Scientific plots remain usable.")}/>
-    <p className="eyebrow">02 / EXPERIMENTAL GEOMETRY</p><h2>Experimental structure · {profile.id}</h2><p>{profile.description}. {profile.scope} Dose, affinity and playback never deform these coordinates.</p>
+    <p className="eyebrow">03 / Experimental geometry</p><h2>Experimental structure · {profile.id}</h2><p>{profile.description}. {profile.scope} Dose, affinity and playback never deform these coordinates.</p>
     <div className="molecular-tour" aria-label="Guided molecular tour">
       <div className="form-actions"><button disabled={!loaded} onClick={()=>{go(0);setPlaying(!reduced);}}>Start guided tour</button><button disabled={!playing} onClick={stop}>Pause tour</button>
         <button disabled={!loaded||step<=0} onClick={()=>{stop();go(step-1);}}>Previous stop</button><button disabled={!loaded||step>=TOUR.length-1} onClick={()=>{stop();go(step+1);}}>Next stop</button></div>
@@ -136,7 +136,7 @@ export function StructureViewer({kind="trastuzumab"}:{kind?:StructureKind}) {
       <p aria-live="polite">{step<0?"Four stops: assembly → partners → interface → measured contact.":`Stop ${step+1} of ${TOUR.length} · ${TOUR[step].title}. ${TOUR[step].description}`}</p>
       {reduced&&<p>Reduced motion: camera framing is immediate. Advance with Next stop; auto-advance is disabled.</p>}
     </div>
-    <div className="structure-tools">{profile.chains.map(chain=><label key={chain.id} style={{color:chain.color}}><input type="checkbox" checked={visible.includes(chain.id)} onChange={()=>{stop();setVisible(ids=>ids.includes(chain.id)?ids.filter(id=>id!==chain.id):[...ids,chain.id]);}}/>{chain.id}: {chain.label}</label>)}</div>
+    <div className="structure-tools">{profile.chains.map(chain=><label key={chain.id} style={{borderLeft:`3px solid ${chain.color}`,paddingLeft:8}}><input type="checkbox" checked={visible.includes(chain.id)} onChange={()=>{stop();setVisible(ids=>ids.includes(chain.id)?ids.filter(id=>id!==chain.id):[...ids,chain.id]);}}/>{chain.id}: {chain.label}</label>)}</div>
     <div className="form-actions"><label><input type="checkbox" checked={surface} onChange={e=>{stop();setSurface(e.target.checked);}}/> Molecular surfaces</label><label><input type="checkbox" checked={contacts} onChange={e=>{stop();setContacts(e.target.checked);}}/> Interface residues within 4 Å</label>
       <button disabled={!loaded} onClick={()=>{stop();setStep(-1);focus({hetflag:false});}}>Reset camera</button>
       <button disabled={!loaded} onClick={()=>{stop();focus(imatinib?{chain:"A"}:{or:[{chain:"A"},{chain:"B"}]});}}>{imatinib?"Focus kinase copy A":"Focus Fab"}</button>

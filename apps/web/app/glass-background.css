@@ -1,0 +1,22 @@
+/* Warm, low-contrast glass behind the existing scientific interface. */
+.glass-environment { position: relative; isolation: isolate; min-height: 100vh; background: #EFE9E1; }
+.glass-background { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; user-select: none; background: #EFE9E1; --glass-x: 0px; --glass-y: 0px; --glass-angle: 0deg; --glass-light-x: 0px; --glass-light-y: 0px; }
+.glass-content { position: relative; z-index: 1; }
+.glass-field { display: block; width: 100%; height: 100%; opacity: .4; transform: translate3d(var(--glass-x),var(--glass-y),0) rotate(var(--glass-angle)) scale(1.04); transform-origin: 65% 45%; transition: transform 1.2s cubic-bezier(.2,.6,.3,1); }
+.glass-pane { transform-box: fill-box; transform-origin: center; transition: transform 1.5s cubic-bezier(.2,.6,.3,1); }
+.glass-pane-stone { transform: translate3d(calc(var(--glass-x) * -.4),calc(var(--glass-y) * -.4),0); }
+.glass-pane-taupe { transform: translate3d(calc(var(--glass-x) * .4),calc(var(--glass-y) * .3),0); }
+.glass-reflection { transform: translate3d(var(--glass-light-x),var(--glass-light-y),0); transition: transform 1.6s cubic-bezier(.2,.6,.3,1); }
+.glass-reading-shade { position: absolute; inset: 0; background: linear-gradient(90deg,#EFE9E155,transparent 68%); }
+.glass-environment .hypothesim-workspace { background: transparent; }
+.glass-preferences { display: flex; justify-content: flex-end; padding: 8px clamp(16px,3vw,32px) 0; }
+.glass-preferences > button { border: 1px solid #AC9C8D66; border-radius: 30px; padding: 6px 12px; background: #EFE9E1b3; color: #65594F; font: 11px/1.5 Arial,Helvetica,sans-serif; }
+.glass-preferences > button:hover:not(:disabled) { background: #D1C7BD66; }
+.glass-preferences > button:focus-visible { outline: 2px solid #72383D; outline-offset: 3px; }
+.glass-background[data-interactive=false] .glass-field { transform: scale(1.04); transition: none; }
+.glass-background[data-interactive=false] .glass-pane,.glass-background[data-interactive=false] .glass-reflection { transform: none; transition: none; }
+@media(max-width:760px) { .glass-field { opacity: .3; } }
+@media(prefers-reduced-motion:reduce), (hover:none), (pointer:coarse) {
+ .glass-field { transform: scale(1.04) !important; transition: none !important; }
+ .glass-pane,.glass-reflection { transform: none !important; transition: none !important; }
+}

@@ -110,7 +110,11 @@ export function buildScientificPlot(
     data,
     layout: {
       autosize: true,
-      margin: { l: 68, r: 22, t: 28, b: 58 },
+      paper_bgcolor: "#fffdfa",
+      plot_bgcolor: "#fffdfa",
+      font: { family: "Arial, Helvetica, sans-serif", color: "#65594f", size: 12 },
+      margin: { l: 68, r: 22, t: 28, b: 145 },
+      legend: { orientation: "h", x: 0, y: -0.24, xanchor: "left", yanchor: "top", font: { size: 10 } },
       hovermode: "x unified",
       showlegend: true,
       uirevision: result.configuration.experiment_id,

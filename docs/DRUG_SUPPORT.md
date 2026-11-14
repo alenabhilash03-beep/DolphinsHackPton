@@ -29,6 +29,10 @@ Expected outcomes:
 
 `model_eligible` means only that the structured drug/target/form/route/endpoint metadata fits an existing reviewed profile. **Every assessment has `runnable:false` and `configuration_required:true`.** No `ExperimentConfig` or `SimulationResult` is returned. The actual scientific configuration and its provenance must still pass deterministic validation.
 
+## Planned preparation workflow
+
+The revised Phase 7 plan adds a separate preparation workflow for drugs without reviewed presets: source-backed parameter extraction, model applicability checks, missing-input clarification, explicit researcher assumptions and deterministic configuration. It does not change the existing 7A assessment contract or make an identity match runnable. Reviewed profiles will be defaults/reference cases rather than the only permitted drug names. The next chunk is 7B.1 (contracts); this broader preparation workflow is not implemented yet. See `docs/IMPLEMENTATION_PLAN.md`.
+
 ## Inputs and result contract
 
 `DrugAssessmentRequest` accepts a required `drug_name` and optional `target`, `molecular_form`, `route`, `endpoint`, and `original_hypothesis`. Original hypothesis text is preserved, including whitespace, but `hypothesis_parsed:false` explicitly states that natural-language interventions were not assessed by 7A. A successful identity assessment does not approve every instruction in that text.

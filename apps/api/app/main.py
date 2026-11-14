@@ -1,0 +1,45 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
+
+from app.config import Settings
+from app.schemas.contracts import ALL_CONTRACTS, ContractValidation, ExperimentConfig, HealthResponse
+
+
+def create_app(settings: Settings | None = None) -> FastAPI:
+    config = settings or Settings()
+    api = FastAPI(title="Hypothesim API", version="0.1.0", description="Foundation contracts. Simulation and research are not implemented yet.")
+    api.add_middleware(CORSMiddleware, allow_origins=config.hypothesim_cors_origins,
+                       allow_credentials=False, allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
+
+    @api.get("/api/health", response_model=HealthResponse)
+    def health() -> HealthResponse:
+        return HealthResponse(
+            ai_credentials_configured=bool(config.nvidia_api_key and config.nvidia_api_key.get_secret_value()),
+            tracing_credentials_configured=bool(config.langsmith_api_key and config.langsmith_api_key.get_secret_value()),
+        )
+
+    @api.post("/api/contracts/experiments/validate", response_model=ContractValidation)
+    def validate_experiment(experiment: ExperimentConfig) -> ContractValidation:
+        """Validate configuration structure and provenance, without running a simulation."""
+        return ContractValidation(experiment_id=experiment.experiment_id, support_status=experiment.support.status,
+                                  scenario_count=len(experiment.scenarios))
+
+    def openapi() -> dict:
+        if api.openapi_schema:
+            return api.openapi_schema
+        schema = get_openapi(title=api.title, version=api.version, routes=api.routes, description=api.description)
+        components = schema.setdefault("components", {}).setdefault("schemas", {})
+        # Publish contracts for future endpoints without pretending those endpoints exist.
+        for model in ALL_CONTRACTS:
+            item = model.model_json_schema(ref_template="#/components/schemas/{model}")
+            components.update(item.pop("$defs", {}))
+            components[model.__name__] = item
+        api.openapi_schema = schema
+        return schema
+
+    api.openapi = openapi
+    return api
+
+
+app = create_app()

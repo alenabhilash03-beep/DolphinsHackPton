@@ -1,0 +1,20 @@
+{
+  "name": "hypothesim",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["apps/web"],
+  "engines": {"node": ">=22.0.0"},
+  "scripts": {
+    "dev:web": "npm run dev --workspace apps/web",
+    "build": "npm run build --workspace apps/web",
+    "start:web": "npm run start --workspace apps/web",
+    "typecheck": "npm run typecheck --workspace apps/web",
+    "contracts:generate": "python scripts/export_contracts.py && openapi-typescript contracts/openapi.json -o apps/web/lib/contracts.generated.ts",
+    "contracts:check": "node scripts/check_contracts.mjs"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "openapi-typescript": "^7.10.1"
+  }
+}

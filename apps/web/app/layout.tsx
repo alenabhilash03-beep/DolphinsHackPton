@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./glass-background.css";
+import { GlassEnvironment } from "../components/GlassEnvironment";
 
 export const metadata: Metadata = {
   title: "Hypothesim — scientific workspace",
@@ -7,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body>{children}</body></html>;
+  return <html lang="en"><body><GlassEnvironment>{children}</GlassEnvironment></body></html>;
 }

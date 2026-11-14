@@ -8,7 +8,7 @@ An evidence-aware scientific hypothesis exploration platform.
 
 ## Current progress
 
-**Phases 0–2 and subphase 3A are complete; 3B's agent workflow is implemented and live checked, with remote LangSmith verification pending credentials.** The repository has the evidence audit, service skeleton, canonical contracts, exact one-compartment PK, adaptive mass-action binding, baseline-versus-alternative numerical metrics, direct simulation API, a functional technical workspace, an audited trastuzumab evidence registry, and a guarded single LangChain agent. The [3B review](docs/subphase-reviews/3B.md) records the live run and trace status.
+**Phases 0–2 and subphases 3A–3B are complete.** The repository has the evidence audit, service skeleton, canonical contracts, exact one-compartment PK, adaptive mass-action binding, baseline-versus-alternative numerical metrics, direct simulation API, a functional technical workspace, an audited trastuzumab evidence registry, and a guarded single LangChain agent. The [3B review](docs/subphase-reviews/3B.md) records the live run and verified remote LangSmith trace.
 
 The web preview and API can be run locally now using the commands below. Python computation is independent of the agent; no AI credentials are needed to run the numerical engine.
 
@@ -117,4 +117,4 @@ The script prints capability status and error categories, not secrets or raw HTT
 
 ## Next development step and when the app becomes visible
 
-**3B's remaining acceptance check** is reading back a remote LangSmith trace with retrieval and simulation spans. The code and live NVIDIA agent already pass; configure `LANGSMITH_API_KEY` and `LANGSMITH_TRACING=true` locally to run `.venv/bin/python scripts/run_research_agent.py --live --require-tracing`. Subphase 3C will add research jobs and the natural-language workspace flow after 3B is reviewed. The real 1N8Z molecular viewer follows in **Phase 4**.
+**3B is complete**, including a live NVIDIA research run and remote LangSmith trace readback. Subphase 3C will add research jobs and the natural-language workspace flow after the next green light. The real 1N8Z molecular viewer follows in **Phase 4**.

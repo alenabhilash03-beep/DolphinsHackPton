@@ -1,5 +1,9 @@
 # Frontend integration contract for the visual UI
 
+## Recovery handoff (5B)
+
+`HypothesisWorkspace` resumes the last research job on reload, offers retry after failure, and can load the typed static `DemoSnapshot` from `/demo/trastuzumab-demo.json`. Preserve the saved/cached/no-live-research banner and interpretation/result linkage if restyling. The snapshot path works without FastAPI; recalculating edits still requires the API and preserves the last valid result on error. `VisualizationBoundary` isolates renderer failures. See [local operation](LOCAL_DEPLOYMENT.md) for launcher and timeout behavior.
+
 ## Playback and paper cards (5A)
 
 `BindingCanvas` accepts `result`, the shared timeline `index`, and the selected `scenarioId`; never give it an independent scientific clock. `ScientificPlot` accepts `revealProgress` from `timeline.revealCurves`, moves sample markers and a reveal overlay without rebuilding trace arrays, and retains pan/zoom positioning. `TimelineControls` exposes the reveal toggle. Paper summaries come from generated API types and connect to `#plot-concentration` and `#plot-occupancy`. Keep reference-paper statements distinct from custom edited inputs. See [the 5A review](subphase-reviews/5A.md).

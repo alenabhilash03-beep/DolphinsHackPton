@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,7 +9,8 @@ from fastapi.responses import StreamingResponse
 from app.config import Settings
 from app.research.europe_pmc import EuropePMCClient, LiteratureSearch, RetrievalError
 from app.research.registry import EvidenceProfile, load_evidence_profile
-from app.research.jobs import ResearchEvent, ResearchJob, ResearchJobService
+from app.research.jobs import ResearchCapacityError, ResearchEvent, ResearchJob, ResearchJobService
+from app.research.demo import DemoSnapshot, load_demo
 from app.schemas.contracts import ALL_CONTRACTS, ControlAdjustment, ContractValidation, ExperimentConfig, HealthResponse, HypothesisRequest, SimulationRequest, SimulationResult
 from app.simulation.controls import adjust_experiment
 from app.simulation.service import run_simulation
@@ -19,7 +21,12 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
     config = settings or Settings()
     research = literature_client or EuropePMCClient()
     jobs = job_service or ResearchJobService(config)
-    api = FastAPI(title="Hypothesim API", version="0.1.0", description="Evidence-aware research jobs and deterministic scientific simulation.")
+    @asynccontextmanager
+    async def lifespan(_api):
+        yield
+        await asyncio.to_thread(jobs.close)
+
+    api = FastAPI(title="Hypothesim API", version="0.1.0", description="Evidence-aware research jobs and deterministic scientific simulation.", lifespan=lifespan)
     api.state.research_jobs = jobs
     api.add_middleware(CORSMiddleware, allow_origins=config.hypothesim_cors_origins,
                        allow_credentials=False, allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
@@ -30,6 +37,14 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
             ai_credentials_configured=bool(config.nvidia_api_key and config.nvidia_api_key.get_secret_value()),
             tracing_credentials_configured=bool(config.langsmith_api_key and config.langsmith_api_key.get_secret_value()),
         )
+
+    @api.get("/api/demo", response_model=DemoSnapshot)
+    def saved_demo() -> DemoSnapshot:
+        """Load a labeled saved result without contacting an LLM or literature provider."""
+        try:
+            return load_demo()
+        except (OSError, ValueError) as exc:
+            raise HTTPException(status_code=503, detail="Saved demo unavailable; regenerate it with scripts/prepare_demo.py") from exc
 
     @api.post("/api/contracts/experiments/validate", response_model=ContractValidation)
     def validate_experiment(experiment: ExperimentConfig) -> ContractValidation:
@@ -76,6 +91,8 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
         """Queue one guarded hypothesis; parameter controls never use this endpoint."""
         try:
             return jobs.submit(request)
+        except ResearchCapacityError as exc:
+            raise HTTPException(status_code=429, detail=str(exc), headers={"Retry-After": "3"}) from exc
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 

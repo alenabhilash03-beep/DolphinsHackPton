@@ -12,3 +12,4 @@ export type LiteratureSearch = components["schemas"]["LiteratureSearch"];
 export type ResearchJob = components["schemas"]["ResearchJob"];
 export type ResearchEvent = components["schemas"]["ResearchEvent"];
 export type PaperSummary = components["schemas"]["PaperSummary"];
+export type DemoSnapshot = components["schemas"]["DemoSnapshot"];

@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from pydantic import SecretStr
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -20,3 +21,6 @@ class Settings(BaseSettings):
     langsmith_project: str = "hypothesim-development"
     langsmith_endpoint: str = "https://api.smith.langchain.com"
     langsmith_workspace_id: str | None = None
+    research_timeout_s: float = Field(default=180, gt=0, le=600)
+    research_max_jobs: int = Field(default=4, ge=1, le=8)
+    research_db_path: Path | None = None

@@ -288,6 +288,50 @@
         "title": "ControlAdjustment",
         "type": "object"
       },
+      "DemoSnapshot": {
+        "properties": {
+          "experiment": {
+            "$ref": "#/components/schemas/ExperimentConfig"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "interpretation": {
+            "$ref": "#/components/schemas/Interpretation"
+          },
+          "origin": {
+            "const": "saved_reviewed_demo",
+            "default": "saved_reviewed_demo",
+            "title": "Origin",
+            "type": "string"
+          },
+          "research_status": {
+            "const": "saved_no_live_agent",
+            "default": "saved_no_live_agent",
+            "title": "Research Status",
+            "type": "string"
+          },
+          "result": {
+            "$ref": "#/components/schemas/SimulationResult"
+          },
+          "retrieval_status": {
+            "const": "cached_reviewed",
+            "default": "cached_reviewed",
+            "title": "Retrieval Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "generated_at",
+          "experiment",
+          "result",
+          "interpretation"
+        ],
+        "title": "DemoSnapshot",
+        "type": "object"
+      },
       "DrugProfile": {
         "additionalProperties": false,
         "properties": {
@@ -2183,6 +2227,25 @@
           }
         },
         "summary": "Validate Experiment"
+      }
+    },
+    "/api/demo": {
+      "get": {
+        "description": "Load a labeled saved result without contacting an LLM or literature provider.",
+        "operationId": "saved_demo_api_demo_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoSnapshot"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Saved Demo"
       }
     },
     "/api/health": {

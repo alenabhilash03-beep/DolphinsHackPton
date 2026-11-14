@@ -98,7 +98,61 @@ def test_restart_marks_interrupted_work_instead_of_stranding_it(tmp_path):
     from app.schemas.contracts import HypothesisRequest
     job = store.create(HypothesisRequest(text=PRIMARY))
     store.update(job.job_id, "running", "Research agent started", status="running")
+    with store._connect() as db:
+        db.execute("UPDATE research_jobs SET owner_pid=? WHERE job_id=?", (999999999, job.job_id))
     restarted = ResearchJobStore(tmp_path / "jobs.db")
     assert restarted.get(job.job_id).status == "failed"
     assert restarted.get(job.job_id).error_code == "interrupted"
     assert restarted.events(job.job_id)[-1].kind == "failed"
+
+
+def test_opening_store_does_not_interrupt_live_work(tmp_path):
+    from app.schemas.contracts import HypothesisRequest
+    store = ResearchJobStore(tmp_path / "jobs.db")
+    job = store.create(HypothesisRequest(text=PRIMARY))
+    assert ResearchJobStore(tmp_path / "jobs.db").get(job.job_id).status == "queued"
+
+
+def test_deadline_stops_child_and_terminal_status_cannot_be_overwritten(tmp_path):
+    import sys
+    from app.schemas.contracts import HypothesisRequest
+    from app.research.jobs import _process_alive
+    settings = Settings(_env_file=None, research_timeout_s=.5, nvidia_api_key=None, langsmith_api_key=None)
+    command = [sys.executable, "-c", "import sys,time,os,json;sys.stdin.readline();print(json.dumps({'type':'progress','kind':'worker','message':str(os.getpid())}),flush=True);time.sleep(10)"]
+    service = ResearchJobService(settings, ResearchJobStore(tmp_path / "jobs.db"), worker_command=command)
+    client = TestClient(create_app(settings, job_service=service))
+    started = time.monotonic()
+    job = service.submit(HypothesisRequest(text=PRIMARY))
+    failed = finish(client, job.job_id)
+    assert failed["error_code"] == "research_timeout" and time.monotonic() - started < 3
+    pid = int(next(event.message for event in service.store.events(job.job_id) if event.kind == "worker"))
+    assert not _process_alive(pid)
+    service.store.update(job.job_id, "completed", "Late result", status="completed")
+    assert service.store.get(job.job_id).status == "failed"
+    service.close()
+
+
+def test_full_queue_returns_429_without_breaking_simulator(tmp_path, experiment_data):
+    from threading import Event
+    gate = Event()
+    def held_runner(request, progress):
+        gate.wait(timeout=2)
+        return fake_runner(request, progress)
+    settings = Settings(_env_file=None, research_max_jobs=1, nvidia_api_key=None, langsmith_api_key=None)
+    service = ResearchJobService(settings, ResearchJobStore(tmp_path / "jobs.db"), held_runner)
+    client = TestClient(create_app(settings, job_service=service))
+    try:
+        assert client.post("/api/research/jobs", json={"text":PRIMARY}).status_code == 202
+        response = client.post("/api/research/jobs", json={"text":PRIMARY})
+        assert response.status_code == 429 and response.headers["retry-after"] == "3"
+        assert client.post("/api/simulations", json={"experiment":experiment_data,"client_revision":0,"output_points":100}).status_code == 200
+    finally:
+        gate.set(); service.close()
+
+
+def test_worker_guard_stops_process_after_supervisor_loss():
+    import subprocess
+    import sys
+    result = subprocess.run([sys.executable, "-c", "from app.research.worker import guard_supervisor;import time;guard_supervisor(999999999,10);time.sleep(4)"],
+                            capture_output=True, timeout=6)
+    assert result.returncode == 2

@@ -3,16 +3,20 @@
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 import json
+import os
 from pathlib import Path
+from queue import Empty, Queue
 import sqlite3
-from threading import Lock
+import subprocess
+import sys
+from threading import BoundedSemaphore, Event, Lock, Thread
+from time import monotonic
 from typing import Callable, Literal
 from uuid import uuid4
 
-from langchain_nvidia_ai_endpoints import ChatNVIDIA
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, TypeAdapter
 
-from app.agent.workflow import ResearchOutcome, run_research, scope_request
+from app.agent.workflow import ResearchOutcome
 from app.config import ROOT, Settings
 from app.research.registry import load_curated_profile
 from app.research.europe_pmc import LiteratureSearch
@@ -20,6 +24,23 @@ from app.schemas.contracts import ExperimentConfig, HypothesisRequest, Interpret
 
 JobStatus = Literal["queued", "running", "completed", "unsupported", "failed"]
 PINNED_MODEL = "nvidia/nemotron-3.5-super-vl-120b-a12b"
+TERMINAL = {"completed", "unsupported", "failed"}
+
+
+class ResearchCapacityError(RuntimeError):
+    pass
+
+
+def _process_alive(pid: int | None) -> bool:
+    if not pid:
+        return False
+    try:
+        os.kill(pid, 0)
+        return True
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
 
 
 class ResearchEvent(BaseModel):
@@ -73,9 +94,14 @@ class ResearchJobStore:
                 );
                 CREATE INDEX IF NOT EXISTS research_events_job ON research_events(job_id, event_id);
             """)
-            # Threads do not survive a server restart. Keep the persisted state truthful.
-            rows = db.execute("SELECT job_id, payload FROM research_jobs WHERE status IN ('queued', 'running')").fetchall()
+            columns = {row["name"] for row in db.execute("PRAGMA table_info(research_jobs)")}
+            if "owner_pid" not in columns:
+                db.execute("ALTER TABLE research_jobs ADD COLUMN owner_pid INTEGER")
+            rows = db.execute("SELECT job_id, payload, owner_pid FROM research_jobs WHERE status IN ('queued', 'running')").fetchall()
             for row in rows:
+                # Importing the app for contracts/tests must not interrupt a live server.
+                if _process_alive(row["owner_pid"]):
+                    continue
                 data = json.loads(row["payload"])
                 data.update(status="failed", error_code="interrupted", error_message="Research was interrupted by a server restart. Please submit again.", updated_at=_stamp())
                 db.execute("UPDATE research_jobs SET status='failed', payload=?, updated_at=? WHERE job_id=?",
@@ -97,8 +123,8 @@ class ResearchJobStore:
         job = ResearchJob(job_id=uuid4().hex, status="queued", request=request,
                           previous_experiment_id=request.previous_experiment_id, created_at=now, updated_at=now)
         with self._lock, self._connect() as db:
-            db.execute("INSERT INTO research_jobs VALUES (?, ?, ?, ?, ?)",
-                       (job.job_id, job.status, job.model_dump_json(), now, now))
+            db.execute("INSERT INTO research_jobs(job_id,status,payload,created_at,updated_at,owner_pid) VALUES (?, ?, ?, ?, ?, ?)",
+                       (job.job_id, job.status, job.model_dump_json(), now, now, os.getpid()))
             self._event(db, job.job_id, "queued", "Research request accepted")
         return job
 
@@ -120,6 +146,8 @@ class ResearchJobStore:
             if row is None:
                 raise KeyError(job_id)
             data = json.loads(row["payload"])
+            if data["status"] in TERMINAL:
+                return
             data.update(changes, updated_at=_stamp())
             validated = ResearchJob.model_validate(data)
             db.execute("UPDATE research_jobs SET status=?, payload=?, updated_at=? WHERE job_id=?",
@@ -132,36 +160,99 @@ ResearchRunner = Callable[[HypothesisRequest, Callable[[str, str], None]], Resea
 
 class ResearchJobService:
     def __init__(self, settings: Settings, store: ResearchJobStore | None = None,
-                 runner: ResearchRunner | None = None):
+                 runner: ResearchRunner | None = None, worker_command: list[str] | None = None):
         self.settings = settings
-        self.store = store or ResearchJobStore(ROOT / "data" / "research-jobs.db")
-        self.runner = runner or self._run_live
+        self.store = store or ResearchJobStore(settings.research_db_path or ROOT / "data" / "research-jobs.db")
+        self.runner = runner
+        self.worker_command = worker_command or [sys.executable, "-m", "app.research.worker"]
         self.executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="hypothesim-research")
+        self.capacity = BoundedSemaphore(settings.research_max_jobs)
+        self.closed = Event()
 
-    def _run_live(self, request: HypothesisRequest, progress: Callable[[str, str], None]) -> ResearchOutcome:
-        blocked = scope_request(request)
-        if blocked:
-            return ResearchOutcome(support=blocked)
-        key = self.settings.nvidia_api_key.get_secret_value() if self.settings.nvidia_api_key else ""
-        if not key:
-            raise RuntimeError("NVIDIA_API_KEY is not configured")
-        if self.settings.hypothesim_llm_model != PINNED_MODEL:
-            raise RuntimeError("The configured AI model has not been audited for this workflow")
-        model = ChatNVIDIA(model=PINNED_MODEL, api_key=key, max_completion_tokens=8192,
-                           temperature=0, timeout=90, usage_telemetry_enabled=False)
-        return run_research(request, model, settings=self.settings, on_progress=progress)
+    def _run_worker(self, request: HypothesisRequest, progress: Callable[[str, str], None], deadline: float) -> ResearchOutcome:
+        settings = self.settings.model_dump(mode="json", exclude={"nvidia_api_key", "langsmith_api_key"})
+        for name in ("nvidia_api_key", "langsmith_api_key"):
+            key = getattr(self.settings, name)
+            settings[name] = key.get_secret_value() if key else None
+        env = dict(os.environ)
+        env["PYTHONPATH"] = str(ROOT / "apps/api")
+        child = subprocess.Popen(self.worker_command, cwd=ROOT, env=env, stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+        messages: Queue = Queue()
+        def read_output():
+            try:
+                while line := child.stdout.readline(1_000_001):
+                    if len(line) > 1_000_000:
+                        break
+                    try:
+                        messages.put(json.loads(line))
+                    except json.JSONDecodeError:
+                        continue
+            finally:
+                messages.put({"type": "eof"})
+        reader = Thread(target=read_output, daemon=True)
+        reader.start()
+        try:
+            # Credentials travel through a pipe, never command arguments or browser state.
+            child.stdin.write(json.dumps({"request": request.model_dump(mode="json"), "settings": settings, "supervisor_pid": os.getpid(),
+                                          "remaining_s": max(.01, deadline - monotonic())}) + "\n")
+            child.stdin.close()
+            while True:
+                if self.closed.is_set():
+                    raise InterruptedError("Research service stopped")
+                remaining = deadline - monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("Research deadline exceeded")
+                try:
+                    message = messages.get(timeout=min(.25, remaining))
+                except Empty:
+                    continue
+                if message.get("type") == "progress":
+                    progress(message["kind"], message["message"])
+                elif message.get("type") == "outcome":
+                    return TypeAdapter(ResearchOutcome).validate_python(message["outcome"])
+                elif message.get("type") == "error":
+                    if message.get("code") == "credentials_missing":
+                        raise RuntimeError("AI provider not configured")
+                    raise RuntimeError("Research worker failed")
+                elif message.get("type") == "eof":
+                    raise RuntimeError("Research worker ended without a validated result")
+        finally:
+            if child.poll() is None:
+                child.terminate()
+                try:
+                    child.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    child.kill(); child.wait(timeout=2)
+            reader.join(timeout=1)
+            child.stdout.close()
+
+    def close(self) -> None:
+        self.closed.set()
+        self.executor.shutdown(wait=True)
 
     def submit(self, request: HypothesisRequest) -> ResearchJob:
         if request.previous_experiment_id and request.previous_experiment_id != load_curated_profile().experiment.experiment_id:
             raise ValueError("Previous experiment is not registered for this research workflow")
-        job = self.store.create(request)
-        self.executor.submit(self._execute, job.job_id, request)
+        if self.closed.is_set() or not self.capacity.acquire(blocking=False):
+            raise ResearchCapacityError("Research capacity is full. Retry shortly; direct simulation remains available.")
+        try:
+            job = self.store.create(request)
+            self.executor.submit(self._execute, job.job_id, request, monotonic() + self.settings.research_timeout_s)
+        except Exception:
+            self.capacity.release()
+            raise
         return job
 
-    def _execute(self, job_id: str, request: HypothesisRequest) -> None:
+    def _execute(self, job_id: str, request: HypothesisRequest, deadline: float) -> None:
         try:
+            if self.closed.is_set():
+                raise InterruptedError("Research service stopped")
+            if monotonic() >= deadline:
+                raise TimeoutError("Research expired in queue")
             self.store.update(job_id, "running", "Research agent started", status="running")
-            outcome = self.runner(request, lambda kind, message: self.store.update(job_id, kind, message))
+            progress = lambda kind, message: self.store.update(job_id, kind, message)
+            outcome = self.runner(request, progress) if self.runner else self._run_worker(request, progress, deadline)
             if outcome.result is not None and (outcome.experiment is None or outcome.interpretation is None or
                 outcome.result.configuration.experiment_id != outcome.experiment.experiment_id or
                 outcome.interpretation.result_id != outcome.result.result_id or
@@ -180,6 +271,11 @@ class ResearchJobService:
                                   status="completed", **common)
         except Exception as exc:
             # Do not persist provider payloads or credentials in a browser-facing job.
-            code = "credentials_missing" if isinstance(exc, RuntimeError) and "not configured" in str(exc) else "research_failed"
-            message = "The AI provider is not configured. Direct simulation remains available." if code == "credentials_missing" else "Research could not be completed. Direct simulation remains available; retry the hypothesis."
+            code = "research_timeout" if isinstance(exc, TimeoutError) else "interrupted" if isinstance(exc, InterruptedError) else "credentials_missing" if isinstance(exc, RuntimeError) and "not configured" in str(exc) else "research_failed"
+            message = {"credentials_missing": "The AI provider is not configured. Load the saved demo or use direct simulation.",
+                       "research_timeout": "Research reached its time limit and was stopped. Load the saved demo or retry research.",
+                       "interrupted": "Research was interrupted by server shutdown. Please retry."}.get(code,
+                       "Research could not be completed. Load the saved demo or retry; direct simulation remains available.")
             self.store.update(job_id, "failed", message, status="failed", error_code=code, error_message=message)
+        finally:
+            self.capacity.release()

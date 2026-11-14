@@ -13,7 +13,8 @@ export async function submitResearch(request: Request): Promise<Response> {
       cache: "no-store", signal: AbortSignal.timeout(10_000),
     });
     return new Response(await backend.text(), { status: backend.status,
-      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+      headers: { "Content-Type": "application/json", "Cache-Control": "no-store",
+        ...(backend.headers.get("retry-after") ? { "Retry-After": backend.headers.get("retry-after")! } : {}) } });
   } catch {
     return Response.json({ detail: "Research API unavailable; direct simulation remains usable." }, { status: 503 });
   }

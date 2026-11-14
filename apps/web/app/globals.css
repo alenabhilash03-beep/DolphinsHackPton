@@ -113,3 +113,5 @@ button:focus-visible, a:focus-visible { outline: 3px solid #b28435; outline-offs
 @media(max-width:480px) { .live-readouts { grid-template-columns:1fr; } }
 .timeline-panel { position:sticky; top:8px; z-index:8; border:1px solid #cbdccd; box-shadow:0 4px 16px #254b3012; }
 .experiment-results>section[id] { scroll-margin-top:110px; }
+.saved-demo-button { margin-top:14px; }
+.saved-demo-banner { padding:14px 18px; background:#e5eef8; border:1px solid #c2d4e5; color:#35576d; border-radius:10px; font-size:13px; }

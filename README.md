@@ -8,7 +8,7 @@ An evidence-aware scientific hypothesis exploration platform.
 
 ## Current progress
 
-**Phases 0–4 and subphase 5A are complete.** The repository has the evidence audit, canonical scientific contracts, exact one-compartment PK, adaptive mass-action binding, numerical comparisons, direct simulation API, functional technical workspace, audited trastuzumab evidence registry, and a guarded LangChain agent. Research jobs now connect the hypothesis form to validated experiments, factual progress events, plots, and result-linked interpretation. The [3B review](docs/subphase-reviews/3B.md) records the verified remote LangSmith trace; the [3C review](docs/subphase-reviews/3C.md) records the end-to-end workspace check.
+**Phases 0–4 and subphases 5A–5B are complete.** The repository has the evidence audit, canonical scientific contracts, exact one-compartment PK, adaptive mass-action binding, numerical comparisons, direct simulation API, functional technical workspace, audited trastuzumab evidence registry, and a guarded LangChain agent. Research jobs now connect the hypothesis form to validated experiments, factual progress events, plots, and result-linked interpretation. The [3B review](docs/subphase-reviews/3B.md) records the verified remote LangSmith trace; the [3C review](docs/subphase-reviews/3C.md) records the end-to-end workspace check.
 
 The web preview and API can be run locally now using the commands below. Python computation is independent of the agent; no AI credentials are needed to run the numerical engine.
 
@@ -37,6 +37,16 @@ cp .env.example .env
 Skip the copy if `.env` already exists. Both services load the root `.env`; never commit it. Python dependencies are locked in `uv.lock`, Node dependencies in `package-lock.json`. Keep those files with the corresponding manifest changes.
 
 ## Start locally
+
+For the checked production demo, use one launcher after installing dependencies:
+
+```sh
+uv run python scripts/start_local.py --build
+```
+
+Open [http://127.0.0.1:3002/preview/plots](http://127.0.0.1:3002/preview/plots). Ctrl+C stops both services. `--offline-research` disables AI for that launch; **Open saved demo · no live research** loads the labeled cached result even when the scientific API is unavailable. Slider recalculation requires the API. See [local deployment and recovery](docs/LOCAL_DEPLOYMENT.md) for smoke checks, logs, ports, queue limits, deadlines, and failure behavior.
+
+For development, you can also run the services separately:
 
 In one terminal:
 
@@ -121,4 +131,4 @@ The script prints capability status and error categories, not secrets or raw HTT
 
 ## Next development step and when the app becomes visible
 
-**5A is complete.** Playback reveals the concentration and occupancy curves with moving markers and synchronized population animation. The research tool searches related papers, and reviewed source summaries explain how the evidence informs each plot. See [the 5A review](docs/subphase-reviews/5A.md). Next is **5B**, then the agreed drug-support expansion **7A–7D**, followed by **5C** integration testing and **Phase 6** local-demo rehearsal.
+**5B is complete.** Research has bounded admission, stoppable deadlines, persisted recovery, and retry. The workspace has a labeled saved-demo fallback and a reproducible local launcher. The [5B review](docs/subphase-reviews/5B.md) records local outage checks and verified live tracing. Next is **7A — drug identity and model eligibility**, then 7B–7D, 5C, and Phase 6.

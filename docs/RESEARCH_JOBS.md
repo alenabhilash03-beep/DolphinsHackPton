@@ -1,6 +1,6 @@
 # Research jobs and workspace handoff (3C)
 
-The scientific API owns the NVIDIA credential and LangChain workflow. The browser calls same-origin Next.js routes, which forward to FastAPI without exposing provider keys. The numerical engine remains independent of the agent.
+The scientific API owns the NVIDIA credential and LangChain workflow. The browser calls same-origin Next.js routes, which forward to FastAPI without exposing provider keys. The numerical engine remains independent of the agent. As of 5B, production research executes in a supervised child process with a configurable submission deadline and bounded admission; see [local deployment and recovery](LOCAL_DEPLOYMENT.md).
 
 ## API
 
@@ -10,7 +10,7 @@ The scientific API owns the NVIDIA credential and LangChain workflow. The browse
 | `GET /api/research/jobs/{job_id}` | Read status, support assessment, validated configuration, result, interpretation, retrieval and trace metadata. |
 | `GET /api/research/jobs/{job_id}/events` | Stream `ResearchEvent` records as SSE `progress` events with monotonically increasing IDs. `Last-Event-ID` replays missed events. |
 
-Statuses are `queued`, `running`, `completed`, `unsupported`, and `failed`. Progress entries correspond to actual transitions or completed profile, literature, and simulation tools; they are not invented token-by-token agent thoughts. The SQLite file is `data/research-jobs.db` and is ignored by Git. Jobs interrupted by a server restart become `failed` with an explicit retry message. This is a single-process hackathon job runner; deployment with multiple API workers needs a shared queue or database coordination.
+Statuses are `queued`, `running`, `completed`, `unsupported`, and `failed`. Progress entries correspond to actual transitions or completed profile, literature, and simulation tools; they are not invented token-by-token agent thoughts. The SQLite file is `data/research-jobs.db` and is ignored by Git. Jobs whose owning server process has died become `failed` with an explicit retry message. Reading or opening the store does not interrupt jobs with live owners. Run one API service with supervised research children for the local MVP; distributed admission and scheduling would need separate coordination.
 
 `completed` includes the full `ExperimentConfig`, `SimulationResult`, and `Interpretation`. The interpretation's experiment and result IDs must match the numerical result. `unsupported` includes the scope reasons and no model output. Provider errors are sanitized into a short `failed` status and do not reveal credentials or provider payloads. `previous_experiment_id` records lineage for a subsequent request; only the registered experiment ID is accepted at present. Research supports the audited primary trastuzumab–HER2 comparison only.
 

@@ -24,6 +24,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/demo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Saved Demo
+         * @description Load a labeled saved result without contacting an LLM or literature provider.
+         */
+        get: operations["saved_demo_api_demo_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -295,6 +315,35 @@ export interface components {
             scenario_id: string | null;
             /** Value */
             value: number | null;
+        };
+        /** DemoSnapshot */
+        DemoSnapshot: {
+            experiment: components["schemas"]["ExperimentConfig"];
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            interpretation: components["schemas"]["Interpretation"];
+            /**
+             * Origin
+             * @default saved_reviewed_demo
+             * @constant
+             */
+            origin: "saved_reviewed_demo";
+            /**
+             * Research Status
+             * @default saved_no_live_agent
+             * @constant
+             */
+            research_status: "saved_no_live_agent";
+            result: components["schemas"]["SimulationResult"];
+            /**
+             * Retrieval Status
+             * @default cached_reviewed
+             * @constant
+             */
+            retrieval_status: "cached_reviewed";
         };
         /** DrugProfile */
         DrugProfile: {
@@ -990,6 +1039,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    saved_demo_api_demo_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoSnapshot"];
                 };
             };
         };

@@ -10,6 +10,7 @@ import { PreviewControls } from "./PreviewControls";
 import { EvidencePanel } from "./EvidencePanel";
 import { ScenarioComparison } from "./ScenarioComparison";
 import { BindingCanvas } from "./BindingCanvas";
+import { VisualizationBoundary } from "./VisualizationBoundary";
 
 /** Isolated functional preview; product styling belongs to the UI contributor. */
 export function PlotPreview({ initialExperiment, initialResult = null, onResultIdChange }: {
@@ -31,12 +32,12 @@ export function PlotPreview({ initialExperiment, initialResult = null, onResultI
       <section id="plot-concentration" aria-label="Concentration comparison">
         <h2>Central concentration</h2>
         <p>PK: volume and clearance drive exposure. S2 supplies the reviewed starting values. <a href="#paper-evidence">See paper summaries ↓</a></p>
-        <ScientificPlot result={workspace.result} kind="concentration" cursorTimeHours={timeline.timeHours} revealProgress={timeline.revealCurves} onSeekTime={timeline.seekTime} />
+        <VisualizationBoundary label="Concentration plot"><ScientificPlot result={workspace.result} kind="concentration" cursorTimeHours={timeline.timeHours} revealProgress={timeline.revealCurves} onSeekTime={timeline.seekTime} /></VisualizationBoundary>
       </section>
       <section id="plot-occupancy" aria-label="Occupancy comparison">
         <h2>Target occupancy</h2>
         <p>Occupancy endpoint: exposure drives binding. S3 supplies the reviewed kinetic starting values. <a href="#paper-evidence">See paper summaries ↓</a></p>
-        <ScientificPlot result={workspace.result} kind="occupancy" cursorTimeHours={timeline.timeHours} revealProgress={timeline.revealCurves} onSeekTime={timeline.seekTime} />
+        <VisualizationBoundary label="Occupancy plot"><ScientificPlot result={workspace.result} kind="occupancy" cursorTimeHours={timeline.timeHours} revealProgress={timeline.revealCurves} onSeekTime={timeline.seekTime} /></VisualizationBoundary>
       </section>
       <h2>Values at {timeline.timeDays.toFixed(2)} days</h2>
       <ul>{timeline.readout?.scenarios.map((scenario) => <li key={scenario.scenarioId}>

@@ -19,6 +19,7 @@ export function StructureViewer() {
   const [scriptReady, setScriptReady] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const [visible, setVisible] = useState(["A", "B", "C"]);
   const [surface, setSurface] = useState(false);
   const [contacts, setContacts] = useState(true);
@@ -55,7 +56,7 @@ export function StructureViewer() {
       abort.abort(); resize?.disconnect(); instance?.clear();
       viewer.current = null; element.replaceChildren();
     };
-  }, [scriptReady]);
+  }, [scriptReady, attempt]);
 
   useEffect(() => {
     const v = viewer.current;
@@ -77,7 +78,7 @@ export function StructureViewer() {
 
   const focus = (selection: AtomSelectionSpec) => { viewer.current?.zoomTo(selection); viewer.current?.render(); };
   return <section id="structure" className="structure-panel" aria-label="Experimental molecular structure">
-    <Script src="/vendor/3Dmol-2.5.5.min.js" onReady={() => setScriptReady(true)} onError={() => setError("Molecular renderer unavailable. Scientific plots remain usable.")} />
+    <Script key={attempt} src={`/vendor/3Dmol-2.5.5.min.js?attempt=${attempt}`} onReady={() => setScriptReady(true)} onError={() => setError("Molecular renderer unavailable. Scientific plots remain usable.")} />
     <h2>Experimental structure · 1N8Z</h2>
     <p>Trastuzumab Fab bound to the HER2 extracellular domain · X-ray diffraction, 2.52 Å. This structure contains an antibody fragment and soluble target domain. Dose and kinetic changes do not alter its geometry.</p>
     <div>{CHAINS.map((chain) => <label key={chain.id} style={{ marginRight: 16, color: chain.color }}>
@@ -102,6 +103,7 @@ export function StructureViewer() {
     }}>Inspect residue</button></div>
     <div ref={host} aria-label="Interactive 1N8Z molecular canvas" style={{ position: "relative", width: "100%", height: 460, border: "1px solid #cad6c7", marginTop: 12 }} />
     <p role="status">{error ?? (loaded ? residue : "Loading cached experimental structure…")}</p>
+    {error && <button type="button" onClick={() => { setError(null); setLoaded(false); setScriptReady(false); setAttempt((value) => value + 1); }}>Retry structure</button>}
     <p>Drag to rotate; scroll to zoom. Interface sticks mark a geometric distance selection, not measured binding energy. <a href="https://www.rcsb.org/structure/1N8Z" target="_blank" rel="noreferrer">RCSB PDB source</a></p>
   </section>;
 }

@@ -10,6 +10,7 @@ export function EvidencePanel({ experiment, scenarioId, resultPresent = false }:
 }) {
   const [profile, setProfile] = useState<EvidenceProfile | null>(null);
   const [cacheError, setCacheError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/research/evidence/trastuzumab", { cache: "no-store", signal: controller.signal })
@@ -20,7 +21,7 @@ export function EvidencePanel({ experiment, scenarioId, resultPresent = false }:
       .then((value) => { setProfile(value); setCacheError(false); })
       .catch(() => { if (!controller.signal.aborted) setCacheError(true); });
     return () => controller.abort();
-  }, []);
+  }, [attempt]);
 
   const scenario = experiment.scenarios.find((item) => item.scenario_id === scenarioId) ?? experiment.scenarios[0];
   const values = useMemo(() => {
@@ -35,6 +36,7 @@ export function EvidencePanel({ experiment, scenarioId, resultPresent = false }:
     <p>{cacheError ? "Bibliographic cache unavailable; source links and the validated experiment remain visible." :
       profile ? "Europe PMC bibliographic metadata: cached, not a live search. Numerical inputs retain their separate reviewed or assumed provenance." :
       "Loading cached bibliographic metadata…"}</p>
+    {cacheError && <button type="button" onClick={() => { setCacheError(false); setAttempt((value) => value + 1); }}>Retry evidence metadata</button>}
     <h3>Sources</h3>
     {profile?.paper_summaries && <PaperSummaries summaries={profile.paper_summaries} experiment={experiment} />}
     <ul>{experiment.sources.map((source) => {

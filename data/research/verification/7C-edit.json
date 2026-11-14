@@ -1,0 +1,22 @@
+{
+  "status": "completed",
+  "mode": "edit",
+  "turn_id": "turn-0618456ac02f473492a667d0a3a34eca",
+  "tool_calls": [
+    "read_current_experiment",
+    "apply_requested_edit",
+    "simulate_current_comparison",
+    "interpret_current_result"
+  ],
+  "trace_id": "01a1db2e-3755-7415-b50b-277fd8e3b87b",
+  "trace_status": "remote_verified",
+  "result_id": "sim-1cc031d4036f8ae491876f18",
+  "preparation_id": null,
+  "questions": [],
+  "applied_changes": [
+    "comparison: duration_h = 2880"
+  ],
+  "checked_at": "2026-11-14T17:50:45.316602+00:00",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "verification": "Live free NVIDIA tool calls and readable remote LangSmith tool spans; no paid OpenAI calls."
+}

@@ -7,6 +7,8 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.responses import StreamingResponse
 
 from app.config import Settings, ROOT
+from app.agent.generalized import GeneralizedAgentService
+from app.schemas.generalized_agent import AgentResearchRequest, AgentEditRequest, AgentTurn
 from app.research.preparation import PreparationService
 from app.research.preparation_store import PreparationStore, StalePreparation
 from app.schemas.preparation_workflow import (CreatePreparation, PreparationUpdate, PreparationRecord, PreparationVersion, ConfiguredPreparation, WORKFLOW_CONTRACTS)
@@ -42,6 +44,34 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
     api.state.preparations = preparations
     api.add_middleware(CORSMiddleware, allow_origins=config.hypothesim_cors_origins,
                        allow_credentials=False, allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
+
+    generalized = GeneralizedAgentService(preparations, config)
+    api.state.generalized_agent = generalized
+
+    def agent_call(request, edit=False):
+        try:
+            return api.state.generalized_agent.run(request, edit=edit)
+        except StalePreparation as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="Unknown agent result/preparation") from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail="Agent request or scientific tool validation failed") from exc
+        except Exception as exc:
+            raise HTTPException(status_code=503, detail="Generalized agent unavailable; no successful result is claimed. Read the preparation before retrying.") from exc
+
+    @api.post("/api/agent/research", response_model=AgentTurn, tags=["Generalized agent"])
+    def generalized_research(request: AgentResearchRequest):
+        return agent_call(request)
+
+    @api.post("/api/agent/edits", response_model=AgentTurn, tags=["Generalized agent"])
+    def generalized_edit(request: AgentEditRequest):
+        return agent_call(request, edit=True)
+
+    @api.get("/api/agent/turns/{turn_id}", response_model=AgentTurn, tags=["Generalized agent"])
+    def generalized_turn(turn_id: str):
+        try: return api.state.generalized_agent.turns.read(turn_id)
+        except KeyError as exc: raise HTTPException(status_code=404, detail="Unknown agent turn") from exc
 
     @api.get("/api/health", response_model=HealthResponse)
     def health() -> HealthResponse:

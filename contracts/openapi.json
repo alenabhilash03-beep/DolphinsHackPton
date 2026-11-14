@@ -1,6 +1,208 @@
 {
   "components": {
     "schemas": {
+      "AgentEditRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "base_configuration_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Base Configuration Sha256",
+            "type": "string"
+          },
+          "base_experiment_id": {
+            "title": "Base Experiment Id",
+            "type": "string"
+          },
+          "base_result_id": {
+            "title": "Base Result Id",
+            "type": "string"
+          },
+          "client_revision": {
+            "exclusiveMinimum": 0.0,
+            "title": "Client Revision",
+            "type": "integer"
+          },
+          "selected_scenario_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selected Scenario Id"
+          },
+          "text": {
+            "maxLength": 12000,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "base_result_id",
+          "base_experiment_id",
+          "base_configuration_sha256",
+          "client_revision",
+          "text"
+        ],
+        "title": "AgentEditRequest",
+        "type": "object"
+      },
+      "AgentResearchRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "client_revision": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Client Revision",
+            "type": "integer"
+          },
+          "preparation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preparation Id"
+          },
+          "request": {
+            "$ref": "#/components/schemas/PreparationRequest"
+          },
+          "researcher_update": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PreparationUpdate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "structured_baseline": {
+            "default": false,
+            "title": "Structured Baseline",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "request"
+        ],
+        "title": "AgentResearchRequest",
+        "type": "object"
+      },
+      "AgentTurn": {
+        "additionalProperties": false,
+        "properties": {
+          "applied_changes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Applied Changes",
+            "type": "array"
+          },
+          "interpretation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Interpretation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "original_text": {
+            "title": "Original Text",
+            "type": "string"
+          },
+          "parent_result_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Result Id"
+          },
+          "preparation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PreparationRecord"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "questions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Questions",
+            "type": "array"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SimulationResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "completed",
+              "needs_inputs",
+              "unsupported",
+              "unavailable"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "tool_calls": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tool Calls",
+            "type": "array"
+          },
+          "trace_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trace Id"
+          },
+          "trace_status": {
+            "default": "not_collected",
+            "title": "Trace Status",
+            "type": "string"
+          },
+          "turn_id": {
+            "title": "Turn Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "turn_id",
+          "status",
+          "original_text"
+        ],
+        "title": "AgentTurn",
+        "type": "object"
+      },
       "Assumption": {
         "additionalProperties": false,
         "properties": {
@@ -4692,6 +4894,130 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/agent/edits": {
+      "post": {
+        "operationId": "generalized_edit_api_agent_edits_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentEditRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentTurn"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generalized Edit",
+        "tags": [
+          "Generalized agent"
+        ]
+      }
+    },
+    "/api/agent/research": {
+      "post": {
+        "operationId": "generalized_research_api_agent_research_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentResearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentTurn"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generalized Research",
+        "tags": [
+          "Generalized agent"
+        ]
+      }
+    },
+    "/api/agent/turns/{turn_id}": {
+      "get": {
+        "operationId": "generalized_turn_api_agent_turns__turn_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "turn_id",
+            "required": true,
+            "schema": {
+              "title": "Turn Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentTurn"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generalized Turn",
+        "tags": [
+          "Generalized agent"
+        ]
+      }
+    },
     "/api/contracts/experiments/validate": {
       "post": {
         "description": "Validate configuration structure and provenance, without running a simulation.",

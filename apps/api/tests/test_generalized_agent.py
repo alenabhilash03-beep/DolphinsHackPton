@@ -1,0 +1,206 @@
+"""Actual LangChain loop with scripted provider; no paid/live network calls."""
+import json
+from math import isclose
+from datetime import datetime, timezone
+import pytest
+from pydantic import PrivateAttr
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages import AIMessage, ToolMessage
+from langchain_core.outputs import ChatResult, ChatGeneration
+from app.agent.generalized import GeneralizedAgentService
+from app.research.experimental_edits import apply_edit
+from app.research.preparation_store import StalePreparation
+from app.research.demo import load_demo
+from app.schemas.generalized_agent import AgentResearchRequest, AgentEditRequest
+from app.schemas.contracts import ControlAdjustment
+from app.simulation.controls import adjust_experiment
+from test_preparation_workflow import IdentityFixture, scope, design, parameters, reported_package
+from app.research.preparation import PreparationService
+from app.research.preparation_store import PreparationStore
+from app.research.source_documents import SourceDocumentService
+from app.research.europe_pmc import EuropePMCClient, LiteratureSearch
+from app.config import Settings
+
+SETTINGS = Settings(_env_file=None, langsmith_tracing=False, nvidia_api_key=None, langsmith_api_key=None)
+
+class DrivingModel(BaseChatModel):
+    mode: str = 'research'
+    request: dict = {}
+    resume_id: str | None = None
+    _step: int = PrivateAttr(default=0)
+    @property
+    def _llm_type(self): return 'offline-generalized-agent-harness'
+    def bind_tools(self, tools, **kwargs): return self
+    def _generate(self, messages, **kwargs):
+        outputs = {}
+        for msg in messages:
+            if isinstance(msg, ToolMessage): outputs[msg.name] = json.loads(msg.content)
+        record = outputs.get('update_experiment_preparation') or outputs.get('start_experiment_preparation') or outputs.get('read_experiment_preparation')
+        if self.mode == 'resume':
+            prep = record['preparation'] if record else {}
+            order = [('read_experiment_preparation',{'preparation_id':self.resume_id}),
+                ('configure_prepared_experiment',{'preparation_id':self.resume_id,'version':{'base_revision':prep.get('revision',0),'base_evidence_sha256':prep.get('evidence_sha256','0'*64)}}),
+                ('simulate_prepared_experiment',{'request':{'experiment':outputs.get('configure_prepared_experiment',{}).get('experiment',{}),'client_revision':0,'output_points':100}}),
+                ('interpret_current_result',{})]
+        elif self.mode == 'edit':
+            order = [('read_current_experiment',{}),('apply_requested_edit',{}),('simulate_current_comparison',{}),('interpret_current_result',{})]
+        else:
+            record_id = record['preparation']['preparation_id'] if record else None
+            search = outputs.get('search_hypothesis_evidence',{})
+            source = outputs.get('retrieve_evidence_source',{}).get('document',{})
+            candidates = outputs.get('extract_cited_parameters',{}).get('parameters',[])
+            order = [('start_experiment_preparation',{'request':self.request}),
+                ('search_hypothesis_evidence',{'request':self.request}),
+                ('retrieve_evidence_source',{'source_handle':next(iter(search.get('source_handles',{})),'pending')}),
+                ('extract_cited_parameters',{'document_id':source.get('document_id','pending'),'request':self.request,
+                    'drug_identifier':'CHEMBL999999999','target_identifier':'Target Y'}),
+                ('update_experiment_preparation',{'preparation_id':record_id,'update':{
+                    'base_revision':record['preparation']['revision'] if record else 0,
+                    'base_evidence_sha256':record['preparation']['evidence_sha256'] if record else '0'*64,
+                    'parameters':candidates,'document_ids':[source.get('document_id','pending')],
+                    'scope':scope().model_dump(mode='json'),'design':design().model_dump(mode='json')}})]
+            if self._step >= 5 and record['preparation']['state']=='ready_for_configuration':
+                prep = record['preparation']
+                order += [('configure_prepared_experiment',{'preparation_id':record_id,'version':{'base_revision':prep['revision'],'base_evidence_sha256':prep['evidence_sha256']}}),
+                    ('simulate_prepared_experiment',{'request':{'experiment':outputs.get('configure_prepared_experiment',{}).get('experiment',{}),'client_revision':0,'output_points':100}}),
+                    ('interpret_current_result',{})]
+        if self._step < len(order): name,args = order[self._step]
+        else:
+            result = outputs.get('simulate_current_comparison') or outputs.get('simulate_prepared_experiment')
+            name,args = 'AgentDecision',{'status':'completed' if result else 'needs_inputs'}
+        self._step += 1
+        return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':name,'args':args,'id':f'call-{self._step}'}]))])
+
+
+def research_service(tmp_path, missing=False):
+    prep = PreparationService(store=PreparationStore(tmp_path/'prep.sqlite3'), documents=SourceDocumentService(cache_dir=tmp_path/'sources'),assessment=IdentityFixture())
+    doc, items = reported_package(prep)
+    def fetch(url):
+        return json.dumps({'hitCount':1,'resultList':{'result':[{'source':'MED','id':'12345678','pmid':'12345678','title':'Synthetic full agent evidence','abstractText':doc.segments[0].text}]}}).encode()
+    prep.documents.literature = EuropePMCClient(fetch=fetch)
+    def extractor(messages):
+        payload=json.loads(messages[-1]['content'])
+        return {'notes':['Synthetic extractor stub'], 'parameters':[{'parameter':p.parameter,'value':p.value,'unit':p.unit,
+            'locator':payload['untrusted_source_segments'][0]['locator'],'supporting_passage':p.passages[0].supporting_passage,
+            'relation':'exact',**{k:v for k,v in p.context.model_dump().items() if k in {'molecular_form','species','route','experimental_system','assay_conditions','exposure_compartment'}}}
+            for p in items if not (missing and p.parameter=='binding.dissociation_h_inv')]}
+    req={'drug_name':'Compound X','target':'Target Y','route':'iv_infusion','original_hypothesis':'SYNTHETIC structured baseline occupancy experiment.'}
+    return GeneralizedAgentService(prep,SETTINGS,DrivingModel(request=req),extractor), req
+
+@pytest.mark.parametrize('missing',[False,True])
+def test_actual_generalized_loop_researches_and_runs_or_clarifies(tmp_path,missing):
+    agent,req=research_service(tmp_path,missing)
+    turn=agent.run(AgentResearchRequest(request=req,structured_baseline=True))
+    assert {'search_hypothesis_evidence','retrieve_evidence_source','extract_cited_parameters','update_experiment_preparation'} <= set(turn.tool_calls)
+    assert turn.preparation.preparation.profile_id is None
+    assert agent.turns.read(turn.turn_id)==turn
+    if missing:
+        assert turn.status=='needs_inputs' and turn.result is None and turn.questions
+    else:
+        assert turn.status=='completed' and turn.interpretation.result_id==turn.result.result_id
+        assert turn.trace_status=='local_collected'
+        assert turn.interpretation.paper_summaries
+        assert all(summary.evidence_ids and summary.plot_ids for summary in turn.interpretation.paper_summaries)
+        assert all(item.review_status=='candidate' for item in turn.result.configuration.evidence)
+
+@pytest.mark.parametrize('text,field,value,scenario',[
+    ('Double the dose in the affinity alternative','dose_mg',1056.,'affinity_x10'),
+    ('Use a 21-day dosing interval in that alternative','dosing_interval_h',504.,'affinity_x10'),
+    ('Run this comparison for 120 days','duration_h',2880.,None),
+    ('Set affinity to 2 nM in the affinity alternative','binding.affinity_nM',2.,'affinity_x10'),
+])
+def test_edit_matches_direct_controls_and_preserves_baseline(tmp_path,text,field,value,scenario):
+    base=load_demo().result
+    prep=PreparationService(store=PreparationStore(tmp_path/'prep.sqlite3'))
+    agent=GeneralizedAgentService(prep,SETTINGS,DrivingModel(mode='edit'))
+    agent.turns.seed(base)
+    req=AgentEditRequest(base_result_id=base.result_id,base_experiment_id=base.configuration.experiment_id,
+        base_configuration_sha256=base.configuration_hash,client_revision=1,selected_scenario_id='affinity_x10',text=text)
+    turn=agent.run(req,edit=True)
+    direct=adjust_experiment(ControlAdjustment(experiment=base.configuration,scenario_id=scenario,field=field,value=value,client_revision=1))
+    for actual,expected in zip(turn.result.configuration.scenarios,direct.scenarios):
+        assert actual.pk==expected.pk and actual.binding==expected.binding and actual.administration==expected.administration
+    assert turn.result.configuration.duration_h==direct.duration_h
+    assert turn.parent_result_id==base.result_id and turn.applied_changes
+    with pytest.raises(StalePreparation): agent.run(req,edit=True)
+
+
+def test_affinity_pair_keeps_kon_and_baseline(tmp_path):
+    base=load_demo().result
+    store=PreparationStore(tmp_path/'p.sqlite3')
+    req=AgentEditRequest(base_result_id=base.result_id,base_experiment_id=base.configuration.experiment_id,base_configuration_sha256=base.configuration_hash,
+        client_revision=1,text='Compare twofold and fivefold affinity improvement at fixed association rate')
+    exp,_=apply_edit(base,req,store)
+    assert exp.scenarios[0]==base.configuration.scenarios[0]
+    for s,f in zip(exp.scenarios[1:],[2,5]):
+        assert s.binding.association_nM_inv_h_inv==base.configuration.scenarios[0].binding.association_nM_inv_h_inv
+        assert isclose(s.binding.affinity_nM,base.configuration.scenarios[0].binding.affinity_nM/f)
+
+@pytest.mark.parametrize('text',['Double dose and change to imatinib','Double the dose in that alternative','Make it better','Run this comparison for 120 days and cure cancer'])
+def test_ambiguous_or_extra_instructions_apply_nothing(tmp_path,text):
+    base=load_demo().result
+    request=AgentEditRequest(base_result_id=base.result_id,base_experiment_id=base.configuration.experiment_id,base_configuration_sha256=base.configuration_hash,
+        client_revision=1,text=text)
+    with pytest.raises(ValueError): apply_edit(base,request,PreparationStore(tmp_path/'p.sqlite3'))
+
+
+def test_missing_rate_continuation_uses_typed_researcher_answer(tmp_path):
+    agent,req=research_service(tmp_path,True)
+    pending=agent.run(AgentResearchRequest(request=req,structured_baseline=True))
+    record=pending.preparation
+    from app.schemas.preparation_workflow import PreparationUpdate
+    answer=next(p for p in parameters() if p.parameter=='binding.dissociation_h_inv')
+    update=PreparationUpdate(base_revision=record.preparation.revision,base_evidence_sha256=record.preparation.evidence_sha256,parameters=[answer])
+    agent.model=DrivingModel(mode='resume',request=req,resume_id=record.preparation.preparation_id)
+    resumed=agent.run(AgentResearchRequest(request=req,preparation_id=record.preparation.preparation_id,researcher_update=update,structured_baseline=True))
+    assert resumed.result is not None and resumed.status=='completed'
+    assert 'search_hypothesis_evidence' not in resumed.tool_calls
+    assert any(e.provenance=='user_supplied' and e.evidence_id==answer.parameter_id for e in resumed.result.configuration.evidence)
+
+
+def test_forged_result_decision_never_creates_a_result(tmp_path):
+    from test_research_agent import ScriptedModel
+    agent,_=research_service(tmp_path)
+    agent.model=ScriptedModel(responses=[AIMessage(content='',tool_calls=[{'name':'AgentDecision','args':{'status':'completed'},'id':'bad'}])])
+    with pytest.raises(ValueError,match='solver result|resolve/create'):
+        agent.run(AgentResearchRequest(request={'drug_name':'anything','original_hypothesis':'No fabricated results'}))
+
+
+def test_agent_cannot_invent_researcher_assumptions(tmp_path):
+    from test_research_agent import ScriptedModel
+    from app.schemas.preparation_workflow import CreatePreparation
+    agent,req=research_service(tmp_path)
+    record=agent.preparation.create(CreatePreparation(request=req))
+    prep=record.preparation
+    update={'preparation_id':prep.preparation_id,'update':{'base_revision':prep.revision,'base_evidence_sha256':prep.evidence_sha256,
+        'parameters':[p.model_dump(mode='json') for p in parameters()]}}
+    responses=[]
+    for index,(name,args) in enumerate([
+        ('search_hypothesis_evidence',{'request':req}),
+        ('update_experiment_preparation',update),
+        ('AgentDecision',{'status':'needs_inputs'})]):
+        responses.append(AIMessage(content='',tool_calls=[{'name':name,'args':args,'id':str(index)}]))
+    class EmptySearch:
+        def search(self,query,page_size):
+            return LiteratureSearch(query=query,hit_count=0,records=[],retrieved_at=datetime.now(timezone.utc))
+    agent.preparation.documents.literature=EmptySearch()
+    agent.model=ScriptedModel(responses=responses)
+    turn=agent.run(AgentResearchRequest(request=req,preparation_id=prep.preparation_id))
+    assert turn.result is None and turn.preparation.input_parameters==[]
+    with agent.preparation.store.connect() as db:
+        assert db.execute('SELECT count(*) FROM prepared_configurations').fetchone()[0]==0
+
+
+def test_api_stale_edit_is_rejected_before_model_call(tmp_path):
+    from fastapi.testclient import TestClient
+    from app.main import create_app
+    agent,_=research_service(tmp_path)
+    base=load_demo().result
+    app=create_app(SETTINGS,preparation_service=agent.preparation)
+    app.state.generalized_agent=agent
+    with TestClient(app) as client:
+        response=client.post('/api/agent/edits',json={'base_result_id':base.result_id,'base_experiment_id':base.configuration.experiment_id,
+            'base_configuration_sha256':'0'*64,'client_revision':1,'text':'Run this comparison for 120 days'})
+        assert response.status_code==409
+        assert agent.model._step==0
+        assert client.get('/api/agent/turns/does-not-exist').status_code==404

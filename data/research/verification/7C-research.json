@@ -1,0 +1,35 @@
+{
+  "status": "needs_inputs",
+  "mode": "research",
+  "turn_id": "turn-0ee95a9a46a64057baa3b689e62770e3",
+  "tool_calls": [
+    "start_experiment_preparation",
+    "search_hypothesis_evidence",
+    "retrieve_evidence_source",
+    "search_hypothesis_evidence",
+    "retrieve_evidence_source",
+    "search_hypothesis_evidence",
+    "retrieve_evidence_source",
+    "search_hypothesis_evidence",
+    "retrieve_evidence_source",
+    "retrieve_evidence_source",
+    "search_hypothesis_evidence",
+    "extract_cited_parameters",
+    "extract_cited_parameters",
+    "extract_cited_parameters",
+    "update_experiment_preparation"
+  ],
+  "trace_id": "01a1db2c-6124-7075-b17a-8767fd398eb6",
+  "trace_status": "remote_verified",
+  "result_id": null,
+  "preparation_id": "prep-82ea2586ac2b45debbe8318df2d8d7b0",
+  "questions": [
+    "Declare molecular form, species, binding/PK regimes, competition and target compartment.",
+    "Provide the administration schedule, duration and experimental design rationale.",
+    "Provide compatible source evidence or an explicit hypothetical value with units and rationale."
+  ],
+  "applied_changes": [],
+  "checked_at": "2026-11-14T17:49:48.805415+00:00",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "verification": "Live free NVIDIA tool calls and readable remote LangSmith tool spans; no paid OpenAI calls."
+}

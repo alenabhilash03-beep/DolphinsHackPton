@@ -1,6 +1,6 @@
 # Preparation integration handoff — 7B.5
 
-The generic backend can configure and simulate compatible, explicitly scoped inputs for a drug without a curated preset. This chunk verifies that foundation; the current hypothesis UI still uses the primary trastuzumab workflow. **7C connects Nemotron to the generalized tools; 7D connects that workflow to the workspace.** Entering an arbitrary name in today's hypothesis box is not yet the full research-to-simulation product flow.
+The generic backend can configure and simulate compatible, explicitly scoped inputs for a drug without a curated preset. This chunk verifies that foundation; the current hypothesis UI still uses the primary trastuzumab workflow. **7C now connects Nemotron through the [generalized agent APIs](GENERALIZED_AGENT.md); 7D connects that workflow to the workspace.** Entering an arbitrary name in today's hypothesis box is not yet the full research-to-simulation product flow.
 
 ## Ownership and interfaces
 

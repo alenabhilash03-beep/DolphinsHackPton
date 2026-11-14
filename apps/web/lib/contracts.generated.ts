@@ -4,6 +4,57 @@
  */
 
 export interface paths {
+    "/api/agent/edits": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generalized Edit */
+        post: operations["generalized_edit_api_agent_edits_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agent/research": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generalized Research */
+        post: operations["generalized_research_api_agent_research_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agent/turns/{turn_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Generalized Turn */
+        get: operations["generalized_turn_api_agent_turns__turn_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/contracts/experiments/validate": {
         parameters: {
             query?: never;
@@ -319,6 +370,68 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AgentEditRequest */
+        AgentEditRequest: {
+            /** Base Configuration Sha256 */
+            base_configuration_sha256: string;
+            /** Base Experiment Id */
+            base_experiment_id: string;
+            /** Base Result Id */
+            base_result_id: string;
+            /** Client Revision */
+            client_revision: number;
+            /** Selected Scenario Id */
+            selected_scenario_id?: string | null;
+            /** Text */
+            text: string;
+        };
+        /** AgentResearchRequest */
+        AgentResearchRequest: {
+            /**
+             * Client Revision
+             * @default 0
+             */
+            client_revision: number;
+            /** Preparation Id */
+            preparation_id?: string | null;
+            request: components["schemas"]["PreparationRequest"];
+            researcher_update?: components["schemas"]["PreparationUpdate"] | null;
+            /**
+             * Structured Baseline
+             * @default false
+             */
+            structured_baseline: boolean;
+        };
+        /** AgentTurn */
+        AgentTurn: {
+            /** Applied Changes */
+            applied_changes?: string[];
+            interpretation?: components["schemas"]["Interpretation"] | null;
+            /** Original Text */
+            original_text: string;
+            /** Parent Result Id */
+            parent_result_id?: string | null;
+            preparation?: components["schemas"]["PreparationRecord"] | null;
+            /** Questions */
+            questions?: string[];
+            result?: components["schemas"]["SimulationResult"] | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "completed" | "needs_inputs" | "unsupported" | "unavailable";
+            /** Tool Calls */
+            tool_calls?: string[];
+            /** Trace Id */
+            trace_id?: string | null;
+            /**
+             * Trace Status
+             * @default not_collected
+             */
+            trace_status: string;
+            /** Turn Id */
+            turn_id: string;
+        };
         /** Assumption */
         Assumption: {
             /** Assumption Id */
@@ -2014,6 +2127,103 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    generalized_edit_api_agent_edits_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgentEditRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentTurn"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generalized_research_api_agent_research_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgentResearchRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentTurn"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generalized_turn_api_agent_turns__turn_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                turn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentTurn"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     validate_experiment_api_contracts_experiments_validate_post: {
         parameters: {
             query?: never;

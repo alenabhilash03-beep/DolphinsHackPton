@@ -33,3 +33,7 @@ export type PreparationUpdate = components["schemas"]["PreparationUpdate"];
 export type PreparationScope = components["schemas"]["PreparationScope"];
 export type PreparationDesign = components["schemas"]["PreparationDesign"];
 export type ConfiguredPreparation = components["schemas"]["ConfiguredPreparation"];
+
+// Reference audits describe evidence limits; they never authorize solver input.
+export type ReferenceAudit = components["schemas"]["ReferenceAudit"];
+export type AuditedStructure = components["schemas"]["AuditedStructure"];

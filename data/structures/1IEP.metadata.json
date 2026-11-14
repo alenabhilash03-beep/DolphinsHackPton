@@ -1,0 +1,35 @@
+{
+  "entry_source": "https://data.rcsb.org/rest/v1/core/entry/1IEP",
+  "polymer_source": "https://data.rcsb.org/rest/v1/core/polymer_entity/1IEP/1",
+  "ligand_source": "https://data.rcsb.org/rest/v1/core/chemcomp/STI",
+  "entry_id": "1IEP",
+  "resolution": [
+    2.1
+  ],
+  "protein_description": "PROTO-ONCOGENE TYROSINE-PROTEIN KINASE ABL",
+  "fragment": "KINASE DOMAIN",
+  "auth_chains": [
+    "A",
+    "B"
+  ],
+  "uniprot_ids": [
+    "P00520"
+  ],
+  "source_taxonomy_id": 10090,
+  "ligand": {
+    "formula": "C29 H31 N7 O",
+    "formula_weight": 493.603,
+    "id": "STI",
+    "name": "4-(4-METHYL-PIPERAZIN-1-YLMETHYL)-N-[4-METHYL-3-(4-PYRIDIN-3-YL-PYRIMIDIN-2-YLAMINO)-PHENYL]-BENZAMIDE",
+    "pdbx_ambiguous_flag": "N",
+    "pdbx_formal_charge": 0,
+    "pdbx_initial_date": "2001-04-11T00:00:00.000+00:00",
+    "pdbx_modified_date": "2020-06-17T00:00:00.000+00:00",
+    "pdbx_processing_site": "RCSB",
+    "pdbx_release_status": "REL",
+    "three_letter_code": "STI",
+    "type": "non-polymer"
+  },
+  "ligand_inchikey": "KTUFNOKKBVMGRW-UHFFFAOYSA-N",
+  "coordinate_sha256": "577386b4b8bc58a570facba0c8a843386842caef5ed7b60106c685d0f68d4218"
+}

@@ -329,7 +329,7 @@ class PreparationService:
                         issue('context:'+field,field,'Exposure factor requires an explicit matching target compartment; IV input does not establish intracellular exposure.'); continue
             if item.provenance == 'reported':
                 qualifiers=r'(?:mesylate|hydrochloride|sulfate|sulphate|phosphate|acetate|maleate|tartrate|hydrate)'
-                form_pattern=r'(?<!\w)' + re.escape(_norm(record.identity_molecular_form)) + r'\s+' + qualifiers + r'(?!\w)'
+                form_pattern=r'(?<!\w)' + re.escape(_norm(record.identity_molecular_form)) + r'(?:\s+' + qualifiers + r'|[-\s]+d[0-9]+)(?!\w)'
                 if record.identity_molecular_form and any(re.search(form_pattern,_norm(p.supporting_passage)) for p in item.passages):
                     issue('context:'+field,field,'Source names a distinct salt/form beyond the resolved identity; no parent/salt transfer is inferred.'); continue
                 texts = [' '.join(s.text for s in snapshots[p.source_id].segments) for p in item.passages]

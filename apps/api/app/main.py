@@ -13,6 +13,7 @@ from app.schemas.preparation_workflow import (CreatePreparation, PreparationUpda
 from app.research.europe_pmc import EuropePMCClient, LiteratureSearch, RetrievalError
 from app.research.registry import EvidenceProfile, load_evidence_profile
 from app.research.jobs import ResearchCapacityError, ResearchEvent, ResearchJob, ResearchJobService
+from app.research.reference_audits import ReferenceAudit, load_reference_audit
 from app.research.demo import DemoSnapshot, load_demo
 from app.research.drug_identity import DrugAssessmentService
 from app.schemas.experiment_preparation import PREPARATION_CONTRACTS
@@ -117,6 +118,16 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
     def configure_preparation(preparation_id: str, version: PreparationVersion):
         """Configure one conditional structured baseline and store its receipt. Does not run the solver or parse a hypothesis."""
         return preparation_call(preparations.configure, preparation_id, version)
+
+    @api.get("/api/research/audits/{drug}", response_model=ReferenceAudit, tags=["Drug evidence audits"])
+    def reference_audit(drug: str):
+        """Read audited evidence gaps and verified structure metadata; never grants simulation eligibility."""
+        try:
+            return load_reference_audit(drug)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="No audit for this name; independent research/preparation remains available") from exc
+        except (ValueError, OSError) as exc:
+            raise HTTPException(status_code=503, detail="Reference audit or its verified structure is unavailable") from exc
 
     @api.get("/api/research/evidence/trastuzumab", response_model=EvidenceProfile)
     def curated_trastuzumab_evidence() -> EvidenceProfile:

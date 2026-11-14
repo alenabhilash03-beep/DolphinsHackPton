@@ -158,6 +158,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/research/audits/{drug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reference Audit
+         * @description Read audited evidence gaps and verified structure metadata; never grants simulation eligibility.
+         */
+        get: operations["reference_audit_api_research_audits__drug__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/research/evidence/trastuzumab": {
         parameters: {
             query?: never;
@@ -305,6 +325,106 @@ export interface components {
             assumption_id: string;
             /** Description */
             description: string;
+        };
+        /** AuditFact */
+        AuditFact: {
+            /** Context */
+            context: string;
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "context_only" | "assay_only" | "not_selected" | "step_specific" | "identity_only";
+            /** Fact Id */
+            fact_id: string;
+            /** Formula */
+            formula?: string | null;
+            /** Locator */
+            locator: string;
+            /** Parameter */
+            parameter: string;
+            /** Parent Ids */
+            parent_ids?: string[];
+            /**
+             * Provenance
+             * @enum {string}
+             */
+            provenance: "reported" | "calculated";
+            /**
+             * Review Status
+             * @default candidate
+             * @constant
+             */
+            review_status: "candidate";
+            /** Source Id */
+            source_id?: string | null;
+            /** Unit */
+            unit: string;
+            /** Value */
+            value: number;
+        };
+        /** AuditSource */
+        AuditSource: {
+            /** Access Note */
+            access_note: string;
+            /** Content Sha256 */
+            content_sha256?: string | null;
+            /** Identifiers */
+            identifiers?: {
+                [key: string]: string;
+            };
+            /** Label */
+            label: string;
+            /**
+             * Reviewed On
+             * Format: date
+             */
+            reviewed_on: string;
+            /** Source Id */
+            source_id: string;
+            /**
+             * Url
+             * Format: uri
+             */
+            url: string;
+        };
+        /** AuditedStructure */
+        AuditedStructure: {
+            /** Asset Path */
+            asset_path: string;
+            /** Ligand Comp Id */
+            ligand_comp_id: string;
+            /** Ligand Formula */
+            ligand_formula: string;
+            /** Ligand Formula Weight G Mol */
+            ligand_formula_weight_g_mol: number;
+            /** Ligand Instances */
+            ligand_instances: {
+                [key: string]: number;
+            };
+            /** Method */
+            method: string;
+            /** Pdb Id */
+            pdb_id: string;
+            /** Protein Chains */
+            protein_chains: string[];
+            /** Resolution Angstrom */
+            resolution_angstrom: number;
+            /** Scope */
+            scope: string;
+            /** Sha256 */
+            sha256: string;
+            /**
+             * Source Url
+             * Format: uri
+             */
+            source_url: string;
+            /** Target Species */
+            target_species: string;
+            /** Target Taxonomy Id */
+            target_taxonomy_id: number;
+            /** Target Uniprot Id */
+            target_uniprot_id: string;
         };
         /** BindingParameters */
         BindingParameters: {
@@ -1464,6 +1584,68 @@ export interface components {
             /** Base Revision */
             base_revision: number;
         };
+        /** ReferenceAudit */
+        ReferenceAudit: {
+            /** Aliases */
+            aliases: string[];
+            /** Audit Id */
+            audit_id: string;
+            /** Blockers */
+            blockers: string[];
+            /** Drug */
+            drug: string;
+            /**
+             * Explicit Hypothetical Preparation Available
+             * @default true
+             * @constant
+             */
+            explicit_hypothetical_preparation_available: true;
+            /** Facts */
+            facts: components["schemas"]["AuditFact"][];
+            /** Follow Up Candidate */
+            follow_up_candidate: string;
+            /** Follow Up Scope */
+            follow_up_scope: string;
+            /** Follow Up Sources */
+            follow_up_sources: string[];
+            /** Identifiers */
+            identifiers: {
+                [key: string]: string;
+            };
+            /** Missing Inputs */
+            missing_inputs: string[];
+            /**
+             * Reviewed On
+             * Format: date
+             */
+            reviewed_on: string;
+            /** Reviewer */
+            reviewer: string;
+            /**
+             * Runnable
+             * @default false
+             * @constant
+             */
+            runnable: false;
+            /**
+             * Scientific Profile Enabled
+             * @default false
+             * @constant
+             */
+            scientific_profile_enabled: false;
+            /** Sources */
+            sources: components["schemas"]["AuditSource"][];
+            /**
+             * Status
+             * @constant
+             */
+            status: "evidence_block";
+            structure: components["schemas"]["AuditedStructure"];
+            /** Target */
+            target: string;
+            /** Version */
+            version: string;
+        };
         /** ResearchEvent */
         ResearchEvent: {
             /** Created At */
@@ -2061,6 +2243,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DrugAssessmentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reference_audit_api_research_audits__drug__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                drug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReferenceAudit"];
                 };
             };
             /** @description Validation Error */

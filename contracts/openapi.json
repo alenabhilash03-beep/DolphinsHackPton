@@ -23,6 +23,264 @@
         "title": "Assumption",
         "type": "object"
       },
+      "AuditFact": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "title": "Context",
+            "type": "string"
+          },
+          "decision": {
+            "enum": [
+              "context_only",
+              "assay_only",
+              "not_selected",
+              "step_specific",
+              "identity_only"
+            ],
+            "title": "Decision",
+            "type": "string"
+          },
+          "fact_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Fact Id",
+            "type": "string"
+          },
+          "formula": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formula"
+          },
+          "locator": {
+            "title": "Locator",
+            "type": "string"
+          },
+          "parameter": {
+            "title": "Parameter",
+            "type": "string"
+          },
+          "parent_ids": {
+            "items": {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            "title": "Parent Ids",
+            "type": "array"
+          },
+          "provenance": {
+            "enum": [
+              "reported",
+              "calculated"
+            ],
+            "title": "Provenance",
+            "type": "string"
+          },
+          "review_status": {
+            "const": "candidate",
+            "default": "candidate",
+            "title": "Review Status",
+            "type": "string"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "exclusiveMinimum": 0.0,
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "fact_id",
+          "parameter",
+          "value",
+          "unit",
+          "provenance",
+          "locator",
+          "context",
+          "decision"
+        ],
+        "title": "AuditFact",
+        "type": "object"
+      },
+      "AuditSource": {
+        "additionalProperties": false,
+        "properties": {
+          "access_note": {
+            "title": "Access Note",
+            "type": "string"
+          },
+          "content_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Sha256"
+          },
+          "identifiers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Identifiers",
+            "type": "object"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "reviewed_on": {
+            "format": "date",
+            "title": "Reviewed On",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Source Id",
+            "type": "string"
+          },
+          "url": {
+            "format": "uri",
+            "maxLength": 2083,
+            "minLength": 1,
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "url",
+          "label",
+          "reviewed_on",
+          "access_note"
+        ],
+        "title": "AuditSource",
+        "type": "object"
+      },
+      "AuditedStructure": {
+        "additionalProperties": false,
+        "properties": {
+          "asset_path": {
+            "title": "Asset Path",
+            "type": "string"
+          },
+          "ligand_comp_id": {
+            "title": "Ligand Comp Id",
+            "type": "string"
+          },
+          "ligand_formula": {
+            "title": "Ligand Formula",
+            "type": "string"
+          },
+          "ligand_formula_weight_g_mol": {
+            "exclusiveMinimum": 0.0,
+            "title": "Ligand Formula Weight G Mol",
+            "type": "number"
+          },
+          "ligand_instances": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Ligand Instances",
+            "type": "object"
+          },
+          "method": {
+            "title": "Method",
+            "type": "string"
+          },
+          "pdb_id": {
+            "pattern": "^[0-9A-Z]{4}$",
+            "title": "Pdb Id",
+            "type": "string"
+          },
+          "protein_chains": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Protein Chains",
+            "type": "array"
+          },
+          "resolution_angstrom": {
+            "exclusiveMinimum": 0.0,
+            "title": "Resolution Angstrom",
+            "type": "number"
+          },
+          "scope": {
+            "title": "Scope",
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "source_url": {
+            "format": "uri",
+            "maxLength": 2083,
+            "minLength": 1,
+            "title": "Source Url",
+            "type": "string"
+          },
+          "target_species": {
+            "title": "Target Species",
+            "type": "string"
+          },
+          "target_taxonomy_id": {
+            "title": "Target Taxonomy Id",
+            "type": "integer"
+          },
+          "target_uniprot_id": {
+            "title": "Target Uniprot Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pdb_id",
+          "source_url",
+          "asset_path",
+          "sha256",
+          "method",
+          "resolution_angstrom",
+          "target_species",
+          "target_taxonomy_id",
+          "target_uniprot_id",
+          "protein_chains",
+          "ligand_comp_id",
+          "ligand_formula",
+          "ligand_formula_weight_g_mol",
+          "ligand_instances",
+          "scope"
+        ],
+        "title": "AuditedStructure",
+        "type": "object"
+      },
       "BindingParameters": {
         "additionalProperties": false,
         "properties": {
@@ -3207,6 +3465,148 @@
         "title": "PreparationVersion",
         "type": "object"
       },
+      "ReferenceAudit": {
+        "additionalProperties": false,
+        "properties": {
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Aliases",
+            "type": "array"
+          },
+          "audit_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Audit Id",
+            "type": "string"
+          },
+          "blockers": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Blockers",
+            "type": "array"
+          },
+          "drug": {
+            "title": "Drug",
+            "type": "string"
+          },
+          "explicit_hypothetical_preparation_available": {
+            "const": true,
+            "default": true,
+            "title": "Explicit Hypothetical Preparation Available",
+            "type": "boolean"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/AuditFact"
+            },
+            "title": "Facts",
+            "type": "array"
+          },
+          "follow_up_candidate": {
+            "title": "Follow Up Candidate",
+            "type": "string"
+          },
+          "follow_up_scope": {
+            "title": "Follow Up Scope",
+            "type": "string"
+          },
+          "follow_up_sources": {
+            "items": {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            "title": "Follow Up Sources",
+            "type": "array"
+          },
+          "identifiers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Identifiers",
+            "type": "object"
+          },
+          "missing_inputs": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Missing Inputs",
+            "type": "array"
+          },
+          "reviewed_on": {
+            "format": "date",
+            "title": "Reviewed On",
+            "type": "string"
+          },
+          "reviewer": {
+            "title": "Reviewer",
+            "type": "string"
+          },
+          "runnable": {
+            "const": false,
+            "default": false,
+            "title": "Runnable",
+            "type": "boolean"
+          },
+          "scientific_profile_enabled": {
+            "const": false,
+            "default": false,
+            "title": "Scientific Profile Enabled",
+            "type": "boolean"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/AuditSource"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "status": {
+            "const": "evidence_block",
+            "title": "Status",
+            "type": "string"
+          },
+          "structure": {
+            "$ref": "#/components/schemas/AuditedStructure"
+          },
+          "target": {
+            "title": "Target",
+            "type": "string"
+          },
+          "version": {
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "audit_id",
+          "version",
+          "reviewed_on",
+          "reviewer",
+          "drug",
+          "aliases",
+          "target",
+          "identifiers",
+          "status",
+          "sources",
+          "facts",
+          "blockers",
+          "missing_inputs",
+          "structure",
+          "follow_up_candidate",
+          "follow_up_sources",
+          "follow_up_scope"
+        ],
+        "title": "ReferenceAudit",
+        "type": "object"
+      },
       "ResearchEvent": {
         "properties": {
           "created_at": {
@@ -4645,6 +5045,49 @@
         "summary": "Assess Drug",
         "tags": [
           "Drug support"
+        ]
+      }
+    },
+    "/api/research/audits/{drug}": {
+      "get": {
+        "description": "Read audited evidence gaps and verified structure metadata; never grants simulation eligibility.",
+        "operationId": "reference_audit_api_research_audits__drug__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "drug",
+            "required": true,
+            "schema": {
+              "title": "Drug",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferenceAudit"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reference Audit",
+        "tags": [
+          "Drug evidence audits"
         ]
       }
     },

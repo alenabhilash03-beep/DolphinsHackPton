@@ -1,0 +1,424 @@
+{
+  "audit_id": "imatinib-abl-v1",
+  "version": "1.0.0",
+  "reviewed_on": "2026-11-14",
+  "reviewer": "Codex technical source audit; not independent expert or clinical validation",
+  "drug": "imatinib",
+  "aliases": [
+    "CHEMBL941"
+  ],
+  "target": "ABL1",
+  "identifiers": {
+    "chembl_parent": "CHEMBL941",
+    "chembl_mesylate": "CHEMBL1642"
+  },
+  "status": "evidence_block",
+  "runnable": false,
+  "scientific_profile_enabled": false,
+  "explicit_hypothetical_preparation_available": true,
+  "sources": [
+    {
+      "source_id": "B2014",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4188269/",
+      "label": "Liang 2014 P-EIM study",
+      "identifiers": {
+        "pmid": "25153794",
+        "pmcid": "PMC4188269",
+        "doi": "10.1021/ac5024556"
+      },
+      "reviewed_on": "2026-11-14",
+      "content_sha256": "b3cf82770db41b71df2d2aaca412b4f6b971abd19c1efe723bb8b7e5ccab2a4c",
+      "access_note": "Inspected primary source; numeric/context facts only are included. Full text stays in ignored work snapshots."
+    },
+    {
+      "source_id": "PK2020",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7351863/",
+      "label": "Roosendaal 2020 isotope PK study",
+      "identifiers": {
+        "pmid": "32430518",
+        "pmcid": "PMC7351863",
+        "doi": "10.1007/s00228-020-02888-y"
+      },
+      "reviewed_on": "2026-11-14",
+      "content_sha256": "2d3f891ed4d5c3d88958eb348d5bddb2699ebe29de1880f2c0b5e4420d8fbcfc",
+      "access_note": "Inspected primary source; numeric/context facts only are included. Full text stays in ignored work snapshots."
+    },
+    {
+      "source_id": "IV2004",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/14747424/",
+      "label": "Peng 2004 IV/oral crossover",
+      "identifiers": {
+        "pmid": "14747424",
+        "doi": "10.1177/0091270003262101"
+      },
+      "reviewed_on": "2026-11-14",
+      "content_sha256": "3c865aa9475889efd5532021b851149f659673a407535491aad2851f7312ce16",
+      "access_note": "Inspected primary source; numeric/context facts only are included. Full text stays in ignored work snapshots."
+    },
+    {
+      "source_id": "B2020",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7431045/",
+      "label": "2020 multistep Abl kinetics",
+      "identifiers": {
+        "pmid": "32719139",
+        "pmcid": "PMC7431045",
+        "doi": "10.1073/pnas.1919221117"
+      },
+      "reviewed_on": "2026-11-14",
+      "content_sha256": "20a237d904495d4b5f48107065d03d59acd45ff9b8f2d532ac0933b0737f0bb3",
+      "access_note": "Primary metadata verified; indexed primary Table 1 excerpt consulted. Full XML unavailable. Metadata checksum only; these step-specific candidates cannot initialize a profile."
+    },
+    {
+      "source_id": "LABEL",
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/021588s067lbl.pdf",
+      "label": "FDA Gleevec label 2026",
+      "identifiers": {
+        "reference_id": "5832783"
+      },
+      "reviewed_on": "2026-11-14",
+      "content_sha256": "447d1f110012fb48905b24bdd311f4045b036ee97dd7017b5ba7de8f998b4871",
+      "access_note": "Inspected primary source; numeric/context facts only are included. Full text stays in ignored work snapshots."
+    },
+    {
+      "source_id": "PDB",
+      "url": "https://data.rcsb.org/rest/v1/core/chemcomp/STI",
+      "label": "RCSB entry/CCD for 1IEP/STI",
+      "identifiers": {
+        "pdb_id": "1IEP",
+        "ccd_id": "STI"
+      },
+      "reviewed_on": "2026-11-14",
+      "content_sha256": "de67f7da6a377edf1ca4f1ec095529d1c3f98db67d47ba76349dc35e94136179",
+      "access_note": "Official chemical component JSON consulted; checksum of normalized JSON. Coordinates and entry metadata are verified separately."
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "parent_mw",
+      "parameter": "molecular_weight",
+      "value": 493.603,
+      "unit": "g/mol",
+      "provenance": "reported",
+      "source_id": "PDB",
+      "locator": "STI chemical component formula_weight",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Parent ligand C29 H31 N7 O, not mesylate salt.",
+      "decision": "identity_only"
+    },
+    {
+      "fact_id": "salt_mw",
+      "parameter": "molecular_weight",
+      "value": 589.7,
+      "unit": "g/mol",
+      "provenance": "reported",
+      "source_id": "LABEL",
+      "locator": "Section 11, page 32 (one-based)",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Mesylate drug substance; label doses use free-base equivalents.",
+      "decision": "identity_only"
+    },
+    {
+      "fact_id": "peim_kon",
+      "parameter": "association",
+      "value": 22000.0,
+      "unit": "M^-1 s^-1",
+      "provenance": "reported",
+      "source_id": "B2014",
+      "locator": "Table 1, Abl1 row",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Surface P-EIM Langmuir fit; supplier Abl1 species/construct not fully identified.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "peim_koff",
+      "parameter": "dissociation",
+      "value": 0.00074,
+      "unit": "s^-1",
+      "provenance": "reported",
+      "source_id": "B2014",
+      "locator": "Table 1, Abl1 row",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Same P-EIM fit; retain buffer and immobilization context.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "peim_kd_table",
+      "parameter": "affinity",
+      "value": 34.0,
+      "unit": "nM",
+      "provenance": "reported",
+      "source_id": "B2014",
+      "locator": "Table 1, Abl1 row",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Printed table affinity.",
+      "decision": "not_selected"
+    },
+    {
+      "fact_id": "peim_kd_text",
+      "parameter": "affinity",
+      "value": 21.0,
+      "unit": "nM",
+      "provenance": "reported",
+      "source_id": "B2014",
+      "locator": "Results, paragraph following Figure 2",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Running text disagrees with table and printed rate ratio.",
+      "decision": "not_selected"
+    },
+    {
+      "fact_id": "peim_kd_ratio",
+      "parameter": "affinity",
+      "value": 33.63636363636363,
+      "unit": "nM",
+      "provenance": "calculated",
+      "source_id": null,
+      "locator": "Deterministic audit calculation",
+      "parent_ids": [
+        "peim_kon",
+        "peim_koff"
+      ],
+      "formula": "koff / kon * 1e9",
+      "context": "33.636... nM matches table rounding, not the text value.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "peim_kon_h",
+      "parameter": "association",
+      "value": 0.07919999999999999,
+      "unit": "nM^-1 hour^-1",
+      "provenance": "calculated",
+      "source_id": null,
+      "locator": "Deterministic audit calculation",
+      "parent_ids": [
+        "peim_kon"
+      ],
+      "formula": "kon * 3600 / 1e9",
+      "context": "Unit conversion only; not a transfer to living cells.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "peim_koff_h",
+      "parameter": "dissociation",
+      "value": 2.664,
+      "unit": "hour^-1",
+      "provenance": "calculated",
+      "source_id": null,
+      "locator": "Deterministic audit calculation",
+      "parent_ids": [
+        "peim_koff"
+      ],
+      "formula": "koff * 3600",
+      "context": "Unit conversion only.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "physical_kon",
+      "parameter": "association",
+      "value": 1.0,
+      "unit": "uM^-1 s^-1",
+      "provenance": "reported",
+      "source_id": "B2020",
+      "locator": "Table 1, WT Binding column",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Physical binding step of a multistep mechanism.",
+      "decision": "step_specific"
+    },
+    {
+      "fact_id": "physical_koff",
+      "parameter": "dissociation",
+      "value": 25.0,
+      "unit": "s^-1",
+      "provenance": "reported",
+      "source_id": "B2020",
+      "locator": "Table 1, WT Binding column",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Not overall complex washout.",
+      "decision": "step_specific"
+    },
+    {
+      "fact_id": "induced_fwd",
+      "parameter": "forward_conformation",
+      "value": 1.5,
+      "unit": "s^-1",
+      "provenance": "reported",
+      "source_id": "B2020",
+      "locator": "Table 1, WT Conformational change column",
+      "parent_ids": [],
+      "formula": null,
+      "context": "A separate induced-fit step.",
+      "decision": "step_specific"
+    },
+    {
+      "fact_id": "induced_rev",
+      "parameter": "reverse_conformation",
+      "value": 0.0017,
+      "unit": "s^-1",
+      "provenance": "reported",
+      "source_id": "B2020",
+      "locator": "Table 1, WT Conformational change column",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Not the dissociation rate paired with physical kon.",
+      "decision": "step_specific"
+    },
+    {
+      "fact_id": "physical_kd",
+      "parameter": "step_affinity",
+      "value": 25000.0,
+      "unit": "nM",
+      "provenance": "calculated",
+      "source_id": null,
+      "locator": "Deterministic audit calculation",
+      "parent_ids": [
+        "physical_kon",
+        "physical_koff"
+      ],
+      "formula": "25 / 1 * 1000",
+      "context": "Physical-step ratio cannot replace whole-mechanism affinity.",
+      "decision": "step_specific"
+    },
+    {
+      "fact_id": "d8_cl",
+      "parameter": "clearance",
+      "value": 7.6,
+      "unit": "L/hour",
+      "provenance": "reported",
+      "source_id": "PK2020",
+      "locator": "Table 2, imatinib-d8 column",
+      "parent_ids": [],
+      "formula": null,
+      "context": "IV isotope microdose, six GIST patients also on oral therapy.",
+      "decision": "not_selected"
+    },
+    {
+      "fact_id": "d8_v",
+      "parameter": "distribution_volume",
+      "value": 462.0,
+      "unit": "L",
+      "provenance": "reported",
+      "source_id": "PK2020",
+      "locator": "Table 2, imatinib-d8 column",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Noncompartmental apparent distribution volume; not measured central V1.",
+      "decision": "not_selected"
+    },
+    {
+      "fact_id": "d8_half",
+      "parameter": "terminal_half_life",
+      "value": 45.5,
+      "unit": "hour",
+      "provenance": "reported",
+      "source_id": "PK2020",
+      "locator": "Table 2, imatinib-d8 column",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Mean terminal half-life, not automatically a one-compartment constant.",
+      "decision": "not_selected"
+    },
+    {
+      "fact_id": "d8_ratio_half",
+      "parameter": "effective_half_life",
+      "value": 42.136052291933524,
+      "unit": "hour",
+      "provenance": "calculated",
+      "source_id": null,
+      "locator": "Deterministic audit calculation",
+      "parent_ids": [
+        "d8_cl",
+        "d8_v"
+      ],
+      "formula": "ln(2) * V / CL",
+      "context": "Ratio of aggregate means differs from mean terminal half-life; no claim of a publication error.",
+      "decision": "not_selected"
+    },
+    {
+      "fact_id": "oral_clf",
+      "parameter": "apparent_clearance",
+      "value": 4.2,
+      "unit": "L/hour",
+      "provenance": "reported",
+      "source_id": "PK2020",
+      "locator": "Table 2, imatinib column",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Oral CL/F; cannot become IV CL without additional assumptions.",
+      "decision": "not_selected"
+    },
+    {
+      "fact_id": "oral_vf",
+      "parameter": "apparent_volume",
+      "value": 190.0,
+      "unit": "L",
+      "provenance": "reported",
+      "source_id": "PK2020",
+      "locator": "Table 2, imatinib column",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Oral Vd/F, not central IV volume.",
+      "decision": "not_selected"
+    },
+    {
+      "fact_id": "iv_dose_2004",
+      "parameter": "experimental_dose",
+      "value": 100.0,
+      "unit": "mg",
+      "provenance": "reported",
+      "source_id": "IV2004",
+      "locator": "Abstract",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Historical IV study exists; does not establish a labeled clinical IV regimen.",
+      "decision": "context_only"
+    }
+  ],
+  "blockers": [
+    "No justified default mapping from total plasma PK to free intracellular Abl-site concentration.",
+    "ATP/target state, isotope/cohort and construct contexts cannot be silently pooled into the current one-step model.",
+    "Accessible P-EIM evidence contains an affinity discrepancy and does not fully establish the assay construct/species.",
+    "A related experimental complex exists, but its mouse kinase domain cannot certify a human-cell model."
+  ],
+  "missing_inputs": [
+    "Compatible unlabeled-IV effective PK or an explicit isotope/model-transfer assumption.",
+    "Matched target construct/assay interpretation and a justified effective binding model.",
+    "Explicit free target-site exposure/competition assumptions, or additional implemented transport/binding models."
+  ],
+  "structure": {
+    "pdb_id": "1IEP",
+    "source_url": "https://www.rcsb.org/structure/1IEP",
+    "asset_path": "/structures/1IEP.pdb",
+    "sha256": "577386b4b8bc58a570facba0c8a843386842caef5ed7b60106c685d0f68d4218",
+    "method": "X-RAY DIFFRACTION",
+    "resolution_angstrom": 2.1,
+    "target_species": "Mus musculus",
+    "target_taxonomy_id": 10090,
+    "target_uniprot_id": "P00520",
+    "protein_chains": [
+      "A",
+      "B"
+    ],
+    "ligand_comp_id": "STI",
+    "ligand_formula": "C29 H31 N7 O",
+    "ligand_formula_weight_g_mol": 493.603,
+    "ligand_instances": {
+      "A:201": 37,
+      "B:202": 37
+    },
+    "scope": "Two crystallographic copies of mouse c-Abl kinase domain with parent imatinib. Related structural reference, not human BCR-ABL cellular kinetics or a molecular dynamics trajectory."
+  },
+  "follow_up_candidate": "cetuximab\u2013EGFR",
+  "follow_up_sources": [
+    "https://www.nature.com/articles/s41467-022-32159-6",
+    "https://www.accessdata.fda.gov/drugsatfda_docs/label/2021/125084s279lbl.pdf",
+    "https://www.rcsb.org/structure/1YY9"
+  ],
+  "follow_up_scope": "Preliminary reference-selection lead only: IV PK and paired SPR data are accessible. Nonlinear PK, Fc/avidity and construct transfer still require audit; no new profile or extra implementation is authorized."
+}

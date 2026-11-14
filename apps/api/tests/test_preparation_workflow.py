@@ -543,3 +543,17 @@ def test_reported_assay_context_preserves_case_sensitive_unit_text(service):
     before=create(service)
     with pytest.raises(ValueError,match='assay_conditions'):
         update(service,before,parameters=items,document_ids=[doc.document_id])
+
+
+def test_isotope_pk_cannot_be_silently_used_for_parent_drug(service):
+    doc,items=reported_package(service)
+    text=doc.segments[0].text.replace('Compound X','Compound X-d8')
+    record=LiteratureRecord(provider_source='MED',provider_id='12345678',pmid='12345678',title='Synthetic isotope source',
+        abstract=text,abstract_available=True,full_text_status='not_confirmed',record_url='https://example.org/isotope-fixture',retrieved_at=NOW)
+    isotope_doc=service.documents.retrieve(service.documents.register(record)).document
+    for item in items:
+        item.passages[0]=SourcePassage(source_id=isotope_doc.source.source_id,locator=isotope_doc.segments[0].locator,
+            supporting_passage=item.passages[0].supporting_passage.replace('Compound X','Compound X-d8'))
+    prepared=ready(service,parameters=items,document_ids=[isotope_doc.document_id])
+    assert prepared.preparation.state=='needs_inputs'
+    assert any('salt/form' in m.reason for m in prepared.preparation.missing_inputs)

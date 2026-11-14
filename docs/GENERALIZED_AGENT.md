@@ -62,7 +62,7 @@ Every successful edit has a new experiment/result and `parent_result_id`; prior 
 
 The interpretation tool returns solver-linked endpoint occupancy, occupancy AUC and threshold status for each scenario, source/evidence IDs, original assumptions, limitations and follow-up measurements. It never infers clinical outcomes. Source summaries describe selected parameter lineage, not an invented narrative about the whole article. They link PK inputs to concentration/occupancy graphs and binding inputs to occupancy. Source availability/abstract versus full text stays in the preparation metadata. Numeric claims are assembled from the solver, not LLM arithmetic.
 
-7D connects `turn.result` directly to the existing aligned plots/timeline/schematic, display `applied_changes`, questions, provenance and interpretation, and retain all base/hash/client revision fields. No molecular coordinate deformation is introduced. Guided molecular inspection remains 7E. The current primary dashboard remains usable while this integration is pending.
+7D connects `turn.result` directly to the existing aligned plots/timeline/schematic, display `applied_changes`, questions, provenance and interpretation, and retain all base/hash/client revision fields. No molecular coordinate deformation is introduced. Guided molecular inspection is implemented in [7E](MOLECULAR_INSPECTION.md). The current primary dashboard remains usable while this integration is pending.
 
 ## Verification
 

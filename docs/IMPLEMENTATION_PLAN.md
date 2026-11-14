@@ -1,6 +1,6 @@
 # Hypothesim — implementation roadmap
 
-Status: Phases 0–4 and subphases 5A–5B, 7A and 7B.1–7B.5, 7C and 7D complete. Phases 5–6 remain planned for the local demo; Phase 7 adds evidence-gated support for additional drugs. Current user-authorized change: plan an arbitrary-drug evidence-to-simulation workflow. 7B.1–7B.3 backend preparation tools, the 7B.4 reference audit and 7B.5 generalization acceptance, 7C generalized agent APIs and 7D workspace integration are complete; the next implementation chunk is 7E and requires its green light. 7B.4 completed the anticipated evidence-block branch; imatinib is not a second enabled profile. See `docs/subphase-reviews/7B.4.md`.
+Status: Phases 0–4 and subphases 5A–5B, 7A and 7B.1–7B.5 and 7C–7E complete. Phases 5–6 remain planned for the local demo; Phase 7 adds evidence-gated support for additional drugs. Current user-authorized change: plan an arbitrary-drug evidence-to-simulation workflow. 7B.1–7B.3 backend preparation tools, the 7B.4 reference audit and 7B.5 generalization acceptance, 7C generalized agent APIs and 7D workspace integration and 7E molecular inspection are complete; the next implementation chunk is 5C and requires its green light. 7B.4 completed the anticipated evidence-block branch; imatinib is not a second enabled profile. See `docs/subphase-reviews/7B.4.md`.
 
 Canonical repository document: `docs/IMPLEMENTATION_PLAN.md` in `alenabhilash03-beep/DolphinsHackPton`.
 
@@ -501,7 +501,7 @@ Every path uses validated scientific computation. Ambiguous identity, incompatib
 | **7B — Reusable research-to-simulation foundation; 10–16 hours, split below** | Build typed evidence/parameter packages, bounded research connectors, context-aware extraction, model applicability validation, missing-input handling and deterministic configuration for drugs without preset profiles. Audit a second candidate, initially imatinib–Abl, as a reference and stress test. | At least one unregistered compatible case produces a provenance-complete configuration through the reusable path without a per-drug code branch; blocked cases produce no curves. A second profile alone does not satisfy this subphase. |
 | **7C — Agent orchestration and natural-language editing; complete** | Connect Nemotron through real LangChain tools for identity, literature search, source retrieval, structured extraction, applicability assessment, clarification, configuration, simulation and interpretation. Replace the fixed primary-question gate. Preserve original hypothesis and versioned edit contracts. Trace the full path with LangSmith. | Demonstrate an unregistered-drug research-to-run path and a missing-input clarification/resumption path, alongside reviewed presets. Edits match equivalent direct-control results. No omitted instructions, preset substitution, untraced invented values or agent-generated numerical results. |
 | **7D — Arbitrary-drug workspace and revisions; complete** | Integrate research status, evidence/parameter review, missing-value fields, explicit hypothetical inputs, profile-specific controls, structure availability and quick natural-language editing. Keep the existing simulation during failures. Pass validated configuration and revision IDs through the frontend handoff. | A scientist enters an unregistered drug, inspects cited values and assumptions, supplies missing values if needed, and receives updated curves through a supported model. Also verify unsupported mechanism, ambiguous identity, source outage, no structure, stale response and original demo. Slider changes remain direct solver calls. |
-| **7E — Guided interface tour and inspection sidebar; 2–3 hours** | Deterministic camera tour, entity-aware interface focus and residue sidebar grounded in cached experimental coordinates. Preserve geometry and provide reduced-motion and missing-data states. | Verify entity identity, selection, coordinate-derived contacts and unchanged asset hashes after camera tours or parameter edits. Never imply computed proximity is binding energy. |
+| **7E — Guided interface tour and inspection sidebar; complete** | Deterministic camera tour, entity-aware interface focus and residue sidebar grounded in cached experimental coordinates. Preserve geometry and provide reduced-motion and missing-data states. | Verify entity identity, selection, coordinate-derived contacts and unchanged asset hashes after camera tours or parameter edits. Never imply computed proximity is binding energy. |
 
 #### 7B execution chunks — run one at a time
 
@@ -653,11 +653,11 @@ The primary demo should take roughly four minutes:
 9. Briefly show that an unsupported drug produces a limitation response.
 Prepare a saved experiment containing the exact configuration, reviewed evidence, structure asset, model version, and expected metrics. The fallback must remain interactive and clearly identify saved research. The live LangChain integration should also have a verified trace available for inspection.
 
-Phases 0–4 are complete. The next execution unit is 7E; 7A identity/eligibility and the 5B local resilience gate are complete. Phase 7 is agreed planned scope; no later Phase 7 implementation begins without its subphase green light.
+Phases 0–4 are complete. The next execution unit is 5C; 7A identity/eligibility and the 5B local resilience gate are complete. Phase 7 is agreed planned scope; no later Phase 7 implementation begins without its subphase green light.
 
 ## Current execution order (revision 2026-11-14)
 
-Completed: Phases 0–4, 5A–5B, 7A and 7B.1–7B.5, 7C and 7D. Remaining: **7E → 5C → 6A → 6B**. The revised Phase 7 planning baseline after 7A is 21–33 hours, including the now-completed 7B.1–7B.5; the original 36-hour MVP estimate does not cover this expansion. Final rehearsal follows all agreed feature work.
+Completed: Phases 0–4, 5A–5B, 7A and 7B.1–7B.5 and 7C–7E. Remaining: **5C → 6A → 6B**. The revised Phase 7 planning baseline after 7A is 21–33 hours, including the now-completed 7B.1–7B.5; the original 36-hour MVP estimate does not cover this expansion. Final rehearsal follows all agreed feature work.
 
 ### 7B.4 reference outcome
 
@@ -674,3 +674,7 @@ The generalized single-agent research/edit APIs are implemented with server-owne
 ### 7D outcome
 
 Generalized research, evidence review, typed researcher answers, explicit hypothetical identity/baseline preparation, language edits and new results are connected to the local workspace. Persisted background jobs provide factual activity and reload/recovery; direct numerical edits remain independent of the LLM and register their results for later language edits. Known complexes have correct entity/species labels; other drug–target pairs show unavailable structure without disabling compatible numerical models. Live browser acceptance covered missing-data research, explicitly synthetic input continuation, affinity alternatives, a direct KD edit and a language edit preserving that result. No additional reviewed drug profile or universal language parser is claimed. See `docs/subphase-reviews/7D.md`. No material plan revision is needed; 7E is next and awaits its green light.
+
+### 7E outcome
+
+The four-stop molecular camera tour and coordinate inspection sidebar are implemented for the two verified cached complexes. Independent NumPy distance references, strict atom/residue handling, asset checksums, reduced motion and browser selection checks pass. Dose/affinity edits leave inspected geometry unchanged. See `docs/MOLECULAR_INSPECTION.md` and `docs/subphase-reviews/7E.md`. No material plan revision is required. Phase 7 feature work is complete; 5C final integration/performance and 6A–6B local packaging/rehearsal remain. Stop for the next green light.

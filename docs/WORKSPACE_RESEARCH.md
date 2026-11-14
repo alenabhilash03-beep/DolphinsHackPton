@@ -38,7 +38,7 @@ The UI retains preparation ID/revision/evidence hash and exact result/configurat
 
 The verified cached complexes are trastuzumab–HER2 (1N8Z) and the related mouse c-Abl/imatinib reference (1IEP). The latter is labeled as mouse kinase-domain geometry, not human BCR-ABL intracellular kinetics. Matching requires the drug **and** target; other pairs show an honest unavailable state while supported mathematical preparation remains possible. No geometry depends on dose, affinity or playback.
 
-Source summaries and plot recommendations now use the actual experiment. Generic candidates never borrow the reviewed trastuzumab cache, HER2-specific follow-ups or antibody-specific labels. Source summaries describe parameter lineage, not a fabricated summary of an inaccessible article. Guided camera tours/contact inspection are the next 7E chunk.
+Source summaries and plot recommendations now use the actual experiment. Generic candidates never borrow the reviewed trastuzumab cache, HER2-specific follow-ups or antibody-specific labels. Source summaries describe parameter lineage, not a fabricated summary of an inaccessible article. The [7E guided camera tour and coordinate inspection](MOLECULAR_INSPECTION.md) are now implemented.
 
 ## Verification
 

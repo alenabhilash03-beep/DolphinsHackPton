@@ -1,0 +1,35 @@
+{
+  "origin": "coordinate_geometry_and_browser_acceptance_not_binding_energy_validation",
+  "checked_at": "2026-11-14T19:17:03.595724+00:00",
+  "assets_sha256": {
+    "1N8Z": "ed934d36503335c6764b08880f9e50933d99eb13b9bf145339cfcaee150eb21e",
+    "1IEP": "577386b4b8bc58a570facba0c8a843386842caef5ed7b60106c685d0f68d4218"
+  },
+  "reference_calculation": "Independent NumPy Euclidean scan of raw PDB columns",
+  "structures": {
+    "1N8Z": {
+      "interface_residue_pairs_at_4_angstrom": 32,
+      "closest_pair": "GLY B:103 O / LYS C:593 NZ",
+      "distance_angstrom": 2.4169871741488387
+    },
+    "1IEP": {
+      "interface_residue_pairs_at_4_angstrom": 45,
+      "closest_pair": "STI A:201 N51 / ILE A:360 O",
+      "distance_angstrom": 2.668499578414803,
+      "ligand_heavy_atoms_per_copy": 37,
+      "scope": "Mouse c-Abl domain; same crystal copy only"
+    }
+  },
+  "browser_checks": [
+    "tour start/pause/navigation",
+    "reduced-motion immediate framing",
+    "direct canvas atom click selected LYS C:593",
+    "REMARK 465 ASN C:102 unresolved",
+    "C:99999 absence cause not inferred",
+    "imatinib ligand identity and same-copy contacts",
+    "dose and affinity edits preserve inspected 2.417 angstrom distance"
+  ],
+  "post_control_result_id": "sim-946d9663ff408b3dcdb59dfa",
+  "live_llm_called": false,
+  "numerical_model_changed": false
+}

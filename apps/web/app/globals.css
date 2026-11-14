@@ -129,3 +129,19 @@ button:focus-visible, a:focus-visible { outline: 3px solid #b28435; outline-offs
 .support-outcome pre { white-space:pre-wrap; overflow-wrap:anywhere; font-size:11px; max-height:350px; overflow:auto; background:#fff; padding:12px; }
 @media(max-width:850px) { .drug-support-panel { margin:18px 14px; padding:20px; } .workspace-header nav { flex-wrap:wrap; gap:8px 16px; justify-content:flex-end; } }
 @media(max-width:480px) { .support-fields { grid-template-columns:1fr; } }
+.molecular-tour { padding:16px 20px; margin:18px 0; border:1px solid #cbded0; border-radius:12px; background:#eff5ec; }
+.molecular-tour p { margin:10px 0 0; font-size:13px; }
+.structure-tools { display:flex; flex-wrap:wrap; gap:10px 20px; margin:14px 0; font-size:12px; }
+.structure-inspection-layout { display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:18px; margin-top:16px; align-items:start; }
+.molecular-canvas { position:relative; width:100%; height:490px; border:1px solid #cad6c7; border-radius:12px; overflow:hidden; }
+.residue-sidebar { padding:18px; border:1px solid #d1ded3; border-radius:12px; background:#f7f9f4; overflow-wrap:anywhere; }
+.residue-sidebar h3 { margin-top:0; }.residue-sidebar h4 { margin-bottom:6px; }
+.residue-sidebar p,.residue-sidebar small { font-size:12px; }.residue-sidebar label { display:block; margin-bottom:10px; }
+.residue-sidebar input,.residue-sidebar select { width:100%; }.contact-list { padding-left:18px; }
+.contact-list li { margin:10px 0; }.contact-list button { padding:7px 9px; text-align:left; font-size:12px; }
+.contact-list small { display:block; color:#64786b; margin-top:3px; }.measurement-readout { padding:10px; background:#f8ecdc; border-radius:8px; }
+@media(max-width:850px) { .structure-inspection-layout { grid-template-columns:1fr; }.molecular-canvas { height:420px; } }
+@media(max-width:480px) { .molecular-canvas { height:340px; }.molecular-tour { padding:12px; } }
+
+.residue-sidebar { max-height:680px; overflow-y:auto; }
+@media(max-width:850px) { .residue-sidebar { max-height:none; } }

@@ -8,7 +8,7 @@ An evidence-aware scientific hypothesis exploration platform.
 
 ## Current progress
 
-**Phases 0–4 and subphases 5A–5B are complete.** The repository has the evidence audit, canonical scientific contracts, exact one-compartment PK, adaptive mass-action binding, numerical comparisons, direct simulation API, functional technical workspace, audited trastuzumab evidence registry, and a guarded LangChain agent. Research jobs now connect the hypothesis form to validated experiments, factual progress events, plots, and result-linked interpretation. The [3B review](docs/subphase-reviews/3B.md) records the verified remote LangSmith trace; the [3C review](docs/subphase-reviews/3C.md) records the end-to-end workspace check.
+**Phases 0–4 and subphases 5A–5B and 7A are complete.** The repository has the evidence audit, canonical scientific contracts, exact one-compartment PK, adaptive mass-action binding, numerical comparisons, direct simulation API, functional technical workspace, audited trastuzumab evidence registry, and a guarded LangChain agent. Research jobs now connect the hypothesis form to validated experiments, factual progress events, plots, and result-linked interpretation. The [3B review](docs/subphase-reviews/3B.md) records the verified remote LangSmith trace; the [3C review](docs/subphase-reviews/3C.md) records the end-to-end workspace check.
 
 The web preview and API can be run locally now using the commands below. Python computation is independent of the agent; no AI credentials are needed to run the numerical engine.
 
@@ -18,7 +18,9 @@ The [3B agent contract](docs/RESEARCH_AGENT.md) explains the supported research 
 
 ## Planned additional drug support
 
-The [roadmap now includes Phase 7](docs/IMPLEMENTATION_PLAN.md): arbitrary drug-name assessment, scientific/model eligibility checks, a second reviewed drug profile, a generalized guarded agent, natural-language editing of existing experiments, workspace integration, and a guided molecular interface tour with a residue-inspection sidebar. It is scheduled after 5B reliability and before 5C final integration testing and Phase 6 rehearsal. This expansion is planned beyond the original 36-hour MVP and is not implemented yet. Unsupported drugs will continue to receive explicit limitations; custom assumptions will remain labeled hypothetical.
+The [roadmap now includes Phase 7](docs/IMPLEMENTATION_PLAN.md): arbitrary drug-name assessment, scientific/model eligibility checks, a second reviewed drug profile, a generalized guarded agent, natural-language editing of existing experiments, workspace integration, and a guided molecular interface tour with a residue-inspection sidebar. It is scheduled after 5B reliability and before 5C final integration testing and Phase 6 rehearsal. The 7A identity-assessment API and callable LangChain tool are implemented; second-drug simulation, generalized natural-language editing, and the guided structure enhancements remain planned beyond the original 36-hour MVP. Unsupported drugs will continue to receive explicit limitations; custom assumptions will remain labeled hypothetical.
+
+The [7A support contract](docs/DRUG_SUPPORT.md) describes `POST /api/research/assess`, with examples in [local API docs](http://127.0.0.1:8001/docs). The main hypothesis form still supports the primary comparison; this new API assesses identities without invoking an LLM or numerical solver.
 
 ## Requirements and installation
 
@@ -131,4 +133,4 @@ The script prints capability status and error categories, not secrets or raw HTT
 
 ## Next development step and when the app becomes visible
 
-**5B is complete.** Research has bounded admission, stoppable deadlines, persisted recovery, and retry. The workspace has a labeled saved-demo fallback and a reproducible local launcher. The [5B review](docs/subphase-reviews/5B.md) records local outage checks and verified live tracing. Next is **7A — drug identity and model eligibility**, then 7B–7E, 5C, and Phase 6.
+**7A is complete.** Drug identity and model eligibility can be assessed through the API and a typed LangChain tool, with live/cached ChEMBL provenance and explicit unknown/ambiguous outcomes. No additional drug is runnable yet. See [the 7A review](docs/subphase-reviews/7A.md). Next is **7B — scientific audit of a second drug–target profile**, followed by 7C–7E, 5C and Phase 6.

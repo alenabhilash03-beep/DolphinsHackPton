@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "profiles": [
+    {
+      "profile_id": "trastuzumab-her2-intact-v1",
+      "profile_version": "1.0.0",
+      "profile_file": "trastuzumab.json",
+      "canonical_name": "trastuzumab",
+      "molecule_type": "Antibody",
+      "chembl_id": "CHEMBL1201585",
+      "identity_checked_on": "2026-11-14",
+      "target_identifiers": {"gene_symbol": "ERBB2"},
+      "target_aliases": ["HER2", "ERBB2", "HER2/ERBB2", "HER2 extracellular domain", "human HER2 extracellular effective sites"],
+      "form_aliases": ["intact trastuzumab IgG1", "intact IgG1", "trastuzumab IgG1", "intact trastuzumab"]
+    }
+  ]
+}

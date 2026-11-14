@@ -1,7 +1,7 @@
 import asyncio
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Header, HTTPException, Query
+from fastapi import Body, FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import StreamingResponse
@@ -11,16 +11,19 @@ from app.research.europe_pmc import EuropePMCClient, LiteratureSearch, Retrieval
 from app.research.registry import EvidenceProfile, load_evidence_profile
 from app.research.jobs import ResearchCapacityError, ResearchEvent, ResearchJob, ResearchJobService
 from app.research.demo import DemoSnapshot, load_demo
+from app.research.drug_identity import DrugAssessmentService
+from app.schemas.drug_support import DrugAssessmentRequest, DrugAssessmentResponse
 from app.schemas.contracts import ALL_CONTRACTS, ControlAdjustment, ContractValidation, ExperimentConfig, HealthResponse, HypothesisRequest, SimulationRequest, SimulationResult
 from app.simulation.controls import adjust_experiment
 from app.simulation.service import run_simulation
 
 
 def create_app(settings: Settings | None = None, literature_client: EuropePMCClient | None = None,
-               job_service: ResearchJobService | None = None) -> FastAPI:
+               job_service: ResearchJobService | None = None, assessment_service: DrugAssessmentService | None = None) -> FastAPI:
     config = settings or Settings()
     research = literature_client or EuropePMCClient()
     jobs = job_service or ResearchJobService(config)
+    assessment = assessment_service or DrugAssessmentService()
     @asynccontextmanager
     async def lifespan(_api):
         yield
@@ -95,6 +98,16 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
             raise HTTPException(status_code=429, detail=str(exc), headers={"Retry-After": "3"}) from exc
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @api.post("/api/research/assess", response_model=DrugAssessmentResponse, tags=["Drug support"])
+    def assess_drug(request: DrugAssessmentRequest = Body(openapi_examples={
+        "reviewed": {"summary":"Reviewed antibody identity", "value":{"drug_name":"Herceptin","target":"HER2","route":"iv_infusion","endpoint":"target_occupancy"}},
+        "candidate": {"summary":"Identified drug without a reviewed model", "value":{"drug_name":"imatinib","target":"Abl"}},
+        "ambiguous": {"summary":"Brand with multiple molecular forms", "value":{"drug_name":"Gleevec"}},
+        "unsupported_route": {"summary":"Reviewed identity, unsupported route", "value":{"drug_name":"trastuzumab","route":"oral"}},
+    })) -> DrugAssessmentResponse:
+        """Assess structured drug/model eligibility without running an LLM or simulator."""
+        return assessment.assess(request)
 
     @api.get("/api/research/jobs/{job_id}", response_model=ResearchJob)
     def read_research(job_id: str) -> ResearchJob:

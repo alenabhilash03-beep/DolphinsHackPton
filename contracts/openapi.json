@@ -332,6 +332,353 @@
         "title": "DemoSnapshot",
         "type": "object"
       },
+      "DrugAssessmentRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "drug_name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Drug Name",
+            "type": "string"
+          },
+          "endpoint": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint"
+          },
+          "molecular_form": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Molecular Form"
+          },
+          "original_hypothesis": {
+            "anyOf": [
+              {
+                "maxLength": 12000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original Hypothesis"
+          },
+          "route": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Route"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target"
+          }
+        },
+        "required": [
+          "drug_name"
+        ],
+        "title": "DrugAssessmentRequest",
+        "type": "object"
+      },
+      "DrugAssessmentResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "ambiguities": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Ambiguities",
+            "type": "array"
+          },
+          "assessed_scope": {
+            "const": "structured_identity_target_form_route_endpoint",
+            "default": "structured_identity_target_form_route_endpoint",
+            "title": "Assessed Scope",
+            "type": "string"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/DrugIdentity"
+            },
+            "maxItems": 5,
+            "title": "Candidates",
+            "type": "array"
+          },
+          "capabilities": {
+            "items": {
+              "$ref": "#/components/schemas/ModelCapability"
+            },
+            "title": "Capabilities",
+            "type": "array"
+          },
+          "configuration_required": {
+            "const": true,
+            "default": true,
+            "title": "Configuration Required",
+            "type": "boolean"
+          },
+          "defaults_applied": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Defaults Applied",
+            "type": "object"
+          },
+          "hypothesis_parsed": {
+            "const": false,
+            "default": false,
+            "title": "Hypothesis Parsed",
+            "type": "boolean"
+          },
+          "identity_status": {
+            "enum": [
+              "reviewed_identity",
+              "candidate_identity",
+              "ambiguous",
+              "not_found",
+              "unavailable"
+            ],
+            "title": "Identity Status",
+            "type": "string"
+          },
+          "model_eligible": {
+            "default": false,
+            "title": "Model Eligible",
+            "type": "boolean"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "profile_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Id"
+          },
+          "profile_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Version"
+          },
+          "request": {
+            "$ref": "#/components/schemas/DrugAssessmentRequest"
+          },
+          "resolved_identity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DrugIdentity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "resolved_target": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved Target"
+          },
+          "retrieval_status": {
+            "enum": [
+              "reviewed_registry",
+              "live",
+              "cached_degraded",
+              "unavailable"
+            ],
+            "title": "Retrieval Status",
+            "type": "string"
+          },
+          "runnable": {
+            "const": false,
+            "default": false,
+            "title": "Runnable",
+            "type": "boolean"
+          },
+          "support": {
+            "$ref": "#/components/schemas/SupportAssessment"
+          },
+          "target_identifiers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Target Identifiers",
+            "type": "object"
+          }
+        },
+        "required": [
+          "request",
+          "identity_status",
+          "retrieval_status",
+          "support"
+        ],
+        "title": "DrugAssessmentResponse",
+        "type": "object"
+      },
+      "DrugIdentity": {
+        "additionalProperties": false,
+        "properties": {
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Aliases",
+            "type": "array"
+          },
+          "canonical_name": {
+            "title": "Canonical Name",
+            "type": "string"
+          },
+          "form_scope": {
+            "title": "Form Scope",
+            "type": "string"
+          },
+          "identifiers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Identifiers",
+            "type": "object"
+          },
+          "identity_checked_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identity Checked On"
+          },
+          "molecular_form": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Molecular Form"
+          },
+          "molecule_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Molecule Type"
+          },
+          "parent_identifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Identifier"
+          },
+          "provenance": {
+            "enum": [
+              "reviewed_registry",
+              "database_candidate"
+            ],
+            "title": "Provenance",
+            "type": "string"
+          },
+          "retrieved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieved At"
+          },
+          "source_url": {
+            "format": "uri",
+            "maxLength": 2083,
+            "minLength": 1,
+            "title": "Source Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "canonical_name",
+          "identifiers",
+          "aliases",
+          "provenance",
+          "source_url",
+          "form_scope"
+        ],
+        "title": "DrugIdentity",
+        "type": "object"
+      },
       "DrugProfile": {
         "additionalProperties": false,
         "properties": {
@@ -1095,6 +1442,64 @@
           "retrieved_at"
         ],
         "title": "LiteratureSearch",
+        "type": "object"
+      },
+      "ModelCapability": {
+        "additionalProperties": false,
+        "properties": {
+          "adjustable_fields": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Adjustable Fields",
+            "type": "array"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "maximum_duration_h": {
+            "title": "Maximum Duration H",
+            "type": "number"
+          },
+          "maximum_events_per_scenario": {
+            "title": "Maximum Events Per Scenario",
+            "type": "integer"
+          },
+          "model_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Model Id",
+            "type": "string"
+          },
+          "supported_endpoints": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Supported Endpoints",
+            "type": "array"
+          },
+          "supported_routes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Supported Routes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "model_id",
+          "supported_routes",
+          "supported_endpoints",
+          "adjustable_fields",
+          "maximum_duration_h",
+          "maximum_events_per_scenario",
+          "limitations"
+        ],
+        "title": "ModelCapability",
         "type": "object"
       },
       "PKParameters": {
@@ -2264,6 +2669,79 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/research/assess": {
+      "post": {
+        "description": "Assess structured drug/model eligibility without running an LLM or simulator.",
+        "operationId": "assess_drug_api_research_assess_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "ambiguous": {
+                  "summary": "Brand with multiple molecular forms",
+                  "value": {
+                    "drug_name": "Gleevec"
+                  }
+                },
+                "candidate": {
+                  "summary": "Identified drug without a reviewed model",
+                  "value": {
+                    "drug_name": "imatinib",
+                    "target": "Abl"
+                  }
+                },
+                "reviewed": {
+                  "summary": "Reviewed antibody identity",
+                  "value": {
+                    "drug_name": "Herceptin",
+                    "endpoint": "target_occupancy",
+                    "route": "iv_infusion",
+                    "target": "HER2"
+                  }
+                },
+                "unsupported_route": {
+                  "summary": "Reviewed identity, unsupported route",
+                  "value": {
+                    "drug_name": "trastuzumab",
+                    "route": "oral"
+                  }
+                }
+              },
+              "schema": {
+                "$ref": "#/components/schemas/DrugAssessmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrugAssessmentResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Assess Drug",
+        "tags": [
+          "Drug support"
+        ]
       }
     },
     "/api/research/evidence/trastuzumab": {

@@ -1,0 +1,79 @@
+{
+  "query": "gleevec",
+  "retrieval_status": "live",
+  "retrieved_at": "2026-11-14T12:42:50.725646Z",
+  "total_matches": 2,
+  "candidates": [
+    {
+      "canonical_name": "IMATINIB",
+      "identifiers": {
+        "chembl_id": "CHEMBL941"
+      },
+      "aliases": [
+        "GLEEVEC",
+        "CGP-57148B",
+        "CGP057148B",
+        "GLAMOX",
+        "GLEEVEC,STI-571",
+        "GLIVEC",
+        "Glamox",
+        "IMATINIB",
+        "IMATINIB (STI571)",
+        "IMATINIB MESYLATE",
+        "IMATINIB MESYLATEGLEEVECGLIVECIMATINIBSTI571CGP 571484-[(4-METHYL-1-PIPERAZINYL)METHYL]-N-[4-METHYL-3-[[4-(3-PYRIDINYL)-2-PYRIMIDINYL]AMINO]-PHENYL]BENZAMIDE",
+        "Imatinib",
+        "NSC-743414",
+        "NSC-759854",
+        "ST-1571",
+        "STI-571",
+        "STI571",
+        "STI571,GLEEVEC"
+      ],
+      "molecular_form": "IMATINIB",
+      "molecule_type": "Small molecule",
+      "parent_identifier": "CHEMBL941",
+      "provenance": "database_candidate",
+      "source_url": "https://www.ebi.ac.uk/chembl/api/data/molecule/CHEMBL941.json",
+      "retrieved_at": "2026-11-14T12:42:50.725646Z",
+      "identity_checked_on": null,
+      "form_scope": "Database preferred record name; formulation, protonation, target and model applicability are not independently established."
+    },
+    {
+      "canonical_name": "IMATINIB MESYLATE",
+      "identifiers": {
+        "chembl_id": "CHEMBL1642"
+      },
+      "aliases": [
+        "Gleevec",
+        "Glivec",
+        "Imatinib (as mesilate)",
+        "Imatinib accord",
+        "Imatinib actavis",
+        "Imatinib koanaa",
+        "Imatinib medac",
+        "Imatinib mesilate",
+        "Imatinib mesylate",
+        "Imatinib methane sulfonate",
+        "Imatinib methanesulfonate",
+        "Imatinib teva",
+        "Imatinib teva b.v.",
+        "NSC-716051",
+        "QTI-571",
+        "QTI571",
+        "Qti571",
+        "STI 571",
+        "STI-571",
+        "STI571"
+      ],
+      "molecular_form": "IMATINIB MESYLATE",
+      "molecule_type": "Small molecule",
+      "parent_identifier": "CHEMBL941",
+      "provenance": "database_candidate",
+      "source_url": "https://www.ebi.ac.uk/chembl/api/data/molecule/CHEMBL1642.json",
+      "retrieved_at": "2026-11-14T12:42:50.725646Z",
+      "identity_checked_on": null,
+      "form_scope": "Database preferred record name; formulation, protonation, target and model applicability are not independently established."
+    }
+  ],
+  "complete": true
+}

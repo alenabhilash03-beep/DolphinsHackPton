@@ -61,6 +61,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/research/assess": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assess Drug
+         * @description Assess structured drug/model eligibility without running an LLM or simulator.
+         */
+        post: operations["assess_drug_api_research_assess_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/research/evidence/trastuzumab": {
         parameters: {
             query?: never;
@@ -344,6 +364,121 @@ export interface components {
              * @constant
              */
             retrieval_status: "cached_reviewed";
+        };
+        /** DrugAssessmentRequest */
+        DrugAssessmentRequest: {
+            /** Drug Name */
+            drug_name: string;
+            /** Endpoint */
+            endpoint?: string | null;
+            /** Molecular Form */
+            molecular_form?: string | null;
+            /** Original Hypothesis */
+            original_hypothesis?: string | null;
+            /** Route */
+            route?: string | null;
+            /** Target */
+            target?: string | null;
+        };
+        /** DrugAssessmentResponse */
+        DrugAssessmentResponse: {
+            /** Ambiguities */
+            ambiguities?: string[];
+            /**
+             * Assessed Scope
+             * @default structured_identity_target_form_route_endpoint
+             * @constant
+             */
+            assessed_scope: "structured_identity_target_form_route_endpoint";
+            /** Candidates */
+            candidates?: components["schemas"]["DrugIdentity"][];
+            /** Capabilities */
+            capabilities?: components["schemas"]["ModelCapability"][];
+            /**
+             * Configuration Required
+             * @default true
+             * @constant
+             */
+            configuration_required: true;
+            /** Defaults Applied */
+            defaults_applied?: {
+                [key: string]: string;
+            };
+            /**
+             * Hypothesis Parsed
+             * @default false
+             * @constant
+             */
+            hypothesis_parsed: false;
+            /**
+             * Identity Status
+             * @enum {string}
+             */
+            identity_status: "reviewed_identity" | "candidate_identity" | "ambiguous" | "not_found" | "unavailable";
+            /**
+             * Model Eligible
+             * @default false
+             */
+            model_eligible: boolean;
+            /** Notes */
+            notes?: string[];
+            /** Profile Id */
+            profile_id?: string | null;
+            /** Profile Version */
+            profile_version?: string | null;
+            request: components["schemas"]["DrugAssessmentRequest"];
+            resolved_identity?: components["schemas"]["DrugIdentity"] | null;
+            /** Resolved Target */
+            resolved_target?: string | null;
+            /**
+             * Retrieval Status
+             * @enum {string}
+             */
+            retrieval_status: "reviewed_registry" | "live" | "cached_degraded" | "unavailable";
+            /**
+             * Runnable
+             * @default false
+             * @constant
+             */
+            runnable: false;
+            support: components["schemas"]["SupportAssessment"];
+            /** Target Identifiers */
+            target_identifiers?: {
+                [key: string]: string;
+            };
+        };
+        /** DrugIdentity */
+        DrugIdentity: {
+            /** Aliases */
+            aliases: string[];
+            /** Canonical Name */
+            canonical_name: string;
+            /** Form Scope */
+            form_scope: string;
+            /** Identifiers */
+            identifiers: {
+                [key: string]: string;
+            };
+            /** Identity Checked On */
+            identity_checked_on?: string | null;
+            /** Molecular Form */
+            molecular_form?: string | null;
+            /** Molecule Type */
+            molecule_type?: string | null;
+            /** Parent Identifier */
+            parent_identifier?: string | null;
+            /**
+             * Provenance
+             * @enum {string}
+             */
+            provenance: "reviewed_registry" | "database_candidate";
+            /** Retrieved At */
+            retrieved_at?: string | null;
+            /**
+             * Source Url
+             * Format: uri
+             */
+            source_url: string;
         };
         /** DrugProfile */
         DrugProfile: {
@@ -645,6 +780,23 @@ export interface components {
              * Format: date-time
              */
             retrieved_at: string;
+        };
+        /** ModelCapability */
+        ModelCapability: {
+            /** Adjustable Fields */
+            adjustable_fields: string[];
+            /** Limitations */
+            limitations: string[];
+            /** Maximum Duration H */
+            maximum_duration_h: number;
+            /** Maximum Events Per Scenario */
+            maximum_events_per_scenario: number;
+            /** Model Id */
+            model_id: string;
+            /** Supported Endpoints */
+            supported_endpoints: string[];
+            /** Supported Routes */
+            supported_routes: string[];
         };
         /** PKParameters */
         PKParameters: {
@@ -1079,6 +1231,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    assess_drug_api_research_assess_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DrugAssessmentRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DrugAssessmentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

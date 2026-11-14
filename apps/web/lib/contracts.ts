@@ -13,3 +13,5 @@ export type ResearchJob = components["schemas"]["ResearchJob"];
 export type ResearchEvent = components["schemas"]["ResearchEvent"];
 export type PaperSummary = components["schemas"]["PaperSummary"];
 export type DemoSnapshot = components["schemas"]["DemoSnapshot"];
+export type DrugAssessmentRequest = components["schemas"]["DrugAssessmentRequest"];
+export type DrugAssessmentResponse = components["schemas"]["DrugAssessmentResponse"];

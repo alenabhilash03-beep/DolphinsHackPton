@@ -2,13 +2,13 @@
 
 const BASE = process.env.API_BASE_URL ?? "http://127.0.0.1:8000";
 
-export async function submitResearch(request: Request): Promise<Response> {
+export async function submitResearch(request: Request, path: "/api/research/jobs" | "/api/research/assess" = "/api/research/jobs"): Promise<Response> {
   const body = await request.text();
   if (new TextEncoder().encode(body).length > 20_000) {
     return Response.json({ detail: "Hypothesis request is too large." }, { status: 413 });
   }
   try {
-    const backend = await fetch(`${BASE}/api/research/jobs`, {
+    const backend = await fetch(`${BASE}${path}`, {
       method: "POST", headers: { "Content-Type": "application/json" }, body,
       cache: "no-store", signal: AbortSignal.timeout(10_000),
     });

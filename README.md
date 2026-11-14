@@ -20,7 +20,7 @@ The [3B agent contract](docs/RESEARCH_AGENT.md) explains the supported research 
 
 The [roadmap now includes Phase 7](docs/IMPLEMENTATION_PLAN.md): arbitrary drug-name assessment, scientific/model eligibility checks, a second reviewed drug profile, a generalized guarded agent, natural-language editing of existing experiments, workspace integration, and a guided molecular interface tour with a residue-inspection sidebar. It is scheduled after 5B reliability and before 5C final integration testing and Phase 6 rehearsal. The 7A identity-assessment API and callable LangChain tool are implemented; second-drug simulation, generalized natural-language editing, and the guided structure enhancements remain planned beyond the original 36-hour MVP. Unsupported drugs will continue to receive explicit limitations; custom assumptions will remain labeled hypothetical.
 
-The [7A support contract](docs/DRUG_SUPPORT.md) describes `POST /api/research/assess`, with examples in [local API docs](http://127.0.0.1:8001/docs). The main hypothesis form still supports the primary comparison; this new API assesses identities without invoking an LLM or numerical solver.
+The [7A support contract](docs/DRUG_SUPPORT.md) describes `POST /api/research/assess`, with examples in [local API docs](http://127.0.0.1:8001/docs) and a [workspace test panel](http://127.0.0.1:3002/preview/plots#drug-support). The main hypothesis form still supports the primary comparison; this new API assesses identities without invoking an LLM or numerical solver.
 
 ## Requirements and installation
 

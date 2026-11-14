@@ -115,3 +115,17 @@ button:focus-visible, a:focus-visible { outline: 3px solid #b28435; outline-offs
 .experiment-results>section[id] { scroll-margin-top:110px; }
 .saved-demo-button { margin-top:14px; }
 .saved-demo-banner { padding:14px 18px; background:#e5eef8; border:1px solid #c2d4e5; color:#35576d; border-radius:10px; font-size:13px; }
+.drug-support-panel { max-width:1160px; margin:24px auto; padding:28px; background:#fff; border:1px solid var(--line); border-radius:18px; scroll-margin-top:20px; }
+.drug-support-panel>p { color:var(--muted); font-size:13px; }
+.support-examples { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:20px 0; font-size:12px; }
+.support-fields { grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
+.support-outcome { margin-top:22px; padding:20px; border-radius:12px; border:1px solid #e4d6b4; background:#fbf7ed; }
+.support-outcome.eligible { border-color:#c1dac9; background:#eef6ef; }
+.support-outcome h3 { margin-top:0; }
+.support-outcome p { font-size:13px; }
+.identity-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr)); gap:12px; margin:16px 0; }
+.identity-card { padding:16px; border-radius:10px; border:1px solid #d9e3d9; background:#ffffffd9; overflow-wrap:anywhere; }
+.identity-card a { font-size:12px; }
+.support-outcome pre { white-space:pre-wrap; overflow-wrap:anywhere; font-size:11px; max-height:350px; overflow:auto; background:#fff; padding:12px; }
+@media(max-width:850px) { .drug-support-panel { margin:18px 14px; padding:20px; } .workspace-header nav { flex-wrap:wrap; gap:8px 16px; justify-content:flex-end; } }
+@media(max-width:480px) { .support-fields { grid-template-columns:1fr; } }

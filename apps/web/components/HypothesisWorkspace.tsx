@@ -6,6 +6,7 @@ import { PlotPreview } from "./PlotPreview";
 import { StructureViewer } from "./StructureViewer";
 import { PaperSummaries } from "./PaperSummaries";
 import { VisualizationBoundary } from "./VisualizationBoundary";
+import { DrugSupportPanel } from "./DrugSupportPanel";
 
 const PRIMARY = "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const TERMINAL = new Set(["completed", "unsupported", "failed"]);
@@ -148,7 +149,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
   return <div className="hypothesim-workspace">
     <header className="workspace-header">
       <a className="workspace-brand" href="/">hypothesim<span>.</span></a>
-      <nav aria-label="Workspace sections"><a href="#research">Research</a><a href="#structure">Structure</a><a href="#experiment">Experiment</a></nav>
+      <nav aria-label="Workspace sections"><a href="#drug-support">Drug support</a><a href="#research">Research</a><a href="#structure">Structure</a><a href="#experiment">Experiment</a></nav>
       <span className="workspace-badge">LOCAL SCIENCE WORKSPACE</span>
     </header>
     <div className="workspace-intro"><p className="eyebrow">FROM HYPOTHESIS TO EXPLORATION</p>
@@ -156,6 +157,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
       <p>Prepare an experiment, inspect the molecular structure, and compare how your assumptions change predicted occupancy.</p>
       <div className="workspace-steps"><span>01 · Research a hypothesis</span><span>02 · Inspect the structure</span><span>03 · Adjust and compare</span></div>
     </div>
+    <DrugSupportPanel />
     <section id="research" className="research-panel" aria-label="Hypothesis research">
       <div className="section-heading"><div><p className="eyebrow">01 / RESEARCH</p><h2>Start with your question</h2></div><span className="scope-badge">Trastuzumab × HER2</span></div>
       <p className="scope-note">Available now: half-life ×3 versus affinity ×10. Other drugs or interventions receive a scope assessment. You can explore more values with the simulation controls below.</p>

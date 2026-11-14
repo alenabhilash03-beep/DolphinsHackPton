@@ -1,10 +1,12 @@
 # Drug identity and scientific eligibility (7A)
 
-This layer answers two separate questions: which molecular record was requested, and whether Hypothesim has an applicable reviewed model profile. It does not configure an experiment, invoke Nemotron, or run the numerical solver. Broader agent wiring and experimental editing belong to 7C; main-workspace integration belongs to 7D.
+This layer answers two separate questions: which molecular record was requested, and whether Hypothesim has an applicable reviewed model profile. It does not configure an experiment, invoke Nemotron, or run the numerical solver. Broader agent wiring and experimental editing belong to 7C; full experiment integration belongs to 7D. A diagnostic assessment panel is available in the current local workspace.
 
 ## Test locally
 
-With the local launcher running, open [FastAPI docs](http://127.0.0.1:8001/docs), expand **Drug support → POST /api/research/assess**, select one of the provided examples, and click **Try it out → Execute**. The same route is forwarded by Next.js at `http://127.0.0.1:3002/api/research/assess`.
+With the local launcher running, open the [workspace drug-support panel](http://127.0.0.1:3002/preview/plots#drug-support). Use the Herceptin, Imatinib, Gleevec, Unsupported route, and Unknown name buttons, or fill in the structured fields and click **Check drug support**. Results expose identity candidates, source status, missing inputs, and reviewed model limits. Gleevec offers explicit candidate-selection buttons. Editing a field clears the old assessment and cancels an outstanding request. These checks leave the experiment below unchanged and never invoke the LLM or solver.
+
+For raw API testing, open [FastAPI docs](http://127.0.0.1:8001/docs), expand **Drug support → POST /api/research/assess**, select one of the provided examples, and click **Try it out → Execute**. The same route is forwarded by Next.js at `http://127.0.0.1:3002/api/research/assess`.
 
 Example request:
 

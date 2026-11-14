@@ -7,6 +7,8 @@ import { StructureViewer } from "./StructureViewer";
 import { VisualizationBoundary } from "./VisualizationBoundary";
 import { DrugSupportPanel } from "./DrugSupportPanel";
 import { PreparationAnswers } from "./PreparationAnswers";
+import { InvestigationPanel } from "./InvestigationPanel";
+import { investigationView } from "../lib/investigation";
 const PRIMARY="Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const STORAGE="hypothesim-agent-job-v1";
 const SCIENCE_REQUEST="hypothesim-scientific-request-v1";
@@ -83,7 +85,11 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
           setStructureIdentity({drug:request.drug_name,target:request.target ?? ""});
         }
         if(next.edit_text) setEdit(next.edit_text);
-        if(next.status==="completed" && next.turn) {acceptTurn(next.turn);return;}
+        if(next.status==="completed" && next.turn) {
+          const execution=investigationView(next);
+          if(execution.invalid || (!execution.legacy && next.turn.status==="completed" && !execution.accepted)){setMessage("Agent execution/result linkage could not be verified. Earlier curves are preserved.");return;}
+          acceptTurn(next.turn);return;
+        }
         if(next.status==="failed") {
           setMessage(next.error_message ?? "Research failed; prior curves remain available.");
           if(next.preparation_id) {
@@ -111,13 +117,14 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
       if(!response.ok) throw new Error(typeof data.detail==="string" ? data.detail : "Check the scientific request fields.");
       if(!epoch.current.current(ticket)) return;
       const next=data as AgentJob;activeJob.current=next.job_id;setJob(next);setJobId(next.job_id);
+      requestAnimationFrame(()=>document.getElementById("investigation")?.scrollIntoView({block:"start",behavior:"auto"}));
       try{localStorage.setItem(STORAGE,next.job_id);}catch{}
     } catch(e) {if(epoch.current.current(ticket))setMessage(e instanceof Error ? e.message : "Research unavailable; previous curves remain visible.");}
     finally{if(epoch.current.current(ticket))setSubmitting(false);}
   }
   function research(event:FormEvent) {
     event.preventDefault();
-    setTurn(null);setRecord(null);
+    setResearchOpen(false);setTurn(null);setRecord(null);
     try{localStorage.setItem(SCIENCE_REQUEST,JSON.stringify({drug_name:drug.trim(),target:target.trim() || null,route:route || null,original_hypothesis:text}));}catch{}
     setStructureIdentity({drug,target});
     void submitJob("research",{request:{drug_name:drug.trim(),target:target.trim() || null,route:route || null,molecular_form:null,endpoint:"target_occupancy",original_hypothesis:text},structured_baseline:baseline,client_revision:0});
@@ -182,18 +189,17 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
         <div className="form-actions"><button className="primary-button" disabled={busy}>{busy?"Research in progress…":"Research hypothesis →"}</button><button type="button" className="quiet-button" onClick={()=>{setDrug("imatinib");setTarget("ABL1");setRoute("hypothetical_iv_bolus");setBaseline(false);setText("How would hypothetical bloodstream imatinib input affect ABL1 occupancy? Research evidence and identify missing PK, binding and target-site exposure data.");}}>Try imatinib research</button>
         <button type="button" className="quiet-button" onClick={()=>{setText(PRIMARY);setDrug("trastuzumab");setTarget("HER2");setRoute("iv_infusion");setBaseline(false);}}>Use trastuzumab example</button></div>
       </fieldset></form>
-      <section className="activity-panel" aria-label="Agent activity" aria-live="polite"><div className="activity-heading"><span className={`status-dot ${busy?"active":""}`}/><h3>Research record</h3><span>{job?.status==="completed" ? turn?.status ?? "Finished" : job?.status ?? "Ready"}</span></div>
-        <p>{busy?"Nemotron is working through scientific tools. Curves change only after a validated numerical result returns.":saved?"Saved reviewed demo; no live research was run for this view.":turn?`Scientific status: ${turn.status}. Review the returned evidence and questions below.`:"Start research or open the saved demo."}</p>
-        {job?.events?.length ? <ol>{job.events.map((event,i)=><li key={i}>{event}</li>)}</ol>:<p>Identity → papers → cited candidates → model assessment → numerical tool</p>}
-        {turn && <details><summary>Agent record · {turn.status}</summary><p>Turn: {turn.turn_id}</p><p>Trace: {turn.trace_status} · {turn.trace_id ?? "not collected"}</p><p>Tools: {(turn.tool_calls ?? []).join(", ")}</p></details>}
-      </section></div>
+      <aside className="activity-panel"><h3>Evidence first</h3><p>The agent searches sources and extracts cited values before configuring a supported model. Missing inputs remain explicit.</p><p>Follow tool outcomes and numerical execution in the <a href="#investigation">investigation panel ↓</a>.</p></aside></div>
       </details><div className="demo-entry"><div><h3>Trastuzumab / HER2 demo</h3><p>Reviewed reference inputs · hypothetical alternatives · interactive results</p></div><button className="saved-demo-button" type="button" onClick={()=>void openDemo()}>Load saved demo</button><a href="#experiment">Go to simulation ↓</a></div>
       <details><summary>Resume a saved preparation</summary><label>Preparation ID<input value={resumeId} onChange={e=>setResumeId(e.target.value)} placeholder="prep-…"/></label><button type="button" disabled={!!busy} onClick={()=>void loadPreparation()}>Load preparation</button></details>
-      {message && <p role="alert">{message}</p>}
+      {message && !job && <p role="alert">{message}</p>}
+    </section>
+    <InvestigationPanel job={job} submitting={submitting} saved={saved} displayedResult={shown} config={visible} message={message}/>
+    {(record || turn?.questions?.length || (explanation && !currentInterpretation)) ? <section className="research-panel" aria-label="Research continuation">
       {turn?.questions?.length ? <section aria-label="Agent questions"><h3>What is needed next</h3><ul>{turn.questions.map(q=><li key={q}>{q}</li>)}</ul></section>:null}
       {record && <PreparationAnswers key={`${record.preparation.preparation_id}:${record.preparation.revision}`} record={record} busy={!!busy} onContinue={continueResearch} onReload={()=>void reloadPreparation()}/>}
       {explanation && !currentInterpretation && <p className="scope-note">The earlier explanation belongs to a different result. Current curves reflect your direct parameter changes.</p>}
-    </section>
+    </section> : null}
     <details id="revise" className="research-panel experiment-revision" onToggle={e=>{if(e.currentTarget.open)e.currentTarget.querySelector("input")?.focus();}}><summary>Change the experiment in words <span>Dose, affinity, schedule or duration</span></summary><p>Edits apply to the displayed result. The baseline stays protected; selected alternative: <strong>{visible.scenarios.find(s=>s.scenario_id===selected)?.label ?? "none"}</strong>.</p>
       <form onSubmit={submitEdit}><label>Experimental edit<input required disabled={!!busy} value={edit} onChange={e=>setEdit(e.target.value)} placeholder="Run this comparison for 120 days"/></label><button className="primary-button" disabled={!!busy || !shown || controlBusy}>Apply edit & simulate</button></form>
       <details><summary>Supported examples</summary><ul>{["Double the dose in the affinity alternative","Use a 21-day dosing interval in that alternative","Compare twofold and fivefold affinity improvement at fixed association rate","Run this comparison for 120 days"].map(s=><li key={s}><button type="button" disabled={!!busy} onClick={()=>setEdit(s)}>{s}</button></li>)}</ul><p>Unrecognized wording or extra instructions request clarification. Changes of drug, target or route require new research above.</p></details>

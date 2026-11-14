@@ -4,6 +4,7 @@ import "./glass-background.css";
 import "./workspace-editorial.css";
 import "./workspace-console.css";
 import "./research-journey.css";
+import "./investigation.css";
 import { GlassEnvironment } from "../components/GlassEnvironment";
 
 

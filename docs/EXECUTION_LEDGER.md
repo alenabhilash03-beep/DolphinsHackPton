@@ -38,4 +38,4 @@ Run:
 
 The live command uses the pinned NVIDIA endpoint and a separate local edit-verification store; it does not consume a user's edit head. It now verifies ledger sequences and receipt linkage and writes a report under ignored `work/`. Committed bounded verification metadata is in `data/research/verification/8A.1-execution.json`.
 
-**8A.2** will render these events and parameter snapshots in the compact investigation panel. This subphase provides contracts, persistence and numerical attribution; no frontend playback of agent execution is implemented or implied here. Provider token streaming, private reasoning display, new model equations and new drug profiles are outside 8A.1.
+**8A.2 is now complete:** the [live investigation panel](INVESTIGATION_PANEL.md) renders these events and parameter snapshots in the compact workspace. This subphase provides contracts, persistence and numerical attribution; the frontend rendering is documented separately in 8A.2. Provider token streaming, private reasoning display, new model equations and new drug profiles are outside 8A.1.

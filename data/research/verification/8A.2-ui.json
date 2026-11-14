@@ -1,0 +1,35 @@
+{
+  "verification_kind": "browser UI acceptance",
+  "live": {
+    "provider": "configured pinned NVIDIA Nemotron",
+    "job_id": "f6e667da78fa4c709874f84a2dfd3204",
+    "run_id": "run-2509db794bb248539160d7571e325f1d",
+    "turn_id": "turn-33c3716d776445568203123d5f6ff0a2",
+    "result_id": "sim-9857762b76231eb1d556ff60",
+    "configuration_sha256": "6a0ff1b2cd77c4d2ddfe92e2eb77febe51934a4574fc1bf298c68916ac1bfe5d",
+    "trace_status": "local_collected",
+    "event_count": 10,
+    "tool_calls": [
+      "read_current_experiment",
+      "apply_requested_edit",
+      "simulate_current_comparison",
+      "interpret_current_result"
+    ],
+    "duration_h": 2880.0,
+    "accepted_panel_observed": true,
+    "reload_restored": true
+  },
+  "synthetic_browser_checks": {
+    "description": "Isolated developer acceptance server using the actual LangChain graph and SciPy solver with scripted provider/synthetic evidence; solver held for 8 seconds only in this test process. No hosted calls or production delays.",
+    "running_solver": true,
+    "reload_while_running": true,
+    "rejected_tool_then_success": true,
+    "provider_failure_after_solver": true,
+    "prior_120_day_curves_preserved_for_failed_121_day_run": true,
+    "missing_rate_research_did_not_run_solver": true
+  },
+  "saved_demo_no_live_execution_label": true,
+  "narrow_viewport_width": 390,
+  "narrow_layout_verified": true,
+  "frontend_tests": 46
+}

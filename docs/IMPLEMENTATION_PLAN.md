@@ -1,6 +1,6 @@
 # Hypothesim — implementation roadmap
 
-Status: Phases 0–4, 5A–5B and 7A–7E are complete, including generalized preparation/research/edit APIs, molecular inspection and the compact workspace console. The user has approved planning Phase 8 in priority order: visible agent execution → scientific synthesis → agent-driven structural analysis → actionable iteration/history → broader drug demonstrations. **8A.1 is complete; the next proposed implementation chunk is 8A.2 and requires its green light.** Then complete Phase 8, 5C and 6A–6B. This planning approval does not authorize implementation. Imatinib remains an evidence-blocked simulation reference, not a second enabled profile.
+Status: Phases 0–4, 5A–5B and 7A–7E are complete, including generalized preparation/research/edit APIs, molecular inspection and the compact workspace console. The user has approved planning Phase 8 in priority order: visible agent execution → scientific synthesis → agent-driven structural analysis → actionable iteration/history → broader drug demonstrations. **8A.1–8A.2 are complete; the next proposed implementation chunk is 8B.1 and requires its green light.** Then complete Phase 8, 5C and 6A–6B. This planning approval does not authorize implementation. Imatinib remains an evidence-blocked simulation reference, not a second enabled profile.
 
 Canonical repository document: `docs/IMPLEMENTATION_PLAN.md` in `alenabhilash03-beep/DolphinsHackPton`.
 
@@ -565,7 +565,7 @@ Depends on 7C/7D and the compact console. Deliver a reviewable account of what t
 | Execution chunk | Concrete tasks / expected files | Interfaces, checks and completion |
 | --- | --- | --- |
 | **8A.1 — Structured execution ledger and experiment snapshots — complete** | Extend `apps/api/app/schemas/generalized_agent.py`, `research/agent_jobs.py` and `agent/generalized.py`, plus generated contracts and targeted tests. Persist ordered tool-start/success/rejection/failure events with run/tool-call IDs, timestamps and elapsed duration. Capture bounded scientific output summaries, source references, and authoritative configured parameters/deltas with units, provenance and configuration hash. Link solver completion to its actual result receipt. Wrap execution so a requested tool cannot appear as a completed tool. Retain existing readable event strings for compatibility. | Additive `AgentJob`/event schemas, usable through existing polling. Test ordering, failures, recoverable rejections, configuration/result linkage, reload persistence, stale jobs, bounded payloads and redaction. Never expose provider secrets, raw prompt/source payloads or arbitrary tool arguments. Deliverable: an API-visible research/edit run showing exactly which parameters were configured and which solver result was returned, including honest failed/no-result paths. No frontend execution theatre or new model in this chunk. |
-| **8A.2 — Live investigation panel** | Add a compact execution panel to `HypothesisWorkspace.tsx` and supporting components/styles. Show actual research stages and individual tool outcomes, source counts, configured parameter cards and baseline/alternative changes. Highlight simulator running/completed states, elapsed time and returned metrics. Keep the pending run distinct from prior displayed curves; reveal results only on validated completion. Make progress discoverable when the hypothesis editor is collapsed. | Consume the structured ledger through current job polling; no invented percentages. Browser checks: successful primary/edit execution, missing-input research, rejected tool, provider failure and reload. Saved demo clearly identifies recorded results; no fake live replay. Deliverable: users can visibly follow research → parameters → actual solver → results. |
+| **8A.2 — Live investigation panel — complete** | Add a compact execution panel to `HypothesisWorkspace.tsx` and supporting components/styles. Show actual research stages and individual tool outcomes, source counts, configured parameter cards and baseline/alternative changes. Highlight simulator running/completed states, elapsed time and returned metrics. Keep the pending run distinct from prior displayed curves; reveal results only on validated completion. Make progress discoverable when the hypothesis editor is collapsed. | Consume the structured ledger through current job polling; no invented percentages. Browser checks: successful primary/edit execution, missing-input research, rejected tool, provider failure and reload. Saved demo clearly identifies recorded results; no fake live replay. Deliverable: users can visibly follow research → parameters → actual solver → results. |
 
 #### 8B — One strong, source- and result-linked scientific answer (second priority)
 
@@ -709,11 +709,11 @@ The primary demo should take roughly four minutes:
 9. Briefly show that an unsupported drug produces a limitation response.
 Prepare a saved experiment containing the exact configuration, reviewed evidence, structure asset, model version, and expected metrics. The fallback must remain interactive and clearly identify saved research. The live LangChain integration should also have a verified trace available for inspection.
 
-Phases 0–4, 5A–5B and Phase 7 are complete. Phase 8 is now agreed planned scope; **8A.1 is complete; 8A.2** is the next proposed implementation unit and awaits its green light.
+Phases 0–4, 5A–5B and Phase 7 are complete. Phase 8 is now agreed planned scope; **Phase 8A is complete; 8B.1** is the next proposed implementation unit and awaits its green light.
 
 ## Current execution order (revision 2026-11-14)
 
-Completed: Phases 0–4, 5A–5B, 7A and 7B.1–7B.5 and 7C–7E, plus 8A.1. Remaining: **8A.2 → 8B.1 → 8B.2 → 8C.1 → 8C.2 → 8D.1 → 8D.2 → 8E.1 → 8E.2 → 5C → 6A → 6B**. The revised Phase 7 planning baseline after 7A is 21–33 hours, including the now-completed 7B.1–7B.5; the original 36-hour MVP estimate does not cover this expansion. Final rehearsal follows all agreed feature work.
+Completed: Phases 0–4, 5A–5B, 7A and 7B.1–7B.5 and 7C–7E, plus 8A.1–8A.2. Remaining: **8B.1 → 8B.2 → 8C.1 → 8C.2 → 8D.1 → 8D.2 → 8E.1 → 8E.2 → 5C → 6A → 6B**. The revised Phase 7 planning baseline after 7A is 21–33 hours, including the now-completed 7B.1–7B.5; the original 36-hour MVP estimate does not cover this expansion. Final rehearsal follows all agreed feature work.
 
 ### 7B.4 reference outcome
 
@@ -750,3 +750,7 @@ The user approved the five priorities in order following the capability review. 
 ### 8A.1 outcome
 
 Structured execution events and authoritative parameter/configuration snapshots now persist through queued and synchronous agent APIs. Actual solver receipts, scientific outcomes and overall run completion are distinct; failures/rejections/restarts do not fabricate successful actions. Live Nemotron editing and remote LangSmith verification passed, alongside 309 backend and 37 frontend tests. See `docs/EXECUTION_LEDGER.md` and `docs/subphase-reviews/8A.1.md`. **Keep the plan.** Next is **8A.2 — Live investigation panel**, awaiting its green light.
+
+### 8A.2 outcome
+
+The live investigation panel renders actual stages, tool outcomes/durations, parameter changes/provenance, solver receipts and acceptance states outside the collapsed editor. Browser checks cover real Nemotron editing plus isolated synthetic running/reload/rejection/missing-data/provider-failure paths, with prior curves preserved until full receipt linkage passes. See `docs/INVESTIGATION_PANEL.md` and `docs/subphase-reviews/8A.2.md`. **Keep the plan.** Phase 8A is complete; next is **8B.1 — Grounded synthesis schema and tool**, awaiting its green light.

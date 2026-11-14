@@ -40,6 +40,10 @@ export function PreviewControls({ workspace }: { workspace: Workspace }) {
     </label>;
   };
 
+  const exact = (field: ControlField, label: string, actual: number, unit: string) => <label style={{display:"block",margin:"8px 0"}}>
+    {label} ({unit})<input key={`${selected?.scenario_id ?? "global"}:${field}:${actual}`} type="number" step="any" defaultValue={actual}
+      onBlur={event=>{if(event.currentTarget.value.trim()){const next=Number(event.currentTarget.value);if(Number.isFinite(next)&&next!==actual)edit(field,next);}}}/>
+  </label>;
   return <section aria-label="Technical parameter controls">
     <h3>Experiment controls</h3>
     <p>Changes update the alternative and rerun the deterministic simulator. Baseline parameters stay fixed.</p>
@@ -47,16 +51,27 @@ export function PreviewControls({ workspace }: { workspace: Workspace }) {
       onChange={(event) => workspace.selectAlternative(event.target.value)}>
       {workspace.alternatives.map((scenario) => <option key={scenario.scenario_id} value={scenario.scenario_id}>{scenario.label}</option>)}
     </select></label>
+    {!workspace.alternatives.length && <p>Only a protected baseline is prepared. Use “Compare twofold and fivefold affinity improvement at fixed association rate” above to create editable alternatives.</p>}
     {selected && <>
-      {range("dose_mg", "Infusion amount", selected.administration[0].amount_mg, 0, 1500, 1, "mg")}
+      {selected.administration.every(event=>event.kind==="infusion") ? range("dose_mg", "Infusion amount", selected.administration[0].amount_mg, 0, Math.max(1500,selected.administration[0].amount_mg*2), 1, "mg") : <p>Dose and repeat-interval controls support finite infusions only. Kinetic and observation-window controls remain available.</p>}
       {range("pk.elimination_half_life_h", "Effective half-life", selected.pk.elimination_half_life_h, 24, 2200, 1, "h")}
       {kinetic("binding.association_nM_inv_h_inv", "Association rate", selected.binding.association_nM_inv_h_inv)}
       {kinetic("binding.dissociation_h_inv", "Dissociation rate", selected.binding.dissociation_h_inv)}
       {kinetic("binding.affinity_nM", "Model KD", selected.binding.affinity_nM)}
-      <label>Dosing interval (h; blank for one infusion): <input type="number" min={1} value={intervalText}
+      {selected.administration.every(event=>event.kind==="infusion") && <><label>Dosing interval (h; blank for one infusion): <input type="number" min={1} value={intervalText}
         onChange={(event) => setIntervalText(event.target.value)} /></label>
-      <button type="button" onClick={() => void workspace.applyControl("dosing_interval_h", intervalText.trim() ? Number(intervalText) : null)}>Apply interval</button>
+      <button type="button" onClick={() => void workspace.applyControl("dosing_interval_h", intervalText.trim() ? Number(intervalText) : null)}>Apply interval</button></> }
     </>}
+    <details><summary>Exact parameter values · apply when leaving a field</summary>
+      {selected && <>
+        {exact("pk.elimination_half_life_h","Exact half-life",selected.pk.elimination_half_life_h,"h")}
+        {exact("binding.association_nM_inv_h_inv","Exact association rate",selected.binding.association_nM_inv_h_inv,"nM^-1 h^-1")}
+        {exact("binding.dissociation_h_inv","Exact dissociation rate",selected.binding.dissociation_h_inv,"h^-1")}
+        {exact("binding.affinity_nM","Exact KD",selected.binding.affinity_nM,"nM")}
+        {exact("exposure_factor","Exact prescribed exposure factor",selected.exposure_factor,"1")}
+      </>}
+      {exact("duration_h","Exact observation duration",workspace.experiment.duration_h,"h")}
+    </details>
     {range("duration_h", "Common duration", workspace.experiment.duration_h, 24, 8760, 24, "h")}
     {range("occupancy_threshold", "Analytical threshold", workspace.experiment.occupancy_threshold, .05, .99, .01, "fraction")}
     <button type="button" onClick={() => void workspace.resetToInitial()}>Reset experiment</button>

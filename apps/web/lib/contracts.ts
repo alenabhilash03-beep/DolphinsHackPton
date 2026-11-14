@@ -41,3 +41,6 @@ export type AuditedStructure = components["schemas"]["AuditedStructure"];
 export type AgentResearchRequest = components["schemas"]["AgentResearchRequest"];
 export type AgentEditRequest = components["schemas"]["AgentEditRequest"];
 export type AgentTurn = components["schemas"]["AgentTurn"];
+
+export type AgentJob = components["schemas"]["AgentJob"];
+export type Interpretation = components["schemas"]["Interpretation"];

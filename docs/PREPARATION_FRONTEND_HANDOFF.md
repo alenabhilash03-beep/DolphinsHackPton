@@ -1,10 +1,10 @@
 # Preparation integration handoff — 7B.5
 
-The generic backend can configure and simulate compatible, explicitly scoped inputs for a drug without a curated preset. This chunk verifies that foundation; the current hypothesis UI still uses the primary trastuzumab workflow. **7C now connects Nemotron through the [generalized agent APIs](GENERALIZED_AGENT.md); 7D connects that workflow to the workspace.** Entering an arbitrary name in today's hypothesis box is not yet the full research-to-simulation product flow.
+The generic backend can configure and simulate compatible, explicitly scoped inputs for a drug without a curated preset. This chunk verifies that foundation; the current hypothesis UI still uses the primary trastuzumab workflow. **7C now connects Nemotron through the [generalized agent APIs](GENERALIZED_AGENT.md); 7D now connects that workflow to the [workspace](WORKSPACE_RESEARCH.md).** Entering an arbitrary name in today's hypothesis box is not yet the full research-to-simulation product flow.
 
 ## Ownership and interfaces
 
-Use generated types from `apps/web/lib/contracts.ts` and current OpenAPI at `http://127.0.0.1:8001/docs`. Backend base URL in the local launcher is `http://127.0.0.1:8001`; the workspace is on port 3002. The listed paths are FastAPI routes. Corresponding Next.js preparation proxies have **not** been added. Keep credentials and research-source sessions on the server.
+Use generated types from `apps/web/lib/contracts.ts` and current OpenAPI at `http://127.0.0.1:8001/docs`. Backend base URL in the local launcher is `http://127.0.0.1:8001`; the workspace is on port 3002. The listed paths are FastAPI routes. 7D adds fixed-path Next.js job proxies and preparation-read forwarding; server-side evidence extraction stays in the agent session. Keep credentials and research-source sessions on the server.
 
 | Operation | Interface | Expected behavior |
 | --- | --- | --- |

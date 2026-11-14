@@ -8,6 +8,7 @@ from fastapi.responses import StreamingResponse
 
 from app.config import Settings, ROOT
 from app.agent.generalized import GeneralizedAgentService
+from app.research.agent_jobs import AgentQueue, AgentJob
 from app.schemas.generalized_agent import AgentResearchRequest, AgentEditRequest, AgentTurn
 from app.research.preparation import PreparationService
 from app.research.preparation_store import PreparationStore, StalePreparation
@@ -38,6 +39,7 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
     async def lifespan(_api):
         yield
         await asyncio.to_thread(jobs.close)
+        agent_queue.close()
 
     api = FastAPI(title="Hypothesim API", version="0.1.0", description="Evidence-aware research jobs and deterministic scientific simulation.", lifespan=lifespan)
     api.state.research_jobs = jobs
@@ -47,6 +49,7 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
 
     generalized = GeneralizedAgentService(preparations, config)
     api.state.generalized_agent = generalized
+    agent_queue = AgentQueue(generalized)
 
     def agent_call(request, edit=False):
         try:
@@ -59,6 +62,21 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
             raise HTTPException(status_code=422, detail="Agent request or scientific tool validation failed") from exc
         except Exception as exc:
             raise HTTPException(status_code=503, detail="Generalized agent unavailable; no successful result is claimed. Read the preparation before retrying.") from exc
+
+    @api.post("/api/agent/jobs/research", response_model=AgentJob, status_code=202, tags=["Generalized agent"])
+    def queue_agent_research(request: AgentResearchRequest):
+        try: return agent_queue.submit(request)
+        except RuntimeError as exc: raise HTTPException(status_code=429, detail="Local research slots are busy; retry shortly.") from exc
+
+    @api.post("/api/agent/jobs/edits", response_model=AgentJob, status_code=202, tags=["Generalized agent"])
+    def queue_agent_edit(request: AgentEditRequest):
+        try: return agent_queue.submit(request, edit=True)
+        except RuntimeError as exc: raise HTTPException(status_code=429, detail="Local research slots are busy; retry shortly.") from exc
+
+    @api.get("/api/agent/jobs/{job_id}", response_model=AgentJob, tags=["Generalized agent"])
+    def read_agent_job(job_id: str):
+        try: return agent_queue.read(job_id)
+        except KeyError as exc: raise HTTPException(status_code=404, detail="Unknown agent job") from exc
 
     @api.post("/api/agent/research", response_model=AgentTurn, tags=["Generalized agent"])
     def generalized_research(request: AgentResearchRequest):
@@ -103,7 +121,9 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
     def simulate(request: SimulationRequest) -> SimulationResult:
         """Run the reviewed one-compartment model without an LLM call."""
         try:
-            return run_simulation(request, preparation_store=preparations.store)
+            result = run_simulation(request, preparation_store=preparations.store)
+            generalized.turns.seed(result)
+            return result
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
@@ -112,11 +132,13 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
         """Apply one linked control edit and return the new deterministic result."""
         try:
             experiment = adjust_experiment(adjustment, preparation_store=preparations.store)
-            return run_simulation(SimulationRequest(
+            result = run_simulation(SimulationRequest(
                 experiment=experiment,
                 client_revision=adjustment.client_revision,
                 output_points=adjustment.output_points,
             ), preparation_store=preparations.store)
+            generalized.turns.seed(result)
+            return result
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 

@@ -76,7 +76,7 @@ export function StructureViewer() {
   }, [loaded, visible, surface, contacts]);
 
   const focus = (selection: AtomSelectionSpec) => { viewer.current?.zoomTo(selection); viewer.current?.render(); };
-  return <section aria-label="Experimental molecular structure" style={{ maxWidth: 1100, margin: "24px auto", padding: "0 24px" }}>
+  return <section id="structure" className="structure-panel" aria-label="Experimental molecular structure">
     <Script src="/vendor/3Dmol-2.5.5.min.js" onReady={() => setScriptReady(true)} onError={() => setError("Molecular renderer unavailable. Scientific plots remain usable.")} />
     <h2>Experimental structure · 1N8Z</h2>
     <p>Trastuzumab Fab bound to the HER2 extracellular domain · X-ray diffraction, 2.52 Å. This structure contains an antibody fragment and soluble target domain. Dose and kinetic changes do not alter its geometry.</p>

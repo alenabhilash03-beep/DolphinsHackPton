@@ -18,10 +18,10 @@ export function PlotPreview({ initialExperiment, initialResult = null, onResultI
   const workspace = useExperimentWorkspace(initialExperiment, 600, initialResult);
   useEffect(() => onResultIdChange?.(workspace.result?.result_id ?? null), [workspace.result?.result_id, onResultIdChange]);
   const timeline = useSimulationTimeline(workspace.result);
-  return <main style={{ maxWidth: 1100, margin: "0 auto", padding: 24 }}>
-    <h1>Hypothesis simulation workspace</h1>
+  return <main id="experiment" className="experiment-panel">
+    <p className="eyebrow">03 / EXPERIMENT</p><h2 className="experiment-title">Adjust. Compare. Discover.</h2>
     <p>Conditional mathematical simulation · 90% is an analytical threshold, not a therapeutic cutoff.</p>
-    <PreviewControls workspace={workspace} />
+    <div className="experiment-layout"><aside className="controls-panel"><PreviewControls workspace={workspace} /></aside><div className="experiment-results">
     {workspace.error && <p role="alert">{workspace.error}</p>}
     {workspace.result ? <>
       <ScenarioComparison result={workspace.result} busy={workspace.busy} />
@@ -40,5 +40,6 @@ export function PlotPreview({ initialExperiment, initialResult = null, onResultI
       </li>)}</ul>
       <EvidencePanel experiment={workspace.experiment} scenarioId={workspace.selectedScenarioId} resultPresent={true} />
     </> : <p role="status">{workspace.status === "loading" ? "Calculating simulation…" : "Simulation not loaded."}</p>}
+    </div></div>
   </main>;
 }

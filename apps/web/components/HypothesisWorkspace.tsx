@@ -107,41 +107,57 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
   const interpretation = job?.status === "completed" && job.interpretation &&
     shownResultId === job.interpretation.result_id ? job.interpretation : null;
 
-  return <div>
-    <section aria-label="Hypothesis research" style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 24px 0" }}>
-      <h1>Research a hypothesis</h1>
-      <p>The research agent currently supports the reviewed trastuzumab–HER2 half-life ×3 versus affinity ×10 comparison. Other requests return an explicit scope assessment.</p>
+  const researchBusy = submitting || job?.status === "queued" || job?.status === "running";
+  return <div className="hypothesim-workspace">
+    <header className="workspace-header">
+      <a className="workspace-brand" href="/">hypothesim<span>.</span></a>
+      <nav aria-label="Workspace sections"><a href="#research">Research</a><a href="#structure">Structure</a><a href="#experiment">Experiment</a></nav>
+      <span className="workspace-badge">LOCAL SCIENCE WORKSPACE</span>
+    </header>
+    <div className="workspace-intro"><p className="eyebrow">FROM HYPOTHESIS TO EXPLORATION</p>
+      <h1>Ask a question.<br /><span>Explore the evidence.</span></h1>
+      <p>Prepare an experiment, inspect the molecular structure, and compare how your assumptions change predicted occupancy.</p>
+      <div className="workspace-steps"><span>01 · Research a hypothesis</span><span>02 · Inspect the structure</span><span>03 · Adjust and compare</span></div>
+    </div>
+    <section id="research" className="research-panel" aria-label="Hypothesis research">
+      <div className="section-heading"><div><p className="eyebrow">01 / RESEARCH</p><h2>Start with your question</h2></div><span className="scope-badge">Trastuzumab × HER2</span></div>
+      <p className="scope-note">Available now: half-life ×3 versus affinity ×10. Other drugs or interventions receive a scope assessment. You can explore more values with the simulation controls below.</p>
+      <div className="research-layout">
       <form onSubmit={(event) => void submit(event)}>
-        <label style={{ display: "block" }}>Hypothesis <textarea required minLength={1} maxLength={12000} value={text}
-          onChange={(event) => setText(event.target.value)} rows={3} style={{ display: "block", width: "100%" }} /></label>
-        <label>Drug <input value={drug} onChange={(event) => setDrug(event.target.value)} /></label>{" "}
-        <label>Target <input value={target} onChange={(event) => setTarget(event.target.value)} /></label>{" "}
-        <label>Route <select value={route} onChange={(event) => setRoute(event.target.value)}>
+        <label className="hypothesis-label">Scientific hypothesis<textarea required minLength={1} maxLength={12000} value={text}
+          onChange={(event) => setText(event.target.value)} rows={4} /></label>
+        <div className="form-grid"><label>Drug<input value={drug} onChange={(event) => setDrug(event.target.value)} /></label>
+        <label>Biological target<input value={target} onChange={(event) => setTarget(event.target.value)} /></label></div>
+        <details className="optional-inputs"><summary>Optional experiment details</summary>
+          <p>The reviewed preset uses one 8 mg/kg IV infusion over a 4,320-hour window. Other values may need custom controls.</p>
+          <div className="form-grid"><label>Administration route<select value={route} onChange={(event) => setRoute(event.target.value)}>
           <option value="">From reviewed preset</option><option value="iv_infusion">IV infusion</option>
           <option value="hypothetical_iv_bolus">Hypothetical IV bolus</option><option value="oral">Oral</option>
           <option value="subcutaneous">Subcutaneous</option><option value="other">Other</option>
-        </select></label>{" "}
-        <label>Dose (mg/kg) <input type="number" min="0.001" step="any" value={dose} onChange={(event) => setDose(event.target.value)} placeholder="Preset" /></label>{" "}
-        <label>Duration (h) <input type="number" min="0.001" step="any" value={duration} onChange={(event) => setDuration(event.target.value)} placeholder="Preset" /></label>{" "}
-        <button type="submit" disabled={submitting}>{submitting ? "Submitting…" : "Research and simulate"}</button>
+        </select></label><label>Dose (mg/kg)<input type="number" min="0.001" step="any" value={dose} onChange={(event) => setDose(event.target.value)} placeholder="8 · preset" /></label>
+        <label>Duration (hours)<input type="number" min="0.001" step="any" value={duration} onChange={(event) => setDuration(event.target.value)} placeholder="4,320 · preset" /></label></div></details>
+        <div className="form-actions"><button className="primary-button" type="submit" disabled={researchBusy}>{researchBusy ? "Research in progress…" : "Research & simulate →"}</button>
+        <button type="button" className="quiet-button" disabled={researchBusy} onClick={() => {setText(PRIMARY);setDrug("trastuzumab");setTarget("HER2");setRoute("");setDose("");setDuration("");}}>Use example question</button></div>
       </form>
+      <section className="activity-panel" aria-label="Agent activity" aria-live="polite">
+        <div className="activity-heading"><span className={`status-dot ${researchBusy ? "active" : ""}`} /><h3>Research activity</h3><span className="status-label">{job?.status ?? "Ready"}</span></div>
+        <p>{job ? "Evidence and computation for your question." : "Your example is ready. Run the research agent, or start exploring the simulation below."}</p>
+        {events.length > 0 ? <ol>{events.map((item) => <li key={item.event_id}>{item.message}</li>)}</ol> : <div className="activity-placeholder">Reviewed evidence → supported model → numerical comparison</div>}
+        {job?.status === "completed" && <p className="activity-success">Experiment prepared · literature {job.retrieval_status === "live" ? "verified live" : "from labeled cache"}</p>}
+        {job && <details><summary>Research record</summary><p>Job {job.job_id}</p><p>Trace: {job.trace_status} · Tools: {(job.tool_calls ?? []).join(", ")}</p></details>}
+      </section></div>
       {message && <p role="alert">{message}</p>}
-      <section aria-label="Agent activity" aria-live="polite">
-        <h2>Agent activity</h2>
-        <p>{job ? `Job ${job.job_id} · ${job.status}` : "No research job submitted yet. The example simulation below is ready."}</p>
-        <ol>{events.map((item) => <li key={item.event_id}>{item.message}</li>)}</ol>
-        {job?.status === "completed" && <p>Literature: {job.retrieval_status} · Trace: {job.trace_status} · Tools: {(job.tool_calls ?? []).join(", ")}</p>}
-      </section>
-      {interpretation && <section aria-label="Scientific interpretation">
-        <h2>Interpretation of research result {interpretation.result_id}</h2>
+      {interpretation && <section className="interpretation-panel" aria-label="Scientific interpretation">
+        <p className="eyebrow">RESEARCH FINDINGS</p><h2>What this experiment predicts</h2>
         <ul>{interpretation.claims.map((claim) => <li key={claim}>{claim}</li>)}</ul>
-        <h3>Follow-up experiments</h3><ul>{interpretation.follow_up_experiments.map((item) => <li key={item}>{item}</li>)}</ul>
-        <h3>Limitations</h3><ul>{interpretation.limitations.map((item) => <li key={item}>{item}</li>)}</ul>
+        <details><summary>Follow-up experiments and limitations</summary><h3>Follow-up experiments</h3><ul>{interpretation.follow_up_experiments.map((item) => <li key={item}>{item}</li>)}</ul>
+        <h3>Limitations</h3><ul>{interpretation.limitations.map((item) => <li key={item}>{item}</li>)}</ul></details>
       </section>}
-      {job?.interpretation && !interpretation && <p>The agent explanation applies to the original research result. Adjusted curves need a new interpretation.</p>}
+      {job?.interpretation && !interpretation && <p className="scope-note">The agent explanation applies to the original research result. Adjusted curves need a new interpretation.</p>}
     </section>
     <StructureViewer />
     <PlotPreview key={prepared?.result.result_id ?? "fallback"} initialExperiment={visibleExperiment}
       initialResult={prepared?.result} onResultIdChange={setShownResultId} />
+    <footer className="workspace-footer">Hypothesim · Conditional scientific exploration · Predictions are model outputs.</footer>
   </div>;
 }

@@ -13,7 +13,7 @@ export default function Home() {
       <p className="mt-6 max-w-xl text-base leading-7 text-[#637168]">A scientific workspace for comparing how drug exposure and binding assumptions change predicted target occupancy.</p>
     </section>
     <div className="grid items-start gap-6 lg:grid-cols-[1.2fr_1fr]">
-      <FoundationStatus />
+      <div><a href="/preview/plots" className="mb-5 inline-block rounded-xl bg-[#245e53] px-6 py-3 font-semibold text-white">Open the simulation workspace →</a><FoundationStatus /></div>
       <section className="rounded-2xl border border-[#d7e1d4] bg-[#edf2e8] p-6 sm:p-8">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#6c8066]">First experiment · configuration example</p>
         <h2 className="mt-4 text-2xl font-medium">Trastuzumab × HER2</h2>

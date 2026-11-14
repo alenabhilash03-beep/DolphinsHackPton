@@ -25,7 +25,7 @@ export function PreviewControls({ workspace }: { workspace: Workspace }) {
   const range = (field: ControlField, label: string, actual: number, min: number, max: number, step: number, unit: string) =>
     <label style={{ display: "block", margin: "8px 0" }}>
       {label}: <output>{valueFor(field, actual).toFixed(step < 1 ? 2 : 0)} {unit}</output>
-      <input type="range" min={min} max={max} step={step} value={valueFor(field, actual)}
+      <input aria-label={label} type="range" min={min} max={max} step={step} value={valueFor(field, actual)}
         onChange={(event) => edit(field, Number(event.target.value))} style={{ display: "block", width: "100%" }} />
     </label>;
   const kinetic = (field: KineticField, label: string, actual: number) => {
@@ -33,7 +33,7 @@ export function PreviewControls({ workspace }: { workspace: Workspace }) {
     const shown = valueFor(field, actual);
     return <label style={{ display: "block", margin: "8px 0" }}>
       {label}: <output>{shown.toExponential(3)} {bounds.unit}</output>
-      <input type="range" min={0} max={1} step={0.001}
+      <input aria-label={label} type="range" min={0} max={1} step={0.001}
         value={toLogPosition(shown, bounds.min, bounds.max)}
         onChange={(event) => edit(field, fromLogPosition(Number(event.target.value), bounds.min, bounds.max))}
         style={{ display: "block", width: "100%" }} />
@@ -41,7 +41,7 @@ export function PreviewControls({ workspace }: { workspace: Workspace }) {
   };
 
   return <section aria-label="Technical parameter controls">
-    <h2>Technical controls</h2>
+    <h3>Experiment controls</h3>
     <p>Changes update the alternative and rerun the deterministic simulator. Baseline parameters stay fixed.</p>
     <label>Alternative: <select value={workspace.selectedScenarioId ?? ""}
       onChange={(event) => workspace.selectAlternative(event.target.value)}>

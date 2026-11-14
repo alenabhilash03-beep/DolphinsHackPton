@@ -9,7 +9,7 @@ export interface TimelineControlsProps {
 
 /** Accessible native controls that the visual UI can style or replace. */
 export function TimelineControls({ timeline, className }: TimelineControlsProps) {
-  return <div className={className}>
+  return <div className={`timeline-panel ${className ?? ""}`}>
     <button type="button" onClick={timeline.toggle} disabled={timeline.maxIndex === 0}
       aria-label={timeline.playing ? "Pause simulation" : "Play simulation"}>
       {timeline.playing ? "Pause" : "Play"}

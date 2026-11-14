@@ -18,7 +18,7 @@ export const ScenarioComparison = memo(function ScenarioComparison({ result, bus
     <h2>Compare the experiments</h2>
     <p>{config.mode === "custom" ? "Custom hypothetical comparison" : "Reviewed preset with hypothetical alternatives"} · {config.support.status} model scope.</p>
     <p role="status">{busy ? "Recalculating. The comparison below shows the last completed result." : `Showing completed result ${result.result_id}.`}</p>
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))", gap: 16 }}>
       {config.scenarios.map((scenario, index) => <article key={scenario.scenario_id} style={{ borderTop: `4px solid ${scenarioColor(scenario.scenario_id, index)}`, padding: 12, background: "#edf2e8" }}>
         <h3>{scenario.label}</h3>
         <p>{scenario.intervention === "baseline" ? "Protected reference scenario" : "Hypothetical intervention"}</p>

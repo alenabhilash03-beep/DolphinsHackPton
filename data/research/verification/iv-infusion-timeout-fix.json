@@ -1,0 +1,57 @@
+{
+  "status": "completed",
+  "original_failed_job": "199daebc2194492e945c066c7038168a",
+  "request": {
+    "drug_name": "trastuzumab",
+    "original_hypothesis": "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?",
+    "target": "HER2",
+    "molecular_form": null,
+    "route": "iv_infusion",
+    "endpoint": "target_occupancy"
+  },
+  "run_id": "run-297d6444c9b8485494c117f2f01ff138",
+  "turn_id": "turn-f4c1dff6fa8f44009c04aa12bd851370",
+  "trace_id": "01a1dc03-c059-70ac-ae94-ea11d6298396",
+  "trace_status": "remote_verified",
+  "result_id": "sim-262bc1bc1e17aefb3d6995d5",
+  "elapsed_s": 10.44,
+  "tool_calls": [
+    "prepare_reviewed_comparison",
+    "simulate_current_comparison",
+    "interpret_current_result"
+  ],
+  "mode": "reviewed_preset",
+  "endpoint_occupancies": [
+    {
+      "scenario_id": "baseline",
+      "occupancy": 0.6290296753927977
+    },
+    {
+      "scenario_id": "half_life_x3",
+      "occupancy": 0.9982410790607064
+    },
+    {
+      "scenario_id": "affinity_x10",
+      "occupancy": 0.944375996301382
+    }
+  ],
+  "verification": "Exact original IV-infusion request, real pinned Nemotron + deterministic SciPy execution in an isolated verification store.",
+  "original_failure": {
+    "stage": "model inference after prepare_reviewed_comparison, before solver",
+    "provider_read_timeout_s": 45,
+    "elapsed_s": 76.19,
+    "overall_budget_s": 180,
+    "rejected_search_calls": 2,
+    "configuration_tool_response_chars": 14991
+  },
+  "browser_verification": {
+    "status": "completed",
+    "elapsed_s": 8.2,
+    "tool_invocations": 3,
+    "accepted_numerical_result": true
+  },
+  "checks": {
+    "backend_tests_passed": 322,
+    "frontend_tests_passed": 44
+  }
+}

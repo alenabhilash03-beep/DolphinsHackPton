@@ -234,3 +234,108 @@ def test_unknown_identity_can_request_clarification_before_searching_papers(tmp_
     assert turn.status=='needs_inputs' and turn.result is None
     assert turn.preparation.preparation.state=='identity_clarification'
     assert turn.questions and turn.tool_calls==['start_experiment_preparation']
+
+
+def test_configuration_handoff_is_compact_and_full_evidence_stays_server_owned(tmp_path):
+    from test_research_agent import ScriptedModel
+    from langchain_core.messages import ToolMessage
+    from app.agent.generalized import configuration_receipt
+    from app.research.registry import load_curated_profile
+    captured={}
+    class InspectingModel(ScriptedModel):
+        def _generate(self,messages,**kwargs):
+            for message in messages:
+                if isinstance(message,ToolMessage):captured[message.name]=json.loads(message.content)
+            return super()._generate(messages,**kwargs)
+    model=InspectingModel(responses=[AIMessage(content='',tool_calls=[{'name':name,'args':args,'id':str(i)}]) for i,(name,args) in enumerate([
+        ('prepare_reviewed_comparison',{}),('simulate_current_comparison',{}),('interpret_current_result',{}),('AgentDecision',{'status':'completed'})])])
+    prep=PreparationService(store=PreparationStore(tmp_path/'p.sqlite3'))
+    agent=GeneralizedAgentService(prep,SETTINGS,model)
+    turn=agent.run(AgentResearchRequest(request={'drug_name':'trastuzumab','target':'HER2','route':'iv_infusion',
+        'original_hypothesis':"Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?"}))
+    payload=captured['prepare_reviewed_comparison']
+    assert len(json.dumps(payload))<3000
+    assert payload['next_tool']=='simulate_current_comparison' and 'evidence' not in payload
+    assert payload['configuration_sha256']==turn.result.configuration_hash
+    assert turn.result.configuration==load_curated_profile().experiment
+    assert turn.interpretation.paper_summaries and 'paper_summaries' not in captured['interpret_current_result']
+    assert len(json.dumps(configuration_receipt(turn.result.configuration)))<len(turn.result.configuration.model_dump_json())/3
+
+
+def test_session_bound_tools_use_original_request_instead_of_llm_copied_fields(tmp_path):
+    from test_research_agent import ScriptedModel
+    from app.research.europe_pmc import LiteratureSearch
+    agent,req=research_service(tmp_path)
+    queries=[]
+    class EmptySearch:
+        def search(self,query,page_size):
+            queries.append(query)
+            return LiteratureSearch(query=query,hit_count=0,records=[],retrieved_at=datetime.now(timezone.utc))
+    agent.preparation.documents.literature=EmptySearch()
+    bad={**req,'drug_name':'WRONG COPIED NAME','original_hypothesis':'rewritten and untrusted'}
+    seen_schemas={}
+    class Model(ScriptedModel):
+        def bind_tools(self,tools,**kwargs):
+            for tool in tools:
+                if hasattr(getattr(tool,'args_schema',None),'model_fields'):seen_schemas[tool.name]=tool.args_schema.model_fields
+            return self
+    agent.model=Model(responses=[AIMessage(content='',tool_calls=[{'name':name,'args':args,'id':str(i)}]) for i,(name,args) in enumerate([
+        ('start_experiment_preparation',{'request':bad}),('search_hypothesis_evidence',{'request':bad}),('AgentDecision',{'status':'needs_inputs'})])])
+    turn=agent.run(AgentResearchRequest(request=req))
+    assert turn.preparation.preparation.request.original_hypothesis==req['original_hypothesis']
+    assert all('WRONG' not in q and 'Compound X' in q for q in queries)
+    assert 'request' not in seen_schemas['search_hypothesis_evidence']
+    assert 'request' not in seen_schemas['start_experiment_preparation']
+    assert not {'request','drug_identifier','target_identifier'} & seen_schemas['extract_cited_parameters'].keys()
+    assert not any(e.state=='rejected' for e in turn.execution_events)
+
+
+def test_provider_timeout_retry_does_not_repeat_prepared_edits_or_solver(tmp_path):
+    from requests.exceptions import ReadTimeout
+    raised=[]
+    class Flaky(DrivingModel):
+        def _generate(self,messages,**kwargs):
+            if self._step==2 and not raised:
+                raised.append(True);raise ReadTimeout('temporary provider outage')
+            return super()._generate(messages,**kwargs)
+    base=load_demo().result
+    agent=GeneralizedAgentService(PreparationService(store=PreparationStore(tmp_path/'p.sqlite3')),SETTINGS,Flaky(mode='edit'))
+    req=AgentEditRequest(base_result_id=base.result_id,base_experiment_id=base.configuration.experiment_id,
+        base_configuration_sha256=base.configuration_hash,client_revision=1,text='Run this comparison for 120 days')
+    progress=[];turn=agent.run(req,edit=True,on_progress=progress.append)
+    assert turn.status=='completed' and turn.tool_calls.count('apply_requested_edit')==turn.tool_calls.count('simulate_current_comparison')==1
+    assert sum('retrying the model once' in item for item in progress)==1
+    assert turn.result.configuration.duration_h==2880
+
+
+@pytest.mark.parametrize('budget,expected_calls',[(180,2),(20,1)])
+def test_model_timeout_retry_is_bounded_and_respects_remaining_time(tmp_path,budget,expected_calls):
+    from requests.exceptions import ReadTimeout
+    calls=[]
+    class Offline(DrivingModel):
+        def _generate(self,messages,**kwargs):calls.append(True);raise ReadTimeout('provider timeout')
+    settings=SETTINGS.model_copy(update={'research_timeout_s':budget})
+    agent=GeneralizedAgentService(PreparationService(store=PreparationStore(tmp_path/'p.sqlite3')),settings,Offline(mode='edit'))
+    base=load_demo().result
+    req=AgentEditRequest(base_result_id=base.result_id,base_experiment_id=base.configuration.experiment_id,
+        base_configuration_sha256=base.configuration_hash,client_revision=1,text='Run this comparison for 120 days')
+    observed=[]
+    with pytest.raises(ReadTimeout):agent.run(req,edit=True,on_execution=observed.append)
+    assert len(calls)==expected_calls
+    assert [e.state for e in observed]==['started','failed']
+    assert observed[-1].summary.error_code=='timeout'
+
+
+def test_reviewed_profile_resume_preserves_but_does_not_present_unrelated_draft_inputs(tmp_path):
+    from test_research_agent import ScriptedModel
+    from app.schemas.preparation_workflow import CreatePreparation
+    request=AgentResearchRequest(request={'drug_name':'trastuzumab','target':'HER2','route':'iv_infusion',
+        'original_hypothesis':"Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?"})
+    prep=PreparationService(store=PreparationStore(tmp_path/'p.sqlite3'),assessment=IdentityFixture())
+    draft=prep.create(CreatePreparation(request=request.request))
+    request.preparation_id=draft.preparation.preparation_id
+    model=ScriptedModel(responses=[AIMessage(content='',tool_calls=[{'name':name,'args':args,'id':str(i)}]) for i,(name,args) in enumerate([
+        ('prepare_reviewed_comparison',{}),('simulate_current_comparison',{}),('interpret_current_result',{}),('AgentDecision',{'status':'completed'})])])
+    turn=GeneralizedAgentService(prep,SETTINGS,model).run(request)
+    assert turn.status=='completed' and turn.preparation is None and not turn.questions
+    assert prep.store.read(request.preparation_id)==draft

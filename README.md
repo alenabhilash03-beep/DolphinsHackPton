@@ -18,7 +18,7 @@ The [3B agent contract](docs/RESEARCH_AGENT.md) explains the supported research 
 
 ## Planned additional drug support
 
-The [roadmap now includes Phase 7](docs/IMPLEMENTATION_PLAN.md): arbitrary drug-name assessment, scientific/model eligibility checks, a second reviewed drug profile, a generalized guarded agent, and workspace integration. This expansion is planned beyond the original 36-hour MVP and is not implemented yet. Unsupported drugs will continue to receive explicit limitations; custom assumptions will remain labeled hypothetical.
+The [roadmap now includes Phase 7](docs/IMPLEMENTATION_PLAN.md): arbitrary drug-name assessment, scientific/model eligibility checks, a second reviewed drug profile, a generalized guarded agent, and workspace integration. It is scheduled after 5B reliability and before 5C final integration testing and Phase 6 rehearsal. This expansion is planned beyond the original 36-hour MVP and is not implemented yet. Unsupported drugs will continue to receive explicit limitations; custom assumptions will remain labeled hypothetical.
 
 ## Requirements and installation
 

@@ -1,6 +1,6 @@
 # Hypothesim — implementation roadmap
 
-Status: Phases 0–4 complete. Phases 5–6 remain planned for the local demo; Phase 7 adds evidence-gated support for additional drugs. No later subphase is authorized to start by this plan revision.
+Status: Phases 0–4 complete. Phases 5–6 remain planned for the local demo; Phase 7 adds evidence-gated support for additional drugs. Current user-authorized follow-up: improve paper-to-plot explanations and implement synchronized visuals (5A). Later subphases still require their green light.
 
 Canonical repository document: `docs/IMPLEMENTATION_PLAN.md` in `alenabhilash03-beep/DolphinsHackPton`.
 
@@ -39,10 +39,11 @@ A review that concludes **Keep the plan** does not require a roadmap-only GitHub
 | --- | --- | --- |
 | Initial planning commit | User requested the full roadmap in GitHub and a review after every subphase | Preserve the original technical roadmap and add conditional risk/opportunity reassessment, documented revisions, GitHub commits for agreed changes, and a green-light boundary between chunks. Phase 0 remained unstarted at that historical revision. |
 | 2026-11-14 — drug support expansion | User requested support for additional drug names after clarifying that Phase 5 does not provide it | Add Phase 7A–7D after the reproducible local-demo gates. Accept arbitrary names for assessment, but allow simulations only through reviewed drug/model profiles or explicit hypothetical custom inputs. Budget additional work beyond the original 36 hours; preserve existing subphase IDs and the primary demo. User also selected a local demo package, so hosted deployment is no longer a mandatory Phase 5/6 gate. This revision authorizes planning only. |
+| 2026-11-14 — expansion ordering and scientific visuals | User requested additional drug support after reliability but before final testing, plus paper summaries and clearer playback visuals | Execution order is 5A → 5B → 7A–7D → 5C → 6A–6B. Stable IDs are retained. Extend the existing evidence/agent presentation with cited paper summaries and explicit links to model inputs and plots; related search candidates cannot become reviewed parameters automatically. Implement 5A now under this user request. Use the shared timeline for animation and chart playback without deforming experimental structures. No revised multi-drug support is claimed implemented by this planning change. |
 
 Hypothesim is feasible in 36 hours if the MVP centers on one carefully documented trastuzumab–HER2 experiment. The strongest demo combines a trustworthy numerical model, immediate scenario comparison, a real molecular structure, and an agent that shows its evidence.
 
-The full specification exceeds a reliable 36-hour build. Additional drug support is now planned as a separately estimated Phase 7 after the core local demo. Automatic validation of newly discovered models, detailed tissue distribution, and downstream biological predictions remain outside the MVP.
+The full specification exceeds a reliable 36-hour build. Additional drug support is now planned as a separately estimated Phase 7 after 5B reliability and before final testing/rehearsal. Automatic validation of newly discovered models, detailed tissue distribution, and downstream biological predictions remain outside the MVP.
 
 Implementation through Phase 4 is recorded in `docs/subphase-reviews/`. The roadmap below preserves the original MVP sequence and adds the agreed expansion as Phase 7.
 
@@ -472,27 +473,15 @@ Phase deliverable: A complete demonstrable MVP. This is the gate for adding stre
 | --- | --- | --- |
 | 5A — Optional Canvas schematic; maximum 2 hours | Implement BindingCanvas, deterministic target states, fixed concentration scale, timeline sampling, and reduced-motion support. | Occupancy agrees within one illustrative target site; scrubbing and replay are stable. Cut this feature if it threatens core reliability. |
 | 5B — Failure recovery and deployment; about 2 hours | Configure deployment, local fallback, evidence/cache behavior, research deadlines, backend restart handling, asset loading, and trace verification. | Local smoke checks pass; source/LLM failure produces a truthful fallback state. Prepare hosting instructions, but public deployment requires a separately selected destination and is not a completion gate for the agreed local demo. |
-| 5C — End-to-end and performance checks; about 2 hours | Implement focused browser/API integration tests and profile chart updates, solver latency, memory, and rendering. | Core test matrix passes on the actual demonstration machine and browser. |
 
 
 
-Phase deliverable: A resilient release candidate, with schematic animation only if it passes its acceptance gate.
 
-### Phase 6, hours 30–36, freezes and rehearses the release. No new features.
-
-
-| Subphase | Tasks and files | Interface, verification, and completion |
-| --- | --- | --- |
-| 6A — Reproducible demo package; about 2 hours | Finalize demo.json, evidence snapshots, cached structure, README, environment instructions, and demo-runbook.md. | A clean startup reproduces the primary experiment; saved and live runs are visibly distinguished. |
-| 6B — Rehearsal, fixes, and buffer; about 4 hours | Rehearse live and fallback paths; fix acceptance failures; verify final local startup and LangSmith trace. | Two consecutive successful rehearsals, including one with literature connectivity disabled. |
-
-
-
-Phase deliverable: A frozen build, reproducible demonstration, and practiced recovery path.
+5A/5B deliverable: a visually clear, resilient local workspace. Run Phase 7 next, then return to 5C to test the complete supported-drug set.
 
 ### Phase 7 — Evidence-gated additional drug support; estimated 8–13 additional engineering hours.
 
-This is an expansion beyond the original 36-hour schedule, not a promise that arbitrary drugs can all be simulated. Depends on 4C scientific acceptance and the Phase 5–6 local release gates. Reassess the estimate after 7A; stop for the normal review and green light after every chunk. Do not consume the original rehearsal buffer to fit this expansion.
+This is an expansion beyond the original 36-hour schedule, not a promise that arbitrary drugs can all be simulated. Depends on 4C scientific acceptance and 5B reliability. Runs before 5C final integration testing and Phase 6 rehearsal. Reassess the estimate after 7A; stop for the normal review and green light after every chunk. Do not consume the original rehearsal buffer to fit this expansion.
 
 The intended product accepts any drug name and returns an evidence-backed support assessment. A numerical run requires an applicable, reviewed model and parameter profile, or explicit user-supplied hypothetical values in a supported mathematical model. Missing evidence, an unsuitable route, or an unsupported biological mechanism produces limitations and required inputs rather than fabricated curves. Custom output must not be labeled as drug-specific validated prediction.
 
@@ -506,6 +495,26 @@ The intended product accepts any drug name and returns an evidence-backed suppor
 Phase deliverable: drug-agnostic intake with bounded scientific support, at least two reviewed runnable drug–target profiles, profile-specific evidence/model selection, and explicit unsupported/custom outcomes. This phase does not add automatic approval of new scientific models, unrestricted combinations, clinical recommendations, or support for every drug.
 
 Scope cutoff: establish the assessment and evidence gates before adding connectors or extra drugs. If the second profile needs a major PK/PD model beyond the estimated budget, revise the phase at its review. Do not mark support complete using assumed drug-specific values. Phase 7D ends with a regression rehearsal and a saved example for each supported profile; hosting remains optional under the local-demo preference.
+
+### Phase 5C — Final integration and performance, after 7D; about 2 hours.
+
+| Subphase | Tasks and files | Interface, verification, and completion |
+| --- | --- | --- |
+| 5C — End-to-end and performance checks; about 2 hours | Implement focused browser/API integration tests and profile chart updates, solver latency, memory, and rendering. | Core test matrix passes on the actual demonstration machine and browser. |
+
+Test the original antibody workflow and every newly approved drug profile. This gate precedes the Phase 6 feature freeze; no additional drug work should start during rehearsal.
+
+### Phase 6, hours 30–36, freezes and rehearses the release. No new features.
+
+
+| Subphase | Tasks and files | Interface, verification, and completion |
+| --- | --- | --- |
+| 6A — Reproducible demo package; about 2 hours | Finalize demo.json, evidence snapshots, cached structure, README, environment instructions, and demo-runbook.md. | A clean startup reproduces the primary experiment; saved and live runs are visibly distinguished. |
+| 6B — Rehearsal, fixes, and buffer; about 4 hours | Rehearse live and fallback paths; fix acceptance failures; verify final local startup and LangSmith trace. | Two consecutive successful rehearsals, including one with literature connectivity disabled. |
+
+
+
+Phase deliverable: A frozen build, reproducible demonstration, and practiced recovery path.
 
 ## 8. Team parallelization and ownership
 
@@ -590,3 +599,7 @@ The primary demo should take roughly four minutes:
 Prepare a saved experiment containing the exact configuration, reviewed evidence, structure asset, model version, and expected metrics. The fallback must remain interactive and clearly identify saved research. The live LangChain integration should also have a verified trace available for inspection.
 
 Phases 0–4 are complete. The next execution unit remains 5A unless the user explicitly reprioritizes the roadmap. Phase 7 is agreed planned scope; no Phase 7 implementation begins without its subphase green light.
+
+## Current execution order (revision 2026-11-14)
+
+Completed: Phases 0–4. Remaining: **5A → 5B → 7A → 7B → 7C → 7D → 5C → 6A → 6B**. Phase 7 retains its 8–13 additional-hour estimate beyond the original 36-hour scope. Final rehearsal follows all agreed feature work.

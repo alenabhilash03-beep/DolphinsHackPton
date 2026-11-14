@@ -34,9 +34,10 @@ export function FoundationStatus() {
     <div role="status" aria-live="polite" className="mt-6 space-y-4 text-sm">
       <p><span className={`mr-2 inline-block h-2 w-2 rounded-full ${health ? "bg-[#3f7444]" : "bg-[#b8bdb3]"}`} />{health ? "Scientific API connected" : busy ? "Connecting to scientific API…" : "Scientific API not connected"}</p>
       {validation && <p>Example configuration validated · {validation.scenario_count} scenarios · <strong>{validation.support_status}</strong> scientific scope</p>}
+      {health?.simulation_available && <p>Numerical simulation API ready · interactive controls and graphs arrive in Phase 2</p>}
       {health && <p className="text-[#637168]">NVIDIA credentials: {health.ai_credentials_configured ? "configured" : "not configured"} · LangSmith credentials: {health.tracing_credentials_configured ? "configured" : "not configured"}. AI compatibility is verified separately from service health.</p>}
       {error && <p className="rounded-lg bg-[#fff3e8] p-3 text-[#824a23]">{error}</p>}
     </div>
-    <p className="mt-6 border-t border-[#e5ebe1] pt-5 text-sm leading-6 text-[#637168]">This preview validates the connection and shared experiment format. Numerical simulation, literature research, and molecular rendering arrive in later chunks.</p>
+    <p className="mt-6 border-t border-[#e5ebe1] pt-5 text-sm leading-6 text-[#637168]">This preview checks the service and experiment format. The deterministic engine runs through the API; the interactive workspace, literature research, and molecular rendering arrive in later chunks.</p>
   </section>;
 }

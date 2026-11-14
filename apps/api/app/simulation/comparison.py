@@ -15,7 +15,7 @@ class ScenarioComputation:
     metrics: ScenarioMetrics
 
 
-def compare_experiment(experiment: ExperimentConfig) -> tuple[ScenarioComputation, ...]:
+def compare_experiment(experiment: ExperimentConfig, *, deadline: float | None = None) -> tuple[ScenarioComputation, ...]:
     """Preserve scenario order; all scenarios share the experiment horizon and q."""
     if not isinstance(experiment, ExperimentConfig):
         raise TypeError("A validated ExperimentConfig is required")
@@ -34,6 +34,7 @@ def compare_experiment(experiment: ExperimentConfig) -> tuple[ScenarioComputatio
             scenario.binding,
             scenario.exposure_factor,
             initial_occupancy=scenario.initial_occupancy,
+            deadline=deadline,
         )
         results.append(ScenarioComputation(scenario.scenario_id, trajectory, calculate_metrics(trajectory, experiment.occupancy_threshold)))
     return tuple(results)

@@ -430,14 +430,14 @@
             "type": "string"
           },
           "simulation_available": {
-            "const": false,
-            "default": false,
+            "const": true,
+            "default": true,
             "title": "Simulation Available",
             "type": "boolean"
           },
           "stage": {
-            "const": "foundation",
-            "default": "foundation",
+            "const": "simulation",
+            "default": "simulation",
             "title": "Stage",
             "type": "string"
           },
@@ -1130,6 +1130,56 @@
         "title": "ScenarioSeries",
         "type": "object"
       },
+      "SimulationDiagnostics": {
+        "additionalProperties": false,
+        "properties": {
+          "absolute_tolerance": {
+            "exclusiveMinimum": 0,
+            "title": "Absolute Tolerance",
+            "type": "number"
+          },
+          "event_boundaries_h": {
+            "items": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "minItems": 2,
+            "title": "Event Boundaries H",
+            "type": "array"
+          },
+          "output_point_count": {
+            "maximum": 5000,
+            "minimum": 2,
+            "title": "Output Point Count",
+            "type": "integer"
+          },
+          "relative_tolerance": {
+            "exclusiveMinimum": 0,
+            "title": "Relative Tolerance",
+            "type": "number"
+          },
+          "solver_method": {
+            "const": "Radau",
+            "title": "Solver Method",
+            "type": "string"
+          },
+          "total_solver_knots": {
+            "minimum": 2,
+            "title": "Total Solver Knots",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "solver_method",
+          "relative_tolerance",
+          "absolute_tolerance",
+          "total_solver_knots",
+          "event_boundaries_h",
+          "output_point_count"
+        ],
+        "title": "SimulationDiagnostics",
+        "type": "object"
+      },
       "SimulationRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1171,6 +1221,9 @@
             "pattern": "^[a-f0-9]{64}$",
             "title": "Configuration Hash",
             "type": "string"
+          },
+          "diagnostics": {
+            "$ref": "#/components/schemas/SimulationDiagnostics"
           },
           "model_version": {
             "title": "Model Version",
@@ -1221,6 +1274,7 @@
           "configuration",
           "time_h",
           "scenarios",
+          "diagnostics",
           "warnings"
         ],
         "title": "SimulationResult",
@@ -1376,7 +1430,7 @@
     }
   },
   "info": {
-    "description": "Foundation contracts. Simulation and research are not implemented yet.",
+    "description": "Deterministic scientific simulation API. Research-agent endpoints are not implemented yet.",
     "title": "Hypothesim API",
     "version": "0.1.0"
   },
@@ -1437,6 +1491,45 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/simulations": {
+      "post": {
+        "description": "Run the reviewed one-compartment model without an LLM call.",
+        "operationId": "simulate_api_simulations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulationResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Simulate"
       }
     }
   }

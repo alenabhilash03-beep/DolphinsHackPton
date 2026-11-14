@@ -8,9 +8,9 @@ An evidence-aware scientific hypothesis exploration platform.
 
 ## Current progress
 
-Subphases **0A, 0B, 1A, and 1B are complete**. The repository has the evidence audit, service skeleton, canonical contracts, exact one-compartment PK, adaptive mass-action binding, and baseline-versus-alternative numerical metrics. The [1B review](docs/subphase-reviews/1B.md) records analytical checks and limits. The example configuration now computes through the Python engine; there is not yet a public simulation API endpoint or a graphing workspace.
+**Phases 0 and 1 are complete** (subphases 0A–1C). The repository has the evidence audit, service skeleton, canonical contracts, exact one-compartment PK, adaptive mass-action binding, baseline-versus-alternative numerical metrics, and a direct simulation API. The [1C review](docs/subphase-reviews/1C.md) records API checks and limits. There is not yet a graphing workspace.
 
-The existing web page and health/validation endpoints can be run locally now using the commands below. The scientific plots and live controls arrive in Phase 2, after the 1C simulation API. Python computation is independent of the agent; no AI credentials are needed to run the numerical engine.
+The existing web page and API can be run locally now using the commands below. The scientific plots and live controls arrive in Phase 2. Python computation is independent of the agent; no AI credentials are needed to run the numerical engine.
 
 ## Requirements and installation
 
@@ -47,6 +47,7 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000). The page checks the actual 
 - API health: [http://127.0.0.1:8000/api/health](http://127.0.0.1:8000/api/health).
 - API reference: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 - OpenAPI: [http://127.0.0.1:8000/openapi.json](http://127.0.0.1:8000/openapi.json).
+- Direct simulation: `POST http://127.0.0.1:8000/api/simulations`. In the API reference, expand this operation and use **Try it out** with `data/examples/contract-experiment.json` as the `experiment` field, `client_revision` set to `0`, and `output_points` set to `100` or more. The complete checked-in response is [data/examples/simulation-result.reference.json](data/examples/simulation-result.reference.json).
 
 Set `API_BASE_URL` to change the server-to-server destination; restart Next.js after environment changes. No provider keys are sent to browser code. Health reports credential presence, not successful authentication or model validation.
 
@@ -73,7 +74,7 @@ Committed generated files:
 
 After changing schemas or the example, regenerate and review these outputs. `data/examples/contract-experiment.json` is an auditable contract fixture; it is not the Phase 3 runtime drug registry.
 
-Implemented validation includes finite canonical numerical inputs, linked PK/affinity values, nonoverlapping infusion schedules, source and assumption references, reviewed evidence chains, canonical evidence units, conditional scope for assumed inputs, and separation of blocked outcomes from runnable configurations. The numerical engine is implemented in Python; exposing it through a direct API is the next chunk. Runtime model suitability and research remain later gates.
+Implemented validation includes finite canonical numerical inputs, linked PK/affinity values, nonoverlapping infusion schedules, source and assumption references, reviewed evidence chains, canonical evidence units, conditional scope for assumed inputs, and separation of blocked outcomes from runnable configurations. The API enforces the registered model and computational limits. Runtime research and model suitability beyond the registered example remain later gates.
 
 ## Free NVIDIA compatibility check
 
@@ -111,4 +112,4 @@ The script prints capability status and error categories, not secrets or raw HTT
 
 ## Next development step and when the app becomes visible
 
-**1C** will expose the current three-scenario computation through FastAPI. After that, **Phase 2 (subphases 2A–2C, roadmap hours 7–12)** will connect live controls, Plotly graphs, and a synchronized timeline. This is the first interactive scientific workspace. The LangChain research workflow follows in **Phase 3 (hours 12–18)**, and the real 1N8Z molecular viewer in **Phase 4 (hours 18–24)**. These are roadmap estimates, not guarantees. Review the plan after each subphase and wait for the next green light.
+**Phase 2 (subphases 2A–2C, roadmap hours 7–12)** connects live controls, Plotly graphs, and a synchronized timeline. This is the first interactive scientific workspace. The LangChain research workflow follows in **Phase 3 (hours 12–18)**, and the real 1N8Z molecular viewer in **Phase 4 (hours 18–24)**. These are roadmap estimates, not guarantees. Review the plan after each subphase and wait for the next green light.

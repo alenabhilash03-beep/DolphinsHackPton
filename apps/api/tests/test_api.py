@@ -14,7 +14,8 @@ def test_health_is_truthful_without_credentials():
     response = client().get("/api/health")
     assert response.status_code == 200
     body = response.json()
-    assert body["simulation_available"] is False
+    assert body["simulation_available"] is True
+    assert body["stage"] == "simulation"
     assert body["research_available"] is False
     assert body["ai_credentials_configured"] is False
 
@@ -38,7 +39,8 @@ def test_local_browser_origins_only():
     assert "access-control-allow-origin" not in denied.headers
 
 
-def test_openapi_contains_future_contracts_without_fake_routes():
+def test_openapi_contains_simulation_route_and_future_contracts():
     document = client().get("/openapi.json").json()
     assert "SimulationResult" in document["components"]["schemas"]
-    assert "/api/simulations" not in document["paths"]
+    assert "/api/simulations" in document["paths"]
+    assert "SimulationDiagnostics" in document["components"]["schemas"]

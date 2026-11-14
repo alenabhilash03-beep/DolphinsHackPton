@@ -41,6 +41,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/simulations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Simulate
+         * @description Run the reviewed one-compartment model without an LLM call.
+         */
+        post: operations["simulate_api_simulations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -219,16 +239,16 @@ export interface components {
             service: "hypothesim-api";
             /**
              * Simulation Available
-             * @default false
+             * @default true
              * @constant
              */
-            simulation_available: false;
+            simulation_available: true;
             /**
              * Stage
-             * @default foundation
+             * @default simulation
              * @constant
              */
-            stage: "foundation";
+            stage: "simulation";
             /**
              * Status
              * @default ok
@@ -466,6 +486,24 @@ export interface components {
             /** Target Site Concentration Nm */
             target_site_concentration_nM: number[];
         };
+        /** SimulationDiagnostics */
+        SimulationDiagnostics: {
+            /** Absolute Tolerance */
+            absolute_tolerance: number;
+            /** Event Boundaries H */
+            event_boundaries_h: number[];
+            /** Output Point Count */
+            output_point_count: number;
+            /** Relative Tolerance */
+            relative_tolerance: number;
+            /**
+             * Solver Method
+             * @constant
+             */
+            solver_method: "Radau";
+            /** Total Solver Knots */
+            total_solver_knots: number;
+        };
         /** SimulationRequest */
         SimulationRequest: {
             /** Client Revision */
@@ -484,6 +522,7 @@ export interface components {
             configuration: components["schemas"]["ExperimentConfig"];
             /** Configuration Hash */
             configuration_hash: string;
+            diagnostics: components["schemas"]["SimulationDiagnostics"];
             /** Model Version */
             model_version: string;
             /** Result Id */
@@ -599,6 +638,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    simulate_api_simulations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SimulationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimulationResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

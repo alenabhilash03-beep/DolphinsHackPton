@@ -310,6 +310,15 @@ class ScenarioSeries(Contract):
     metrics: ScenarioMetrics
 
 
+class SimulationDiagnostics(Contract):
+    solver_method: Literal["Radau"]
+    relative_tolerance: Positive
+    absolute_tolerance: Positive
+    total_solver_knots: Annotated[int, Field(ge=2)]
+    event_boundaries_h: Annotated[list[Nonnegative], Field(min_length=2)]
+    output_point_count: Annotated[int, Field(ge=2, le=5000)]
+
+
 class SimulationResult(Contract):
     result_id: Identifier
     client_revision: Annotated[int, Field(ge=0)]
@@ -319,6 +328,7 @@ class SimulationResult(Contract):
     configuration: ExperimentConfig
     time_h: Annotated[list[Nonnegative], Field(min_length=2)]
     scenarios: Annotated[list[ScenarioSeries], Field(min_length=1, max_length=3)]
+    diagnostics: SimulationDiagnostics
     warnings: list[str]
 
     @model_validator(mode="after")
@@ -332,6 +342,10 @@ class SimulationResult(Contract):
             raise ValueError("Result scenarios must match the configuration")
         if any(len(values) != len(self.time_h) for s in self.scenarios for values in (s.central_concentration_nM, s.target_site_concentration_nM, s.occupancy)):
             raise ValueError("All series must align with the common timeline")
+        if self.diagnostics.output_point_count != len(self.time_h):
+            raise ValueError("Diagnostic point count must match the common timeline")
+        if any(t not in self.time_h for t in self.diagnostics.event_boundaries_h):
+            raise ValueError("All event boundaries must appear in the common timeline")
         return self
 
 
@@ -361,8 +375,8 @@ class DrugProfile(Contract):
 class HealthResponse(Contract):
     status: Literal["ok"] = "ok"
     service: Literal["hypothesim-api"] = "hypothesim-api"
-    stage: Literal["foundation"] = "foundation"
-    simulation_available: Literal[False] = False
+    stage: Literal["simulation"] = "simulation"
+    simulation_available: Literal[True] = True
     research_available: Literal[False] = False
     ai_credentials_configured: bool
     tracing_credentials_configured: bool

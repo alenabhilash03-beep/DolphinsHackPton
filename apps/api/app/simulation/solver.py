@@ -3,6 +3,7 @@
 from bisect import bisect_right
 from dataclasses import dataclass
 from math import exp, expm1, isfinite
+from time import perf_counter
 from typing import Any
 
 import numpy as np
@@ -10,6 +11,7 @@ from scipy.integrate import solve_ivp
 
 from app.schemas.contracts import BindingParameters
 from app.simulation.pk import PKSegment, PKTrajectory
+from app.simulation.registry import SimulationLimitError
 from app.simulation.units import _finite
 
 RTOL = 1e-6
@@ -69,6 +71,7 @@ def solve_binding(
     initial_occupancy: float = 0,
     rtol: float = RTOL,
     atol: float = ATOL,
+    deadline: float | None = None,
 ) -> BindingTrajectory:
     if not isinstance(pk, PKTrajectory) or not isinstance(binding, BindingParameters):
         raise TypeError("Validated PKTrajectory and BindingParameters are required")
@@ -86,7 +89,14 @@ def solve_binding(
     kon = binding.association_nM_inv_h_inv
     koff = binding.dissociation_h_inv
     for pk_segment in pk.segments:
+        if deadline is not None and perf_counter() > deadline:
+            raise SimulationLimitError("Simulation exceeded the runtime budget")
+        calls = 0
         def rhs(t: float, y: list[float]) -> tuple[float, float]:
+            nonlocal calls
+            calls += 1
+            if deadline is not None and calls % 64 == 0 and perf_counter() > deadline:
+                raise SimulationLimitError("Simulation exceeded the runtime budget")
             concentration = alpha * segment_concentration(pk_segment, pk, t)
             derivative = kon * concentration * (1 - y[0]) - koff * y[0]
             return derivative, y[0]

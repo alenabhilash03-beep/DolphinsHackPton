@@ -435,9 +435,9 @@ class DrugProfile(Contract):
 class HealthResponse(Contract):
     status: Literal["ok"] = "ok"
     service: Literal["hypothesim-api"] = "hypothesim-api"
-    stage: Literal["simulation"] = "simulation"
+    stage: Literal["research"] = "research"
     simulation_available: Literal[True] = True
-    research_available: Literal[False] = False
+    research_available: Literal[True] = True
     ai_credentials_configured: bool
     tracing_credentials_configured: bool
     live_ai_verified: Literal[False] = False

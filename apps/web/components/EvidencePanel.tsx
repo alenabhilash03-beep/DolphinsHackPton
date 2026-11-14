@@ -4,7 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import type { EvidenceProfile, ExperimentConfig } from "../lib/contracts";
 
 /** Plain evidence view for the UI team to restyle; never upgrades cache metadata to reviewed data. */
-export function EvidencePanel({ experiment, scenarioId }: { experiment: ExperimentConfig; scenarioId?: string | null }) {
+export function EvidencePanel({ experiment, scenarioId, resultPresent = false }: {
+  experiment: ExperimentConfig; scenarioId?: string | null; resultPresent?: boolean;
+}) {
   const [profile, setProfile] = useState<EvidenceProfile | null>(null);
   const [cacheError, setCacheError] = useState(false);
   useEffect(() => {
@@ -49,6 +51,7 @@ export function EvidencePanel({ experiment, scenarioId }: { experiment: Experime
       {item.provenance === "user_supplied" && <> · unreviewed hypothetical input</>}
     </li>)}</ul>
     <h3>Limits</h3>
-    <ul>{experiment.limitations.map((limit) => <li key={limit}>{limit}</li>)}</ul>
+    <ul>{experiment.limitations.filter((limit) => !(resultPresent && limit === "Configuration fixture only: no simulator has run."))
+      .map((limit) => <li key={limit}>{limit}</li>)}</ul>
   </section>;
 }

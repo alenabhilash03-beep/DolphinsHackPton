@@ -18,7 +18,7 @@ export function Workspace() {
 }
 ```
 
-Pass a stable `ExperimentConfig` object. The hook runs the initial experiment on mount, returns the authoritative `experiment` and `result`, and uses the Next.js same-origin routes. The hook itself has no styling. A Phase 3 agent-prepared experiment can replace `example` later.
+Pass a stable `ExperimentConfig` object. The hook runs the initial experiment on mount, returns the authoritative `experiment` and `result`, and uses the Next.js same-origin routes. The hook itself has no styling. When a research job returns both `experiment` and `result`, pass both to `useExperimentWorkspace(experiment, 600, result)` to load the validated solver result immediately without recomputing it. Mount a new workspace instance for a new research result; later parameter edits still call the direct solver.
 
 Returned values and actions:
 
@@ -100,6 +100,10 @@ npm run build
 ```
 
 The current root page is only an engine preview. The visual UI developer can replace that page and its styles while keeping the hook, generated types, and API routes.
+
+## Research handoff (3C)
+
+`HypothesisWorkspace` in `apps/web/components/HypothesisWorkspace.tsx` is the plain functional flow for natural-language submission. It uses `POST /api/research/jobs`, `GET /api/research/jobs/{id}`, and SSE `/api/research/jobs/{id}/events`; the Next.js proxy is in `apps/web/lib/research-proxy.ts`. The generated `ResearchJob` and `ResearchEvent` types are exported from `apps/web/lib/contracts.ts`. See [the research job contract](RESEARCH_JOBS.md) for status semantics, failure behavior, and interpretation/result linkage. Preserve the result ID check when rendering agent claims after a slider edit.
 
 ## Evidence handoff (3A)
 

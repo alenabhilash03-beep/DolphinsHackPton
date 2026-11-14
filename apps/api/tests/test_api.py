@@ -15,8 +15,8 @@ def test_health_is_truthful_without_credentials():
     assert response.status_code == 200
     body = response.json()
     assert body["simulation_available"] is True
-    assert body["stage"] == "simulation"
-    assert body["research_available"] is False
+    assert body["stage"] == "research"
+    assert body["research_available"] is True
     assert body["ai_credentials_configured"] is False
 
 

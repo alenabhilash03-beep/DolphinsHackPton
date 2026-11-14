@@ -9,3 +9,5 @@ export type ControlAdjustment = components["schemas"]["ControlAdjustment"];
 export type ScenarioConfig = components["schemas"]["ScenarioConfig"];
 export type EvidenceProfile = components["schemas"]["EvidenceProfile"];
 export type LiteratureSearch = components["schemas"]["LiteratureSearch"];
+export type ResearchJob = components["schemas"]["ResearchJob"];
+export type ResearchEvent = components["schemas"]["ResearchEvent"];

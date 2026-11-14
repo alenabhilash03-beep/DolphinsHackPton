@@ -61,6 +61,63 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/research/jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Research
+         * @description Queue one guarded hypothesis; parameter controls never use this endpoint.
+         */
+        post: operations["submit_research_api_research_jobs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/research/jobs/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Research */
+        get: operations["read_research_api_research_jobs__job_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/research/jobs/{job_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Research Events
+         * @description Replay persisted events, then stream new factual progress with reconnection IDs.
+         */
+        get: operations["research_events_api_research_jobs__job_id__events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/research/search": {
         parameters: {
             query?: never;
@@ -370,10 +427,10 @@ export interface components {
             live_ai_verified: false;
             /**
              * Research Available
-             * @default false
+             * @default true
              * @constant
              */
-            research_available: false;
+            research_available: true;
             /**
              * Service
              * @default hypothesim-api
@@ -388,10 +445,10 @@ export interface components {
             simulation_available: true;
             /**
              * Stage
-             * @default simulation
+             * @default research
              * @constant
              */
-            stage: "simulation";
+            stage: "research";
             /**
              * Status
              * @default ok
@@ -634,6 +691,59 @@ export interface components {
             target: string | null;
             /** Unsupported Requests */
             unsupported_requests?: string[];
+        };
+        /** ResearchEvent */
+        ResearchEvent: {
+            /** Created At */
+            created_at: string;
+            /** Event Id */
+            event_id: number;
+            /** Job Id */
+            job_id: string;
+            /** Kind */
+            kind: string;
+            /** Message */
+            message: string;
+        };
+        /** ResearchJob */
+        ResearchJob: {
+            /** Created At */
+            created_at: string;
+            /** Error Code */
+            error_code?: string | null;
+            /** Error Message */
+            error_message?: string | null;
+            experiment?: components["schemas"]["ExperimentConfig"] | null;
+            interpretation?: components["schemas"]["Interpretation"] | null;
+            /** Job Id */
+            job_id: string;
+            parsed?: components["schemas"]["ParsedHypothesis"] | null;
+            /** Previous Experiment Id */
+            previous_experiment_id?: string | null;
+            request: components["schemas"]["HypothesisRequest"];
+            result?: components["schemas"]["SimulationResult"] | null;
+            /**
+             * Retrieval Status
+             * @default not_attempted
+             */
+            retrieval_status: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "running" | "completed" | "unsupported" | "failed";
+            support?: components["schemas"]["SupportAssessment"] | null;
+            /** Tool Calls */
+            tool_calls?: string[];
+            /** Trace Id */
+            trace_id?: string | null;
+            /**
+             * Trace Status
+             * @default not_attempted
+             */
+            trace_status: string;
+            /** Updated At */
+            updated_at: string;
         };
         /** ScenarioConfig */
         ScenarioConfig: {
@@ -891,6 +1001,103 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EvidenceProfile"];
+                };
+            };
+        };
+    };
+    submit_research_api_research_jobs_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HypothesisRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResearchJob"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_research_api_research_jobs__job_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResearchJob"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    research_events_api_research_jobs__job_id__events_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "last-event-id"?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

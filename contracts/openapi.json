@@ -629,8 +629,8 @@
             "type": "boolean"
           },
           "research_available": {
-            "const": false,
-            "default": false,
+            "const": true,
+            "default": true,
             "title": "Research Available",
             "type": "boolean"
           },
@@ -647,8 +647,8 @@
             "type": "boolean"
           },
           "stage": {
-            "const": "simulation",
-            "default": "simulation",
+            "const": "research",
+            "default": "research",
             "title": "Stage",
             "type": "string"
           },
@@ -1317,6 +1317,189 @@
         "title": "ParsedHypothesis",
         "type": "object"
       },
+      "ResearchEvent": {
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "integer"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "job_id",
+          "kind",
+          "message",
+          "created_at"
+        ],
+        "title": "ResearchEvent",
+        "type": "object"
+      },
+      "ResearchJob": {
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "experiment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExperimentConfig"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "interpretation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Interpretation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "parsed": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ParsedHypothesis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "previous_experiment_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Experiment Id"
+          },
+          "request": {
+            "$ref": "#/components/schemas/HypothesisRequest"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SimulationResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "retrieval_status": {
+            "default": "not_attempted",
+            "title": "Retrieval Status",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "unsupported",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "support": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SupportAssessment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tool_calls": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tool Calls",
+            "type": "array"
+          },
+          "trace_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trace Id"
+          },
+          "trace_status": {
+            "default": "not_attempted",
+            "title": "Trace Status",
+            "type": "string"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id",
+          "status",
+          "request",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ResearchJob",
+        "type": "object"
+      },
       "ScenarioConfig": {
         "additionalProperties": false,
         "properties": {
@@ -1865,7 +2048,7 @@
     }
   },
   "info": {
-    "description": "Deterministic scientific simulation API. Research-agent endpoints are not implemented yet.",
+    "description": "Evidence-aware research jobs and deterministic scientific simulation.",
     "title": "Hypothesim API",
     "version": "0.1.0"
   },
@@ -1945,6 +2128,138 @@
           }
         },
         "summary": "Curated Trastuzumab Evidence"
+      }
+    },
+    "/api/research/jobs": {
+      "post": {
+        "description": "Queue one guarded hypothesis; parameter controls never use this endpoint.",
+        "operationId": "submit_research_api_research_jobs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HypothesisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchJob"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Submit Research"
+      }
+    },
+    "/api/research/jobs/{job_id}": {
+      "get": {
+        "operationId": "read_research_api_research_jobs__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchJob"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Research"
+      }
+    },
+    "/api/research/jobs/{job_id}/events": {
+      "get": {
+        "description": "Replay persisted events, then stream new factual progress with reconnection IDs.",
+        "operationId": "research_events_api_research_jobs__job_id__events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "last-event-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Last-Event-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Research Events"
       }
     },
     "/api/research/search": {

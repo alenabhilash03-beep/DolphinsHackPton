@@ -1,6 +1,7 @@
 "use client";
 
-import type { ExperimentConfig } from "../lib/contracts";
+import { useEffect } from "react";
+import type { ExperimentConfig, SimulationResult } from "../lib/contracts";
 import { useExperimentWorkspace } from "../hooks/useExperimentWorkspace";
 import { useSimulationTimeline } from "../hooks/useSimulationTimeline";
 import { ScientificPlot } from "./ScientificPlot";
@@ -9,8 +10,12 @@ import { PreviewControls } from "./PreviewControls";
 import { EvidencePanel } from "./EvidencePanel";
 
 /** Isolated functional preview; product styling belongs to the UI contributor. */
-export function PlotPreview({ initialExperiment }: { initialExperiment: ExperimentConfig }) {
-  const workspace = useExperimentWorkspace(initialExperiment, 600);
+export function PlotPreview({ initialExperiment, initialResult = null, onResultIdChange }: {
+  initialExperiment: ExperimentConfig; initialResult?: SimulationResult | null;
+  onResultIdChange?: (resultId: string | null) => void;
+}) {
+  const workspace = useExperimentWorkspace(initialExperiment, 600, initialResult);
+  useEffect(() => onResultIdChange?.(workspace.result?.result_id ?? null), [workspace.result?.result_id, onResultIdChange]);
   const timeline = useSimulationTimeline(workspace.result);
   return <main style={{ maxWidth: 1100, margin: "0 auto", padding: 24 }}>
     <h1>Hypothesim plot integration preview</h1>
@@ -31,7 +36,7 @@ export function PlotPreview({ initialExperiment }: { initialExperiment: Experime
       <ul>{timeline.readout?.scenarios.map((scenario) => <li key={scenario.scenarioId}>
         {scenario.label}: {scenario.centralConcentrationNM.toFixed(3)} nM central; {(scenario.occupancyFraction * 100).toFixed(2)}% occupied
       </li>)}</ul>
-      <EvidencePanel experiment={workspace.experiment} scenarioId={workspace.selectedScenarioId} />
+      <EvidencePanel experiment={workspace.experiment} scenarioId={workspace.selectedScenarioId} resultPresent={true} />
     </> : <p role="status">{workspace.status === "loading" ? "Calculating simulation…" : "Simulation not loaded."}</p>}
   </main>;
 }

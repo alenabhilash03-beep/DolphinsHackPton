@@ -52,15 +52,21 @@ export class WorkspaceController {
     transport: SimulationTransport,
     debounceMs = 150,
     now: () => number = () => performance.now(),
+    initialResult: SimulationResult | null = null,
   ) {
     this.initialExperiment = initialExperiment;
     this.outputPoints = outputPoints;
     this.transport = transport;
     this.debounceMs = debounceMs;
     this.now = now;
-    this.currentExperiment = initialExperiment;
+    this.currentExperiment = initialResult?.configuration ?? initialExperiment;
+    if (initialResult && initialResult.configuration.experiment_id !== initialExperiment.experiment_id) {
+      throw new Error("The initial result does not belong to the supplied experiment.");
+    }
+    this.latestResult = initialResult;
     this.snapshot = {
-      experiment: initialExperiment, result: null, status: "idle", error: null, busy: false,
+      experiment: initialResult?.configuration ?? initialExperiment, result: initialResult,
+      status: initialResult ? "ready" : "idle", error: null, busy: false,
       pendingEdits: 0, selectedScenarioId: editableScenarioIds(initialExperiment)[0] ?? null,
       lastTransportMs: null, lastEditToResultMs: null,
     };
@@ -93,6 +99,7 @@ export class WorkspaceController {
   start(): Promise<boolean> {
     if (this.started) return Promise.resolve(this.snapshot.status === "ready");
     this.started = true;
+    if (this.latestResult) return Promise.resolve(true);
     return this.runDirect(this.currentExperiment);
   }
   stop(): void {

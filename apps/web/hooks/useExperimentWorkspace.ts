@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useMemo, useSyncExternalStore } from "react";
-import type { ExperimentConfig } from "../lib/contracts";
+import type { ExperimentConfig, SimulationResult } from "../lib/contracts";
 import { adjustAndSimulate, simulate } from "../lib/simulation-client";
 import { editableScenarioIds } from "../lib/workspace-state";
 import { WorkspaceController } from "../lib/workspace-controller";
 
 /** Headless workspace API; pass a stable initialExperiment object. */
-export function useExperimentWorkspace(initialExperiment: ExperimentConfig, outputPoints = 1000) {
+export function useExperimentWorkspace(initialExperiment: ExperimentConfig, outputPoints = 1000, initialResult: SimulationResult | null = null) {
   const controller = useMemo(() => new WorkspaceController(initialExperiment, outputPoints, {
     simulate,
     adjust: adjustAndSimulate,
-  }), [initialExperiment, outputPoints]);
+  }, 150, () => performance.now(), initialResult), [initialExperiment, outputPoints, initialResult]);
   const snapshot = useSyncExternalStore(controller.subscribe, controller.getSnapshot, controller.getSnapshot);
 
   useEffect(() => {

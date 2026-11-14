@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from math import isclose
 import re
-from typing import Literal
+from typing import Callable, Literal
 
 from langchain.agents import create_agent
 from langchain.agents.structured_output import ToolStrategy
@@ -110,7 +110,8 @@ def scope_request(request: HypothesisRequest) -> SupportAssessment | None:
     return None
 
 
-def build_research_agent(model: BaseChatModel, literature: EuropePMCClient | None = None):
+def build_research_agent(model: BaseChatModel, literature: EuropePMCClient | None = None,
+                         on_progress: Callable[[str, str], None] | None = None):
     profile = load_curated_profile()
     client = literature or EuropePMCClient()
     ledger = ToolLedger()
@@ -119,6 +120,8 @@ def build_research_agent(model: BaseChatModel, literature: EuropePMCClient | Non
     def read_reviewed_profile() -> dict:
         """Read the sole allowlisted trastuzumab–HER2 model, parameters, scope, and source IDs."""
         ledger.calls.append("read_reviewed_profile")
+        if on_progress:
+            on_progress("profile", "Reviewed trastuzumab–HER2 profile loaded")
         baseline = profile.experiment.scenarios[0]
         return {
             "profile_id": profile.profile_id, "experiment_id": profile.experiment.experiment_id,
@@ -165,6 +168,8 @@ def build_research_agent(model: BaseChatModel, literature: EuropePMCClient | Non
                 ledger.rejected_source = True
                 raise
         ledger.retrieval_status = "cached_degraded" if degraded else "live"
+        if on_progress:
+            on_progress("literature", "Primary literature identities verified" if not degraded else "Literature provider unavailable; audited bibliographic cache used")
         return {"retrieval_status": ledger.retrieval_status, "records": records,
                 "rule": "Bibliographic verification does not upgrade or change reviewed numerical parameters."}
 
@@ -173,6 +178,8 @@ def build_research_agent(model: BaseChatModel, literature: EuropePMCClient | Non
         """Run the registered three-scenario SciPy model and return result-linked metrics; no LLM arithmetic."""
         ledger.calls.append("simulate_reviewed_comparison")
         ledger.result = run_simulation(SimulationRequest(experiment=profile.experiment, client_revision=0, output_points=600))
+        if on_progress:
+            on_progress("simulation", "Deterministic three-scenario comparison completed")
         return {"experiment_id": profile.experiment.experiment_id, "result_id": ledger.result.result_id,
                 "duration_h": profile.experiment.duration_h, "occupancy_threshold": profile.experiment.occupancy_threshold,
                 "scenarios": [{"scenario_id": series.scenario_id,
@@ -223,7 +230,7 @@ def _interpret(result: SimulationResult, codes: list[str]) -> Interpretation:
         client_revision=result.client_revision, claims=claims,
         evidence_ids=["volume", "clearance", "kon", "koff"],
         assumptions=[item.description for item in result.configuration.assumptions],
-        limitations=list(result.configuration.limitations) + result.warnings,
+        limitations=[item for item in result.configuration.limitations if item != "Configuration fixture only: no simulator has run."] + result.warnings,
         follow_up_experiments=[FOLLOW_UPS[code] for code in dict.fromkeys(codes)],
     )
 
@@ -250,13 +257,14 @@ def run_research(
     literature: EuropePMCClient | None = None,
     settings: Settings | None = None,
     require_remote_trace: bool = False,
+    on_progress: Callable[[str, str], None] | None = None,
 ) -> ResearchOutcome:
     blocked = scope_request(request)
     if blocked:
         return ResearchOutcome(support=blocked)
     settings = settings or Settings()
     profile = load_curated_profile()
-    agent, ledger = build_research_agent(model, literature)
+    agent, ledger = build_research_agent(model, literature, on_progress)
     trace_key = settings.langsmith_api_key.get_secret_value() if settings.langsmith_api_key else ""
     remote_enabled = bool(trace_key and settings.langsmith_tracing)
     if require_remote_trace and not remote_enabled:

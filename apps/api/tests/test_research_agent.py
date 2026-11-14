@@ -82,6 +82,7 @@ def test_primary_agent_calls_retrieval_and_solver_then_links_interpretation():
     assert outcome.support.status == "conditional"
     assert outcome.retrieval_status == "live"
     assert any("censored" in claim for claim in outcome.interpretation.claims)
+    assert all("no simulator has run" not in limit for limit in outcome.interpretation.limitations)
     assert outcome.trace_status == "local_collected"
     assert {"verify_primary_literature", "simulate_reviewed_comparison"} <= set(outcome.trace_tool_names)
 

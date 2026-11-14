@@ -8,13 +8,13 @@ An evidence-aware scientific hypothesis exploration platform.
 
 ## Current progress
 
-**Phases 0–2 and subphases 3A–3B are complete.** The repository has the evidence audit, service skeleton, canonical contracts, exact one-compartment PK, adaptive mass-action binding, baseline-versus-alternative numerical metrics, direct simulation API, a functional technical workspace, an audited trastuzumab evidence registry, and a guarded single LangChain agent. The [3B review](docs/subphase-reviews/3B.md) records the live run and verified remote LangSmith trace.
+**Phases 0–3 are complete.** The repository has the evidence audit, canonical scientific contracts, exact one-compartment PK, adaptive mass-action binding, numerical comparisons, direct simulation API, functional technical workspace, audited trastuzumab evidence registry, and a guarded LangChain agent. Research jobs now connect the hypothesis form to validated experiments, factual progress events, plots, and result-linked interpretation. The [3B review](docs/subphase-reviews/3B.md) records the verified remote LangSmith trace; the [3C review](docs/subphase-reviews/3C.md) records the end-to-end workspace check.
 
 The web preview and API can be run locally now using the commands below. Python computation is independent of the agent; no AI credentials are needed to run the numerical engine.
 
 The [frontend integration handoff](docs/FRONTEND_INTEGRATION.md) documents same-origin simulation routes, a typed client, a headless React workspace hook, linked parameter controls, provenance, and rapid-edit behavior. The separate technical preview route [`/preview/plots`](http://127.0.0.1:3000/preview/plots) contains working controls, Plotly comparisons, a synchronized timeline, and a read-only evidence panel. A separate UI contributor can use these components without keeping the preview's plain styling. The root page remains the engine preview. The [research evidence contract](docs/RESEARCH_EVIDENCE.md) explains the curated profile, bibliographic cache, live search, and their distinct statuses.
 
-The [3B agent contract](docs/RESEARCH_AGENT.md) explains the supported research request, LangChain tools, result validation, and local versus remote trace checks. The agent is callable from Python and its live CLI; the user-facing hypothesis form and research jobs arrive in 3C.
+The [3B agent contract](docs/RESEARCH_AGENT.md) explains the supported research request, LangChain tools, result validation, and local versus remote trace checks. The [research job contract](docs/RESEARCH_JOBS.md) describes the asynchronous API, SSE progress, failure behavior, and frontend handoff.
 
 ## Requirements and installation
 
@@ -46,7 +46,7 @@ In another terminal:
 npm run dev:web
 ```
 
-Open [http://127.0.0.1:3000/preview/plots](http://127.0.0.1:3000/preview/plots) for the functional Phase 2 workspace. It runs the real numerical engine, edits alternative scenarios, and displays two synchronized Plotly graphs. The root page checks the actual API and validates the example through the backend. If the backend is offline, it shows an error and offers retry. Neither page displays invented simulation results.
+Open [http://127.0.0.1:3000/preview/plots](http://127.0.0.1:3000/preview/plots) for the functional Phase 3 workspace. Its form submits a hypothesis to the guarded research agent, shows factual progress, and loads the validated experiment, interpretation, and synchronized Plotly comparison. Sliders rerun the deterministic numerical engine directly. An unsupported or failed research job leaves the existing simulation usable. The root page remains an engine preview.
 
 - API health: [http://127.0.0.1:8000/api/health](http://127.0.0.1:8000/api/health).
 - API reference: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
@@ -117,4 +117,4 @@ The script prints capability status and error categories, not secrets or raw HTT
 
 ## Next development step and when the app becomes visible
 
-**3B is complete**, including a live NVIDIA research run and remote LangSmith trace readback. Subphase 3C will add research jobs and the natural-language workspace flow after the next green light. The real 1N8Z molecular viewer follows in **Phase 4**.
+**Phase 3 is complete.** The next subphase is **4A**, which adds the real 1N8Z trastuzumab Fab–HER2 structure viewer to the workspace. It begins after the next green light.

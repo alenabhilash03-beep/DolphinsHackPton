@@ -1,19 +1,26 @@
-from fastapi import FastAPI, HTTPException, Query
+import asyncio
+
+from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
+from fastapi.responses import StreamingResponse
 
 from app.config import Settings
 from app.research.europe_pmc import EuropePMCClient, LiteratureSearch, RetrievalError
 from app.research.registry import EvidenceProfile, load_evidence_profile
-from app.schemas.contracts import ALL_CONTRACTS, ControlAdjustment, ContractValidation, ExperimentConfig, HealthResponse, SimulationRequest, SimulationResult
+from app.research.jobs import ResearchEvent, ResearchJob, ResearchJobService
+from app.schemas.contracts import ALL_CONTRACTS, ControlAdjustment, ContractValidation, ExperimentConfig, HealthResponse, HypothesisRequest, SimulationRequest, SimulationResult
 from app.simulation.controls import adjust_experiment
 from app.simulation.service import run_simulation
 
 
-def create_app(settings: Settings | None = None, literature_client: EuropePMCClient | None = None) -> FastAPI:
+def create_app(settings: Settings | None = None, literature_client: EuropePMCClient | None = None,
+               job_service: ResearchJobService | None = None) -> FastAPI:
     config = settings or Settings()
     research = literature_client or EuropePMCClient()
-    api = FastAPI(title="Hypothesim API", version="0.1.0", description="Deterministic scientific simulation API. Research-agent endpoints are not implemented yet.")
+    jobs = job_service or ResearchJobService(config)
+    api = FastAPI(title="Hypothesim API", version="0.1.0", description="Evidence-aware research jobs and deterministic scientific simulation.")
+    api.state.research_jobs = jobs
     api.add_middleware(CORSMiddleware, allow_origins=config.hypothesim_cors_origins,
                        allow_credentials=False, allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
 
@@ -64,6 +71,50 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
         except RetrievalError as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
 
+    @api.post("/api/research/jobs", response_model=ResearchJob, status_code=202)
+    def submit_research(request: HypothesisRequest) -> ResearchJob:
+        """Queue one guarded hypothesis; parameter controls never use this endpoint."""
+        try:
+            return jobs.submit(request)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @api.get("/api/research/jobs/{job_id}", response_model=ResearchJob)
+    def read_research(job_id: str) -> ResearchJob:
+        job = jobs.store.get(job_id)
+        if job is None:
+            raise HTTPException(status_code=404, detail="Research job not found")
+        return job
+
+    @api.get("/api/research/jobs/{job_id}/events")
+    async def research_events(job_id: str, last_event_id: str | None = Header(default=None)) -> StreamingResponse:
+        """Replay persisted events, then stream new factual progress with reconnection IDs."""
+        if jobs.store.get(job_id) is None:
+            raise HTTPException(status_code=404, detail="Research job not found")
+        try:
+            cursor = max(0, int(last_event_id or "0"))
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail="Invalid Last-Event-ID") from exc
+
+        async def stream():
+            nonlocal cursor
+            idle = 0
+            while True:
+                events = await asyncio.to_thread(jobs.store.events, job_id, cursor)
+                for event in events:
+                    cursor = event.event_id
+                    yield f"id: {event.event_id}\nevent: progress\ndata: {event.model_dump_json()}\n\n"
+                job = await asyncio.to_thread(jobs.store.get, job_id)
+                if job and job.status in {"completed", "unsupported", "failed"}:
+                    break
+                idle += 1
+                if idle % 30 == 0:
+                    yield ": heartbeat\n\n"
+                await asyncio.sleep(0.5)
+
+        return StreamingResponse(stream(), media_type="text/event-stream",
+                                 headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"})
+
     def openapi() -> dict:
         if api.openapi_schema:
             return api.openapi_schema
@@ -74,6 +125,7 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
             item = model.model_json_schema(ref_template="#/components/schemas/{model}")
             components.update(item.pop("$defs", {}))
             components[model.__name__] = item
+        components["ResearchEvent"] = ResearchEvent.model_json_schema()
         api.openapi_schema = schema
         return schema
 

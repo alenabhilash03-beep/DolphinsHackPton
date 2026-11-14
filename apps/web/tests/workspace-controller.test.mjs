@@ -20,6 +20,22 @@ function response(request, suffix = "") {
   };
 }
 
+test("agent result loads without another simulation and later edits use the direct solver", async () => {
+  const prepared = response({ experiment: example, client_revision: 0 }, "agent");
+  let simulations = 0;
+  let adjustments = 0;
+  const controller = new WorkspaceController(example, 100, {
+    simulate: async (request) => { simulations++; return response(request); },
+    adjust: async (request) => { adjustments++; return response(request, "edited"); },
+  }, 5, () => performance.now(), prepared);
+  assert.equal(await controller.start(), true);
+  assert.equal(simulations, 0);
+  assert.equal(controller.getSnapshot().result.result_id, "result-0agent");
+  assert.equal(await controller.applyControl("binding.affinity_nM", 0.05), true);
+  assert.equal(adjustments, 1);
+  assert.notEqual(controller.getSnapshot().result.result_id, prepared.result_id);
+});
+
 test("rapid same-field edits coalesce to one latest server request", async () => {
   const calls = [];
   const controller = new WorkspaceController(example, 100, {

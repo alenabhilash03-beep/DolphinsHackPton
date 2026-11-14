@@ -18,7 +18,7 @@ The [3B agent contract](docs/RESEARCH_AGENT.md) explains the supported research 
 
 ## Planned additional drug support
 
-The [roadmap now includes Phase 7](docs/IMPLEMENTATION_PLAN.md): arbitrary drug-name assessment, scientific/model eligibility checks, a second reviewed drug profile, a generalized guarded agent, and workspace integration. It is scheduled after 5B reliability and before 5C final integration testing and Phase 6 rehearsal. This expansion is planned beyond the original 36-hour MVP and is not implemented yet. Unsupported drugs will continue to receive explicit limitations; custom assumptions will remain labeled hypothetical.
+The [roadmap now includes Phase 7](docs/IMPLEMENTATION_PLAN.md): arbitrary drug-name assessment, scientific/model eligibility checks, a second reviewed drug profile, a generalized guarded agent, natural-language editing of existing experiments, workspace integration, and a guided molecular interface tour with a residue-inspection sidebar. It is scheduled after 5B reliability and before 5C final integration testing and Phase 6 rehearsal. This expansion is planned beyond the original 36-hour MVP and is not implemented yet. Unsupported drugs will continue to receive explicit limitations; custom assumptions will remain labeled hypothetical.
 
 ## Requirements and installation
 
@@ -131,4 +131,4 @@ The script prints capability status and error categories, not secrets or raw HTT
 
 ## Next development step and when the app becomes visible
 
-**5B is complete.** Research has bounded admission, stoppable deadlines, persisted recovery, and retry. The workspace has a labeled saved-demo fallback and a reproducible local launcher. The [5B review](docs/subphase-reviews/5B.md) records local outage checks and verified live tracing. Next is **7A — drug identity and model eligibility**, then 7B–7D, 5C, and Phase 6.
+**5B is complete.** Research has bounded admission, stoppable deadlines, persisted recovery, and retry. The workspace has a labeled saved-demo fallback and a reproducible local launcher. The [5B review](docs/subphase-reviews/5B.md) records local outage checks and verified live tracing. Next is **7A — drug identity and model eligibility**, then 7B–7E, 5C, and Phase 6.

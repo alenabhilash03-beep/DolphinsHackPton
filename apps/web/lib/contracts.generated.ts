@@ -295,6 +295,15 @@ export interface components {
             /** Title */
             title: string;
         };
+        /** CandidateConflict */
+        CandidateConflict: {
+            /** Parameter */
+            parameter: string;
+            /** Parameter Ids */
+            parameter_ids: string[];
+            /** Reason */
+            reason: string;
+        };
         /** ContractValidation */
         ContractValidation: {
             /** Experiment Id */
@@ -567,6 +576,39 @@ export interface components {
              */
             retrieval_status: "cached";
             structure: components["schemas"]["StructureReference"];
+        };
+        /** EvidenceSearchResult */
+        EvidenceSearchResult: {
+            /** Reasons */
+            reasons?: string[];
+            /** @default null */
+            search: components["schemas"]["LiteratureSearch"] | null;
+            /** Source Handles */
+            source_handles?: {
+                [key: string]: string;
+            };
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "live" | "unavailable";
+        };
+        /** EvidenceSegment */
+        EvidenceSegment: {
+            /** Locator */
+            locator: string;
+            /** Text */
+            text: string;
+        };
+        /** EvidenceSnapshot */
+        EvidenceSnapshot: {
+            /** Document Id */
+            document_id: string;
+            /** Segments */
+            segments: components["schemas"]["EvidenceSegment"][];
+            source: components["schemas"]["PreparationSource"];
+            /** Warnings */
+            warnings?: string[];
         };
         /** EvidenceSource */
         EvidenceSource: {
@@ -1002,6 +1044,37 @@ export interface components {
             unit: string;
             /** Value */
             value: number;
+        };
+        /** ParameterExtractionResult */
+        ParameterExtractionResult: {
+            /** Conflicts */
+            conflicts?: components["schemas"]["CandidateConflict"][];
+            /** Document Id */
+            document_id: string;
+            /** Missing Parameters */
+            missing_parameters?: string[];
+            /** Notes */
+            notes?: string[];
+            /** Parameters */
+            parameters?: components["schemas"]["PreparationParameter"][];
+            /** Rejected Candidates */
+            rejected_candidates?: string[];
+            /**
+             * Runnable
+             * @default false
+             * @constant
+             */
+            runnable: false;
+            /**
+             * Snapshot Sha256
+             * @default null
+             */
+            snapshot_sha256: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "candidates" | "no_values" | "unavailable" | "rejected";
         };
         /** ParsedHypothesis */
         ParsedHypothesis: {
@@ -1443,6 +1516,23 @@ export interface components {
             source_id: string;
             /** Supporting Passage */
             supporting_passage: string;
+        };
+        /** SourceRetrievalResult */
+        SourceRetrievalResult: {
+            /** @default null */
+            document: components["schemas"]["EvidenceSnapshot"] | null;
+            /**
+             * Next Start Block
+             * @default null
+             */
+            next_start_block: number | null;
+            /** Reasons */
+            reasons?: string[];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "retrieved" | "unavailable" | "rejected";
         };
         /** StructureReference */
         StructureReference: {

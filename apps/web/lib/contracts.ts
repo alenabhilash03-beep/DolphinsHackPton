@@ -22,3 +22,8 @@ export type PreparationAnswers = components["schemas"]["PreparationAnswers"];
 export type ResearchPreparation = components["schemas"]["ResearchPreparation"];
 export type PreparationParameter = components["schemas"]["PreparationParameter"];
 export type ModelPreparationRequirements = components["schemas"]["ModelPreparationRequirements"];
+
+export type EvidenceSearchResult = components["schemas"]["EvidenceSearchResult"];
+export type SourceRetrievalResult = components["schemas"]["SourceRetrievalResult"];
+export type EvidenceSnapshot = components["schemas"]["EvidenceSnapshot"];
+export type ParameterExtractionResult = components["schemas"]["ParameterExtractionResult"];

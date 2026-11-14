@@ -13,6 +13,7 @@ from app.research.jobs import ResearchCapacityError, ResearchEvent, ResearchJob,
 from app.research.demo import DemoSnapshot, load_demo
 from app.research.drug_identity import DrugAssessmentService
 from app.schemas.experiment_preparation import PREPARATION_CONTRACTS
+from app.schemas.evidence_extraction import EVIDENCE_EXTRACTION_CONTRACTS
 from app.simulation.capabilities import ModelPreparationRequirements
 from app.schemas.drug_support import DrugAssessmentRequest, DrugAssessmentResponse
 from app.schemas.contracts import ALL_CONTRACTS, ControlAdjustment, ContractValidation, ExperimentConfig, HealthResponse, HypothesisRequest, SimulationRequest, SimulationResult
@@ -156,6 +157,13 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
         for model in [*ALL_CONTRACTS, *PREPARATION_CONTRACTS, ModelPreparationRequirements]:
             item = model.model_json_schema(ref_template="#/components/schemas/{model}")
             components.update(item.pop("$defs", {}))
+            components[model.__name__] = item
+        # New source-result contracts reuse published components without replacing the
+        # serialization schemas of existing literature endpoints with input schemas.
+        for model in EVIDENCE_EXTRACTION_CONTRACTS:
+            item = model.model_json_schema(ref_template="#/components/schemas/{model}")
+            for name, definition in item.pop("$defs", {}).items():
+                components.setdefault(name, definition)
             components[model.__name__] = item
         components["ResearchEvent"] = ResearchEvent.model_json_schema()
         api.openapi_schema = schema

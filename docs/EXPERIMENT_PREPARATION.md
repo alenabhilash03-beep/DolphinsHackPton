@@ -1,6 +1,6 @@
 # Experiment preparation contracts — 7B.1
 
-Status: contracts, model requirements, synthetic examples and tests implemented. Evidence retrieval/extraction is 7B.2; applicability/configuration and persisted clarification are 7B.3; agent orchestration is 7C; workspace integration is 7D. There is no preparation HTTP endpoint or new runnable drug in this chunk.
+Status: contracts, model requirements, synthetic examples and tests implemented. Agent-callable [retrieval/extraction services](EVIDENCE_EXTRACTION.md) are implemented in 7B.2; applicability/configuration and persisted clarification are 7B.3; agent orchestration is 7C; workspace integration is 7D. There is no preparation HTTP endpoint or new runnable drug in this chunk.
 
 ## Agent ownership and tool boundaries
 
@@ -69,4 +69,4 @@ npm run contracts:check
 npm run typecheck
 ```
 
-Next chunk: **7B.2**, bounded agent-callable source retrieval and source-grounded structured parameter extraction with outage/conflict fixtures. Agent orchestration remains in 7C; these services will be called by that agent, not run as a substitute for it.
+7B.2 retrieval/extraction tools are complete. Next chunk: **7B.3**, deterministic applicability/configuration and missing-input resolution. Agent orchestration remains in 7C; these services will be called by that agent, not run as a substitute for it.

@@ -103,6 +103,7 @@ The current root page is only an engine preview. The visual UI developer can rep
 
 ## Research handoff (3C)
 
+
 `HypothesisWorkspace` in `apps/web/components/HypothesisWorkspace.tsx` is the plain functional flow for natural-language submission. It uses `POST /api/research/jobs`, `GET /api/research/jobs/{id}`, and SSE `/api/research/jobs/{id}/events`; the Next.js proxy is in `apps/web/lib/research-proxy.ts`. The generated `ResearchJob` and `ResearchEvent` types are exported from `apps/web/lib/contracts.ts`. See [the research job contract](RESEARCH_JOBS.md) for status semantics, failure behavior, and interpretation/result linkage. Preserve the result ID check when rendering agent claims after a slider edit.
 
 ## Evidence handoff (3A)
@@ -110,3 +111,7 @@ The current root page is only an engine preview. The visual UI developer can rep
 `EvidencePanel` in `apps/web/components/EvidencePanel.tsx` accepts the current `workspace.experiment` and optional `workspace.selectedScenarioId`. It renders source links, parameter provenance, scientific limits, and clearly labeled **cached** Europe PMC bibliographic metadata. The same-origin `/api/research/evidence/trastuzumab` route returns the audited profile and cache; generated TypeScript aliases `EvidenceProfile` and `LiteratureSearch` are exported from `apps/web/lib/contracts.ts`.
 
 Keep the experiment's `review_status` and `provenance` separate from `retrieval_status`. A recent live search does not independently validate a numerical parameter, and a user-edited input remains unreviewed even when the original source is still listed. If the evidence metadata route is unavailable, the panel keeps the current experiment's source links and values visible and marks only the cache status unavailable. See [the research evidence contract](RESEARCH_EVIDENCE.md).
+
+## Structure viewer handoff (4A)
+
+`StructureViewer` in `apps/web/components/StructureViewer.tsx` is a client component with no simulation props. Keep it mounted outside any result-keyed subtree to preserve the camera during control edits or research completion. It uses local `/structures/1N8Z.pdb` and `/vendor/3Dmol-2.5.5.min.js` assets, with chain identities and colors defined in the component. Its controls can be restyled independently. The panel documents the Fab/soluble HER2 scope and the geometric meaning of the interface selection. See the [4A review](subphase-reviews/4A.md) for asset provenance and verification.

@@ -8,7 +8,7 @@ An evidence-aware scientific hypothesis exploration platform.
 
 ## Current progress
 
-**Phases 0–3 are complete.** The repository has the evidence audit, canonical scientific contracts, exact one-compartment PK, adaptive mass-action binding, numerical comparisons, direct simulation API, functional technical workspace, audited trastuzumab evidence registry, and a guarded LangChain agent. Research jobs now connect the hypothesis form to validated experiments, factual progress events, plots, and result-linked interpretation. The [3B review](docs/subphase-reviews/3B.md) records the verified remote LangSmith trace; the [3C review](docs/subphase-reviews/3C.md) records the end-to-end workspace check.
+**Phases 0–3 and subphase 4A are complete.** The repository has the evidence audit, canonical scientific contracts, exact one-compartment PK, adaptive mass-action binding, numerical comparisons, direct simulation API, functional technical workspace, audited trastuzumab evidence registry, and a guarded LangChain agent. Research jobs now connect the hypothesis form to validated experiments, factual progress events, plots, and result-linked interpretation. The [3B review](docs/subphase-reviews/3B.md) records the verified remote LangSmith trace; the [3C review](docs/subphase-reviews/3C.md) records the end-to-end workspace check.
 
 The web preview and API can be run locally now using the commands below. Python computation is independent of the agent; no AI credentials are needed to run the numerical engine.
 
@@ -117,4 +117,4 @@ The script prints capability status and error categories, not secrets or raw HTT
 
 ## Next development step and when the app becomes visible
 
-**Phase 3 is complete.** The next subphase is **4A**, which adds the real 1N8Z trastuzumab Fab–HER2 structure viewer to the workspace. It begins after the next green light.
+**4A is complete.** The workspace now includes the cached experimental 1N8Z structure with chain controls, surfaces, interface highlighting, residue inspection, and camera controls. The [4A review](docs/subphase-reviews/4A.md) records verification and scientific scope. Next is **4B**, the primary hypothesis walkthrough with metric comparisons and evidence presentation, after the next green light.

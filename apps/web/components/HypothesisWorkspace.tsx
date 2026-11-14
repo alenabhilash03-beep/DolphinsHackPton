@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import type { ExperimentConfig, ResearchEvent, ResearchJob, SimulationResult } from "../lib/contracts";
 import { PlotPreview } from "./PlotPreview";
+import { StructureViewer } from "./StructureViewer";
 
 const PRIMARY = "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const TERMINAL = new Set(["completed", "unsupported", "failed"]);
@@ -139,6 +140,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
       </section>}
       {job?.interpretation && !interpretation && <p>The agent explanation applies to the original research result. Adjusted curves need a new interpretation.</p>}
     </section>
+    <StructureViewer />
     <PlotPreview key={prepared?.result.result_id ?? "fallback"} initialExperiment={visibleExperiment}
       initialResult={prepared?.result} onResultIdChange={setShownResultId} />
   </div>;

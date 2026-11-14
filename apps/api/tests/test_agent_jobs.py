@@ -102,3 +102,14 @@ def test_another_app_import_does_not_interrupt_a_live_local_job(tmp_path):
         assert second.read(job.job_id).status in {'queued','running'}
         gate.set();assert wait(first,job.job_id).status=='completed'
     finally:gate.set();first.close();second.close()
+
+
+def test_provider_read_timeout_is_reported_without_private_exception_payload(tmp_path):
+    from requests.exceptions import ReadTimeout
+    queue=AgentQueue(FakeService(tmp_path,error=ReadTimeout('PRIVATE provider request')))
+    try:
+        job=wait(queue,queue.submit(None).job_id)
+        assert job.status=='failed' and job.error_code=='timeout'
+        assert 'time limit' in job.error_message
+        assert 'PRIVATE' not in job.model_dump_json()
+    finally:queue.close()

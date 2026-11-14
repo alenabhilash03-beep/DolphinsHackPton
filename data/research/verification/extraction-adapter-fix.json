@@ -1,0 +1,19 @@
+{
+  "check": "live NVIDIA extraction of the same failed abstract snapshot",
+  "status": "no_values",
+  "document_id": "14cd64d4aa1642fdaea86139057efbeb",
+  "source_kind": "abstract",
+  "candidate_count": 0,
+  "rejected_candidate_count": 0,
+  "route": "hypothetical_iv_bolus",
+  "adapter": "single typed extraction data tool call; notes-only normalization",
+  "no_simulation_run": true,
+  "original_failed_job": "61d9bca31d62493c98ba2906f67235d2",
+  "original_trace_id": "01a1dbec-b9e7-73cc-8de8-50093326e352",
+  "verified_original_failures": [
+    "NVIDIA adapter fallback rejected legacy guided_json fields",
+    "a later ChatNVIDIA read timeout ended the overall run"
+  ],
+  "additional_extraction_format_fix": "Normalize a scalar note to a one-item unverified note list; numerical fields, units, relations and source passages retain strict validation.",
+  "scope": "Extraction transport and error/route messaging only. No new bolus comparison or reviewed drug parameters were introduced."
+}

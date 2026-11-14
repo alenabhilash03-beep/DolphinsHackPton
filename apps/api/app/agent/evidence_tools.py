@@ -1,4 +1,5 @@
 """Agent-callable 7B.2 tools. Generalized agent orchestration is the separate 7C chunk."""
+from typing import Literal
 from langchain_core.tools import tool
 from app.research.parameter_extraction import ParameterResearchService
 from app.schemas.experiment_preparation import PreparationRequest
@@ -8,7 +9,7 @@ def build_evidence_tools(service: ParameterResearchService | None = None):
     session = service or ParameterResearchService()
 
     @tool
-    def search_hypothesis_evidence(request: PreparationRequest, focus: str = 'binding') -> dict:
+    def search_hypothesis_evidence(request: PreparationRequest, focus: Literal['binding','pk','exposure'] = 'binding') -> dict:
         """Search Europe PMC for this drug/hypothesis. Focus is binding, pk or exposure. Returns source handles; metadata is not numerical evidence."""
         return session.search(request, focus).model_dump(mode='json')
 

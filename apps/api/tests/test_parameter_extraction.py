@@ -384,3 +384,45 @@ def test_tables_in_jats_float_group_are_available(document_service):
     document = retrieve(document_service).document
     assert 'KD nM' in document.segments[0].text
     assert any('KD nM 5' in segment.text for segment in document.segments)
+
+
+def test_nemotron_extraction_uses_data_tool_not_guided_json():
+    from langchain_core.messages import AIMessage
+    from langchain_core.runnables import RunnableLambda
+    from app.research.parameter_extraction import LangChainParameterExtractor
+    class Model:
+        def bind_tools(self,tools,**kwargs):
+            assert tools==[ExtractionProposalBatch]
+            assert kwargs=={'tool_choice':'ExtractionProposalBatch'}
+            return RunnableLambda(lambda messages:AIMessage(content='',tool_calls=[{
+                'name':'ExtractionProposalBatch','args':{'parameters':[proposal()],'notes':[]},'id':'data'}]))
+        def with_structured_output(self,*args,**kwargs):
+            raise AssertionError('Must not invoke the unsupported guided_json adapter')
+    batch=LangChainParameterExtractor(Model())([{'role':'user','content':'fixture'}])
+    assert batch.parameters[0].value==5 and batch.parameters[0].supporting_passage==proposal()['supporting_passage']
+
+
+@pytest.mark.parametrize('kind',['text_only','wrong_name','multiple','invalid_schema'])
+def test_extraction_data_tool_rejects_nonconforming_replies(kind):
+    from langchain_core.messages import AIMessage
+    from langchain_core.runnables import RunnableLambda
+    from app.research.parameter_extraction import LangChainParameterExtractor
+    call={'name':'ExtractionProposalBatch','args':{'parameters':[],'notes':[]},'id':'data'}
+    if kind=='text_only':reply=AIMessage(content='{"parameters":[],"notes":[]}')
+    elif kind=='wrong_name':reply=AIMessage(content='',tool_calls=[dict(call,name='run_simulation')])
+    elif kind=='multiple':reply=AIMessage(content='',tool_calls=[call,dict(call,id='second')])
+    else:reply=AIMessage(content='',tool_calls=[dict(call,args={'parameters':[{'value':'invented'}]})])
+    class Model:
+        def bind_tools(self,*args,**kwargs):return RunnableLambda(lambda messages:reply)
+    with pytest.raises(ValueError):LangChainParameterExtractor(Model())([])
+
+
+def test_extractor_normalizes_only_non_scientific_note_metadata():
+    from langchain_core.messages import AIMessage
+    from langchain_core.runnables import RunnableLambda
+    from app.research.parameter_extraction import LangChainParameterExtractor
+    class Model:
+        def bind_tools(self,*args,**kwargs):
+            return RunnableLambda(lambda messages:AIMessage(content='',tool_calls=[{
+                'name':'ExtractionProposalBatch','args':{'parameters':[],'notes':'No numeric inputs in these segments.'},'id':'data'}]))
+    assert LangChainParameterExtractor(Model())([]).notes==['No numeric inputs in these segments.']

@@ -2,6 +2,7 @@
 from datetime import datetime, timezone
 from time import monotonic
 from uuid import uuid4
+from requests.exceptions import Timeout as ProviderTimeout
 from app.schemas.execution import (ExecutionEvent, ExecutionSummary, ExperimentSnapshot,
     ParameterSnapshot, ScheduleSnapshot, SolverReceipt, MetricSnapshot, SourceReference)
 from app.simulation.service import _canonical_hash
@@ -24,7 +25,7 @@ def utcnow(): return datetime.now(timezone.utc)
 
 def error_code(exc):
     from app.research.preparation_store import StalePreparation
-    return 'stale' if isinstance(exc,StalePreparation) else 'validation' if isinstance(exc,(ValueError,KeyError)) else 'unavailable'
+    return 'timeout' if isinstance(exc,(TimeoutError,ProviderTimeout)) else 'stale' if isinstance(exc,StalePreparation) else 'validation' if isinstance(exc,(ValueError,KeyError)) else 'unavailable'
 
 def parameter(config, scenario, path, value, unit, comparison='none', reference=None, exists=False):
     by_id={item.evidence_id:item for item in config.evidence}

@@ -10,7 +10,7 @@ from app.schemas.contracts import Contract
 from app.schemas.generalized_agent import AgentTurn, AgentResearchRequest, AgentEditRequest
 from app.research.preparation_store import StalePreparation
 from app.schemas.execution import ExecutionEvent, RunID
-from app.research.execution_ledger import ExecutionLedger
+from app.research.execution_ledger import ExecutionLedger, error_code
 
 class AgentJob(Contract):
     job_id: str
@@ -94,8 +94,10 @@ class AgentQueue:
             job.status='completed'; progress('Turn saved; scientific status: '+job.turn.status)
         except Exception as exc:
             job.status='failed'
-            job.error_code='stale' if isinstance(exc,StalePreparation) else 'validation' if isinstance(exc,ValueError) else 'unavailable'
+            job.error_code=error_code(exc)
             job.error_message='The experiment changed; use the latest result or preparation.' if job.error_code=='stale' else 'Research could not finish. Existing curves are preserved; reload the preparation before retrying.'
+            if job.error_code=='timeout':
+                job.error_message='The AI provider or research time limit was reached. No new result was accepted; existing curves are preserved. Reload the saved preparation before retrying.'
             self.save(job)
         finally: self.slots.release()
 

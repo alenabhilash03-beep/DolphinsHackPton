@@ -2003,7 +2003,8 @@
                   "validation",
                   "stale",
                   "unavailable",
-                  "interrupted"
+                  "interrupted",
+                  "timeout"
                 ],
                 "type": "string"
               },

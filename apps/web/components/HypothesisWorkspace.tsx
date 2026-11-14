@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import type { AgentJob, AgentTurn, AgentResearchRequest, AgentEditRequest, DemoSnapshot, ExperimentConfig, PreparationRecord, PreparationUpdate, SimulationResult, Interpretation } from "../lib/contracts";
-import { RequestEpoch, linkedTurnResult, structureKind } from "../lib/agent-workspace";
+import { RequestEpoch, linkedTurnResult, structureKind, researchRouteNotice } from "../lib/agent-workspace";
 import { PlotPreview } from "./PlotPreview";
 import { StructureViewer } from "./StructureViewer";
 import { VisualizationBoundary } from "./VisualizationBoundary";
@@ -184,6 +184,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
         <label>Scientific hypothesis<textarea required maxLength={12000} value={text} onChange={e=>setText(e.target.value)} rows={4}/></label>
         <div className="form-grid"><label>Drug name<input required maxLength={200} value={drug} onChange={e=>setDrug(e.target.value)}/></label><label>Biological target (optional)<input value={target} onChange={e=>setTarget(e.target.value)}/></label>
           <label>Administration route<select value={route} onChange={e=>setRoute(e.target.value)}><option value="">Unspecified — ask the agent</option><option value="iv_infusion">IV infusion</option><option value="hypothetical_iv_bolus">Hypothetical IV bolus</option><option value="oral">Oral (model assessment only)</option><option value="subcutaneous">Subcutaneous (model assessment only)</option></select></label></div>
+        {researchRouteNotice(drug,route) && <p className="scope-note" role="note">{researchRouteNotice(drug,route)}</p>}
         <label><input type="checkbox" checked={baseline} onChange={e=>setBaseline(e.target.checked)}/> Prepare a baseline experiment first, using compatible evidence and assumptions I explicitly supply.</label>
         <p className="scope-note">Other interventions may need clarification or a subsequent experiment edit. Unsupported models never receive fabricated curves.</p>
         <div className="form-actions"><button className="primary-button" disabled={busy}>{busy?"Research in progress…":"Research hypothesis →"}</button><button type="button" className="quiet-button" onClick={()=>{setDrug("imatinib");setTarget("ABL1");setRoute("hypothetical_iv_bolus");setBaseline(false);setText("How would hypothetical bloodstream imatinib input affect ABL1 occupancy? Research evidence and identify missing PK, binding and target-site exposure data.");}}>Try imatinib research</button>

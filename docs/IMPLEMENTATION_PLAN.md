@@ -754,3 +754,7 @@ Structured execution events and authoritative parameter/configuration snapshots 
 ### 8A.2 outcome
 
 The live investigation panel renders actual stages, tool outcomes/durations, parameter changes/provenance, solver receipts and acceptance states outside the collapsed editor. Browser checks cover real Nemotron editing plus isolated synthetic running/reload/rejection/missing-data/provider-failure paths, with prior curves preserved until full receipt linkage passes. See `docs/INVESTIGATION_PANEL.md` and `docs/subphase-reviews/8A.2.md`. **Keep the plan.** Phase 8A is complete; next is **8B.1 — Grounded synthesis schema and tool**, awaiting its green light.
+
+### Extraction integration repair after 8A.2
+
+A user-reported hypothetical-bolus research failure exposed NVIDIA structured-output fallback incompatibility and a later provider timeout. The extraction adapter now uses a typed data tool call with strict scientific validation and notes-only normalization, timeout classification is explicit, and route guidance distinguishes custom bolus preparation from the reviewed infusion comparison. A live replay on the same cached abstract returned a valid no-values outcome. See `docs/subphase-reviews/extraction-adapter-fix.md`. **Keep the plan**; next remains **8B.1**. This repair does not add an automatic bolus comparison or broaden scientific model support.

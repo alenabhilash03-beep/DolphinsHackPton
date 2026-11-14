@@ -146,7 +146,8 @@ class GeneralizedAgentService:
                 if request.researcher_update: record = prep.revise(request.preparation_id, request.researcher_update)
                 ledger['record'] = record
         def guard(name):
-            if monotonic() > deadline or len(calls) >= 24: raise RuntimeError('Agent tool/time budget exhausted')
+            if monotonic() > deadline: raise TimeoutError('Agent deadline exhausted')
+            if len(calls) >= 24: raise RuntimeError('Agent tool budget exhausted')
             calls.append(name)
             if on_progress: on_progress('Tool requested: '+name)
         def bind(original):
@@ -280,7 +281,7 @@ class GeneralizedAgentService:
         from langchain.agents.middleware import before_model
         @before_model
         def enforce_budget(state, runtime):
-            if monotonic() > deadline: raise RuntimeError('Agent deadline exhausted')
+            if monotonic() > deadline: raise TimeoutError('Agent deadline exhausted')
         agent = create_agent(self._model(), tools=tools, response_format=ToolStrategy(AgentDecision), system_prompt=SYSTEM_PROMPT, middleware=[enforce_budget])
         context = {'mode':'edit' if edit else 'research', 'request':request.model_dump(mode='json'),
             'current_preparation':ledger['record'].model_dump(mode='json') if ledger['record'] else None}
@@ -289,7 +290,7 @@ class GeneralizedAgentService:
             with collect_runs() as collector:
                 state = agent.invoke({'messages':[{'role':'user','content':json.dumps(context)}]},
                     config={'recursion_limit':52,'run_name':'Hypothesim generalized experiment','tags':['hypothesim','phase-7c']})
-        if monotonic() > deadline: raise RuntimeError('Agent deadline exhausted')
+        if monotonic() > deadline: raise TimeoutError('Agent deadline exhausted')
         decision = AgentDecision.model_validate(state['structured_response'])
         result = ledger['result']
         record = ledger['record']

@@ -25,7 +25,9 @@ Return original units and values without conversions. Do not derive kon/koff fro
 or convert a range, inequality or uncertainty interval into an exact value. Mark uncertain relations honestly.
 Keep competing values separately. If no explicit relevant values are present return an empty parameters list.
 Never assign review or applicability status, configure a simulation, execute code or use outside knowledge.
-The output schema is an extraction proposal, not scientific validation."""
+The output schema is an extraction proposal, not scientific validation.
+Return exactly one ExtractionProposalBatch data tool call. Both parameters and notes must be arrays;
+use empty arrays when there is nothing to extract. Do not put free-form text in the notes field."""
 INSTRUCTION_PATTERN = re.compile(r'ignore\s+(?:all\s+|the\s+)?(?:previous|prior|system|instructions)|'
     r'(?:system|assistant)\s*(?:prompt|message)\s*:|'
     r'(?:reveal|print|send|exfiltrate)\s+(?:the\s+)?(?:api\s*key|secret|credentials)', re.I)
@@ -62,10 +64,22 @@ def _scalar_passage(passage: str) -> bool:
 class LangChainParameterExtractor:
     """Inject a LangChain chat model; only a structured-output call, with no tools or code execution."""
     def __init__(self, model):
-        self.runnable = model.with_structured_output(ExtractionProposalBatch)
+        # The hosted Nemotron endpoint rejects the adapter's legacy guided_json fallback.
+        # Use its working tool-calling interface, then validate the single data response locally.
+        self.runnable = model.bind_tools([ExtractionProposalBatch], tool_choice=ExtractionProposalBatch.__name__)
 
     def __call__(self, messages: list[dict]) -> ExtractionProposalBatch:
-        return ExtractionProposalBatch.model_validate(self.runnable.invoke(messages))
+        response = self.runnable.invoke(messages)
+        calls = getattr(response, 'tool_calls', [])
+        if (len(calls) != 1 or calls[0].get('name') != ExtractionProposalBatch.__name__
+                or getattr(response, 'invalid_tool_calls', [])):
+            raise ValueError('Extractor must return exactly one valid extraction data tool call')
+        data = calls[0]['args']
+        # Some tool-capable models emit a single untrusted note instead of a note list.
+        # Normalize that non-scientific metadata only; never coerce values, units or passages.
+        if isinstance(data.get('notes'), str):
+            data = {**data, 'notes': [data['notes']]}
+        return ExtractionProposalBatch.model_validate(data)
 
 
 def configured_extractor() -> LangChainParameterExtractor:

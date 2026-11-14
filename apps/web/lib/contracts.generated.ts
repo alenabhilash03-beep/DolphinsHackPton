@@ -1123,7 +1123,7 @@ export interface components {
             /** Candidate Count */
             candidate_count?: number | null;
             /** Error Code */
-            error_code?: ("validation" | "stale" | "unavailable" | "interrupted") | null;
+            error_code?: ("validation" | "stale" | "unavailable" | "interrupted" | "timeout") | null;
             experiment?: components["schemas"]["ExperimentSnapshot"] | null;
             /** Missing Input Count */
             missing_input_count?: number | null;

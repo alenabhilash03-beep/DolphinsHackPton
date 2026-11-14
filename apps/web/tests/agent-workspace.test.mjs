@@ -52,3 +52,11 @@ test('generic plot recommendations use the current target and drug class neutral
   assert(summary.followUps.some(text=>text.includes('Fixture receptor B')));
   assert(!summary.followUps.some(text=>/HER2|intact-antibody/.test(text)));
 });
+
+test('hypothetical bolus route explains the separate preparation path without changing the choice',async()=>{
+  const {researchRouteNotice}=await import('../lib/agent-workspace.ts');
+  assert.match(researchRouteNotice('Trastuzumab','hypothetical_iv_bolus'),/custom research\/preparation/);
+  assert.match(researchRouteNotice('Herceptin','hypothetical_iv_bolus'),/IV infusion/);
+  assert.equal(researchRouteNotice('trastuzumab','iv_infusion'),null);
+  assert.equal(researchRouteNotice('another drug','hypothetical_iv_bolus'),null);
+});

@@ -19,3 +19,9 @@ export function structureKind(drug: string, target: string): StructureKind {
   if (["imatinib", "chembl941"].includes(name) && ["abl", "abl1", "abl kinase"].includes(site)) return "imatinib";
   return "unavailable";
 }
+
+/** A route choice must not imply that the reviewed infusion preset covers bolus input. */
+export function researchRouteNotice(drug:string,route:string):string|null {
+  if(route!=="hypothetical_iv_bolus" || !["trastuzumab","herceptin"].includes(drug.trim().toLowerCase()))return null;
+  return "The reviewed trastuzumab comparison uses IV infusion. Hypothetical IV bolus follows custom research/preparation and does not automatically reuse the demo parameters or comparison. Choose IV infusion for the reviewed example, or prepare an explicit hypothetical baseline with compatible inputs.";
+}

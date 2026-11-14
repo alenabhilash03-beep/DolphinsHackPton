@@ -78,7 +78,7 @@ class ExecutionSummary(Contract):
     sources_truncated: bool = False
     experiment: ExperimentSnapshot | None = None
     result: SolverReceipt | None = None
-    error_code: Literal['validation','stale','unavailable','interrupted'] | None = None
+    error_code: Literal['validation','stale','unavailable','interrupted','timeout'] | None = None
 
 class ExecutionEvent(Contract):
     schema_version: Literal['1.0'] = '1.0'

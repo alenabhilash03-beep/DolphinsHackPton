@@ -1,12 +1,12 @@
 # Hypothesim — implementation roadmap
 
-Status: Phases 0–4 and subphases 5A–5B, 7A and 7B.1–7B.5 and 7C–7E complete. Phases 5–6 remain planned for the local demo; Phase 7 adds evidence-gated support for additional drugs. Current user-authorized change: plan an arbitrary-drug evidence-to-simulation workflow. 7B.1–7B.3 backend preparation tools, the 7B.4 reference audit and 7B.5 generalization acceptance, 7C generalized agent APIs and 7D workspace integration and 7E molecular inspection are complete; the next implementation chunk is 5C and requires its green light. 7B.4 completed the anticipated evidence-block branch; imatinib is not a second enabled profile. See `docs/subphase-reviews/7B.4.md`.
+Status: Phases 0–4, 5A–5B and 7A–7E are complete, including generalized preparation/research/edit APIs, molecular inspection and the compact workspace console. The user has approved planning Phase 8 in priority order: visible agent execution → scientific synthesis → agent-driven structural analysis → actionable iteration/history → broader drug demonstrations. **The next proposed implementation chunk is 8A.1; it requires a green light.** Then complete Phase 8, 5C and 6A–6B. This planning approval does not authorize implementation. Imatinib remains an evidence-blocked simulation reference, not a second enabled profile.
 
 Canonical repository document: `docs/IMPLEMENTATION_PLAN.md` in `alenabhilash03-beep/DolphinsHackPton`.
 
 ## Execution policy: review after every subphase
 
-This checkpoint applies to every subphase from 0A through 7E, including optional work. It is part of the existing subphase time budget rather than an additional implementation phase. A roadmap revision does not itself authorize implementation of the next subphase.
+This checkpoint applies to every subphase across all roadmap phases, including Phase 8 and optional work. It is part of the existing subphase time budget rather than an additional implementation phase. A roadmap revision does not itself authorize implementation of the next subphase.
 
 At the end of every subphase, before beginning another, Codex will report:
 
@@ -37,6 +37,7 @@ A review that concludes **Keep the plan** does not require a roadmap-only GitHub
 
 | Revision | Trigger | Decision and impact |
 | --- | --- | --- |
+| 2026-11-14 — integrated scientific-agent experience | User prioritized visible experiment execution, stronger synthesis, agent structural tools, actionable iteration, then broader drug demonstrations | Add Phase 8A–8E in that exact order before 5C and Phase 6. Existing capabilities stay implemented; these chunks connect and extend them. Next proposed chunk is 8A.1. Preserve scientific/model gates, per-chunk reviews and green lights, local hosting, and final rehearsal time. Additional effort is outside the original 36-hour estimate. |
 | Initial planning commit | User requested the full roadmap in GitHub and a review after every subphase | Preserve the original technical roadmap and add conditional risk/opportunity reassessment, documented revisions, GitHub commits for agreed changes, and a green-light boundary between chunks. Phase 0 remained unstarted at that historical revision. |
 | 2026-11-14 — drug support expansion | User requested support for additional drug names after clarifying that Phase 5 does not provide it | Add Phase 7A–7D after the reproducible local-demo gates. Accept arbitrary names for assessment, but allow simulations only through reviewed drug/model profiles or explicit hypothetical custom inputs. Budget additional work beyond the original 36 hours; preserve existing subphase IDs and the primary demo. User also selected a local demo package, so hosted deployment is no longer a mandatory Phase 5/6 gate. This revision authorizes planning only. |
 | 2026-11-14 — expansion ordering and scientific visuals | User requested additional drug support after reliability but before final testing, plus paper summaries and clearer playback visuals | Execution order is 5A → 5B → 7A–7D → 5C → 6A–6B. Stable IDs are retained. Extend the existing evidence/agent presentation with cited paper summaries and explicit links to model inputs and plots; related search candidates cannot become reviewed parameters automatically. Implement 5A now under this user request. Use the shared timeline for animation and chart playback without deforming experimental structures. No revised multi-drug support is claimed implemented by this planning change. |
@@ -551,13 +552,68 @@ Phase deliverable: arbitrary-drug research and conditional configuration in supp
 
 Scope cutoff: retain arbitrary-drug preparation as essential. Defer extra connectors, extra curated presets and cosmetic enhancements before weakening evidence/provenance checks or restricting the workflow back to a drug-name allowlist. Newly invented models, unrestricted mechanisms, clinical recommendations and universal drug support remain outside scope. Reassess estimates at each chunk; final testing must include the unregistered-drug path and original demo. Hosting remains optional.
 
-### Phase 5C — Final integration and performance, after 7E; about 2 hours.
+### Phase 8 — Integrated scientific-agent investigation (new planned work)
+
+User-approved priority order: **8A → 8B → 8C → 8D → 8E → 5C → 6A → 6B**. This addresses the gap between the implemented scientific services and a coherent iterative investigator experience. These are planned deliverables, not existing capabilities. Retain the compact result-first workspace and the deterministic simulator independent of the agent.
+
+Provisional additional engineering budget: **16–27 hours** for Phase 8 (8A 2–4, 8B 3–5, 8C 4–6, 8D 4–6, 8E 3–6). These are estimates, not promises or remaining hackathon clock time; the original 36-hour schedule no longer covers the agreed expansion. Reassess at every completed chunk. Preserve at least the existing 5C and 6A–6B budgets; do not consume final integration/rehearsal time silently. Work one chunk at a time and stop for its review and the next green light.
+
+#### 8A — Visible, factual experiment execution (first priority)
+
+Depends on 7C/7D and the compact console. Deliver a reviewable account of what the agent actually did, including configuration and numerical execution. Do not expose private reasoning or simulate tool activity with timers.
+
+| Execution chunk | Concrete tasks / expected files | Interfaces, checks and completion |
+| --- | --- | --- |
+| **8A.1 — Structured execution ledger and experiment snapshots** | Extend `apps/api/app/schemas/generalized_agent.py`, `research/agent_jobs.py` and `agent/generalized.py`, plus generated contracts and targeted tests. Persist ordered tool-start/success/rejection/failure events with run/tool-call IDs, timestamps and elapsed duration. Capture bounded scientific output summaries, source references, and authoritative configured parameters/deltas with units, provenance and configuration hash. Link solver completion to its actual result receipt. Wrap execution so a requested tool cannot appear as a completed tool. Retain existing readable event strings for compatibility. | Additive `AgentJob`/event schemas, usable through existing polling. Test ordering, failures, recoverable rejections, configuration/result linkage, reload persistence, stale jobs, bounded payloads and redaction. Never expose provider secrets, raw prompt/source payloads or arbitrary tool arguments. Deliverable: an API-visible research/edit run showing exactly which parameters were configured and which solver result was returned, including honest failed/no-result paths. No frontend execution theatre or new model in this chunk. |
+| **8A.2 — Live investigation panel** | Add a compact execution panel to `HypothesisWorkspace.tsx` and supporting components/styles. Show actual research stages and individual tool outcomes, source counts, configured parameter cards and baseline/alternative changes. Highlight simulator running/completed states, elapsed time and returned metrics. Keep the pending run distinct from prior displayed curves; reveal results only on validated completion. Make progress discoverable when the hypothesis editor is collapsed. | Consume the structured ledger through current job polling; no invented percentages. Browser checks: successful primary/edit execution, missing-input research, rejected tool, provider failure and reload. Saved demo clearly identifies recorded results; no fake live replay. Deliverable: users can visibly follow research → parameters → actual solver → results. |
+
+#### 8B — One strong, source- and result-linked scientific answer (second priority)
+
+Depends on 8A. Keep authoritative numerical claims deterministic while adding grounded qualitative synthesis.
+
+| Execution chunk | Concrete tasks / expected files | Interfaces, checks and completion |
+| --- | --- | --- |
+| **8B.1 — Grounded synthesis schema and tool** | Extend interpretation schemas and agent interpretation tools with answer-to-hypothesis, evidence findings, disagreement/missing evidence, simulation implications, limitations and proposed next experiments. Use only retrieved passages, source access metadata and accepted result receipts. Let Nemotron synthesize qualitative findings; bind quantitative findings to solver fields and validate source/claim references. Expected files: `agent/generalized.py`, evidence/synthesis service, interpretation contracts and tests. | Reject nonexistent citations, unsupported numeric claims and stale result references. Test abstract-only access, contradictory evidence, no-result research and missing data. Deliverable: a structured scientific answer that distinguishes paper findings, conditional simulation predictions and hypotheses needing experimental validation. |
+| **8B.2 — Unified answer presentation** | Present the direct answer and key solver findings above supporting detail; connect evidence passages/paper summaries to specific plots and parameter records. Remove redundant text and retain access limitations. Show useful evidence-based answers even when no simulation can run. Update console components and result-to-interpretation handling. | Browser acceptance: a completed result, no-result research and a direct slider edit that marks prior synthesis stale. Deliverable: one readable answer with citations and clearly separated research versus simulation evidence. |
+
+#### 8C — Agent-driven structural measurements (third priority)
+
+Depends on 8B. Extend the verified 7E geometry capability into agent tools; this is structural inspection, not a new molecular simulation engine.
+
+| Execution chunk | Concrete tasks / expected files | Interfaces, checks and completion |
+| --- | --- | --- |
+| **8C.1 — Verified structure-analysis tools** | Add server-side structure metadata, partner/interface-contact and selected residue-distance tools for verified assets. Return PDB ID/hash, species/construct, author residue/atom identifiers, heavy-atom distances and cutoff rules. Reuse geometry definitions or prove independent backend/frontend parity. Expected files: new `app/structures/` service, LangChain tools, schemas and parity tests. | Test 1N8Z/1IEP reference distances, alternate conformers, unresolved residues, same-copy/entity restrictions and immutable assets. Unknown pairs return unavailable. Deliverable: actual agent-callable quantitative structural analysis with provenance and matching viewer measurements. |
+| **8C.2 — Agent-to-viewer handoff and structural interpretation** | Let the agent request relevant supported structural measurements and attach justified qualitative context to the answer. Link ledger events and measurement cards to viewer focus/highlight commands. Retain manual inspection and explain when structure cannot answer the hypothesis. | Browser/API checks: agent-measured contact opens the matching residues and distance; repeated focus commands work; unavailable structure leaves research/PK usable. Deliverable: visible agent inspection plus cited coordinate data in the answer. No inference of KD/kon/koff, docking scores, mutation effects or dose-driven coordinate deformation. |
+
+#### 8D — Actionable, persistent iteration (fourth priority)
+
+Depends on 8C. Build on existing immutable turns/results and edit lineage, rather than replacing the validated control path with unrestricted code generation.
+
+| Execution chunk | Concrete tasks / expected files | Interfaces, checks and completion |
+| --- | --- | --- |
+| **8D.1 — Typed next-experiment proposals** | Return actionable proposals with rationale, supported parameter changes, units, expected question tested and base result/configuration references. Add explicit **Run this experiment** controls. Expand language editing through validated structured operations while preserving whole-request coverage, clarification, protected baseline and no-silent-assumption rules. Expected files: edit/proposal schemas, `experimental_edits.py`, agent tools and console recommendation components. | Test proposal-to-config equality, stale bases, unsupported clauses, unchanged-parameter preservation and numerical equivalence to direct controls. New drug/target/model scope requires research. Deliverable: recommendations can trigger real, attributable follow-up experiments against the current result. |
+| **8D.2 — Investigation history and contextual follow-up** | Add a compact history of questions, evidence, parameter changes, parent results and findings. Allow reopening prior results and explicitly continuing from a chosen version; adapt edit-head/branch semantics if required with immutable provenance. Supply bounded scientific context to subsequent agent turns; do not send entire time-series arrays. | Test research → run → direct edit → agent follow-up → reopen/continue, reload persistence, branch/concurrency rules and stale-response guards. Deliverable: users can understand and continue an investigation across multiple iterations without losing the experiment context. |
+
+#### 8E — Convincing broader-drug demonstrations (fifth priority)
+
+Depends on 8D. Generic research/preparation remains essential and independent of curated reference examples.
+
+| Execution chunk | Concrete tasks / expected files | Interfaces, checks and completion |
+| --- | --- | --- |
+| **8E.1 — Additional evidence audit** | Audit one promising additional drug/target for compatible PK, matched binding kinetics, exposure assumptions, units and model applicability; cetuximab–EGFR is a candidate, not an approved selection. Record exact sources, uncertainty and optional structure provenance. Enable a conditional runnable profile only if the audit supports it. | Existing reference-audit gates apply. If evidence is incomplete, complete an honest blocked audit, record gaps and propose a justified replacement or cutoff; never fill measurements to obtain a second runnable drug. Deliverable: an auditable support decision and, only when justified, an additional runnable conditional example. |
+| **8E.2 — Cross-drug and unfamiliar-drug acceptance** | Rehearse the reviewed primary workflow, the additional audit outcome, an unfamiliar name through generic research, explicit custom assumptions, missing-input continuation and unsupported model rejection. Show richer synthesis/structural tools only where the actual evidence supports them. | Distinguish live retrieval from cached demonstrations and synthetic software fixtures from measured values. A successful extra preset alone does not satisfy generalization. Deliverable: a reproducible multi-case demonstration with clear capability boundaries and no fallback to unrelated drug results. |
+
+Phase 8 deliverable: a visible, cited investigation loop connecting agent tool execution, numerical results, bounded structural measurements, actionable next experiments and persistent history. Arbitrary-drug research is supported; universal automatic scientific simulation is not promised.
+
+Hackathon cutoffs: preserve the exact priority order and complete acceptance for each chunk before starting the next. If time is constrained, stop at a verified boundary, document/defer remaining chunks with the user, and move to 5C/rehearsal. Defer extra source connectors, additional aesthetic work, extra curated drugs beyond the bounded audit and broader language forms before weakening provenance or final testing. New biological models, molecular dynamics/docking and public hosting remain outside this expansion.
+
+### Phase 5C — Final integration and performance, after Phase 8; about 2 hours.
 
 | Subphase | Tasks and files | Interface, verification, and completion |
 | --- | --- | --- |
 | 5C — End-to-end and performance checks; about 2 hours | Implement focused browser/API integration tests and profile chart updates, solver latency, memory, and rendering. | Core test matrix passes on the actual demonstration machine and browser. |
 
-Test the original antibody workflow, reviewed reference profiles, research-derived unregistered-drug preparation, missing-input resumption and unsupported requests. This gate precedes the Phase 6 feature freeze; no additional drug work should start during rehearsal.
+Test the original antibody workflow, reviewed reference profiles, research-derived unregistered-drug preparation, missing-input resumption and unsupported requests, plus the Phase 8 execution ledger, synthesis/citation linkage, structural handoff, proposals and investigation history. This gate precedes the Phase 6 feature freeze; no additional drug work should start during rehearsal.
 
 ### Phase 6, hours 30–36, freezes and rehearses the release. No new features.
 
@@ -653,11 +709,11 @@ The primary demo should take roughly four minutes:
 9. Briefly show that an unsupported drug produces a limitation response.
 Prepare a saved experiment containing the exact configuration, reviewed evidence, structure asset, model version, and expected metrics. The fallback must remain interactive and clearly identify saved research. The live LangChain integration should also have a verified trace available for inspection.
 
-Phases 0–4 are complete. The next execution unit is 5C; 7A identity/eligibility and the 5B local resilience gate are complete. Phase 7 is agreed planned scope; no later Phase 7 implementation begins without its subphase green light.
+Phases 0–4, 5A–5B and Phase 7 are complete. Phase 8 is now agreed planned scope; **8A.1** is the next proposed implementation unit and awaits its green light.
 
 ## Current execution order (revision 2026-11-14)
 
-Completed: Phases 0–4, 5A–5B, 7A and 7B.1–7B.5 and 7C–7E. Remaining: **5C → 6A → 6B**. The revised Phase 7 planning baseline after 7A is 21–33 hours, including the now-completed 7B.1–7B.5; the original 36-hour MVP estimate does not cover this expansion. Final rehearsal follows all agreed feature work.
+Completed: Phases 0–4, 5A–5B, 7A and 7B.1–7B.5 and 7C–7E. Remaining: **8A.1 → 8A.2 → 8B.1 → 8B.2 → 8C.1 → 8C.2 → 8D.1 → 8D.2 → 8E.1 → 8E.2 → 5C → 6A → 6B**. The revised Phase 7 planning baseline after 7A is 21–33 hours, including the now-completed 7B.1–7B.5; the original 36-hour MVP estimate does not cover this expansion. Final rehearsal follows all agreed feature work.
 
 ### 7B.4 reference outcome
 
@@ -686,3 +742,7 @@ The teammate’s frontend branch is integrated into the functional workspace, in
 ### Compact workspace console outcome
 
 The user-requested usability revision consolidates research, cited papers, simulation and molecular inspection into a compact result-first console with focused views. Endpoint cards retain threshold censoring and scientific limitations; complete inputs and citations remain accessible. See `docs/local-workspace-ui.md` and `docs/subphase-reviews/UI-console.md`. No material scope or sequence revision is required; **5C → 6A → 6B** remain.
+
+### Phase 8 planning approval
+
+The user approved the five priorities in order following the capability review. Phase 8 above is the current forward plan and supersedes earlier “5C next” statements in historical outcome notes. No Phase 8 work is implemented or authorized to begin by this planning update; propose **8A.1 — Structured execution ledger and experiment snapshots**, then await its green light.

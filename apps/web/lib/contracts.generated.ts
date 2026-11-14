@@ -504,6 +504,8 @@ export interface components {
             preparation?: components["schemas"]["PreparationRecord"] | null;
             /** Questions */
             questions?: string[];
+            /** Research Papers */
+            research_papers?: components["schemas"]["ResearchPaperReview"][];
             result?: components["schemas"]["SimulationResult"] | null;
             /**
              * Status
@@ -1606,11 +1608,8 @@ export interface components {
              * @constant
              */
             runnable: false;
-            /**
-             * Snapshot Sha256
-             * @default null
-             */
-            snapshot_sha256: string | null;
+            /** Snapshot Sha256 */
+            snapshot_sha256?: string | null;
             /**
              * Status
              * @enum {string}
@@ -2062,6 +2061,23 @@ export interface components {
             trace_status: string;
             /** Updated At */
             updated_at: string;
+        };
+        /**
+         * ResearchPaperReview
+         * @description Actual inspected snapshot and extraction, independent of simulation input selection.
+         */
+        ResearchPaperReview: {
+            /** Document Id */
+            document_id: string;
+            extraction: components["schemas"]["ParameterExtractionResult"];
+            /** Inspected Locators */
+            inspected_locators: string[];
+            source: components["schemas"]["PreparationSource"];
+            /**
+             * Use In Simulation
+             * @enum {string}
+             */
+            use_in_simulation: "not_selected" | "reviewed_reference_separate" | "see_parameter_lineage";
         };
         /** ResearchPreparation */
         ResearchPreparation: {

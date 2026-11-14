@@ -8,6 +8,7 @@ import { VisualizationBoundary } from "./VisualizationBoundary";
 import { DrugSupportPanel } from "./DrugSupportPanel";
 import { PreparationAnswers } from "./PreparationAnswers";
 import { InvestigationPanel } from "./InvestigationPanel";
+import { ResearchPaperReview } from "./ResearchPaperReview";
 import { investigationView } from "../lib/investigation";
 const PRIMARY="Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const STORAGE="hypothesim-agent-job-v1";
@@ -196,6 +197,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
       {message && !job && <p role="alert">{message}</p>}
     </section>
     <InvestigationPanel job={job} submitting={submitting} saved={saved} displayedResult={shown} config={visible} message={message}/>
+    <ResearchPaperReview papers={turn?.research_papers ?? []}/>
     {(record || turn?.questions?.length || (explanation && !currentInterpretation)) ? <section className="research-panel" aria-label="Research continuation">
       {turn?.questions?.length ? <section aria-label="Agent questions"><h3>What is needed next</h3><ul>{turn.questions.map(q=><li key={q}>{q}</li>)}</ul></section>:null}
       {record && <PreparationAnswers key={`${record.preparation.preparation_id}:${record.preparation.revision}`} record={record} busy={!!busy} onContinue={continueResearch} onReload={()=>void reloadPreparation()}/>}

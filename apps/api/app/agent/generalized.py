@@ -19,7 +19,7 @@ from app.research.agent_turn_store import AgentTurnStore
 from app.research.experimental_edits import apply_edit
 from app.research.preparation_store import StalePreparation
 from app.schemas.contracts import HypothesisRequest, SimulationRequest, SimulationResult, Interpretation, PaperSummary
-from app.schemas.generalized_agent import AgentDecision, AgentTurn
+from app.schemas.generalized_agent import AgentDecision, AgentTurn, ResearchPaperReview
 from app.schemas.execution import ExecutionSummary
 from app.research.execution_ledger import ExecutionLedger, error_code
 from app.simulation.service import _canonical_hash
@@ -38,8 +38,21 @@ Missing measurements, identity, context or unsupported models require a needs_in
 response, using the preparation questions. Do not force a result. A structured baseline is only authorized
 when explicitly specified by the request; otherwise clarify the experimental intervention before configuring.
 For the reviewed primary question only, prepare_reviewed_comparison supplies its audited reference.
-When reviewed_comparison_available is true, use that tool first, then simulate_current_comparison and
-interpret_current_result. Its source-backed inputs are already audited; do not reconstruct that preset.
+When reviewed_comparison_available is true, FIRST start/read the preparation, search the literature,
+retrieve relevant source text, and call extract_cited_parameters. Research is required even for this demo.
+When reviewed_reference_papers are supplied, first search those exact PMIDs (one search call per PMID),
+then retrieve and extract both sources. These are citation leads, not new parameter evidence. Without
+reference leads search pk and binding, preferably in one tool-call batch. Choose sources relevant to the hypothesis and
+prefer accessible quantitative PK/binding papers over unrelated treatment-outcome papers. Inspect one
+or two sources within the time budget; use exact returned document IDs. If the inspected page has no
+relevant measurements, follow next_start_block or inspect another relevant source when budget allows.
+After at least one valid extraction (candidates or no_values), prepare_reviewed_comparison can supply
+the independently audited comparison, then simulate_current_comparison and interpret_current_result.
+For this reviewed question do NOT configure or update a generic baseline draft; its missing-input form
+does not gate the independently audited comparison. If extraction is rejected, retry that document once
+using the specific validation feedback (or clarify if it still fails). Newly extracted candidates do NOT automatically replace audited inputs. No-values means no scalar
+values in the inspected passages, not no literature exists. Extraction/provider failures must be reported
+and cannot silently fall back to a demo simulation. Do not reconstruct the audited preset.
 Session-bound research tools preserve the original request and resolved identity server-side; never copy
 the request or identity fields into those tool calls. Only choose their remaining scientific arguments.
 For edits: read_current_experiment then apply_requested_edit. Its conservative whole-request parser
@@ -148,6 +161,8 @@ class GeneralizedAgentService:
         ledger = {'record':None, 'config':None, 'result':None, 'interpretation':None}
         calls, questions, changes = [], [], []
         search_available = []
+        paper_reviews = {}
+        extraction_attempts = {}
         deadline = monotonic() + self.settings.research_timeout_s
         base = None
         if edit:
@@ -164,6 +179,14 @@ class GeneralizedAgentService:
                 if record.preparation.request != request.request: raise ValueError('Continuation must retain its original scientific request; start a new preparation for identity/scope changes')
                 if request.researcher_update: record = prep.revise(request.preparation_id, request.researcher_update)
                 ledger['record'] = record
+        reviewed_available = not edit and scope_request(HypothesisRequest(text=text,drug=request.request.drug_name,
+            target=request.request.target,route=request.request.route)) is None
+        def research_ready():
+            return bool(any(search_available) and paper_reviews
+                and all(document_id in paper_reviews for document_id in evidence.documents.documents)
+                and any(p.extraction.status in {'candidates','no_values'} for p in paper_reviews.values())
+                and all(p.extraction.status in {'candidates','no_values'} or extraction_attempts.get(key,0)>=2
+                    for key,p in paper_reviews.items()))
         def guard(name):
             if monotonic() > deadline: raise TimeoutError('Agent deadline exhausted')
             if len(calls) >= 24: raise RuntimeError('Agent tool budget exhausted')
@@ -206,6 +229,19 @@ class GeneralizedAgentService:
                         raise ValueError('Simulation must use this turn configuration and client revision')
                 output = original.invoke(kwargs)
                 if name == 'search_hypothesis_evidence': search_available.append(bool(output['source_handles']))
+                if name == 'extract_cited_parameters':
+                    from app.schemas.evidence_extraction import ParameterExtractionResult
+                    document = evidence.documents.get(kwargs['document_id'])
+                    extraction = ParameterExtractionResult.model_validate(output)
+                    extraction_attempts[document.document_id] = extraction_attempts.get(document.document_id,0)+1
+                    paper_reviews[document.document_id] = ResearchPaperReview(
+                        document_id=document.document_id, source=document.source,
+                        inspected_locators=kwargs.get('locators') or [s.locator for s in document.segments[:8]],
+                        extraction=extraction, use_in_simulation='not_selected')
+                    output = {**output,'retry_remaining':max(0,2-extraction_attempts[document.document_id])
+                        if extraction.status in {'rejected','unavailable'} else 0}
+                    if output['retry_remaining']:
+                        output['next_action']='Retry extract_cited_parameters for this same document once using the validation feedback; no new search is needed.'
                 if name in {'start_experiment_preparation','read_experiment_preparation','update_experiment_preparation'}:
                     from app.schemas.preparation_workflow import PreparationRecord
                     ledger['record'] = PreparationRecord.model_validate(output)
@@ -238,10 +274,14 @@ class GeneralizedAgentService:
             guard('prepare_reviewed_comparison')
             if scope_request(HypothesisRequest(text=text, drug=request.request.drug_name, target=request.request.target,
                     route=request.request.route)) is not None: raise ValueError('This hypothesis is not the reviewed primary comparison')
+            if not research_ready():
+                raise ValueError('Research required before the reviewed comparison: search, retrieve source text and attempt cited extraction for every inspected snapshot, with at least one valid candidates/no_values outcome. An unavailable/rejected extraction alone is not completed research.')
             from app.research.registry import load_curated_profile
             ledger['config'] = load_curated_profile().experiment
             ledger['record'] = None  # A generic draft is not the source of this independently audited preset.
-            return configuration_receipt(ledger['config'])
+            return {**configuration_receipt(ledger['config']),
+                'research_status':'partial' if any(p.extraction.status in {'rejected','unavailable'} for p in paper_reviews.values()) else 'completed',
+                'research_extractions':{p.document_id:p.extraction.status for p in paper_reviews.values()}}
 
         @tool
         def simulate_current_comparison() -> dict:
@@ -281,6 +321,8 @@ class GeneralizedAgentService:
         tools = [read_current_experiment, apply_requested_edit, simulate_current_comparison, interpret_current_result] if edit else [
             *[bind(t) for t in build_evidence_tools(evidence)], *[bind(t) for t in build_preparation_tools(prep) if t.name != "simulate_prepared_experiment"],
             prepare_reviewed_comparison, simulate_current_comparison, interpret_current_result]
+        if reviewed_available:
+            tools = [t for t in tools if t.name not in {'update_experiment_preparation','configure_prepared_experiment'}]
         from threading import RLock
         tool_lock = RLock()
         def serialize(original):
@@ -317,6 +359,28 @@ class GeneralizedAgentService:
         @wrap_model_call
         def retry_model_timeout(model_request, handler):
             nonlocal retries_left
+            if reviewed_available:
+                # Keep the agent on the audited comparison after actual research; generic draft
+                # reconstruction is a different workflow and can consume the whole time budget.
+                available = ({'interpret_current_result'} if ledger['result'] else {'simulate_current_comparison'}
+                    if ledger['config'] else {'start_experiment_preparation'} if ledger['record'] is None else
+                    {'prepare_reviewed_comparison'} if research_ready() else
+                    {'extract_cited_parameters'} if any(p.extraction.status in {'rejected','unavailable'}
+                        and extraction_attempts.get(key,0)<2 for key,p in paper_reviews.items()) else
+                    {'search_hypothesis_evidence',
+                     'retrieve_evidence_source','extract_cited_parameters'})
+                model_request = model_request.override(tools=[t for t in model_request.tools if t.name in available])
+                can_finish = bool(ledger['interpretation'] or (not ledger['config'] and not research_ready() and (
+                    evidence.search_calls>=4 or evidence.extraction_calls>=4
+                    or (evidence.search_calls>=2 and not any(search_available))
+                    or (not research_ready() and any(p.extraction.status in {'rejected','unavailable'}
+                        and extraction_attempts.get(key,0)>=2 for key,p in paper_reviews.items()))
+                    or ('prepare_reviewed_comparison' in calls and ledger['config'] is None)
+                    or (ledger['record'] and ledger['record'].preparation.state in {'unsupported','identity_clarification','source_unavailable'}))))
+                if not can_finish:
+                    # A generic missing-input draft is not a completed research investigation.
+                    # Offer the final decision only after execution or a real research block.
+                    model_request = model_request.override(response_format=None,tool_choice='any')
             try:
                 return handler(model_request)
             except Exception as exc:
@@ -328,8 +392,12 @@ class GeneralizedAgentService:
                 return handler(model_request)
         agent = create_agent(self._model(), tools=tools, response_format=ToolStrategy(AgentDecision), system_prompt=SYSTEM_PROMPT, middleware=[enforce_budget,retry_model_timeout])
         context = {'mode':'edit' if edit else 'research', 'request':request.model_dump(mode='json'),
-            'reviewed_comparison_available':False if edit else scope_request(HypothesisRequest(text=text,drug=request.request.drug_name,target=request.request.target,route=request.request.route)) is None,
+            'reviewed_comparison_available':reviewed_available,
             'current_preparation':ledger['record'].model_dump(mode='json') if ledger['record'] else None}
+        if context['reviewed_comparison_available']:
+            from app.research.registry import load_curated_profile
+            context['reviewed_reference_papers'] = [{'title':s.title,'pmid':s.identifiers['pmid']}
+                for s in load_curated_profile().experiment.sources if s.identifiers.get('pmid')]
         import json
         with tracing_context(enabled=remote, client=client, project_name=settings.langsmith_project):
             with collect_runs() as collector:
@@ -347,6 +415,8 @@ class GeneralizedAgentService:
         elif result is not None: raise ValueError('Agent decision contradicts its numerical result')
         if not edit and not ledger['config'] and record.preparation.state not in {'unsupported','identity_clarification','source_unavailable'} and ('search_hypothesis_evidence' not in calls or (any(search_available) and 'retrieve_evidence_source' not in calls)):
             raise ValueError('Research must actually search and inspect available evidence before concluding')
+        if not edit and evidence.documents.documents and not paper_reviews:
+            raise ValueError('Retrieved sources must undergo cited parameter extraction before concluding')
         if record and not result:
             questions.extend(item.question for item in record.preparation.missing_inputs)
         if not result and not questions:
@@ -360,6 +430,10 @@ class GeneralizedAgentService:
             def names(run): return [run.name] + [n for child in (run.child_runs or []) for n in names(child)]
             if not set(calls) <= set(names(traced)): raise RuntimeError('Remote trace omitted tool spans')
             trace_status = 'remote_verified'
+        for review in paper_reviews.values():
+            review.use_in_simulation = ('reviewed_reference_separate' if result.configuration.mode == 'reviewed_preset'
+                else 'see_parameter_lineage') if result else 'not_selected'
         return AgentTurn(turn_id='turn-'+uuid4().hex, status=decision.status, original_text=text,
+            research_papers=list(paper_reviews.values()),
             preparation=record,result=result,interpretation=ledger['interpretation'],questions=list(dict.fromkeys(questions)),
             applied_changes=changes,parent_result_id=base.result_id if edit else None,tool_calls=calls,trace_id=trace_id,trace_status=trace_status)

@@ -308,6 +308,13 @@
             "title": "Questions",
             "type": "array"
           },
+          "research_papers": {
+            "items": {
+              "$ref": "#/components/schemas/ResearchPaperReview"
+            },
+            "title": "Research Papers",
+            "type": "array"
+          },
           "result": {
             "anyOf": [
               {
@@ -3359,7 +3366,6 @@
                 "type": "null"
               }
             ],
-            "default": null,
             "title": "Snapshot Sha256"
           },
           "status": {
@@ -4702,6 +4708,47 @@
           "updated_at"
         ],
         "title": "ResearchJob",
+        "type": "object"
+      },
+      "ResearchPaperReview": {
+        "additionalProperties": false,
+        "description": "Actual inspected snapshot and extraction, independent of simulation input selection.",
+        "properties": {
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "extraction": {
+            "$ref": "#/components/schemas/ParameterExtractionResult"
+          },
+          "inspected_locators": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Inspected Locators",
+            "type": "array"
+          },
+          "source": {
+            "$ref": "#/components/schemas/PreparationSource"
+          },
+          "use_in_simulation": {
+            "enum": [
+              "not_selected",
+              "reviewed_reference_separate",
+              "see_parameter_lineage"
+            ],
+            "title": "Use In Simulation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_id",
+          "source",
+          "inspected_locators",
+          "extraction",
+          "use_in_simulation"
+        ],
+        "title": "ResearchPaperReview",
         "type": "object"
       },
       "ResearchPreparation": {

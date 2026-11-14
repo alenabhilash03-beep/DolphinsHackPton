@@ -20,6 +20,13 @@ const TOOL_NAMES:Record<string,string> = {
 };
 export const toolLabel=(event:ExecutionEvent)=>TOOL_NAMES[event.tool_name ?? ""] ?? "Scientific tool";
 export const stateLabel=(state:string)=>({started:"Running",succeeded:"Completed",rejected:"Rejected",needs_inputs:"Needs input",unsupported:"Unsupported",failed:"Failed",interrupted:"Interrupted"}[state] ?? state);
+export function stageSummary(attempts:ToolAttempt[],busy:boolean) {
+  if(!attempts.length)return busy?"Not run yet":"Not run";
+  if(attempts.some(t=>!t.outcome))return "Running";
+  const counts=new Map<string,number>();
+  for(const attempt of attempts){const state=attempt.outcome!.state;counts.set(state,(counts.get(state) ?? 0)+1);}
+  return [...counts].map(([state,count])=>`${count} ${stateLabel(state).toLowerCase()}`).join(" · ");
+}
 
 /** Build a view of observed execution only. No timers may advance scientific stages. */
 export function investigationView(job:AgentJob|null) {

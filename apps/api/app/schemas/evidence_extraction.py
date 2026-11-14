@@ -1,7 +1,7 @@
 """Bounded source snapshots and candidate-only extraction contracts."""
 from typing import Annotated, Literal
 
-from pydantic import Field
+from pydantic import Field, PrivateAttr
 
 from app.schemas.contracts import Contract, Identifier
 from app.schemas.experiment_preparation import Digest, PreparationParameter, PreparationSource, Text
@@ -57,6 +57,7 @@ class ParameterProposal(Contract):
 class ExtractionProposalBatch(Contract):
     parameters: Annotated[list[ParameterProposal], Field(max_length=20)]
     notes: Annotated[list[Text], Field(max_length=20)]
+    _format_rejections: list[str] = PrivateAttr(default_factory=list)
 
 
 class CandidateConflict(Contract):

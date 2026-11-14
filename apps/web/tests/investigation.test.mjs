@@ -95,3 +95,12 @@ test('changed values include schedule edits and preserve canonical numbers',()=>
   assert.deepEqual(changedParameters({parameters:[main,{change:'unchanged'}],schedules:[{parameter_evidence:[dose]}]}),[main,dose]);
   assert.equal(scientificNumber(null),'None');assert.equal(scientificNumber(0),'0');assert.equal(scientificNumber(.00001),'1.000e-5');
 });
+
+
+test('mixed stage outcomes show successful and failed attempts instead of only the last result',async()=>{
+  const {stageSummary}=await import('../lib/investigation.ts');
+  const attempts=[{outcome:{state:'succeeded'}},{outcome:{state:'failed'}},{outcome:{state:'rejected'}}];
+  assert.equal(stageSummary(attempts,false),'1 completed · 1 failed · 1 rejected');
+  assert.equal(stageSummary([],true),'Not run yet');
+  assert.equal(stageSummary([...attempts,{outcome:null}],true),'Running');
+});

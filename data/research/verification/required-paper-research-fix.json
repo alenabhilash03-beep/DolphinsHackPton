@@ -1,0 +1,149 @@
+{
+  "browser_job_id": "beb87070c499416885eccafbe776d9e2",
+  "status": "completed",
+  "turn_status": "completed",
+  "trace_id": "01a1dc36-a447-7699-82ee-8845a45baafe",
+  "tool_calls": [
+    "start_experiment_preparation",
+    "search_hypothesis_evidence",
+    "search_hypothesis_evidence",
+    "retrieve_evidence_source",
+    "retrieve_evidence_source",
+    "extract_cited_parameters",
+    "extract_cited_parameters",
+    "extract_cited_parameters",
+    "prepare_reviewed_comparison",
+    "simulate_current_comparison",
+    "interpret_current_result"
+  ],
+  "result_id": "sim-262bc1bc1e17aefb3d6995d5",
+  "papers": [
+    {
+      "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal antibody, in patients with a variety of solid tumors.",
+      "url": "https://europepmc.org/article/MED/30467591",
+      "content_kind": "abstract",
+      "retrieval_status": "live",
+      "extraction_status": "rejected",
+      "candidate_count": 0,
+      "candidates": [],
+      "use_in_simulation": "reviewed_reference_separate"
+    },
+    {
+      "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Target Antigen.",
+      "url": "https://europepmc.org/article/MED/27043557",
+      "content_kind": "abstract",
+      "retrieval_status": "live",
+      "extraction_status": "no_values",
+      "candidate_count": 0,
+      "candidates": [],
+      "use_in_simulation": "reviewed_reference_separate"
+    }
+  ],
+  "elapsed_s": 69.89,
+  "remote_tools_verified": true,
+  "private_live_workflow": {
+    "status": "completed",
+    "elapsed_s": 48.43,
+    "trace_id": "01a1dc2b-9d4d-71d6-8341-f4331a4fb768",
+    "trace_status": "remote_verified",
+    "tool_calls": [
+      "start_experiment_preparation",
+      "search_hypothesis_evidence",
+      "search_hypothesis_evidence",
+      "retrieve_evidence_source",
+      "retrieve_evidence_source",
+      "extract_cited_parameters",
+      "extract_cited_parameters",
+      "extract_cited_parameters",
+      "prepare_reviewed_comparison",
+      "simulate_current_comparison",
+      "interpret_current_result"
+    ],
+    "result_id": "sim-262bc1bc1e17aefb3d6995d5",
+    "papers": [
+      {
+        "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Target Antigen.",
+        "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4848947/fullTextXML",
+        "content_kind": "full_text",
+        "status": "candidates",
+        "candidate_count": 1,
+        "use_in_simulation": "reviewed_reference_separate"
+      },
+      {
+        "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal antibody, in patients with a variety of solid tumors.",
+        "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC6394489/fullTextXML",
+        "content_kind": "full_text",
+        "status": "rejected",
+        "candidate_count": 0,
+        "use_in_simulation": "reviewed_reference_separate"
+      }
+    ]
+  },
+  "cached_extraction_check": {
+    "status": "candidates",
+    "elapsed_s": 4.96,
+    "source_title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal antibody, in patients with a variety of solid tumors.",
+    "source_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC6394489/fullTextXML",
+    "retrieval_status": "cached",
+    "content_kind": "full_text",
+    "candidate_count": 2,
+    "candidates": [
+      {
+        "parameter": "pk.clearance_L_h",
+        "value": 0.127,
+        "unit": "L/day"
+      },
+      {
+        "parameter": "pk.volume_L",
+        "value": 2.62,
+        "unit": "L"
+      }
+    ]
+  },
+  "checks": {
+    "backend_tests_passed": 339,
+    "frontend_tests_passed": 45,
+    "typecheck": "passed",
+    "contracts": "passed",
+    "production_build": "passed"
+  },
+  "earlier_full_text_browser_check": {
+    "job_id": "d27f47d1121a41f8a36a005ff649f14c",
+    "status": "completed",
+    "trace_id": "01a1dc2c-dbbe-73ff-9772-39e7da0a6b31",
+    "remote_tools_verified": true,
+    "elapsed_s": 46.98,
+    "papers": [
+      {
+        "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal antibody, in patients with a variety of solid tumors.",
+        "content_kind": "full_text",
+        "status": "candidates",
+        "candidate_count": 2,
+        "candidates": [
+          {
+            "parameter": "pk.clearance_L_h",
+            "value": 0.127,
+            "unit": "L/day"
+          },
+          {
+            "parameter": "pk.volume_L",
+            "value": 2.62,
+            "unit": "L"
+          }
+        ]
+      },
+      {
+        "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Target Antigen.",
+        "content_kind": "full_text",
+        "status": "unavailable",
+        "candidate_count": 0,
+        "candidates": []
+      }
+    ]
+  },
+  "notes": [
+    "The final browser run retrieved abstracts after full-text requests were unavailable. One extraction was rejected and one returned no_values; neither supplies new approved model inputs.",
+    "An earlier live browser check retrieved full text and validated clearance 0.127 L/day and central volume 2.62 L. The final extraction adapter also reproduced these values on an explicitly cached, integrity-checked full-text snapshot.",
+    "The simulation uses separately audited reference parameters. No claim that the final abstract-only research produced a complete new parameter package."
+  ]
+}

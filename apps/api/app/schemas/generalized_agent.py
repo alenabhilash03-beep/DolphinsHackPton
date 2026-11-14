@@ -5,6 +5,16 @@ from app.schemas.contracts import Contract, SimulationResult, Interpretation
 from app.schemas.execution import ExecutionEvent, RunID
 from app.schemas.experiment_preparation import PreparationRequest, Text, Digest
 from app.schemas.preparation_workflow import PreparationUpdate, PreparationRecord
+from app.schemas.experiment_preparation import PreparationSource
+from app.schemas.evidence_extraction import ParameterExtractionResult
+
+class ResearchPaperReview(Contract):
+    """Actual inspected snapshot and extraction, independent of simulation input selection."""
+    document_id: str
+    source: PreparationSource
+    inspected_locators: list[str]
+    extraction: ParameterExtractionResult
+    use_in_simulation: Literal['not_selected', 'reviewed_reference_separate', 'see_parameter_lineage']
 
 class AgentResearchRequest(Contract):
     request: PreparationRequest
@@ -37,6 +47,7 @@ class AgentTurn(Contract):
     preparation: PreparationRecord | None = None
     result: SimulationResult | None = None
     interpretation: Interpretation | None = None
+    research_papers: list[ResearchPaperReview] = Field(default_factory=list)
     questions: list[str] = Field(default_factory=list)
     applied_changes: list[str] = Field(default_factory=list)
     parent_result_id: str | None = None

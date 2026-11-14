@@ -9,9 +9,9 @@ def build_evidence_tools(service: ParameterResearchService | None = None):
     session = service or ParameterResearchService()
 
     @tool
-    def search_hypothesis_evidence(request: PreparationRequest, focus: Literal['binding','pk','exposure'] = 'binding') -> dict:
-        """Search Europe PMC for this drug/hypothesis. Focus is binding, pk or exposure. Returns source handles; metadata is not numerical evidence."""
-        return session.search(request, focus).model_dump(mode='json')
+    def search_hypothesis_evidence(request: PreparationRequest, focus: Literal['binding','pk','exposure'] = 'binding', pmid: str | None = None) -> dict:
+        """Search Europe PMC for this drug/hypothesis. Optionally look up an exact numeric PMID from a cited reference lead, still constrained to the submitted drug. Returns source handles; metadata is not numerical evidence."""
+        return session.search(request, focus, pmid=pmid).model_dump(mode='json')
 
     @tool
     def retrieve_evidence_source(source_handle: str, start_block: int = 0) -> dict:

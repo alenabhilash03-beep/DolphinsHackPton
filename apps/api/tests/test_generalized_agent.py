@@ -72,6 +72,25 @@ class DrivingModel(BaseChatModel):
         return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':name,'args':args,'id':f'call-{self._step}'}]))])
 
 
+PRIMARY_REQUEST={'drug_name':'trastuzumab','target':'HER2','route':'iv_infusion',
+    'original_hypothesis':"Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?"}
+
+class ReviewedResearchModel(DrivingModel):
+    attempt_skip: bool = False
+    def _generate(self,messages,**kwargs):
+        outputs={m.name:json.loads(m.content) for m in messages if isinstance(m,ToolMessage)}
+        source=outputs.get('retrieve_evidence_source',{}).get('document',{})
+        order=([('prepare_reviewed_comparison',{})] if self.attempt_skip else [])+[
+            ('read_experiment_preparation',{'preparation_id':self.resume_id}) if self.resume_id else ('start_experiment_preparation',{}),
+            ('search_hypothesis_evidence',{'focus':'binding'}),
+            ('retrieve_evidence_source',{'source_handle':next(iter(outputs.get('search_hypothesis_evidence',{}).get('source_handles',{})),'pending')}),
+            ('extract_cited_parameters',{'document_id':source.get('document_id','pending')}),
+            ('prepare_reviewed_comparison',{}),('simulate_current_comparison',{}),('interpret_current_result',{}),
+            ('AgentDecision',{'status':'completed'})]
+        name,args=order[self._step];self._step+=1
+        return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':name,'args':args,'id':f'primary-{self._step}'}]))])
+
+
 def research_service(tmp_path, missing=False):
     prep = PreparationService(store=PreparationStore(tmp_path/'prep.sqlite3'), documents=SourceDocumentService(cache_dir=tmp_path/'sources'),assessment=IdentityFixture())
     doc, items = reported_package(prep)
@@ -242,15 +261,13 @@ def test_configuration_handoff_is_compact_and_full_evidence_stays_server_owned(t
     from app.agent.generalized import configuration_receipt
     from app.research.registry import load_curated_profile
     captured={}
-    class InspectingModel(ScriptedModel):
+    class InspectingModel(ReviewedResearchModel):
         def _generate(self,messages,**kwargs):
             for message in messages:
                 if isinstance(message,ToolMessage):captured[message.name]=json.loads(message.content)
             return super()._generate(messages,**kwargs)
-    model=InspectingModel(responses=[AIMessage(content='',tool_calls=[{'name':name,'args':args,'id':str(i)}]) for i,(name,args) in enumerate([
-        ('prepare_reviewed_comparison',{}),('simulate_current_comparison',{}),('interpret_current_result',{}),('AgentDecision',{'status':'completed'})])])
-    prep=PreparationService(store=PreparationStore(tmp_path/'p.sqlite3'))
-    agent=GeneralizedAgentService(prep,SETTINGS,model)
+    agent,_=research_service(tmp_path)
+    agent.model=InspectingModel()
     turn=agent.run(AgentResearchRequest(request={'drug_name':'trastuzumab','target':'HER2','route':'iv_infusion',
         'original_hypothesis':"Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?"}))
     payload=captured['prepare_reviewed_comparison']
@@ -331,11 +348,150 @@ def test_reviewed_profile_resume_preserves_but_does_not_present_unrelated_draft_
     from app.schemas.preparation_workflow import CreatePreparation
     request=AgentResearchRequest(request={'drug_name':'trastuzumab','target':'HER2','route':'iv_infusion',
         'original_hypothesis':"Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?"})
-    prep=PreparationService(store=PreparationStore(tmp_path/'p.sqlite3'),assessment=IdentityFixture())
+    agent,_=research_service(tmp_path)
+    prep=agent.preparation
     draft=prep.create(CreatePreparation(request=request.request))
     request.preparation_id=draft.preparation.preparation_id
-    model=ScriptedModel(responses=[AIMessage(content='',tool_calls=[{'name':name,'args':args,'id':str(i)}]) for i,(name,args) in enumerate([
-        ('prepare_reviewed_comparison',{}),('simulate_current_comparison',{}),('interpret_current_result',{}),('AgentDecision',{'status':'completed'})])])
-    turn=GeneralizedAgentService(prep,SETTINGS,model).run(request)
+    agent.model=ReviewedResearchModel(resume_id=request.preparation_id)
+    turn=agent.run(request)
     assert turn.status=='completed' and turn.preparation is None and not turn.questions
     assert prep.store.read(request.preparation_id)==draft
+
+
+def test_reviewed_comparison_cannot_bypass_real_research_and_extraction(tmp_path):
+    agent,_=research_service(tmp_path)
+    agent.model=ReviewedResearchModel(attempt_skip=True)
+    turn=agent.run(AgentResearchRequest(request=PRIMARY_REQUEST))
+    attempted=[e for e in turn.execution_events if e.tool_name=='prepare_reviewed_comparison' and e.state!='started']
+    assert [e.state for e in attempted]==['rejected','succeeded']
+    assert turn.status=='completed' and turn.research_papers
+    order=turn.tool_calls[1:]
+    assert order.index('search_hypothesis_evidence')<order.index('retrieve_evidence_source')<order.index('extract_cited_parameters')<order.index('prepare_reviewed_comparison')<order.index('simulate_current_comparison')
+    paper=turn.research_papers[0]
+    assert paper.extraction.status=='candidates' and paper.extraction.parameters
+    assert paper.source.snapshot_sha256==paper.extraction.snapshot_sha256
+    assert paper.use_in_simulation=='reviewed_reference_separate'
+    assert agent.turns.read(turn.turn_id).research_papers==turn.research_papers
+    assert turn.result.configuration==load_demo().experiment
+
+
+def test_no_values_is_recorded_honestly_without_inventing_extraction(tmp_path):
+    agent,_=research_service(tmp_path)
+    agent.model=ReviewedResearchModel()
+    agent.extractor=lambda messages:{'parameters':[],'notes':['Synthetic no-values extraction.']}
+    turn=agent.run(AgentResearchRequest(request=PRIMARY_REQUEST))
+    assert turn.status=='completed'
+    assert turn.research_papers[0].extraction.status=='no_values'
+    assert not turn.research_papers[0].extraction.parameters
+    event=next(e for e in turn.execution_events if e.tool_name=='extract_cited_parameters' and e.state!='started')
+    assert event.summary.outcome=='no_values' and event.summary.candidate_count==0
+
+
+@pytest.mark.parametrize('invalid',[False,True])
+def test_unavailable_or_rejected_extraction_cannot_silently_run_preset(tmp_path,invalid):
+    class StopOnRejection(ReviewedResearchModel):
+        def _generate(self,messages,**kwargs):
+            outputs={m.name:json.loads(m.content) for m in messages if isinstance(m,ToolMessage)}
+            if outputs.get('prepare_reviewed_comparison',{}).get('status')=='rejected':
+                return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':'AgentDecision','args':{'status':'needs_inputs'},'id':'stop'}]))])
+            return super()._generate(messages,**kwargs)
+    agent,_=research_service(tmp_path)
+    agent.model=StopOnRejection()
+    if invalid:
+        agent.extractor=lambda messages:{'parameters':[{'parameter':'pk.volume_L','value':12345.,'unit':'L','locator':'invented','supporting_passage':'Invented 12345 L','relation':'exact'}],'notes':[]}
+    else:
+        def broken(messages):raise TimeoutError('Synthetic extraction provider timeout')
+        agent.extractor=broken
+    turn=agent.run(AgentResearchRequest(request=PRIMARY_REQUEST))
+    assert turn.status=='needs_inputs' and turn.result is None
+    assert 'simulate_current_comparison' not in turn.tool_calls
+    assert turn.research_papers[0].extraction.status==('rejected' if invalid else 'unavailable')
+    assert turn.research_papers[0].use_in_simulation=='not_selected'
+    assert any(e.tool_name=='prepare_reviewed_comparison' and e.state=='rejected' for e in turn.execution_events)
+
+
+def test_reviewed_reference_pmid_search_is_live_drug_constrained_and_validated(tmp_path):
+    from app.research.parameter_extraction import ParameterResearchService
+    from app.schemas.experiment_preparation import PreparationRequest
+    queries=[]
+    class Search:
+        def search(self,query,page_size):
+            queries.append(query)
+            return LiteratureSearch(query=query,records=[],hit_count=0,retrieved_at=datetime.now(timezone.utc))
+    service=ParameterResearchService(SourceDocumentService(literature=Search()))
+    request=PreparationRequest.model_validate(PRIMARY_REQUEST)
+    service.search(request,pmid='30467591')
+    assert queries==['"trastuzumab" AND EXT_ID:30467591 AND SRC:MED']
+    with pytest.raises(ValueError,match='PMID'):service.search(request,pmid='30467591 OR cancer')
+    assert len(queries)==1
+
+
+def test_primary_agent_tool_selection_requires_research_then_exposes_only_execution_steps(tmp_path):
+    bindings=[]
+    class Inspect(ReviewedResearchModel):
+        def bind_tools(self,tools,**kwargs):
+            bindings.append({t.name for t in tools if hasattr(t,'name')})
+            return self
+    agent,_=research_service(tmp_path)
+    agent.model=Inspect()
+    turn=agent.run(AgentResearchRequest(request=PRIMARY_REQUEST))
+    assert turn.status=='completed'
+    assert 'prepare_reviewed_comparison' not in bindings[0]
+    assert all(not {'update_experiment_preparation','configure_prepared_experiment'} & b for b in bindings)
+    assert {'prepare_reviewed_comparison'} in bindings
+    assert {'simulate_current_comparison'} in bindings
+    assert {'interpret_current_result'} in bindings
+    assert 'AgentDecision' not in bindings[0]
+    assert 'AgentDecision' in bindings[-1]
+
+
+def test_partial_research_is_explicit_when_a_separate_paper_extraction_fails(tmp_path):
+    captured={}
+    class Partial(ReviewedResearchModel):
+        def _generate(self,messages,**kwargs):
+            outputs=[m for m in messages if isinstance(m,ToolMessage)]
+            search=next((json.loads(m.content) for m in outputs if m.name=='search_hypothesis_evidence'),{})
+            docs=[json.loads(m.content)['document']['document_id'] for m in outputs if m.name=='retrieve_evidence_source']
+            for m in outputs:
+                if m.name=='prepare_reviewed_comparison':captured.update(json.loads(m.content))
+            order=[('start_experiment_preparation',{}),('search_hypothesis_evidence',{}),
+                ('retrieve_evidence_source',{'source_handle':next(iter(search.get('source_handles',{})),'pending')}),
+                ('retrieve_evidence_source',{'source_handle':next(iter(search.get('source_handles',{})),'pending')}),
+                ('extract_cited_parameters',{'document_id':docs[0] if docs else 'pending'}),
+                ('extract_cited_parameters',{'document_id':docs[1] if len(docs)>1 else 'pending'}),
+                ('extract_cited_parameters',{'document_id':docs[1] if len(docs)>1 else 'pending'}),
+                ('prepare_reviewed_comparison',{}),('simulate_current_comparison',{}),('interpret_current_result',{}),('AgentDecision',{'status':'completed'})]
+            name,args=order[self._step];self._step+=1
+            return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':name,'args':args,'id':f'partial-{self._step}'}]))])
+    agent,_=research_service(tmp_path)
+    agent.model=Partial()
+    original=agent.extractor
+    attempted=[]
+    def extractor(messages):
+        attempted.append(True)
+        if len(attempted)>=2:raise TimeoutError('Synthetic provider failure on separate paper')
+        return original(messages)
+    agent.extractor=extractor
+    turn=agent.run(AgentResearchRequest(request=PRIMARY_REQUEST))
+    assert turn.status=='completed' and captured['research_status']=='partial'
+    assert {p.extraction.status for p in turn.research_papers}=={'candidates','unavailable'}
+    assert all(p.use_in_simulation=='reviewed_reference_separate' for p in turn.research_papers)
+    assert turn.result.configuration==load_demo().experiment
+
+
+def test_successful_research_after_retries_cannot_finish_before_simulation(tmp_path):
+    bindings=[]
+    class RetryThenRun(ReviewedResearchModel):
+        def bind_tools(self,tools,**kwargs):
+            bindings.append({t.name for t in tools if hasattr(t,'name')});return self
+        def _generate(self,messages,**kwargs):
+            extractions=[m for m in messages if isinstance(m,ToolMessage) and m.name=='extract_cited_parameters']
+            if self._step==4 and len(extractions)<4:
+                doc=next(json.loads(m.content)['document']['document_id'] for m in messages if isinstance(m,ToolMessage) and m.name=='retrieve_evidence_source')
+                return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':'extract_cited_parameters','args':{'document_id':doc},'id':f'retry-{len(extractions)}'}]))])
+            return super()._generate(messages,**kwargs)
+    agent,_=research_service(tmp_path);agent.model=RetryThenRun()
+    turn=agent.run(AgentResearchRequest(request=PRIMARY_REQUEST))
+    assert turn.status=='completed' and turn.tool_calls.count('extract_cited_parameters')==4
+    assert {'prepare_reviewed_comparison'} in bindings
+    assert {'prepare_reviewed_comparison','AgentDecision'} not in bindings

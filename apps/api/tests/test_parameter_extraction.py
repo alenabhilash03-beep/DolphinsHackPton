@@ -426,3 +426,93 @@ def test_extractor_normalizes_only_non_scientific_note_metadata():
             return RunnableLambda(lambda messages:AIMessage(content='',tool_calls=[{
                 'name':'ExtractionProposalBatch','args':{'parameters':[],'notes':'No numeric inputs in these segments.'},'id':'data'}]))
     assert LangChainParameterExtractor(Model())([]).notes==['No numeric inputs in these segments.']
+
+
+def test_rejected_context_feedback_reaches_next_extraction_without_relaxing_checks(document_service,request_data):
+    doc=retrieve(document_service).document
+    messages_seen=[]
+    def extractor(messages):
+        messages_seen.append(json.loads(messages[-1]['content']))
+        return {'parameters':[proposal(route='iv_infusion' if len(messages_seen)==1 else None)],'notes':[]}
+    service=ParameterResearchService(document_service,extractor)
+    first=service.extract(doc.document_id,request_data,'fixture:X','fixture:Y',locators=['full_text:block-1:0'])
+    assert first.status=='rejected' and not first.parameters
+    assert 'route' in first.rejected_candidates[0]
+    second=service.extract(doc.document_id,request_data,'fixture:X','fixture:Y',locators=['full_text:block-1:0'])
+    assert messages_seen[1]['previous_validation_errors']==first.rejected_candidates
+    assert second.status=='candidates' and second.parameters[0].context.route is None
+    assert second.parameters[0].passages[0].supporting_passage==proposal()['supporting_passage']
+
+
+def test_extraction_output_token_exhaustion_is_distinct_from_no_values(document_service,request_data):
+    from langchain_core.messages import AIMessage
+    from app.research.parameter_extraction import LangChainParameterExtractor
+    class Model:
+        def bind_tools(self,*args,**kwargs):return self
+        def invoke(self,messages):return AIMessage(content='',response_metadata={'finish_reason':'length'})
+    service=ParameterResearchService(document_service,LangChainParameterExtractor(Model()))
+    doc=retrieve(document_service).document
+    result=service.extract(doc.document_id,request_data,'fixture:X','fixture:Y')
+    assert result.status=='unavailable' and not result.parameters
+    assert any('output-token limit' in note for note in result.notes)
+
+
+def test_unknown_null_placeholders_do_not_discard_independent_real_measurements():
+    from langchain_core.messages import AIMessage
+    from app.research.parameter_extraction import LangChainParameterExtractor
+    valid=proposal()
+    unknown={**proposal(parameter='pk.elimination_half_life_h',relation='uncertain'),'value':None,'unit':None}
+    class Model:
+        def bind_tools(self,*args,**kwargs):return self
+        def invoke(self,messages):return AIMessage(content='',tool_calls=[{'name':'ExtractionProposalBatch','args':{'parameters':[valid,unknown],'notes':[]},'id':'data'}])
+    batch=LangChainParameterExtractor(Model())([])
+    assert len(batch.parameters)==1 and batch.parameters[0].value==5.0
+    assert batch.parameters[0].supporting_passage==valid['supporting_passage']
+
+
+@pytest.mark.parametrize('field,value,unit,passage',[
+    ('pk.clearance_L_h',0.544,'L/day','Distribution clearance Q (L/day) 0.544.'),
+    ('pk.volume_L',2.97,'L','Volume of distribution, peripheral compartment Vp (L) 2.97.')])
+def test_distribution_quantities_are_not_mislabeled_as_elimination_or_effective_volume(request_data,field,value,unit,passage):
+    docs=SourceDocumentService()
+    doc=retrieve(docs,pmcid=None,abstract=passage).document
+    item=proposal(parameter=field,value=value,unit=unit,locator='abstract:0',supporting_passage=passage,species=None,experimental_system=None)
+    service=ParameterResearchService(docs,lambda messages:{'parameters':[item],'notes':[]})
+    result=service.extract(doc.document_id,request_data,'fixture:X','fixture:Y')
+    assert result.status=='rejected' and not result.parameters
+    assert 'distribution-only' in result.rejected_candidates[0]
+
+
+def test_original_number_matching_accepts_sentence_punctuation_without_accepting_prefixes():
+    from app.research.parameter_extraction import _contains_number
+    assert _contains_number('The volume (L) was 2.97.',2.97)
+    assert _contains_number('The rate was 2 x 10^-3.',.002)
+    assert not _contains_number('The value was 2.971.',2.97)
+    assert not _contains_number('The value was 2.97.',2.)
+    assert not _contains_number('The value was 2.97.',97.)
+
+
+@pytest.mark.parametrize('include_valid',[True,False])
+def test_bad_proposal_is_rejected_independently_and_never_becomes_no_values(document_service,request_data,include_valid):
+    from langchain_core.messages import AIMessage
+    from app.research.parameter_extraction import LangChainParameterExtractor
+    raw=([proposal()] if include_valid else [])+[proposal(supporting_passage='x'*601)]
+    class Model:
+        def bind_tools(self,*args,**kwargs):return self
+        def invoke(self,messages):return AIMessage(content='',tool_calls=[{'name':'ExtractionProposalBatch','args':{'parameters':raw,'notes':[]},'id':'data'}])
+    doc=retrieve(document_service).document
+    service=ParameterResearchService(document_service,LangChainParameterExtractor(Model()))
+    result=service.extract(doc.document_id,request_data,'fixture:X','fixture:Y',locators=['full_text:block-1:0'])
+    assert result.status==('candidates' if include_valid else 'rejected')
+    assert len(result.parameters)==int(include_valid)
+    assert any('string_too_long' in r for r in result.rejected_candidates)
+    assert '_format_rejections' not in ExtractionProposalBatch.model_json_schema()['properties']
+
+
+def test_ec50_is_not_accepted_as_equilibrium_binding_affinity(request_data):
+    passage='Trastuzumab EC 50 was 0.228 nM.'
+    docs=SourceDocumentService();doc=retrieve(docs,pmcid=None,abstract=passage).document
+    item=proposal(value=.228,locator='abstract:0',supporting_passage=passage,species=None,experimental_system=None)
+    result=ParameterResearchService(docs,lambda messages:{'parameters':[item],'notes':[]}).extract(doc.document_id,request_data,'fixture:X','fixture:Y')
+    assert result.status=='rejected' and not result.parameters
+    assert 'EC50/IC50' in result.rejected_candidates[0]

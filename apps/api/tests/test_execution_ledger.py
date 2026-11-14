@@ -304,8 +304,9 @@ def test_primary_configuration_snapshot_has_baseline_deltas_and_inherited_citati
     primary=load_demo().experiment
     req=AgentResearchRequest(request={'drug_name':'trastuzumab','target':'HER2','route':'iv_infusion',
         'original_hypothesis':"Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?"})
-    model=script([('prepare_reviewed_comparison',{}),('simulate_current_comparison',{}),('interpret_current_result',{}),('AgentDecision',{'status':'completed'})])
-    agent=GeneralizedAgentService(PreparationService(store=PreparationStore(tmp_path/'p.sqlite3')),SETTINGS,model)
+    from test_generalized_agent import research_service, ReviewedResearchModel
+    agent,_=research_service(tmp_path)
+    agent.model=ReviewedResearchModel()
     turn=agent.run(req)
     config=next(e.summary.experiment for e in turn.execution_events if e.summary and e.summary.experiment)
     half=next(p for p in config.parameters if p.parameter=='pk.elimination_half_life_h' and p.scenario_id=='half_life_x3')

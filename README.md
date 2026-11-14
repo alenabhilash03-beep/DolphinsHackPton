@@ -1,12 +1,16 @@
 # Hypothesim
 
-An evidence-aware scientific hypothesis exploration platform. The approved roadmap is in [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md); the scientific specification and source audit are in [docs/model.md](docs/model.md) and [docs/evidence-policy.md](docs/evidence-policy.md).
+An evidence-aware scientific hypothesis exploration platform.
 
-## Current foundation
+## Full development plan
 
-Subphase 0B provides a Next.js starter, FastAPI health/configuration-validation endpoints, authoritative Pydantic contracts, generated TypeScript/OpenAPI/JSON Schema, and a three-scenario example based on 0A. The example is configuration data, not a computed result. Numerical simulation, literature research, plots, and molecular viewers are later subphases.
+**[Read the complete 36-hour implementation plan](docs/IMPLEMENTATION_PLAN.md).** It contains every phase and subphase, dependencies, interfaces, tests, cutoffs, risks, parallel work, and the demo strategy. The scientific specification and source audit are in [docs/model.md](docs/model.md) and [docs/evidence-policy.md](docs/evidence-policy.md). Completed-chunk reviews are in [docs/subphase-reviews](docs/subphase-reviews).
 
-Python computation will remain independent of the agent. No AI credentials are needed to start or test this foundation.
+## Current progress
+
+Subphases **0A, 0B, 1A, and 1B are complete**. The repository has the evidence audit, service skeleton, canonical contracts, exact one-compartment PK, adaptive mass-action binding, and baseline-versus-alternative numerical metrics. The [1B review](docs/subphase-reviews/1B.md) records analytical checks and limits. The example configuration now computes through the Python engine; there is not yet a public simulation API endpoint or a graphing workspace.
+
+The existing web page and health/validation endpoints can be run locally now using the commands below. The scientific plots and live controls arrive in Phase 2, after the 1C simulation API. Python computation is independent of the agent; no AI credentials are needed to run the numerical engine.
 
 ## Requirements and installation
 
@@ -69,7 +73,7 @@ Committed generated files:
 
 After changing schemas or the example, regenerate and review these outputs. `data/examples/contract-experiment.json` is an auditable contract fixture; it is not the Phase 3 runtime drug registry.
 
-Implemented validation includes finite canonical numerical inputs, linked PK/affinity values, nonoverlapping infusion schedules, source and assumption references, reviewed evidence chains, canonical evidence units, conditional scope for assumed inputs, and separation of blocked outcomes from runnable configurations. Model suitability and numerical execution remain later gates.
+Implemented validation includes finite canonical numerical inputs, linked PK/affinity values, nonoverlapping infusion schedules, source and assumption references, reviewed evidence chains, canonical evidence units, conditional scope for assumed inputs, and separation of blocked outcomes from runnable configurations. The numerical engine is implemented in Python; exposing it through a direct API is the next chunk. Runtime model suitability and research remain later gates.
 
 ## Free NVIDIA compatibility check
 
@@ -105,6 +109,6 @@ The [LangSmith setup guide](https://docs.langchain.com/langsmith/create-account-
 
 The script prints capability status and error categories, not secrets or raw HTTP requests. It does not persist credentials or silently switch providers. If credentials or free access are unavailable, record live verification as pending. Health intentionally does not claim this check has passed; a saved dated verification record is separate from current service state.
 
-## Next development step
+## Next development step and when the app becomes visible
 
-Finish the 0B acceptance/review record before starting 1A. The next implementation chunk is units, administration, and analytical PK. Apply the roadmap's review after every subphase and wait for the next green light.
+**1C** will expose the current three-scenario computation through FastAPI. After that, **Phase 2 (subphases 2A–2C, roadmap hours 7–12)** will connect live controls, Plotly graphs, and a synchronized timeline. This is the first interactive scientific workspace. The LangChain research workflow follows in **Phase 3 (hours 12–18)**, and the real 1N8Z molecular viewer in **Phase 4 (hours 18–24)**. These are roadmap estimates, not guarantees. Review the plan after each subphase and wait for the next green light.

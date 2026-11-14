@@ -36,7 +36,7 @@ For the reviewed primary question only, prepare_reviewed_comparison supplies its
 For edits: read_current_experiment then apply_requested_edit. Its conservative whole-request parser
 rejects ambiguity and unsupported clauses. Do not replace or rephrase the user's edit. Parameter-only
 edits need no literature search. Drug/target/route changes require a new research preparation.
-A result requires an actual simulation tool followed by interpret_current_result. Numerical conclusions
+After configuration, call simulate_current_comparison with no arguments, then interpret_current_result. Never copy a full configuration into tool arguments. A result requires these actual tools. Numerical conclusions
 are returned by that tool; never calculate or invent your own. Return only the bounded decision schema
 with a status only. The server supplies all preparation/result IDs from actual tool execution. Occupancy is not clinical efficacy or safety.'''
 
@@ -92,7 +92,7 @@ class GeneralizedAgentService:
         return ChatNVIDIA(model=self.settings.hypothesim_llm_model, api_key=self.settings.nvidia_api_key.get_secret_value(),
             temperature=0, timeout=45, max_completion_tokens=8192, usage_telemetry_enabled=False)
 
-    def run(self, request, *, edit=False, require_remote_trace=False):
+    def run(self, request, *, edit=False, require_remote_trace=False, on_progress=None):
         from app.research.source_documents import SourceDocumentService
         from app.simulation.service import run_simulation
         # Isolated source handles per turn, shared persistent receipts/cache for continuation.
@@ -122,6 +122,7 @@ class GeneralizedAgentService:
         def guard(name):
             if monotonic() > deadline or len(calls) >= 24: raise RuntimeError('Agent tool/time budget exhausted')
             calls.append(name)
+            if on_progress: on_progress('Tool requested: '+name)
         def bind(original):
             def execute(**kwargs):
                 """Execute a session-bound scientific tool with server provenance checks."""
@@ -155,9 +156,11 @@ class GeneralizedAgentService:
                 if name in {'start_experiment_preparation','read_experiment_preparation','update_experiment_preparation'}:
                     from app.schemas.preparation_workflow import PreparationRecord
                     ledger['record'] = PreparationRecord.model_validate(output)
+                    if on_progress: on_progress('Preparation saved: '+ledger['record'].preparation.preparation_id)
                 if name == 'configure_prepared_experiment':
                     from app.schemas.contracts import ExperimentConfig
                     ledger['config'] = ExperimentConfig.model_validate(output['experiment'])
+                    return {'experiment_id':ledger['config'].experiment_id,'configuration_sha256':output['configuration_sha256'],'classification':output['classification'],'next_tool':'simulate_current_comparison'}
                 if name == 'simulate_prepared_experiment': ledger['result'] = SimulationResult.model_validate(output)
                 if name == 'simulate_prepared_experiment':
                     return {'result_id': ledger['result'].result_id, 'experiment_id': ledger['result'].configuration.experiment_id}
@@ -202,7 +205,8 @@ class GeneralizedAgentService:
         def read_current_experiment() -> dict:
             """Read the exact stored experiment/result selected for editing, including scenario IDs and base hash."""
             guard('read_current_experiment')
-            return base.model_dump(mode='json')
+            return {'result_id':base.result_id,'configuration_hash':base.configuration_hash,'client_revision':base.client_revision,
+                'configuration':base.configuration.model_dump(mode='json',include={'experiment_id','drug','target','duration_h','occupancy_threshold','scenarios'})}
 
         @tool
         def apply_requested_edit() -> dict:
@@ -217,7 +221,7 @@ class GeneralizedAgentService:
                 return {'status':'needs_inputs','question':str(exc)}
 
         tools = [read_current_experiment, apply_requested_edit, simulate_current_comparison, interpret_current_result] if edit else [
-            *[bind(t) for t in build_evidence_tools(evidence)], *[bind(t) for t in build_preparation_tools(prep)],
+            *[bind(t) for t in build_evidence_tools(evidence)], *[bind(t) for t in build_preparation_tools(prep) if t.name != "simulate_prepared_experiment"],
             prepare_reviewed_comparison, simulate_current_comparison, interpret_current_result]
         from threading import RLock
         tool_lock = RLock()
@@ -259,7 +263,7 @@ class GeneralizedAgentService:
             if not result or not ledger['interpretation']:
                 raise ValueError('Agent final decision lacks matching solver result and interpretation')
         elif result is not None: raise ValueError('Agent decision contradicts its numerical result')
-        if not edit and not ledger['config'] and ('search_hypothesis_evidence' not in calls or (any(search_available) and 'retrieve_evidence_source' not in calls)):
+        if not edit and not ledger['config'] and record.preparation.state not in {'unsupported','identity_clarification','source_unavailable'} and ('search_hypothesis_evidence' not in calls or (any(search_available) and 'retrieve_evidence_source' not in calls)):
             raise ValueError('Research must actually search and inspect available evidence before concluding')
         if record and not result:
             questions.extend(item.question for item in record.preparation.missing_inputs)

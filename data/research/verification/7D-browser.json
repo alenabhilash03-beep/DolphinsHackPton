@@ -1,0 +1,107 @@
+{
+  "origin": "live_browser_software_acceptance_not_drug_validation",
+  "checked_at": "2026-11-14T18:48:56.378864+00:00",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "numerical_values": "Explicitly entered SYNTHETIC assumptions; not measured imatinib properties.",
+  "stages": [
+    {
+      "job_id": "0234b5dc639547ee9b021fd675704ce5",
+      "status": "needs_inputs",
+      "turn_id": "turn-4635b52457564b74bf549d93db6cb85c",
+      "result_id": null,
+      "parent_result_id": null,
+      "duration_h": null,
+      "tool_calls": [
+        "start_experiment_preparation",
+        "search_hypothesis_evidence",
+        "retrieve_evidence_source",
+        "search_hypothesis_evidence",
+        "search_hypothesis_evidence",
+        "retrieve_evidence_source",
+        "search_hypothesis_evidence",
+        "search_hypothesis_evidence",
+        "extract_cited_parameters",
+        "extract_cited_parameters",
+        "update_experiment_preparation"
+      ],
+      "trace_id": "01a1db48-95c4-7654-8d0e-dbb4bbb08096",
+      "identity_retrieval_status": "cached_degraded"
+    },
+    {
+      "job_id": "bdee4ccbedbf43d085ab2ad00104ec71",
+      "status": "completed",
+      "turn_id": "turn-638333a579ed469fbfad8a2d59a1d1c8",
+      "result_id": "sim-02f573b057dcf7fdfe60f4fc",
+      "parent_result_id": null,
+      "duration_h": 24.0,
+      "tool_calls": [
+        "configure_prepared_experiment",
+        "simulate_current_comparison",
+        "interpret_current_result"
+      ],
+      "trace_id": "01a1db53-7fe6-7702-bb9e-40c35a083d7c",
+      "identity_retrieval_status": "cached_degraded"
+    },
+    {
+      "job_id": "3fdabdba545641d2bc58ded85e030484",
+      "status": "completed",
+      "turn_id": "turn-295a6f71fe4643eb915de006bf14f688",
+      "result_id": "sim-da8cb97e8dd7ad5d510baa51",
+      "parent_result_id": "sim-02f573b057dcf7fdfe60f4fc",
+      "duration_h": 24.0,
+      "tool_calls": [
+        "read_current_experiment",
+        "apply_requested_edit",
+        "simulate_current_comparison",
+        "interpret_current_result"
+      ],
+      "trace_id": "01a1db55-2c1e-7769-bdd5-6287d51234b0",
+      "identity_retrieval_status": null
+    },
+    {
+      "job_id": "7a813824c1b449e4963d576af0c363f0",
+      "status": "completed",
+      "turn_id": "turn-9fd9b8f36365483788b9cc6a973821fa",
+      "result_id": "sim-de0ef9e673c1dcc91b89b877",
+      "parent_result_id": "sim-38556a59db5468f5fa7063ba",
+      "duration_h": 48.0,
+      "tool_calls": [
+        "read_current_experiment",
+        "apply_requested_edit",
+        "simulate_current_comparison",
+        "interpret_current_result"
+      ],
+      "trace_id": "01a1db57-51fb-7057-ba1a-1143e760529f",
+      "identity_retrieval_status": null
+    }
+  ],
+  "direct_control": {
+    "result_id": "sim-38556a59db5468f5fa7063ba",
+    "configuration_hash": "d78f87f5e5aad9e74295c6035f8bc617aeebadea980adcece5ec7dce848a4222",
+    "client_revision": 1,
+    "transport": "POST /api/simulations/adjust",
+    "llm_called": false
+  },
+  "unknown_identity": {
+    "job_id": "a7457611c0f942e0a1563cedbf86c3c5",
+    "turn_id": "turn-94e2e595de8a4fdd8ab7074ce0aba27b",
+    "status": "needs_inputs",
+    "identity_status": "not_found",
+    "result_id": null,
+    "tool_calls": [
+      "start_experiment_preparation",
+      "search_hypothesis_evidence"
+    ],
+    "structure": "unavailable"
+  },
+  "browser_checks": [
+    "live evidence research and missing inputs",
+    "explicit synthetic assumption continuation",
+    "affinity alternatives",
+    "direct KD edit with stale interpretation",
+    "language edit preserves slider result",
+    "unknown identity clarification and no structure",
+    "reload restores request",
+    "saved primary demo and molecular canvas"
+  ]
+}

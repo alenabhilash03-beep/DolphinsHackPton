@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./glass-background.css";
+import "./workspace-editorial.css";
 import { GlassEnvironment } from "../components/GlassEnvironment";
 
 export const metadata: Metadata = {

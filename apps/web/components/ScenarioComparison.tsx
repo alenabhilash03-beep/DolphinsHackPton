@@ -15,11 +15,11 @@ export const ScenarioComparison = memo(function ScenarioComparison({ result, bus
     return [...new Set([...(item?.source_ids ?? []), ...(item?.parent_ids ?? []).flatMap(sourcesFor)])];
   };
   return <section aria-label="Scenario comparison">
-    <h2>Compare the experiments</h2>
+    <h2>Scenario register</h2>
     <p>{config.mode === "research_derived" ? "Conditional research-derived / researcher-specified experiment" : config.mode === "custom" ? "Custom hypothetical comparison" : "Reviewed preset with hypothetical alternatives"} · {config.support.status} model scope.</p>
     <p role="status">{busy ? "Recalculating. The comparison below shows the last completed result." : `Showing completed result ${result.result_id}.`}</p>
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))", gap: 16 }}>
-      {config.scenarios.map((scenario, index) => <article key={scenario.scenario_id} style={{ borderTop: `4px solid ${scenarioColor(scenario.scenario_id, index)}`, padding: 12, background: "#edf2e8" }}>
+    <div className="scenario-register">
+      {config.scenarios.map((scenario, index) => <article key={scenario.scenario_id} style={{ borderLeft: `2px solid ${scenarioColor(scenario.scenario_id, index)}` }}>
         <h3>{scenario.label}</h3>
         <p>{scenario.intervention === "baseline" ? "Protected reference scenario" : "Hypothetical intervention"}</p>
         <dl>

@@ -1,6 +1,6 @@
 # Generalized Nemotron agent — 7C
 
-The new **FastAPI generalized-agent service** runs a single LangChain tool-calling agent. Nemotron selects and invokes evidence and preparation tools; numerical results and their interpretation values come from deterministic services. The existing primary research job endpoint remains compatible. Switching the dashboard to these new routes, progress presentation and clarification forms is 7D.
+The new **FastAPI generalized-agent service** runs a single LangChain tool-calling agent. Nemotron selects and invokes evidence and preparation tools; numerical results and their interpretation values come from deterministic services. The existing primary research job endpoint remains compatible. The [7D dashboard](WORKSPACE_RESEARCH.md) now uses persisted background jobs around these tools, including progress, clarification forms and result handoff.
 
 ## Interfaces
 
@@ -8,7 +8,7 @@ The new **FastAPI generalized-agent service** runs a single LangChain tool-calli
 - `POST /api/agent/edits`: `AgentEditRequest` → `AgentTurn`.
 - `GET /api/agent/turns/{turn_id}`: durable turn, scientific inputs, questions, result and trace metadata.
 
-See `http://127.0.0.1:8001/docs` and generated TypeScript aliases. Routes are on FastAPI, not new Next.js proxies. These endpoints are synchronous; use the configured backend research timeout when integrating. They do not add a new SSE stream. Agent calls are bounded to 24 tool actions, 52 graph steps, a configured turn deadline checked before model/tool calls and at completion, and a 45-second provider-call timeout. A call already in progress can extend wall time beyond the turn deadline. Calls within a turn are serialized around its authoritative state. Original preparation source/session limits still apply.
+See `http://127.0.0.1:8001/docs` and generated TypeScript aliases. These synchronous routes remain on FastAPI; the workspace uses the newer queued routes through fixed-path Next.js proxies. These endpoints are synchronous; use the configured backend research timeout when integrating. They do not add a new SSE stream. Agent calls are bounded to 24 tool actions, 52 graph steps, a configured turn deadline checked before model/tool calls and at completion, and a 45-second provider-call timeout. A call already in progress can extend wall time beyond the turn deadline. Calls within a turn are serialized around its authoritative state. Original preparation source/session limits still apply.
 
 Example research body:
 
@@ -62,7 +62,7 @@ Every successful edit has a new experiment/result and `parent_result_id`; prior 
 
 The interpretation tool returns solver-linked endpoint occupancy, occupancy AUC and threshold status for each scenario, source/evidence IDs, original assumptions, limitations and follow-up measurements. It never infers clinical outcomes. Source summaries describe selected parameter lineage, not an invented narrative about the whole article. They link PK inputs to concentration/occupancy graphs and binding inputs to occupancy. Source availability/abstract versus full text stays in the preparation metadata. Numeric claims are assembled from the solver, not LLM arithmetic.
 
-7D should connect `turn.result` directly to the existing aligned plots/timeline/schematic, display `applied_changes`, questions, provenance and interpretation, and retain all base/hash/client revision fields. No molecular coordinate deformation is introduced. Guided molecular inspection remains 7E. The current primary dashboard remains usable while this integration is pending.
+7D connects `turn.result` directly to the existing aligned plots/timeline/schematic, display `applied_changes`, questions, provenance and interpretation, and retain all base/hash/client revision fields. No molecular coordinate deformation is introduced. Guided molecular inspection remains 7E. The current primary dashboard remains usable while this integration is pending.
 
 ## Verification
 

@@ -40,7 +40,7 @@ class DrivingModel(BaseChatModel):
             prep = record['preparation'] if record else {}
             order = [('read_experiment_preparation',{'preparation_id':self.resume_id}),
                 ('configure_prepared_experiment',{'preparation_id':self.resume_id,'version':{'base_revision':prep.get('revision',0),'base_evidence_sha256':prep.get('evidence_sha256','0'*64)}}),
-                ('simulate_prepared_experiment',{'request':{'experiment':outputs.get('configure_prepared_experiment',{}).get('experiment',{}),'client_revision':0,'output_points':100}}),
+                ('simulate_current_comparison',{}),
                 ('interpret_current_result',{})]
         elif self.mode == 'edit':
             order = [('read_current_experiment',{}),('apply_requested_edit',{}),('simulate_current_comparison',{}),('interpret_current_result',{})]
@@ -62,7 +62,7 @@ class DrivingModel(BaseChatModel):
             if self._step >= 5 and record['preparation']['state']=='ready_for_configuration':
                 prep = record['preparation']
                 order += [('configure_prepared_experiment',{'preparation_id':record_id,'version':{'base_revision':prep['revision'],'base_evidence_sha256':prep['evidence_sha256']}}),
-                    ('simulate_prepared_experiment',{'request':{'experiment':outputs.get('configure_prepared_experiment',{}).get('experiment',{}),'client_revision':0,'output_points':100}}),
+                    ('simulate_current_comparison',{}),
                     ('interpret_current_result',{})]
         if self._step < len(order): name,args = order[self._step]
         else:
@@ -204,3 +204,33 @@ def test_api_stale_edit_is_rejected_before_model_call(tmp_path):
         assert response.status_code==409
         assert agent.model._step==0
         assert client.get('/api/agent/turns/does-not-exist').status_code==404
+
+
+def test_explicit_unsupported_scope_can_finish_without_research_or_solver(tmp_path):
+    from test_research_agent import ScriptedModel
+    from app.schemas.preparation_workflow import CreatePreparation,PreparationUpdate
+    agent,req=research_service(tmp_path)
+    record=agent.preparation.create(CreatePreparation(request=req))
+    update=PreparationUpdate(base_revision=record.preparation.revision,base_evidence_sha256=record.preparation.evidence_sha256,
+        scope=scope(binding_regime='irreversible'))
+    agent.model=ScriptedModel(responses=[AIMessage(content='',tool_calls=[{'name':'AgentDecision','args':{'status':'unsupported'},'id':'unsupported'}])])
+    turn=agent.run(AgentResearchRequest(request=req,preparation_id=record.preparation.preparation_id,researcher_update=update))
+    assert turn.status=='unsupported' and turn.result is None
+    assert turn.preparation.preparation.state=='unsupported'
+
+
+def test_unknown_identity_can_request_clarification_before_searching_papers(tmp_path):
+    from test_research_agent import ScriptedModel
+    from app.schemas.drug_support import DrugAssessmentResponse
+    class MissingIdentity:
+        def assess(self,request):
+            return DrugAssessmentResponse(request=request,identity_status='not_found',retrieval_status='live',support={'status':'needs_parameters','reasons':['Synthetic missing identity'],'missing_parameters':['identity']})
+    agent,req=research_service(tmp_path)
+    agent.preparation.assessment=MissingIdentity()
+    agent.model=ScriptedModel(responses=[
+        AIMessage(content='',tool_calls=[{'name':'start_experiment_preparation','args':{'request':req},'id':'start'}]),
+        AIMessage(content='',tool_calls=[{'name':'AgentDecision','args':{'status':'needs_inputs'},'id':'finish'}])])
+    turn=agent.run(AgentResearchRequest(request=req))
+    assert turn.status=='needs_inputs' and turn.result is None
+    assert turn.preparation.preparation.state=='identity_clarification'
+    assert turn.questions and turn.tool_calls==['start_experiment_preparation']

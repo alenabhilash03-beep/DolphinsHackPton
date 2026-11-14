@@ -11,7 +11,9 @@ export function EvidencePanel({ experiment, scenarioId, resultPresent = false }:
   const [profile, setProfile] = useState<EvidenceProfile | null>(null);
   const [cacheError, setCacheError] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const primary=experiment.mode!=="research_derived" && experiment.sources.some(source=>source.source_id==="S2");
   useEffect(() => {
+    if(!primary){setProfile(null);setCacheError(false);return;}
     const controller = new AbortController();
     fetch("/api/research/evidence/trastuzumab", { cache: "no-store", signal: controller.signal })
       .then(async (response) => {
@@ -21,7 +23,7 @@ export function EvidencePanel({ experiment, scenarioId, resultPresent = false }:
       .then((value) => { setProfile(value); setCacheError(false); })
       .catch(() => { if (!controller.signal.aborted) setCacheError(true); });
     return () => controller.abort();
-  }, [attempt]);
+  }, [attempt,primary]);
 
   const scenario = experiment.scenarios.find((item) => item.scenario_id === scenarioId) ?? experiment.scenarios[0];
   const values = useMemo(() => {
@@ -33,12 +35,12 @@ export function EvidencePanel({ experiment, scenarioId, resultPresent = false }:
   return <section id="paper-evidence" aria-label="Scientific evidence">
     <h2>Evidence and assumptions</h2>
     <p>Model scope: <strong>{experiment.support.status}</strong> · {experiment.support.reasons.join(" ")}</p>
-    <p>{cacheError ? "Bibliographic cache unavailable; source links and the validated experiment remain visible." :
+    <p>{!primary ? "Research-derived inputs remain conditional. Source access and snapshot status are shown in the preparation; no reviewed preset evidence is substituted." : cacheError ? "Bibliographic cache unavailable; source links and the validated experiment remain visible." :
       profile ? "Europe PMC bibliographic metadata: cached, not a live search. Numerical inputs retain their separate reviewed or assumed provenance." :
       "Loading cached bibliographic metadata…"}</p>
     {cacheError && <button type="button" onClick={() => { setCacheError(false); setAttempt((value) => value + 1); }}>Retry evidence metadata</button>}
     <h3>Sources</h3>
-    {profile?.paper_summaries && <PaperSummaries summaries={profile.paper_summaries} experiment={experiment} />}
+    {primary && profile?.paper_summaries && <PaperSummaries summaries={profile.paper_summaries} experiment={experiment} />}
     <ul>{experiment.sources.map((source) => {
       const cached = cacheBySource.get(source.source_id);
       return <li key={source.source_id}>

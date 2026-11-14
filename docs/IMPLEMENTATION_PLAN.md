@@ -1,6 +1,6 @@
 # Hypothesim — implementation roadmap
 
-Status: Phases 0–4 complete. Phases 5–6 remain planned for the local demo; Phase 7 adds evidence-gated support for additional drugs. Current user-authorized follow-up: improve paper-to-plot explanations and implement synchronized visuals (5A). Later subphases still require their green light.
+Status: Phases 0–4 and 5A complete. Phases 5–6 remain planned for the local demo; Phase 7 adds evidence-gated support for additional drugs. Current user-authorized follow-up: improve paper-to-plot explanations and implement synchronized visuals (5A). Later subphases still require their green light.
 
 Canonical repository document: `docs/IMPLEMENTATION_PLAN.md` in `alenabhilash03-beep/DolphinsHackPton`.
 
@@ -598,8 +598,8 @@ The primary demo should take roughly four minutes:
 9. Briefly show that an unsupported drug produces a limitation response.
 Prepare a saved experiment containing the exact configuration, reviewed evidence, structure asset, model version, and expected metrics. The fallback must remain interactive and clearly identify saved research. The live LangChain integration should also have a verified trace available for inspection.
 
-Phases 0–4 are complete. The next execution unit remains 5A unless the user explicitly reprioritizes the roadmap. Phase 7 is agreed planned scope; no Phase 7 implementation begins without its subphase green light.
+Phases 0–4 are complete. The next execution unit is 5B; 5A was explicitly authorized and completed in the paper/playback enhancement. Phase 7 is agreed planned scope; no Phase 7 implementation begins without its subphase green light.
 
 ## Current execution order (revision 2026-11-14)
 
-Completed: Phases 0–4. Remaining: **5A → 5B → 7A → 7B → 7C → 7D → 5C → 6A → 6B**. Phase 7 retains its 8–13 additional-hour estimate beyond the original 36-hour scope. Final rehearsal follows all agreed feature work.
+Completed: Phases 0–4 and 5A. Remaining: **5B → 7A → 7B → 7C → 7D → 5C → 6A → 6B**. Phase 7 retains its 8–13 additional-hour estimate beyond the original 36-hour scope. Final rehearsal follows all agreed feature work.

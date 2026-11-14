@@ -1,6 +1,7 @@
 """Offline LangChain harness checks; live provider quality is tested separately."""
 
 import pytest
+from datetime import datetime, timezone
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage
 from langchain_core.outputs import ChatGeneration, ChatResult
@@ -8,7 +9,7 @@ from pydantic import PrivateAttr
 
 from app.agent.workflow import run_research
 from app.config import Settings
-from app.research.europe_pmc import RetrievalError, SourceMismatchError
+from app.research.europe_pmc import LiteratureSearch, RetrievalError, SourceMismatchError
 from app.research.registry import load_cached_record, load_curated_profile
 from app.schemas.contracts import HypothesisRequest
 
@@ -34,12 +35,18 @@ class ScriptedModel(BaseChatModel):
 
 
 class FakeLiterature:
+    def search(self, query, page_size=3):
+        return LiteratureSearch(query=query, hit_count=0, records=[], retrieved_at=datetime.now(timezone.utc))
+
     def lookup_pmid(self, pmid):
         check = next(item for item in load_curated_profile().literature_checks if item.pmid == pmid)
         return load_cached_record(check)
 
 
-class OfflineLiterature:
+class OfflineLiterature(FakeLiterature):
+    def search(self, query, page_size=3):
+        raise RetrievalError("Provider offline")
+
     def lookup_pmid(self, pmid):
         raise RetrievalError("Provider offline")
 
@@ -49,7 +56,7 @@ class MismatchedLiterature(FakeLiterature):
         return super().lookup_pmid(pmid).model_copy(update={"doi": "10.0000/unrelated"})
 
 
-class WrongPmidLiterature:
+class WrongPmidLiterature(FakeLiterature):
     def lookup_pmid(self, pmid):
         raise SourceMismatchError("Wrong PMID from provider")
 
@@ -81,6 +88,9 @@ def test_primary_agent_calls_retrieval_and_solver_then_links_interpretation():
     assert outcome.result.result_id == outcome.interpretation.result_id
     assert outcome.support.status == "conditional"
     assert outcome.retrieval_status == "live"
+    assert outcome.related_search_status == "live" and outcome.literature_search is not None
+    assert "HER2" in outcome.literature_search.query
+    assert {item.source_id for item in outcome.interpretation.paper_summaries} == {"S2", "S3"}
     assert any("censored" in claim for claim in outcome.interpretation.claims)
     assert all("no simulator has run" not in limit for limit in outcome.interpretation.limitations)
     assert outcome.trace_status == "local_collected"
@@ -90,6 +100,7 @@ def test_primary_agent_calls_retrieval_and_solver_then_links_interpretation():
 def test_provider_outage_uses_labeled_cache_and_still_runs_reviewed_model():
     outcome = run_research(HypothesisRequest(text=PRIMARY), scripted_model(), literature=OfflineLiterature(), settings=SETTINGS)
     assert outcome.retrieval_status == "cached_degraded"
+    assert outcome.related_search_status == "unavailable" and outcome.literature_search is None
     assert outcome.result is not None
     assert outcome.interpretation.evidence_ids == ["volume", "clearance", "kon", "koff"]
 

@@ -15,7 +15,8 @@ from langsmith import Client, tracing_context
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.config import Settings
-from app.research.europe_pmc import EuropePMCClient, RetrievalError, SourceMismatchError
+from app.research.europe_pmc import EuropePMCClient, LiteratureSearch, RetrievalError, SourceMismatchError
+from app.research.paper_summaries import load_paper_summaries
 from app.research.registry import load_cached_record, load_curated_profile, validate_literature_identity
 from app.schemas.contracts import (
     ExperimentConfig, HypothesisRequest, Interpretation, ParsedHypothesis,
@@ -63,6 +64,8 @@ class ToolLedger:
     retrieval_status: Literal["not_attempted", "live", "cached_degraded"] = "not_attempted"
     rejected_source: bool = False
     result: SimulationResult | None = None
+    literature_search: LiteratureSearch | None = None
+    related_search_status: str = "not_attempted"
 
 
 @dataclass
@@ -77,6 +80,8 @@ class ResearchOutcome:
     trace_status: str = "not_attempted"
     trace_id: str | None = None
     trace_tool_names: list[str] = field(default_factory=list)
+    literature_search: LiteratureSearch | None = None
+    related_search_status: str = "not_attempted"
 
 
 def scope_request(request: HypothesisRequest) -> SupportAssessment | None:
@@ -141,13 +146,23 @@ def build_research_agent(model: BaseChatModel, literature: EuropePMCClient | Non
                 "provenance", "estimate_type", "applicability", "source_ids", "locator", "context",
             }) for item in profile.experiment.evidence if item.evidence_id in {"volume", "clearance", "kon", "koff"}],
             "sources": [{"source_id": check.source_id, "pmid": check.pmid, "doi": check.doi} for check in profile.literature_checks],
+            "paper_summaries": [item.model_dump() for item in load_paper_summaries(profile.experiment)],
             "scope": "Conditional reduced PK and transferred apparent SPR kinetics; not measured human tumor occupancy.",
         }
 
     @tool
     def verify_primary_literature() -> dict:
-        """Verify the exact audited PK and binding papers through Europe PMC; label cache fallback."""
+        """Search related trastuzumab/HER2 literature, then verify audited papers; label cache fallback."""
         ledger.calls.append("verify_primary_literature")
+        try:
+            ledger.literature_search = client.search("(trastuzumab OR herceptin) AND (HER2 OR ERBB2) AND (pharmacokinetics OR affinity OR binding)", page_size=3)
+            ledger.related_search_status = "live"
+            if on_progress:
+                on_progress("related_search", f"Europe PMC related-paper search returned {len(ledger.literature_search.records)} candidate records")
+        except RetrievalError:
+            ledger.related_search_status = "unavailable"
+            if on_progress:
+                on_progress("related_search", "Related-paper search unavailable; verifying the reviewed papers separately")
         records = []
         degraded = False
         for check in profile.literature_checks:
@@ -174,6 +189,9 @@ def build_research_agent(model: BaseChatModel, literature: EuropePMCClient | Non
         if on_progress:
             on_progress("literature", "Primary literature identities verified" if not degraded else "Literature provider unavailable; audited bibliographic cache used")
         return {"retrieval_status": ledger.retrieval_status, "records": records,
+                "related_search_status": ledger.related_search_status,
+                "related_candidates": [{"title": item.title, "pmid": item.pmid, "url": item.record_url,
+                                        "abstract_excerpt": (item.abstract or "")[:1200]} for item in (ledger.literature_search.records if ledger.literature_search else [])],
                 "rule": "Bibliographic verification does not upgrade or change reviewed numerical parameters."}
 
     @tool
@@ -235,6 +253,7 @@ def _interpret(result: SimulationResult, codes: list[str]) -> Interpretation:
         assumptions=[item.description for item in result.configuration.assumptions],
         limitations=[item for item in result.configuration.limitations if item != "Configuration fixture only: no simulator has run."] + result.warnings,
         follow_up_experiments=[FOLLOW_UPS[code] for code in dict.fromkeys(codes)],
+        paper_summaries=load_paper_summaries(result.configuration),
     )
 
 
@@ -308,4 +327,5 @@ def run_research(
         interpretation=_interpret(result, report.follow_up_codes),
         tool_calls=list(ledger.calls), retrieval_status=ledger.retrieval_status,
         trace_status=trace_status, trace_id=trace_id, trace_tool_names=trace_tool_names,
+        literature_search=ledger.literature_search, related_search_status=ledger.related_search_status,
     )

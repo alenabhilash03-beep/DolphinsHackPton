@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import type { ExperimentConfig, ResearchEvent, ResearchJob, SimulationResult } from "../lib/contracts";
 import { PlotPreview } from "./PlotPreview";
 import { StructureViewer } from "./StructureViewer";
+import { PaperSummaries } from "./PaperSummaries";
 
 const PRIMARY = "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const TERMINAL = new Set(["completed", "unsupported", "failed"]);
@@ -144,12 +145,21 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
         <p>{job ? "Evidence and computation for your question." : "Your example is ready. Run the research agent, or start exploring the simulation below."}</p>
         {events.length > 0 ? <ol>{events.map((item) => <li key={item.event_id}>{item.message}</li>)}</ol> : <div className="activity-placeholder">Reviewed evidence → supported model → numerical comparison</div>}
         {job?.status === "completed" && <p className="activity-success">Experiment prepared · literature {job.retrieval_status === "live" ? "verified live" : "from labeled cache"}</p>}
+        {job?.literature_search && <details><summary>Related-paper search · {job.literature_search.records.length} candidates</summary>
+          <p>Query: {job.literature_search.query}. These are discovery results; they do not supply reviewed model inputs.</p>
+          {job.literature_search.records.map((paper) => <article key={`${paper.provider_source}-${paper.provider_id}`}>
+            <a href={paper.record_url} target="_blank" rel="noreferrer">{paper.title}</a>
+            <p>{paper.abstract ? `Abstract excerpt: ${paper.abstract.slice(0, 500)}${paper.abstract.length > 500 ? "…" : ""}` : "No abstract returned; no content summary inferred."}</p>
+          </article>)}
+        </details>}
+        {job?.related_search_status === "unavailable" && <p>Related-paper search unavailable. Reviewed evidence is labeled separately.</p>}
         {job && <details><summary>Research record</summary><p>Job {job.job_id}</p><p>Trace: {job.trace_status} · Tools: {(job.tool_calls ?? []).join(", ")}</p></details>}
       </section></div>
       {message && <p role="alert">{message}</p>}
       {interpretation && <section className="interpretation-panel" aria-label="Scientific interpretation">
         <p className="eyebrow">RESEARCH FINDINGS</p><h2>What this experiment predicts</h2>
         <ul>{interpretation.claims.map((claim) => <li key={claim}>{claim}</li>)}</ul>
+        {interpretation.paper_summaries && <PaperSummaries summaries={interpretation.paper_summaries} experiment={job!.experiment!} />}
         <details><summary>Follow-up experiments and limitations</summary><h3>Follow-up experiments</h3><ul>{interpretation.follow_up_experiments.map((item) => <li key={item}>{item}</li>)}</ul>
         <h3>Limitations</h3><ul>{interpretation.limitations.map((item) => <li key={item}>{item}</li>)}</ul></details>
       </section>}

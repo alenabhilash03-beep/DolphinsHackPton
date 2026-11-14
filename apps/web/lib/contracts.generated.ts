@@ -322,6 +322,8 @@ export interface components {
             experiment: components["schemas"]["ExperimentConfig"];
             /** Literature */
             literature: components["schemas"]["CachedSourceRecord"][];
+            /** Paper Summaries */
+            paper_summaries?: components["schemas"]["PaperSummary"][];
             /** Profile Id */
             profile_id: string;
             /**
@@ -523,6 +525,8 @@ export interface components {
             follow_up_experiments: string[];
             /** Limitations */
             limitations: string[];
+            /** Paper Summaries */
+            paper_summaries?: components["schemas"]["PaperSummary"][];
             /** Result Id */
             result_id: string;
         };
@@ -601,6 +605,25 @@ export interface components {
             elimination_half_life_h: number;
             /** Volume L */
             volume_L: number;
+        };
+        /** PaperSummary */
+        PaperSummary: {
+            /** Evidence Ids */
+            evidence_ids: string[];
+            /** Finding */
+            finding: string;
+            /** Hypothesis Relevance */
+            hypothesis_relevance: string;
+            /** Limitation */
+            limitation: string;
+            /** Locator */
+            locator: string;
+            /** Plot Ids */
+            plot_ids: ("concentration" | "occupancy")[];
+            /** Source Id */
+            source_id: string;
+            /** Use In Model */
+            use_in_model: string;
         };
         /** ParameterEvidence */
         ParameterEvidence: {
@@ -717,9 +740,15 @@ export interface components {
             interpretation?: components["schemas"]["Interpretation"] | null;
             /** Job Id */
             job_id: string;
+            literature_search?: components["schemas"]["LiteratureSearch"] | null;
             parsed?: components["schemas"]["ParsedHypothesis"] | null;
             /** Previous Experiment Id */
             previous_experiment_id?: string | null;
+            /**
+             * Related Search Status
+             * @default not_attempted
+             */
+            related_search_status: string;
             request: components["schemas"]["HypothesisRequest"];
             result?: components["schemas"]["SimulationResult"] | null;
             /**

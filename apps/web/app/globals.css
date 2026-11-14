@@ -97,3 +97,19 @@ button:focus-visible, a:focus-visible { outline: 3px solid #b28435; outline-offs
 @media(max-width:850px) { .research-layout,.experiment-layout { grid-template-columns:1fr; } .workspace-badge { display:none; } .workspace-header { padding:18px 24px; } .workspace-intro { margin-top:28px; } .research-panel,.structure-panel,.experiment-panel { margin:18px 14px; padding:20px; } .workspace-steps { flex-wrap:wrap; gap:8px 20px; } }
 @media(max-width:480px) { .workspace-header nav { gap:12px; font-size:12px; } .form-grid { grid-template-columns:1fr; } .section-heading { align-items:flex-start; flex-direction:column; } .timeline-panel { flex-wrap:wrap; } .timeline-panel output { width:100%; } .experiment-results>section { padding:12px; } }
 @media(prefers-reduced-motion:reduce) { .hypothesim-workspace button { transition:none; } }
+.paper-card { padding:18px; margin:16px 0; border:1px solid #d7e3da; border-radius:12px; background:#f5f8f2; }
+.paper-card h3 { min-height:0!important; font-size:15px; }
+.paper-card p { font-size:13px; }
+.paper-limit { color:#796139!important; background:#f5efdf; padding:10px; border-radius:7px; }
+.paper-plot-links { display:flex; gap:14px; flex-wrap:wrap; font-size:12px; font-weight:650; }
+.plot-time-label { display:none; position:absolute; background:#286859; color:white; padding:2px 7px; font-size:10px; border-radius:5px; pointer-events:none; z-index:4; }
+.live-readouts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:14px 0; }
+.live-readouts>div { padding:12px; background:#edf4eb; border-radius:8px; }
+.live-readouts span { display:block; font-size:10px; color:#617b69; }
+.live-readouts strong { display:block; font-size:19px; color:#325e49; font-variant-numeric:tabular-nums; }
+.timeline-panel { flex-wrap:wrap; }
+.timeline-panel .reveal-toggle { width:100%; font-size:11px; font-weight:500; }
+.experiment-results li { overflow-wrap:anywhere; }
+@media(max-width:480px) { .live-readouts { grid-template-columns:1fr; } }
+.timeline-panel { position:sticky; top:8px; z-index:8; border:1px solid #cbdccd; box-shadow:0 4px 16px #254b3012; }
+.experiment-results>section[id] { scroll-margin-top:110px; }

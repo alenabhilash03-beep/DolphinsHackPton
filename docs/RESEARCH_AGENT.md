@@ -1,5 +1,11 @@
 # Phase 3B guarded research agent
 
+## Literature and visualization extension (5A)
+
+The `verify_primary_literature` tool now searches Europe PMC for `(trastuzumab OR herceptin) AND (HER2 OR ERBB2) AND (pharmacokinetics OR affinity OR binding)` and returns up to three discovery records before checking the exact audited S2/S3 identifiers. This query derives from the currently supported hypothesis class; general drug-specific query planning remains Phase 7. The job exposes `literature_search` and `related_search_status` independently of reviewed-paper verification. Retrieved text is untrusted input and candidate records never replace reviewed numeric evidence.
+
+`data/research/paper-summaries.json` contains review-authored S2/S3 summaries with explicit evidence IDs, locators, relevance, model use, limitations, and plot IDs. `load_paper_summaries` verifies source/parameter linkage. These summaries enter the profile tool output, result-linked interpretation, and evidence API. The UI distinguishes these summaries from candidate abstract excerpts and connects them to the numerical plots. Model geometry, equations, and numerical parameters are unchanged by this extension.
+
 `app.agent.workflow.run_research` is the callable 3B interface for the next research-job/API layer. It accepts a validated `HypothesisRequest`, a LangChain chat model, and optionally a Europe PMC client and settings. It returns a `ResearchOutcome` with a support assessment, parsed primary hypothesis, validated experiment, complete deterministic `SimulationResult`, result-linked `Interpretation`, retrieval status, actual tool calls, and trace information. Phase 3C will expose this workflow through asynchronous jobs and the visual hypothesis form.
 
 The single LangChain `create_agent` uses a `ToolStrategy(AgentReport)` schema and three narrowly scoped tools:

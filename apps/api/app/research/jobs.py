@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 from app.agent.workflow import ResearchOutcome, run_research, scope_request
 from app.config import ROOT, Settings
 from app.research.registry import load_curated_profile
+from app.research.europe_pmc import LiteratureSearch
 from app.schemas.contracts import ExperimentConfig, HypothesisRequest, Interpretation, ParsedHypothesis, SimulationResult, SupportAssessment
 
 JobStatus = Literal["queued", "running", "completed", "unsupported", "failed"]
@@ -43,6 +44,8 @@ class ResearchJob(BaseModel):
     tool_calls: list[str] = Field(default_factory=list)
     trace_status: str = "not_attempted"
     trace_id: str | None = None
+    literature_search: LiteratureSearch | None = None
+    related_search_status: str = "not_attempted"
     error_code: str | None = None
     error_message: str | None = None
     created_at: str
@@ -168,6 +171,7 @@ class ResearchJobService:
                           result=outcome.result, interpretation=outcome.interpretation,
                           retrieval_status=outcome.retrieval_status, tool_calls=outcome.tool_calls,
                           trace_status=outcome.trace_status, trace_id=outcome.trace_id)
+            common.update(literature_search=outcome.literature_search, related_search_status=outcome.related_search_status)
             if outcome.result is None:
                 self.store.update(job_id, "unsupported", "The requested hypothesis is outside the reviewed model scope",
                                   status="unsupported", **common)

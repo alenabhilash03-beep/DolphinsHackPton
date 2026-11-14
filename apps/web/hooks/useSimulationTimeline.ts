@@ -4,9 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { SimulationResult } from "../lib/contracts";
 import { nearestTimeIndex, readoutAtIndex } from "../lib/timeline";
 
-export function useSimulationTimeline(result: SimulationResult | null, playbackDurationMs = 12_000) {
+export function useSimulationTimeline(result: SimulationResult | null, playbackDurationMs = 24_000) {
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [playbackStarted, setPlaybackStarted] = useState(false);
+  const [revealEnabled, setRevealEnabled] = useState(true);
   const indexRef = useRef(0);
   const displayedTimeRef = useRef(0);
   const anchorRef = useRef({ wallMs: 0, timeHours: 0 });
@@ -16,6 +18,7 @@ export function useSimulationTimeline(result: SimulationResult | null, playbackD
 
   useEffect(() => {
     setPlaying(false);
+    setPlaybackStarted(false);
     const next = result ? nearestTimeIndex(result.time_h, displayedTimeRef.current) : 0;
     indexRef.current = next;
     setIndex(next);
@@ -49,6 +52,7 @@ export function useSimulationTimeline(result: SimulationResult | null, playbackD
       setIndex(0);
     }
     setPlaying(true);
+    setPlaybackStarted(true);
   }, [result, playbackDurationMs]);
 
   const pause = useCallback(() => setPlaying(false), []);
@@ -87,6 +91,8 @@ export function useSimulationTimeline(result: SimulationResult | null, playbackD
     progress: horizonHours > 0 ? timeHours / horizonHours : 0,
     readout,
     playing,
+    revealCurves: revealEnabled && playbackStarted,
+    revealEnabled, setRevealEnabled,
     maxIndex: Math.max(0, (result?.time_h.length ?? 1) - 1),
     seekIndex, seekTime, play, pause, toggle,
   };

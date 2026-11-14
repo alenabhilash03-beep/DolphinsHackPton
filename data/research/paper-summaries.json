@@ -1,0 +1,33 @@
+[
+  {
+    "source_id": "S2",
+    "evidence_ids": [
+      "volume",
+      "clearance"
+    ],
+    "locator": "Table 1: non-AGC central volume and linear clearance; population-model methods/results",
+    "finding": "Quartino and colleagues modeled serum trastuzumab exposure across clinical studies using two compartments and parallel linear and nonlinear elimination.",
+    "hypothesis_relevance": "Provides the PK reference for asking how slower elimination changes exposure over time.",
+    "use_in_model": "The reviewed volume and linear-clearance inputs provide the PK starting point. In the reference preset, tripling half-life reduces clearance at fixed volume, changing concentration and consequently occupancy.",
+    "plot_ids": [
+      "concentration",
+      "occupancy"
+    ],
+    "limitation": "Hypothesim reduces the published model to one linear compartment. Its curves are exploratory reductions, not reproduced patient predictions."
+  },
+  {
+    "source_id": "S3",
+    "evidence_ids": [
+      "kon",
+      "koff"
+    ],
+    "locator": "Table 3: intact trastuzumab row; SPR methods 4.11",
+    "finding": "Selis and colleagues compared intact trastuzumab with antibody fragments. Their SPR measurements report association and dissociation rates for intact trastuzumab against immobilized HER2.",
+    "hypothesis_relevance": "Supplies the matched kinetic rates used to explore affinity changes alongside changes in elimination.",
+    "use_in_model": "The intact-antibody rate pair provides the occupancy starting point, with KD calculated as koff/kon. In the reference preset, the affinity alternative lowers koff tenfold at fixed kon and does not change the PK concentration curve.",
+    "plot_ids": [
+      "occupancy"
+    ],
+    "limitation": "These are apparent assay kinetics transferred to an effective-site model, not measured tissue occupancy. Fragment engineering in this paper also motivates checking whether PK and affinity can really change independently."
+  }
+]

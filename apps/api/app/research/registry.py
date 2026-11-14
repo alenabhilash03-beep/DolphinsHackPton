@@ -8,7 +8,8 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.research.europe_pmc import LiteratureRecord
-from app.schemas.contracts import ExperimentConfig, MODEL_ID
+from app.schemas.contracts import ExperimentConfig, MODEL_ID, PaperSummary
+from app.research.paper_summaries import load_paper_summaries
 
 DATA_ROOT = Path(__file__).resolve().parents[4] / "data"
 
@@ -94,6 +95,7 @@ class EvidenceProfile(BaseModel):
     experiment: ExperimentConfig
     literature: list[CachedSourceRecord]
     structure: StructureReference
+    paper_summaries: list[PaperSummary] = Field(default_factory=list)
 
 
 def load_curated_profile(path: Path | None = None) -> CuratedProfile:
@@ -126,4 +128,5 @@ def load_evidence_profile(path: Path | None = None, cache_root: Path | None = No
         profile_id=profile.profile_id, experiment=profile.experiment,
         literature=[load_cached_record(check, cache_root) for check in profile.literature_checks],
         structure=profile.structure,
+        paper_summaries=load_paper_summaries(profile.experiment),
     )

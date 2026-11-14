@@ -11,3 +11,4 @@ export type EvidenceProfile = components["schemas"]["EvidenceProfile"];
 export type LiteratureSearch = components["schemas"]["LiteratureSearch"];
 export type ResearchJob = components["schemas"]["ResearchJob"];
 export type ResearchEvent = components["schemas"]["ResearchEvent"];
+export type PaperSummary = components["schemas"]["PaperSummary"];

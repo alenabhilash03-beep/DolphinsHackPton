@@ -18,5 +18,6 @@ export function TimelineControls({ timeline, className }: TimelineControlsProps)
       onChange={(event) => timeline.seekTime(Number(event.target.value))}
       aria-label="Simulation time" disabled={timeline.horizonHours === 0} />
     <output aria-live="off">{timeline.timeDays.toFixed(2)} days ({timeline.timeHours.toFixed(1)} hours)</output>
+    <label className="reveal-toggle"><input type="checkbox" checked={timeline.revealEnabled} onChange={(event) => timeline.setRevealEnabled(event.target.checked)} /> Reveal curves on play</label>
   </div>;
 }

@@ -409,6 +409,17 @@ class SimulationResult(Contract):
         return self
 
 
+class PaperSummary(Contract):
+    source_id: Identifier
+    evidence_ids: list[Identifier]
+    locator: str
+    finding: str
+    hypothesis_relevance: str
+    use_in_model: str
+    plot_ids: list[Literal["concentration", "occupancy"]]
+    limitation: str
+
+
 class Interpretation(Contract):
     experiment_id: Identifier
     result_id: Identifier
@@ -418,6 +429,7 @@ class Interpretation(Contract):
     assumptions: list[str]
     limitations: list[str]
     follow_up_experiments: list[str]
+    paper_summaries: list[PaperSummary] = Field(default_factory=list)
 
 
 class DrugProfile(Contract):
@@ -451,4 +463,4 @@ class ContractValidation(Contract):
 
 
 ALL_CONTRACTS = [HypothesisRequest, ParsedHypothesis, ExperimentPreparation, SimulationRequest, ControlAdjustment,
-                 SimulationResult, Interpretation, DrugProfile]
+                 SimulationResult, Interpretation, PaperSummary, DrugProfile]

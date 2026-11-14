@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { EvidenceProfile, ExperimentConfig } from "../lib/contracts";
+import { PaperSummaries } from "./PaperSummaries";
 
 /** Plain evidence view for the UI team to restyle; never upgrades cache metadata to reviewed data. */
 export function EvidencePanel({ experiment, scenarioId, resultPresent = false }: {
@@ -28,13 +29,14 @@ export function EvidencePanel({ experiment, scenarioId, resultPresent = false }:
   }, [experiment.evidence, scenario.parameter_evidence]);
   const cacheBySource = new Map(profile?.literature.map((item) => [item.source_id, item]));
 
-  return <section aria-label="Scientific evidence">
+  return <section id="paper-evidence" aria-label="Scientific evidence">
     <h2>Evidence and assumptions</h2>
     <p>Model scope: <strong>{experiment.support.status}</strong> · {experiment.support.reasons.join(" ")}</p>
     <p>{cacheError ? "Bibliographic cache unavailable; source links and the validated experiment remain visible." :
       profile ? "Europe PMC bibliographic metadata: cached, not a live search. Numerical inputs retain their separate reviewed or assumed provenance." :
       "Loading cached bibliographic metadata…"}</p>
     <h3>Sources</h3>
+    {profile?.paper_summaries && <PaperSummaries summaries={profile.paper_summaries} experiment={experiment} />}
     <ul>{experiment.sources.map((source) => {
       const cached = cacheBySource.get(source.source_id);
       return <li key={source.source_id}>

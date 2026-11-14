@@ -377,6 +377,13 @@
             "title": "Literature",
             "type": "array"
           },
+          "paper_summaries": {
+            "items": {
+              "$ref": "#/components/schemas/PaperSummary"
+            },
+            "title": "Paper Summaries",
+            "type": "array"
+          },
           "profile_id": {
             "title": "Profile Id",
             "type": "string"
@@ -853,6 +860,13 @@
             "title": "Limitations",
             "type": "array"
           },
+          "paper_summaries": {
+            "items": {
+              "$ref": "#/components/schemas/PaperSummary"
+            },
+            "title": "Paper Summaries",
+            "type": "array"
+          },
           "result_id": {
             "maxLength": 120,
             "minLength": 1,
@@ -1064,6 +1078,69 @@
           "elimination_half_life_h"
         ],
         "title": "PKParameters",
+        "type": "object"
+      },
+      "PaperSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence_ids": {
+            "items": {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "finding": {
+            "title": "Finding",
+            "type": "string"
+          },
+          "hypothesis_relevance": {
+            "title": "Hypothesis Relevance",
+            "type": "string"
+          },
+          "limitation": {
+            "title": "Limitation",
+            "type": "string"
+          },
+          "locator": {
+            "title": "Locator",
+            "type": "string"
+          },
+          "plot_ids": {
+            "items": {
+              "enum": [
+                "concentration",
+                "occupancy"
+              ],
+              "type": "string"
+            },
+            "title": "Plot Ids",
+            "type": "array"
+          },
+          "source_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Source Id",
+            "type": "string"
+          },
+          "use_in_model": {
+            "title": "Use In Model",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "evidence_ids",
+          "locator",
+          "finding",
+          "hypothesis_relevance",
+          "use_in_model",
+          "plot_ids",
+          "limitation"
+        ],
+        "title": "PaperSummary",
         "type": "object"
       },
       "ParameterEvidence": {
@@ -1402,6 +1479,16 @@
             "title": "Job Id",
             "type": "string"
           },
+          "literature_search": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LiteratureSearch"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "parsed": {
             "anyOf": [
               {
@@ -1422,6 +1509,11 @@
               }
             ],
             "title": "Previous Experiment Id"
+          },
+          "related_search_status": {
+            "default": "not_attempted",
+            "title": "Related Search Status",
+            "type": "string"
           },
           "request": {
             "$ref": "#/components/schemas/HypothesisRequest"

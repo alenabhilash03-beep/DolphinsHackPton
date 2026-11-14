@@ -501,6 +501,56 @@ export interface components {
             /** Targets */
             targets: string[];
         };
+        /**
+         * EvidenceContext
+         * @description None means unknown, never an inferred biological match.
+         */
+        EvidenceContext: {
+            /** Applicability Notes */
+            applicability_notes: string[];
+            /**
+             * Assay Conditions
+             * @default null
+             */
+            assay_conditions: string | null;
+            /** Drug Identifier */
+            drug_identifier: string;
+            /**
+             * Experimental System
+             * @default null
+             */
+            experimental_system: string | null;
+            /**
+             * Exposure Compartment
+             * @default null
+             */
+            exposure_compartment: string | null;
+            /**
+             * Formulation
+             * @default null
+             */
+            formulation: string | null;
+            /**
+             * Molecular Form
+             * @default null
+             */
+            molecular_form: string | null;
+            /**
+             * Route
+             * @default null
+             */
+            route: string | null;
+            /**
+             * Species
+             * @default null
+             */
+            species: string | null;
+            /**
+             * Target Identifier
+             * @default null
+             */
+            target_identifier: string | null;
+        };
         /** EvidenceProfile */
         EvidenceProfile: {
             experiment: components["schemas"]["ExperimentConfig"];
@@ -781,6 +831,27 @@ export interface components {
              */
             retrieved_at: string;
         };
+        /** MissingPreparationInput */
+        MissingPreparationInput: {
+            /**
+             * Expected Unit
+             * @default null
+             */
+            expected_unit: string | null;
+            /** Input Id */
+            input_id: string;
+            /** Parameter */
+            parameter: string;
+            /**
+             * Permitted Resolution
+             * @enum {string}
+             */
+            permitted_resolution: "clarify_identity" | "retrieve_evidence" | "provide_value_or_assumption" | "clarify_scope";
+            /** Question */
+            question: string;
+            /** Reason */
+            reason: string;
+        };
         /** ModelCapability */
         ModelCapability: {
             /** Adjustable Fields */
@@ -797,6 +868,37 @@ export interface components {
             supported_endpoints: string[];
             /** Supported Routes */
             supported_routes: string[];
+        };
+        /** ModelPreparationRequirements */
+        ModelPreparationRequirements: {
+            /** Endpoints */
+            endpoints: string[];
+            /** Limitations */
+            limitations: string[];
+            /** Maximum Duration H */
+            maximum_duration_h: number;
+            /** Maximum Events Per Scenario */
+            maximum_events_per_scenario: number;
+            /** Model Id */
+            model_id: string;
+            /** Model Version */
+            model_version: string;
+            /** Relationships */
+            relationships: string[];
+            /** Required Experiment Inputs */
+            required_experiment_inputs: string[];
+            /** Required Parameters */
+            required_parameters: {
+                [key: string]: string;
+            };
+            /** Routes */
+            routes: string[];
+            /**
+             * Scientific Approval
+             * @default false
+             * @constant
+             */
+            scientific_approval: false;
         };
         /** PKParameters */
         PKParameters: {
@@ -916,6 +1018,147 @@ export interface components {
             /** Unsupported Requests */
             unsupported_requests?: string[];
         };
+        /** PreparationAnswers */
+        PreparationAnswers: {
+            /** Answers */
+            answers: {
+                [key: string]: string;
+            };
+            /** Base Evidence Sha256 */
+            base_evidence_sha256: string;
+            /** Base Revision */
+            base_revision: number;
+            /** Parameters */
+            parameters?: components["schemas"]["PreparationParameter"][];
+            /** Preparation Id */
+            preparation_id: string;
+        };
+        /** PreparationCheck */
+        PreparationCheck: {
+            /**
+             * Check
+             * @enum {string}
+             */
+            check: "identity" | "provenance" | "units" | "parameter_domains" | "binding_consistency" | "pk_consistency" | "assay_compatibility" | "route" | "exposure" | "endpoint";
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "pass" | "conditional" | "fail" | "not_checked";
+            /** Reasons */
+            reasons: string[];
+        };
+        /** PreparationParameter */
+        PreparationParameter: {
+            /**
+             * Applicability
+             * @default candidate
+             * @enum {string}
+             */
+            applicability: "candidate" | "compatible" | "conditional" | "incompatible";
+            context: components["schemas"]["EvidenceContext"];
+            /**
+             * Entered At
+             * @default null
+             */
+            entered_at: string | null;
+            /**
+             * Formula
+             * @default null
+             */
+            formula: string | null;
+            /** Normalization */
+            normalization: string;
+            /** Original Unit */
+            original_unit: string;
+            /** Original Value */
+            original_value: number;
+            /** Parameter */
+            parameter: string;
+            /** Parameter Id */
+            parameter_id: string;
+            /** Parent Ids */
+            parent_ids?: string[];
+            /** Passages */
+            passages?: components["schemas"]["SourcePassage"][];
+            /**
+             * Provenance
+             * @enum {string}
+             */
+            provenance: "reported" | "calculated" | "researcher_assumed";
+            /**
+             * Rationale
+             * @default null
+             */
+            rationale: string | null;
+            /** Unit */
+            unit: string;
+            /** Value */
+            value: number;
+        };
+        /** PreparationRequest */
+        PreparationRequest: {
+            /** Drug Name */
+            drug_name: string;
+            /**
+             * Endpoint
+             * @default target_occupancy
+             */
+            endpoint: string;
+            /**
+             * Molecular Form
+             * @default null
+             */
+            molecular_form: string | null;
+            /** Original Hypothesis */
+            original_hypothesis: string;
+            /**
+             * Route
+             * @default null
+             */
+            route: string | null;
+            /**
+             * Target
+             * @default null
+             */
+            target: string | null;
+        };
+        /** PreparationSource */
+        PreparationSource: {
+            /**
+             * Content Kind
+             * @enum {string}
+             */
+            content_kind: "full_text" | "abstract" | "database_record" | "product_label";
+            /** Identifiers */
+            identifiers?: {
+                [key: string]: string;
+            };
+            /**
+             * Retrieval Status
+             * @enum {string}
+             */
+            retrieval_status: "live" | "cached" | "unavailable";
+            /**
+             * Retrieved At
+             * Format: date-time
+             */
+            retrieved_at: string;
+            /**
+             * Snapshot Sha256
+             * @default null
+             */
+            snapshot_sha256: string | null;
+            /** Source Id */
+            source_id: string;
+            /** Title */
+            title: string;
+            /**
+             * Url
+             * Format: uri
+             */
+            url: string;
+        };
         /** ResearchEvent */
         ResearchEvent: {
             /** Created At */
@@ -974,6 +1217,102 @@ export interface components {
             trace_status: string;
             /** Updated At */
             updated_at: string;
+        };
+        /** ResearchPreparation */
+        ResearchPreparation: {
+            /** Assumptions */
+            assumptions?: string[];
+            /**
+             * Base Configuration Sha256
+             * @default null
+             */
+            base_configuration_sha256: string | null;
+            /**
+             * Base Experiment Id
+             * @default null
+             */
+            base_experiment_id: string | null;
+            /** Checks */
+            checks?: components["schemas"]["PreparationCheck"][];
+            /**
+             * Configuration Required
+             * @default true
+             * @constant
+             */
+            configuration_required: true;
+            /** Evidence Sha256 */
+            evidence_sha256: string;
+            /** Limitations */
+            limitations: string[];
+            /** Missing Inputs */
+            missing_inputs?: components["schemas"]["MissingPreparationInput"][];
+            /**
+             * Model Id
+             * @default null
+             */
+            model_id: string | null;
+            /** Parameters */
+            parameters?: components["schemas"]["PreparationParameter"][];
+            /**
+             * Parent Preparation Id
+             * @default null
+             */
+            parent_preparation_id: string | null;
+            /**
+             * Path
+             * @enum {string}
+             */
+            path: "reviewed_preset" | "research_derived" | "researcher_specified";
+            /** Preparation Id */
+            preparation_id: string;
+            /**
+             * Profile Id
+             * @default null
+             */
+            profile_id: string | null;
+            /**
+             * Profile Version
+             * @default null
+             */
+            profile_version: string | null;
+            /** Reasons */
+            reasons: string[];
+            request: components["schemas"]["PreparationRequest"];
+            /**
+             * Resolved Drug Identifier
+             * @default null
+             */
+            resolved_drug_identifier: string | null;
+            /**
+             * Resolved Target Identifier
+             * @default null
+             */
+            resolved_target_identifier: string | null;
+            /** Revision */
+            revision: number;
+            /**
+             * Runnable
+             * @default false
+             * @constant
+             */
+            runnable: false;
+            /**
+             * Schema Version
+             * @default 1.0
+             * @constant
+             */
+            schema_version: "1.0";
+            /** Selected Parameters */
+            selected_parameters?: {
+                [key: string]: string;
+            };
+            /** Sources */
+            sources?: components["schemas"]["PreparationSource"][];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "identity_clarification" | "researching" | "needs_inputs" | "unsupported" | "source_unavailable" | "failed_validation" | "ready_for_configuration";
         };
         /** ScenarioConfig */
         ScenarioConfig: {
@@ -1095,6 +1434,15 @@ export interface components {
             time_h: number[];
             /** Warnings */
             warnings: string[];
+        };
+        /** SourcePassage */
+        SourcePassage: {
+            /** Locator */
+            locator: string;
+            /** Source Id */
+            source_id: string;
+            /** Supporting Passage */
+            supporting_passage: string;
         };
         /** StructureReference */
         StructureReference: {

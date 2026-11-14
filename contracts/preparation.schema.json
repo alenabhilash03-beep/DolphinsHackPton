@@ -1,0 +1,821 @@
+{
+  "$defs": {
+    "EvidenceContext": {
+      "additionalProperties": false,
+      "description": "None means unknown, never an inferred biological match.",
+      "properties": {
+        "applicability_notes": {
+          "items": {
+            "maxLength": 12000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Applicability Notes",
+          "type": "array"
+        },
+        "assay_conditions": {
+          "anyOf": [
+            {
+              "maxLength": 12000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Assay Conditions"
+        },
+        "drug_identifier": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Drug Identifier",
+          "type": "string"
+        },
+        "experimental_system": {
+          "anyOf": [
+            {
+              "maxLength": 12000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Experimental System"
+        },
+        "exposure_compartment": {
+          "anyOf": [
+            {
+              "maxLength": 12000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Exposure Compartment"
+        },
+        "formulation": {
+          "anyOf": [
+            {
+              "maxLength": 12000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Formulation"
+        },
+        "molecular_form": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Molecular Form"
+        },
+        "route": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Route"
+        },
+        "species": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Species"
+        },
+        "target_identifier": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Identifier"
+        }
+      },
+      "required": [
+        "drug_identifier",
+        "applicability_notes"
+      ],
+      "title": "EvidenceContext",
+      "type": "object"
+    },
+    "MissingPreparationInput": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_unit": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Unit"
+        },
+        "input_id": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Input Id",
+          "type": "string"
+        },
+        "parameter": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Parameter",
+          "type": "string"
+        },
+        "permitted_resolution": {
+          "enum": [
+            "clarify_identity",
+            "retrieve_evidence",
+            "provide_value_or_assumption",
+            "clarify_scope"
+          ],
+          "title": "Permitted Resolution",
+          "type": "string"
+        },
+        "question": {
+          "maxLength": 12000,
+          "minLength": 1,
+          "title": "Question",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 12000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "input_id",
+        "parameter",
+        "reason",
+        "question",
+        "permitted_resolution"
+      ],
+      "title": "MissingPreparationInput",
+      "type": "object"
+    },
+    "PreparationCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "check": {
+          "enum": [
+            "identity",
+            "provenance",
+            "units",
+            "parameter_domains",
+            "binding_consistency",
+            "pk_consistency",
+            "assay_compatibility",
+            "route",
+            "exposure",
+            "endpoint"
+          ],
+          "title": "Check",
+          "type": "string"
+        },
+        "outcome": {
+          "enum": [
+            "pass",
+            "conditional",
+            "fail",
+            "not_checked"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "reasons": {
+          "items": {
+            "maxLength": 12000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Reasons",
+          "type": "array"
+        }
+      },
+      "required": [
+        "check",
+        "outcome",
+        "reasons"
+      ],
+      "title": "PreparationCheck",
+      "type": "object"
+    },
+    "PreparationParameter": {
+      "additionalProperties": false,
+      "properties": {
+        "applicability": {
+          "default": "candidate",
+          "enum": [
+            "candidate",
+            "compatible",
+            "conditional",
+            "incompatible"
+          ],
+          "title": "Applicability",
+          "type": "string"
+        },
+        "context": {
+          "$ref": "#/$defs/EvidenceContext"
+        },
+        "entered_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entered At"
+        },
+        "formula": {
+          "anyOf": [
+            {
+              "maxLength": 12000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Formula"
+        },
+        "normalization": {
+          "maxLength": 12000,
+          "minLength": 1,
+          "title": "Normalization",
+          "type": "string"
+        },
+        "original_unit": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Original Unit",
+          "type": "string"
+        },
+        "original_value": {
+          "title": "Original Value",
+          "type": "number"
+        },
+        "parameter": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Parameter",
+          "type": "string"
+        },
+        "parameter_id": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Parameter Id",
+          "type": "string"
+        },
+        "parent_ids": {
+          "items": {
+            "maxLength": 120,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Parent Ids",
+          "type": "array"
+        },
+        "passages": {
+          "items": {
+            "$ref": "#/$defs/SourcePassage"
+          },
+          "title": "Passages",
+          "type": "array"
+        },
+        "provenance": {
+          "enum": [
+            "reported",
+            "calculated",
+            "researcher_assumed"
+          ],
+          "title": "Provenance",
+          "type": "string"
+        },
+        "rationale": {
+          "anyOf": [
+            {
+              "maxLength": 12000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rationale"
+        },
+        "unit": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "parameter_id",
+        "parameter",
+        "value",
+        "unit",
+        "original_value",
+        "original_unit",
+        "normalization",
+        "provenance",
+        "context"
+      ],
+      "title": "PreparationParameter",
+      "type": "object"
+    },
+    "PreparationRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "drug_name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Drug Name",
+          "type": "string"
+        },
+        "endpoint": {
+          "default": "target_occupancy",
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Endpoint",
+          "type": "string"
+        },
+        "molecular_form": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Molecular Form"
+        },
+        "original_hypothesis": {
+          "maxLength": 12000,
+          "minLength": 1,
+          "title": "Original Hypothesis",
+          "type": "string"
+        },
+        "route": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Route"
+        },
+        "target": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target"
+        }
+      },
+      "required": [
+        "drug_name",
+        "original_hypothesis"
+      ],
+      "title": "PreparationRequest",
+      "type": "object"
+    },
+    "PreparationSource": {
+      "additionalProperties": false,
+      "properties": {
+        "content_kind": {
+          "enum": [
+            "full_text",
+            "abstract",
+            "database_record",
+            "product_label"
+          ],
+          "title": "Content Kind",
+          "type": "string"
+        },
+        "identifiers": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Identifiers",
+          "type": "object"
+        },
+        "retrieval_status": {
+          "enum": [
+            "live",
+            "cached",
+            "unavailable"
+          ],
+          "title": "Retrieval Status",
+          "type": "string"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "snapshot_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Snapshot Sha256"
+        },
+        "source_id": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 12000,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "url",
+        "title",
+        "retrieved_at",
+        "retrieval_status",
+        "content_kind"
+      ],
+      "title": "PreparationSource",
+      "type": "object"
+    },
+    "SourcePassage": {
+      "additionalProperties": false,
+      "properties": {
+        "locator": {
+          "maxLength": 12000,
+          "minLength": 1,
+          "title": "Locator",
+          "type": "string"
+        },
+        "source_id": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        },
+        "supporting_passage": {
+          "maxLength": 12000,
+          "minLength": 1,
+          "title": "Supporting Passage",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "locator",
+        "supporting_passage"
+      ],
+      "title": "SourcePassage",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "assumptions": {
+      "items": {
+        "maxLength": 12000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Assumptions",
+      "type": "array"
+    },
+    "base_configuration_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Base Configuration Sha256"
+    },
+    "base_experiment_id": {
+      "anyOf": [
+        {
+          "maxLength": 120,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Base Experiment Id"
+    },
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/PreparationCheck"
+      },
+      "title": "Checks",
+      "type": "array"
+    },
+    "configuration_required": {
+      "const": true,
+      "default": true,
+      "title": "Configuration Required",
+      "type": "boolean"
+    },
+    "evidence_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Evidence Sha256",
+      "type": "string"
+    },
+    "limitations": {
+      "items": {
+        "maxLength": 12000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Limitations",
+      "type": "array"
+    },
+    "missing_inputs": {
+      "items": {
+        "$ref": "#/$defs/MissingPreparationInput"
+      },
+      "title": "Missing Inputs",
+      "type": "array"
+    },
+    "model_id": {
+      "anyOf": [
+        {
+          "maxLength": 120,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model Id"
+    },
+    "parameters": {
+      "items": {
+        "$ref": "#/$defs/PreparationParameter"
+      },
+      "title": "Parameters",
+      "type": "array"
+    },
+    "parent_preparation_id": {
+      "anyOf": [
+        {
+          "maxLength": 120,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Preparation Id"
+    },
+    "path": {
+      "enum": [
+        "reviewed_preset",
+        "research_derived",
+        "researcher_specified"
+      ],
+      "title": "Path",
+      "type": "string"
+    },
+    "preparation_id": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Preparation Id",
+      "type": "string"
+    },
+    "profile_id": {
+      "anyOf": [
+        {
+          "maxLength": 120,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Profile Id"
+    },
+    "profile_version": {
+      "anyOf": [
+        {
+          "maxLength": 120,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Profile Version"
+    },
+    "reasons": {
+      "items": {
+        "maxLength": 12000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Reasons",
+      "type": "array"
+    },
+    "request": {
+      "$ref": "#/$defs/PreparationRequest"
+    },
+    "resolved_drug_identifier": {
+      "anyOf": [
+        {
+          "maxLength": 120,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Resolved Drug Identifier"
+    },
+    "resolved_target_identifier": {
+      "anyOf": [
+        {
+          "maxLength": 120,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Resolved Target Identifier"
+    },
+    "revision": {
+      "minimum": 0,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "runnable": {
+      "const": false,
+      "default": false,
+      "title": "Runnable",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "selected_parameters": {
+      "additionalProperties": {
+        "maxLength": 120,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Selected Parameters",
+      "type": "object"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/PreparationSource"
+      },
+      "title": "Sources",
+      "type": "array"
+    },
+    "state": {
+      "enum": [
+        "identity_clarification",
+        "researching",
+        "needs_inputs",
+        "unsupported",
+        "source_unavailable",
+        "failed_validation",
+        "ready_for_configuration"
+      ],
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "preparation_id",
+    "revision",
+    "request",
+    "state",
+    "path",
+    "evidence_sha256",
+    "reasons",
+    "limitations"
+  ],
+  "title": "ResearchPreparation",
+  "type": "object"
+}

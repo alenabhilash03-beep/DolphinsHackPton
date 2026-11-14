@@ -1,0 +1,1974 @@
+{
+  "complete_unregistered": {
+    "schema_version": "1.0",
+    "preparation_id": "prep-contract-reference",
+    "revision": 0,
+    "parent_preparation_id": null,
+    "base_experiment_id": null,
+    "base_configuration_sha256": null,
+    "request": {
+      "drug_name": "Contract compound X",
+      "original_hypothesis": "  Compare exposure assumptions for compound X and target Y.  ",
+      "target": "target-Y",
+      "molecular_form": null,
+      "route": "iv_infusion",
+      "endpoint": "target_occupancy"
+    },
+    "state": "ready_for_configuration",
+    "path": "research_derived",
+    "profile_id": null,
+    "profile_version": null,
+    "resolved_drug_identifier": "fixture:compound-X",
+    "resolved_target_identifier": "fixture:target-Y",
+    "model_id": "one_compartment_effective_binding_v1",
+    "sources": [
+      {
+        "source_id": "fixture-source",
+        "url": "https://example.org/contract-fixture",
+        "title": "SYNTHETIC CONTRACT FIXTURE \u2014 not scientific evidence",
+        "retrieved_at": "2026-11-14T12:00:00Z",
+        "retrieval_status": "cached",
+        "content_kind": "database_record",
+        "snapshot_sha256": null,
+        "identifiers": {}
+      }
+    ],
+    "parameters": [
+      {
+        "parameter_id": "parameter-0",
+        "parameter": "pk.volume_L",
+        "value": 2.0,
+        "unit": "L",
+        "original_value": 2.0,
+        "original_unit": "L",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 0",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.volume_L = 2.0 L; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-1",
+        "parameter": "pk.clearance_L_h",
+        "value": 0.1,
+        "unit": "L/hour",
+        "original_value": 0.1,
+        "original_unit": "L/hour",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 1",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.clearance_L_h = 0.1 L/hour; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-2",
+        "parameter": "pk.elimination_half_life_h",
+        "value": 13.862943611198904,
+        "unit": "hour",
+        "original_value": 13.862943611198904,
+        "original_unit": "hour",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 2",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.elimination_half_life_h = 13.862943611198904 hour; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-3",
+        "parameter": "binding.association_nM_inv_h_inv",
+        "value": 1.0,
+        "unit": "nM^-1 hour^-1",
+        "original_value": 1.0,
+        "original_unit": "nM^-1 hour^-1",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 3",
+            "supporting_passage": "SYNTHETIC FIXTURE: binding.association_nM_inv_h_inv = 1.0 nM^-1 hour^-1; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-4",
+        "parameter": "binding.dissociation_h_inv",
+        "value": 0.1,
+        "unit": "hour^-1",
+        "original_value": 0.1,
+        "original_unit": "hour^-1",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 4",
+            "supporting_passage": "SYNTHETIC FIXTURE: binding.dissociation_h_inv = 0.1 hour^-1; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-5",
+        "parameter": "binding.affinity_nM",
+        "value": 0.1,
+        "unit": "nM",
+        "original_value": 0.1,
+        "original_unit": "nM",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 5",
+            "supporting_passage": "SYNTHETIC FIXTURE: binding.affinity_nM = 0.1 nM; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-6",
+        "parameter": "molecular_weight_g_mol",
+        "value": 1000.0,
+        "unit": "g/mol",
+        "original_value": 1000.0,
+        "original_unit": "g/mol",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 6",
+            "supporting_passage": "SYNTHETIC FIXTURE: molecular_weight_g_mol = 1000.0 g/mol; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-7",
+        "parameter": "body_mass_kg",
+        "value": 70.0,
+        "unit": "kg",
+        "original_value": 70.0,
+        "original_unit": "kg",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 7",
+            "supporting_passage": "SYNTHETIC FIXTURE: body_mass_kg = 70.0 kg; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-8",
+        "parameter": "exposure_factor",
+        "value": 0.01,
+        "unit": "1",
+        "original_value": 0.01,
+        "original_unit": "1",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 8",
+            "supporting_passage": "SYNTHETIC FIXTURE: exposure_factor = 0.01 1; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      }
+    ],
+    "selected_parameters": {
+      "pk.volume_L": "parameter-0",
+      "pk.clearance_L_h": "parameter-1",
+      "pk.elimination_half_life_h": "parameter-2",
+      "binding.association_nM_inv_h_inv": "parameter-3",
+      "binding.dissociation_h_inv": "parameter-4",
+      "binding.affinity_nM": "parameter-5",
+      "molecular_weight_g_mol": "parameter-6",
+      "body_mass_kg": "parameter-7",
+      "exposure_factor": "parameter-8"
+    },
+    "evidence_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "checks": [
+      {
+        "check": "assay_compatibility",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "binding_consistency",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "endpoint",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "exposure",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "identity",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "parameter_domains",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "pk_consistency",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "provenance",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "route",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "units",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      }
+    ],
+    "missing_inputs": [],
+    "assumptions": [
+      "All numbers and source passages are synthetic fixtures, not usable drug evidence."
+    ],
+    "reasons": [
+      "Contract-only example, not a scientific or runtime readiness decision."
+    ],
+    "limitations": [
+      "No solver authorization or validated ExperimentConfig is present."
+    ],
+    "runnable": false,
+    "configuration_required": true
+  },
+  "reviewed_preset": {
+    "schema_version": "1.0",
+    "preparation_id": "prep-contract-reference",
+    "revision": 0,
+    "parent_preparation_id": null,
+    "base_experiment_id": null,
+    "base_configuration_sha256": null,
+    "request": {
+      "drug_name": "Contract compound X",
+      "original_hypothesis": "  Compare exposure assumptions for compound X and target Y.  ",
+      "target": "target-Y",
+      "molecular_form": null,
+      "route": "iv_infusion",
+      "endpoint": "target_occupancy"
+    },
+    "state": "researching",
+    "path": "reviewed_preset",
+    "profile_id": "fixture-profile",
+    "profile_version": "fixture-v1",
+    "resolved_drug_identifier": "fixture:compound-X",
+    "resolved_target_identifier": "fixture:target-Y",
+    "model_id": "one_compartment_effective_binding_v1",
+    "sources": [
+      {
+        "source_id": "fixture-source",
+        "url": "https://example.org/contract-fixture",
+        "title": "SYNTHETIC CONTRACT FIXTURE \u2014 not scientific evidence",
+        "retrieved_at": "2026-11-14T12:00:00Z",
+        "retrieval_status": "cached",
+        "content_kind": "database_record",
+        "snapshot_sha256": null,
+        "identifiers": {}
+      }
+    ],
+    "parameters": [
+      {
+        "parameter_id": "parameter-0",
+        "parameter": "pk.volume_L",
+        "value": 2.0,
+        "unit": "L",
+        "original_value": 2.0,
+        "original_unit": "L",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 0",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.volume_L = 2.0 L; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-1",
+        "parameter": "pk.clearance_L_h",
+        "value": 0.1,
+        "unit": "L/hour",
+        "original_value": 0.1,
+        "original_unit": "L/hour",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 1",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.clearance_L_h = 0.1 L/hour; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-2",
+        "parameter": "pk.elimination_half_life_h",
+        "value": 13.862943611198904,
+        "unit": "hour",
+        "original_value": 13.862943611198904,
+        "original_unit": "hour",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 2",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.elimination_half_life_h = 13.862943611198904 hour; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-3",
+        "parameter": "binding.association_nM_inv_h_inv",
+        "value": 1.0,
+        "unit": "nM^-1 hour^-1",
+        "original_value": 1.0,
+        "original_unit": "nM^-1 hour^-1",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 3",
+            "supporting_passage": "SYNTHETIC FIXTURE: binding.association_nM_inv_h_inv = 1.0 nM^-1 hour^-1; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-4",
+        "parameter": "binding.dissociation_h_inv",
+        "value": 0.1,
+        "unit": "hour^-1",
+        "original_value": 0.1,
+        "original_unit": "hour^-1",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 4",
+            "supporting_passage": "SYNTHETIC FIXTURE: binding.dissociation_h_inv = 0.1 hour^-1; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-5",
+        "parameter": "binding.affinity_nM",
+        "value": 0.1,
+        "unit": "nM",
+        "original_value": 0.1,
+        "original_unit": "nM",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 5",
+            "supporting_passage": "SYNTHETIC FIXTURE: binding.affinity_nM = 0.1 nM; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-6",
+        "parameter": "molecular_weight_g_mol",
+        "value": 1000.0,
+        "unit": "g/mol",
+        "original_value": 1000.0,
+        "original_unit": "g/mol",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 6",
+            "supporting_passage": "SYNTHETIC FIXTURE: molecular_weight_g_mol = 1000.0 g/mol; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-7",
+        "parameter": "body_mass_kg",
+        "value": 70.0,
+        "unit": "kg",
+        "original_value": 70.0,
+        "original_unit": "kg",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 7",
+            "supporting_passage": "SYNTHETIC FIXTURE: body_mass_kg = 70.0 kg; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-8",
+        "parameter": "exposure_factor",
+        "value": 0.01,
+        "unit": "1",
+        "original_value": 0.01,
+        "original_unit": "1",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 8",
+            "supporting_passage": "SYNTHETIC FIXTURE: exposure_factor = 0.01 1; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      }
+    ],
+    "selected_parameters": {
+      "pk.volume_L": "parameter-0",
+      "pk.clearance_L_h": "parameter-1",
+      "pk.elimination_half_life_h": "parameter-2",
+      "binding.association_nM_inv_h_inv": "parameter-3",
+      "binding.dissociation_h_inv": "parameter-4",
+      "binding.affinity_nM": "parameter-5",
+      "molecular_weight_g_mol": "parameter-6",
+      "body_mass_kg": "parameter-7",
+      "exposure_factor": "parameter-8"
+    },
+    "evidence_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "checks": [],
+    "missing_inputs": [],
+    "assumptions": [
+      "All numbers and source passages are synthetic fixtures, not usable drug evidence."
+    ],
+    "reasons": [
+      "Contract-only example, not a scientific or runtime readiness decision."
+    ],
+    "limitations": [
+      "No solver authorization or validated ExperimentConfig is present."
+    ],
+    "runnable": false,
+    "configuration_required": true
+  },
+  "missing_binding": {
+    "schema_version": "1.0",
+    "preparation_id": "prep-contract-reference",
+    "revision": 0,
+    "parent_preparation_id": null,
+    "base_experiment_id": null,
+    "base_configuration_sha256": null,
+    "request": {
+      "drug_name": "Contract compound X",
+      "original_hypothesis": "  Compare exposure assumptions for compound X and target Y.  ",
+      "target": "target-Y",
+      "molecular_form": null,
+      "route": "iv_infusion",
+      "endpoint": "target_occupancy"
+    },
+    "state": "needs_inputs",
+    "path": "research_derived",
+    "profile_id": null,
+    "profile_version": null,
+    "resolved_drug_identifier": "fixture:compound-X",
+    "resolved_target_identifier": "fixture:target-Y",
+    "model_id": "one_compartment_effective_binding_v1",
+    "sources": [
+      {
+        "source_id": "fixture-source",
+        "url": "https://example.org/contract-fixture",
+        "title": "SYNTHETIC CONTRACT FIXTURE \u2014 not scientific evidence",
+        "retrieved_at": "2026-11-14T12:00:00Z",
+        "retrieval_status": "cached",
+        "content_kind": "database_record",
+        "snapshot_sha256": null,
+        "identifiers": {}
+      }
+    ],
+    "parameters": [
+      {
+        "parameter_id": "parameter-0",
+        "parameter": "pk.volume_L",
+        "value": 2.0,
+        "unit": "L",
+        "original_value": 2.0,
+        "original_unit": "L",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 0",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.volume_L = 2.0 L; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-1",
+        "parameter": "pk.clearance_L_h",
+        "value": 0.1,
+        "unit": "L/hour",
+        "original_value": 0.1,
+        "original_unit": "L/hour",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 1",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.clearance_L_h = 0.1 L/hour; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-2",
+        "parameter": "pk.elimination_half_life_h",
+        "value": 13.862943611198904,
+        "unit": "hour",
+        "original_value": 13.862943611198904,
+        "original_unit": "hour",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 2",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.elimination_half_life_h = 13.862943611198904 hour; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-6",
+        "parameter": "molecular_weight_g_mol",
+        "value": 1000.0,
+        "unit": "g/mol",
+        "original_value": 1000.0,
+        "original_unit": "g/mol",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 6",
+            "supporting_passage": "SYNTHETIC FIXTURE: molecular_weight_g_mol = 1000.0 g/mol; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-7",
+        "parameter": "body_mass_kg",
+        "value": 70.0,
+        "unit": "kg",
+        "original_value": 70.0,
+        "original_unit": "kg",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 7",
+            "supporting_passage": "SYNTHETIC FIXTURE: body_mass_kg = 70.0 kg; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-8",
+        "parameter": "exposure_factor",
+        "value": 0.01,
+        "unit": "1",
+        "original_value": 0.01,
+        "original_unit": "1",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "researcher_assumed",
+        "passages": [],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": "Illustrative target exposure only; must be supplied explicitly by researcher.",
+        "entered_at": "2026-11-14T12:00:00Z",
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      }
+    ],
+    "selected_parameters": {
+      "pk.volume_L": "parameter-0",
+      "pk.clearance_L_h": "parameter-1",
+      "pk.elimination_half_life_h": "parameter-2",
+      "molecular_weight_g_mol": "parameter-6",
+      "body_mass_kg": "parameter-7",
+      "exposure_factor": "parameter-8"
+    },
+    "evidence_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "checks": [],
+    "missing_inputs": [
+      {
+        "input_id": "missing-kinetics",
+        "parameter": "binding rate pair",
+        "reason": "No compatible measured association/dissociation pair retrieved.",
+        "expected_unit": "nM^-1 hour^-1 and hour^-1",
+        "question": "Provide a compatible rate pair and evidence, or explicit hypothetical values. KD alone cannot supply kinetics.",
+        "permitted_resolution": "provide_value_or_assumption"
+      },
+      {
+        "input_id": "exposure-context",
+        "parameter": "exposure_factor",
+        "reason": "Illustrative exposure assumption is not experimental evidence.",
+        "expected_unit": "1",
+        "question": "Which target-site exposure assumption should this hypothetical experiment use?",
+        "permitted_resolution": "clarify_scope"
+      }
+    ],
+    "assumptions": [
+      "All numbers and source passages are synthetic fixtures, not usable drug evidence."
+    ],
+    "reasons": [
+      "Contract-only example, not a scientific or runtime readiness decision."
+    ],
+    "limitations": [
+      "No solver authorization or validated ExperimentConfig is present."
+    ],
+    "runnable": false,
+    "configuration_required": true
+  },
+  "incompatible_assays": {
+    "schema_version": "1.0",
+    "preparation_id": "prep-contract-reference",
+    "revision": 0,
+    "parent_preparation_id": null,
+    "base_experiment_id": null,
+    "base_configuration_sha256": null,
+    "request": {
+      "drug_name": "Contract compound X",
+      "original_hypothesis": "  Compare exposure assumptions for compound X and target Y.  ",
+      "target": "target-Y",
+      "molecular_form": null,
+      "route": "iv_infusion",
+      "endpoint": "target_occupancy"
+    },
+    "state": "failed_validation",
+    "path": "research_derived",
+    "profile_id": null,
+    "profile_version": null,
+    "resolved_drug_identifier": "fixture:compound-X",
+    "resolved_target_identifier": "fixture:target-Y",
+    "model_id": "one_compartment_effective_binding_v1",
+    "sources": [
+      {
+        "source_id": "fixture-source",
+        "url": "https://example.org/contract-fixture",
+        "title": "SYNTHETIC CONTRACT FIXTURE \u2014 not scientific evidence",
+        "retrieved_at": "2026-11-14T12:00:00Z",
+        "retrieval_status": "cached",
+        "content_kind": "database_record",
+        "snapshot_sha256": null,
+        "identifiers": {}
+      }
+    ],
+    "parameters": [
+      {
+        "parameter_id": "parameter-0",
+        "parameter": "pk.volume_L",
+        "value": 2.0,
+        "unit": "L",
+        "original_value": 2.0,
+        "original_unit": "L",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 0",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.volume_L = 2.0 L; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "incompatible"
+      },
+      {
+        "parameter_id": "parameter-1",
+        "parameter": "pk.clearance_L_h",
+        "value": 0.1,
+        "unit": "L/hour",
+        "original_value": 0.1,
+        "original_unit": "L/hour",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 1",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.clearance_L_h = 0.1 L/hour; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-2",
+        "parameter": "pk.elimination_half_life_h",
+        "value": 13.862943611198904,
+        "unit": "hour",
+        "original_value": 13.862943611198904,
+        "original_unit": "hour",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 2",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.elimination_half_life_h = 13.862943611198904 hour; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-3",
+        "parameter": "binding.association_nM_inv_h_inv",
+        "value": 1.0,
+        "unit": "nM^-1 hour^-1",
+        "original_value": 1.0,
+        "original_unit": "nM^-1 hour^-1",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 3",
+            "supporting_passage": "SYNTHETIC FIXTURE: binding.association_nM_inv_h_inv = 1.0 nM^-1 hour^-1; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-4",
+        "parameter": "binding.dissociation_h_inv",
+        "value": 0.1,
+        "unit": "hour^-1",
+        "original_value": 0.1,
+        "original_unit": "hour^-1",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 4",
+            "supporting_passage": "SYNTHETIC FIXTURE: binding.dissociation_h_inv = 0.1 hour^-1; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-5",
+        "parameter": "binding.affinity_nM",
+        "value": 0.1,
+        "unit": "nM",
+        "original_value": 0.1,
+        "original_unit": "nM",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 5",
+            "supporting_passage": "SYNTHETIC FIXTURE: binding.affinity_nM = 0.1 nM; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-6",
+        "parameter": "molecular_weight_g_mol",
+        "value": 1000.0,
+        "unit": "g/mol",
+        "original_value": 1000.0,
+        "original_unit": "g/mol",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 6",
+            "supporting_passage": "SYNTHETIC FIXTURE: molecular_weight_g_mol = 1000.0 g/mol; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-7",
+        "parameter": "body_mass_kg",
+        "value": 70.0,
+        "unit": "kg",
+        "original_value": 70.0,
+        "original_unit": "kg",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 7",
+            "supporting_passage": "SYNTHETIC FIXTURE: body_mass_kg = 70.0 kg; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-8",
+        "parameter": "exposure_factor",
+        "value": 0.01,
+        "unit": "1",
+        "original_value": 0.01,
+        "original_unit": "1",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 8",
+            "supporting_passage": "SYNTHETIC FIXTURE: exposure_factor = 0.01 1; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      }
+    ],
+    "selected_parameters": {
+      "pk.volume_L": "parameter-0",
+      "pk.clearance_L_h": "parameter-1",
+      "pk.elimination_half_life_h": "parameter-2",
+      "binding.association_nM_inv_h_inv": "parameter-3",
+      "binding.dissociation_h_inv": "parameter-4",
+      "binding.affinity_nM": "parameter-5",
+      "molecular_weight_g_mol": "parameter-6",
+      "body_mass_kg": "parameter-7",
+      "exposure_factor": "parameter-8"
+    },
+    "evidence_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "checks": [
+      {
+        "check": "assay_compatibility",
+        "outcome": "fail",
+        "reasons": [
+          "Incompatible assay contexts cannot be silently combined."
+        ]
+      },
+      {
+        "check": "binding_consistency",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "endpoint",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "exposure",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "identity",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "parameter_domains",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "pk_consistency",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "provenance",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "route",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      },
+      {
+        "check": "units",
+        "outcome": "conditional",
+        "reasons": [
+          "Synthetic schema example; applicability checks are not actually executed."
+        ]
+      }
+    ],
+    "missing_inputs": [],
+    "assumptions": [
+      "All numbers and source passages are synthetic fixtures, not usable drug evidence."
+    ],
+    "reasons": [
+      "Contract-only example, not a scientific or runtime readiness decision."
+    ],
+    "limitations": [
+      "No solver authorization or validated ExperimentConfig is present."
+    ],
+    "runnable": false,
+    "configuration_required": true
+  },
+  "unsupported_mechanism": {
+    "schema_version": "1.0",
+    "preparation_id": "prep-contract-reference",
+    "revision": 0,
+    "parent_preparation_id": null,
+    "base_experiment_id": null,
+    "base_configuration_sha256": null,
+    "request": {
+      "drug_name": "Contract compound X",
+      "original_hypothesis": "  Compare exposure assumptions for compound X and target Y.  ",
+      "target": "target-Y",
+      "molecular_form": null,
+      "route": "iv_infusion",
+      "endpoint": "tumor_response"
+    },
+    "state": "unsupported",
+    "path": "research_derived",
+    "profile_id": null,
+    "profile_version": null,
+    "resolved_drug_identifier": "fixture:compound-X",
+    "resolved_target_identifier": "fixture:target-Y",
+    "model_id": null,
+    "sources": [
+      {
+        "source_id": "fixture-source",
+        "url": "https://example.org/contract-fixture",
+        "title": "SYNTHETIC CONTRACT FIXTURE \u2014 not scientific evidence",
+        "retrieved_at": "2026-11-14T12:00:00Z",
+        "retrieval_status": "cached",
+        "content_kind": "database_record",
+        "snapshot_sha256": null,
+        "identifiers": {}
+      }
+    ],
+    "parameters": [
+      {
+        "parameter_id": "parameter-0",
+        "parameter": "pk.volume_L",
+        "value": 2.0,
+        "unit": "L",
+        "original_value": 2.0,
+        "original_unit": "L",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 0",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.volume_L = 2.0 L; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-1",
+        "parameter": "pk.clearance_L_h",
+        "value": 0.1,
+        "unit": "L/hour",
+        "original_value": 0.1,
+        "original_unit": "L/hour",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 1",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.clearance_L_h = 0.1 L/hour; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-2",
+        "parameter": "pk.elimination_half_life_h",
+        "value": 13.862943611198904,
+        "unit": "hour",
+        "original_value": 13.862943611198904,
+        "original_unit": "hour",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 2",
+            "supporting_passage": "SYNTHETIC FIXTURE: pk.elimination_half_life_h = 13.862943611198904 hour; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-3",
+        "parameter": "binding.association_nM_inv_h_inv",
+        "value": 1.0,
+        "unit": "nM^-1 hour^-1",
+        "original_value": 1.0,
+        "original_unit": "nM^-1 hour^-1",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 3",
+            "supporting_passage": "SYNTHETIC FIXTURE: binding.association_nM_inv_h_inv = 1.0 nM^-1 hour^-1; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-4",
+        "parameter": "binding.dissociation_h_inv",
+        "value": 0.1,
+        "unit": "hour^-1",
+        "original_value": 0.1,
+        "original_unit": "hour^-1",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 4",
+            "supporting_passage": "SYNTHETIC FIXTURE: binding.dissociation_h_inv = 0.1 hour^-1; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-5",
+        "parameter": "binding.affinity_nM",
+        "value": 0.1,
+        "unit": "nM",
+        "original_value": 0.1,
+        "original_unit": "nM",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 5",
+            "supporting_passage": "SYNTHETIC FIXTURE: binding.affinity_nM = 0.1 nM; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-6",
+        "parameter": "molecular_weight_g_mol",
+        "value": 1000.0,
+        "unit": "g/mol",
+        "original_value": 1000.0,
+        "original_unit": "g/mol",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 6",
+            "supporting_passage": "SYNTHETIC FIXTURE: molecular_weight_g_mol = 1000.0 g/mol; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-7",
+        "parameter": "body_mass_kg",
+        "value": 70.0,
+        "unit": "kg",
+        "original_value": 70.0,
+        "original_unit": "kg",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 7",
+            "supporting_passage": "SYNTHETIC FIXTURE: body_mass_kg = 70.0 kg; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      },
+      {
+        "parameter_id": "parameter-8",
+        "parameter": "exposure_factor",
+        "value": 0.01,
+        "unit": "1",
+        "original_value": 0.01,
+        "original_unit": "1",
+        "normalization": "Identity conversion in synthetic fixture",
+        "provenance": "reported",
+        "passages": [
+          {
+            "source_id": "fixture-source",
+            "locator": "Fixture row 8",
+            "supporting_passage": "SYNTHETIC FIXTURE: exposure_factor = 0.01 1; not a measurement."
+          }
+        ],
+        "parent_ids": [],
+        "formula": null,
+        "rationale": null,
+        "entered_at": null,
+        "context": {
+          "drug_identifier": "fixture:compound-X",
+          "target_identifier": "fixture:target-Y",
+          "molecular_form": "synthetic form",
+          "species": null,
+          "experimental_system": null,
+          "formulation": null,
+          "route": null,
+          "assay_conditions": null,
+          "exposure_compartment": null,
+          "applicability_notes": [
+            "Synthetic context for schema testing only."
+          ]
+        },
+        "applicability": "conditional"
+      }
+    ],
+    "selected_parameters": {
+      "pk.volume_L": "parameter-0",
+      "pk.clearance_L_h": "parameter-1",
+      "pk.elimination_half_life_h": "parameter-2",
+      "binding.association_nM_inv_h_inv": "parameter-3",
+      "binding.dissociation_h_inv": "parameter-4",
+      "binding.affinity_nM": "parameter-5",
+      "molecular_weight_g_mol": "parameter-6",
+      "body_mass_kg": "parameter-7",
+      "exposure_factor": "parameter-8"
+    },
+    "evidence_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "checks": [],
+    "missing_inputs": [],
+    "assumptions": [
+      "All numbers and source passages are synthetic fixtures, not usable drug evidence."
+    ],
+    "reasons": [
+      "No implemented downstream tumor-response model."
+    ],
+    "limitations": [
+      "No solver authorization or validated ExperimentConfig is present."
+    ],
+    "runnable": false,
+    "configuration_required": true
+  }
+}

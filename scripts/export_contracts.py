@@ -8,12 +8,13 @@ sys.path.insert(0, str(ROOT / "apps/api"))
 
 from app.main import app
 from app.schemas.contracts import ExperimentConfig
+from app.schemas.experiment_preparation import ResearchPreparation
 
 destination = ROOT / "contracts"
 destination.mkdir(exist_ok=True)
-for name, document in {"openapi.json": app.openapi(), "experiment.schema.json": ExperimentConfig.model_json_schema()}.items():
+for name, document in {"openapi.json": app.openapi(), "experiment.schema.json": ExperimentConfig.model_json_schema(), "preparation.schema.json": ResearchPreparation.model_json_schema()}.items():
     (destination / name).write_text(json.dumps(document, indent=2, sort_keys=True) + "\n")
-print("Exported OpenAPI and experiment JSON Schema")
+print("Exported OpenAPI, experiment and preparation JSON Schemas")
 example = ExperimentConfig.model_validate_json(
     (ROOT / "data/examples/contract-experiment.json").read_text()
 ).model_dump(mode="json")

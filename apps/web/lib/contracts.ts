@@ -15,3 +15,10 @@ export type PaperSummary = components["schemas"]["PaperSummary"];
 export type DemoSnapshot = components["schemas"]["DemoSnapshot"];
 export type DrugAssessmentRequest = components["schemas"]["DrugAssessmentRequest"];
 export type DrugAssessmentResponse = components["schemas"]["DrugAssessmentResponse"];
+
+// Preparation records are metadata, not permission to run a simulation.
+export type PreparationRequest = components["schemas"]["PreparationRequest"];
+export type PreparationAnswers = components["schemas"]["PreparationAnswers"];
+export type ResearchPreparation = components["schemas"]["ResearchPreparation"];
+export type PreparationParameter = components["schemas"]["PreparationParameter"];
+export type ModelPreparationRequirements = components["schemas"]["ModelPreparationRequirements"];

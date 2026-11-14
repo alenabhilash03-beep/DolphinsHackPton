@@ -12,6 +12,8 @@ from app.research.registry import EvidenceProfile, load_evidence_profile
 from app.research.jobs import ResearchCapacityError, ResearchEvent, ResearchJob, ResearchJobService
 from app.research.demo import DemoSnapshot, load_demo
 from app.research.drug_identity import DrugAssessmentService
+from app.schemas.experiment_preparation import PREPARATION_CONTRACTS
+from app.simulation.capabilities import ModelPreparationRequirements
 from app.schemas.drug_support import DrugAssessmentRequest, DrugAssessmentResponse
 from app.schemas.contracts import ALL_CONTRACTS, ControlAdjustment, ContractValidation, ExperimentConfig, HealthResponse, HypothesisRequest, SimulationRequest, SimulationResult
 from app.simulation.controls import adjust_experiment
@@ -151,7 +153,7 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
         schema = get_openapi(title=api.title, version=api.version, routes=api.routes, description=api.description)
         components = schema.setdefault("components", {}).setdefault("schemas", {})
         # Publish shared schemas, including contracts reserved for future research endpoints.
-        for model in ALL_CONTRACTS:
+        for model in [*ALL_CONTRACTS, *PREPARATION_CONTRACTS, ModelPreparationRequirements]:
             item = model.model_json_schema(ref_template="#/components/schemas/{model}")
             components.update(item.pop("$defs", {}))
             components[model.__name__] = item

@@ -45,9 +45,11 @@ A proposal is rejected, with field-specific feedback for one corrected retry, wh
 - a statement contains a number that its own references do not contain. Paper findings and disagreements may use only numbers from their cited quotes or the hypothesis. Simulation implications and the answer may use the display values of the metrics they reference, configured design values and the hypothesis. Other sections may use design values and the hypothesis. Spelled-out quantities are checked like digits; identifier suffixes such as HER-2 are not treated as numbers;
 - `result_id` is not the current result, a metric names an unknown scenario, or solver metrics are referenced when no result exists;
 - a determined verdict has no finding or solver reference, a disagreement references fewer than two existing findings, or finding IDs repeat;
-- an edit request is given a verdict other than `undetermined` (an edit is an instruction, not a hypothesis).
+- an edit request is given a verdict other than `undetermined` (an edit is an instruction, not a hypothesis);
+- a "how long" question is answered `supported` or `not_supported` from solver fields alone while two or more scenarios are still above threshold at the horizon. Their time above threshold is cut off by the observation window and cannot rank them;
+- a statement is a serialized list or object rather than prose.
 
-Surplus list items are dropped and over-long quotes shortened to a verbatim prefix before validation; a single-string or one-field-object `limitations` shape is unwrapped. Nothing is added or reworded, and every retained item is validated.
+Surplus list items and references are dropped and over-long quotes shortened to a verbatim prefix before validation; a single-string or one-field-object `limitations` shape is unwrapped. Nothing is added or reworded, and every retained item is validated.
 
 `require_current(synthesis, result)` rejects a synthesis for any other result and checks each quantity against its solver field exactly. `AgentTurn` runs it on construction, so a stored turn cannot pair a synthesis with a different result. A direct slider edit produces a new `result_id`, which makes the earlier synthesis stale by this check; 8B.2 uses it to mark the displayed answer.
 

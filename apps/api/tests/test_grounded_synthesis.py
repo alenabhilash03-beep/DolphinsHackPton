@@ -216,6 +216,10 @@ def test_spelled_out_numbers_and_simulation_facts_cannot_hide_under_a_citation()
     accepted, _ = run(g, shaped)
     assert accepted.status == 'grounded' and 'Only one synthetic passage was inspected.' in accepted.limitations
     assert [item.parameter for item in accepted.missing_evidence if item.origin == 'synthesis'] == [None]
+    # A serialized list squeezed into one string is not a statement (observed from the live model).
+    garbled = proposal(g, limitations='["First limit."], ["Second limit."]]')
+    rejected, seen = run(g, garbled, garbled)
+    assert rejected.status == 'rejected' and 'plain prose' in seen[1]['previous_validation_errors'][0]
     invalid_stance = proposal(g, evidence_findings=[{**finding(), 'stance': 'not_supported'}])
     _, seen = run(g, invalid_stance, proposal(g))
     assert "'supports', 'contradicts' or 'context'" in seen[1]['previous_validation_errors'][0]
@@ -347,6 +351,7 @@ def test_oversized_proposals_are_trimmed_without_weakening_grounding():
     citation = {'document_id': DOC_A, 'locator': 'abstract:0', 'quote': long_passage[:900]}
     oversized = proposal(g, evidence_findings=[{**finding(), 'citations': [citation] * 5}],
         limitations=[f'Synthetic limitation {word}.' for word in 'abcdefghij'], missing_evidence=None)
+    oversized['answer'] = {**oversized['answer'], 'metric_refs': oversized['answer']['metric_refs'] * 4}
     synthesis, seen = run(g, oversized)
     assert synthesis.status == 'grounded' and len(seen) == 1
     quotes = [c.quote for c in synthesis.evidence_findings[0].citations]
@@ -367,6 +372,24 @@ def test_missing_evidence_prefers_the_preparation_assessment_and_is_absent_for_s
     assert 'No compatible dissociation rate' in g.missing_evidence()[0].statement
     assert {m.origin for m in grounding(result=None).missing_evidence()} == {'extraction'}
     assert grounding(record=record).missing_evidence() == []
+
+
+def test_censored_durations_cannot_decide_a_how_long_question():
+    question = "Would tripling the half-life maintain occupancy longer than improving affinity tenfold?"
+    g = grounding(text=question, documents=[])
+    censored = [s.scenario_id for s in g.result.scenarios if s.metrics.threshold.status == 'still_above_at_horizon']
+    assert len(censored) >= 2
+    refs = [{'scenario_id': key, 'metric': 'endpoint_occupancy'} for key in censored]
+    def answered(verdict):
+        return proposal(g, evidence_findings=[], answer={'verdict': verdict, 'metric_refs': refs,
+            'statement': 'One scenario ends at a higher occupancy than the other.'})
+    rejected, seen = run(g, answered('supported'), answered('not_supported'))
+    assert rejected.status == 'rejected' and 'censored by the observation window' in seen[1]['previous_validation_errors'][0]
+    assert run(g, answered('mixed'))[0].status == 'grounded'
+    assert run(g, answered('undetermined'))[0].status == 'grounded'
+    # A question that is not about duration may still be decided from solver fields.
+    other = grounding(text='Does tripling the half-life raise endpoint occupancy more than improving affinity tenfold?', documents=[])
+    assert run(other, answered('supported'))[0].status == 'grounded'
 
 
 def test_validation_feedback_allows_one_corrected_retry():

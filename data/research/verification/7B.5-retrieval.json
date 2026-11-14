@@ -1,0 +1,35 @@
+{
+  "checked_at": "2026-11-14T17:33:00.613432+00:00",
+  "origin": "live_tool_retrieval_smoke_not_scientific_validation",
+  "drug": "imatinib",
+  "target": "ABL1",
+  "focus": "pk",
+  "status": "passed",
+  "search_status": "live",
+  "query": "\"imatinib\" AND (pharmacokinetics OR clearance OR half-life OR distribution)",
+  "source_attempts": [
+    {
+      "status": "retrieved",
+      "reasons": [],
+      "title": "Pharmacokinetic profiling of imatinib in relation to CYP3A4 activity in leukaemia patients.",
+      "url": "https://europepmc.org/article/MED/42208992",
+      "identifiers": {
+        "pmid": "42208992",
+        "pmcid": "PMC13619075",
+        "doi": "10.1002/bcp.70622"
+      },
+      "retrieved_at": "2026-11-14T17:33:00.612262+00:00",
+      "content_kind": "abstract",
+      "snapshot_sha256": "a63aee81332f051f47e12bc80b629ca685156b1c1619504ffb822552dca9dc48",
+      "segment_count": 2,
+      "character_count": 2089,
+      "warnings": [
+        "Full text unavailable or unusable; only the retrieved abstract can be inspected."
+      ],
+      "next_start_block": null
+    }
+  ],
+  "llm_called": false,
+  "parameters_extracted": false,
+  "solver_called": false
+}

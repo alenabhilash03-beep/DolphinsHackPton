@@ -1,0 +1,153 @@
+{
+  "origin": "synthetic_software_fixture_not_scientific_evidence",
+  "fixture_version": "1.0.0",
+  "notes": [
+    "No identity or measurement in these fixtures is a real drug database or literature claim.",
+    "Reported means source-backed within synthetic source text only.",
+    "Numerical values cannot be used as drug-specific scientific evidence."
+  ],
+  "cases": [
+    {
+      "case_id": "synthetic-1",
+      "request": {
+        "drug_name": "Fixture Aster-17",
+        "target": "Fixture receptor A",
+        "route": "iv_infusion",
+        "original_hypothesis": "SYNTHETIC: explore target occupancy under an explicitly specified effective reservoir model."
+      },
+      "scope": {
+        "molecular_form": "Fixture Aster-17",
+        "species": "human",
+        "target_compartment": "extracellular",
+        "binding_regime": "reversible_1_to_1",
+        "pk_regime": "linear_effective",
+        "competition": "absent_assumed",
+        "rationale": "SYNTHETIC software acceptance only: explicit cell-free effective model, no biological or clinical prediction."
+      },
+      "design": {
+        "duration_h": 24.0,
+        "administration": [
+          {
+            "kind": "infusion",
+            "start_h": 0.0,
+            "duration_h": 1.0,
+            "amount_mg": 1.0
+          }
+        ],
+        "initial_occupancy": 0.0,
+        "rationale": "SYNTHETIC software acceptance only: explicit cell-free effective model, no biological or clinical prediction."
+      },
+      "inputs": [
+        {
+          "parameter": "pk.volume_L",
+          "value": 2.0,
+          "unit": "L"
+        },
+        {
+          "parameter": "pk.clearance_L_h",
+          "value": 0.1,
+          "unit": "L/hour"
+        },
+        {
+          "parameter": "binding.association_nM_inv_h_inv",
+          "value": 0.01,
+          "unit": "nM^-1 hour^-1"
+        },
+        {
+          "parameter": "binding.dissociation_h_inv",
+          "value": 0.1,
+          "unit": "hour^-1"
+        },
+        {
+          "parameter": "molecular_weight_g_mol",
+          "value": 1000.0,
+          "unit": "g/mol"
+        },
+        {
+          "parameter": "body_mass_kg",
+          "value": 70.0,
+          "unit": "kg"
+        },
+        {
+          "parameter": "exposure_factor",
+          "value": 0.1,
+          "unit": "1"
+        }
+      ],
+      "initially_missing": null,
+      "expected_initial_state": "ready_for_configuration",
+      "expected_resumed_state": "ready_for_configuration"
+    },
+    {
+      "case_id": "synthetic-2",
+      "request": {
+        "drug_name": "Fixture Boreal-29",
+        "target": "Fixture receptor B",
+        "route": "iv_infusion",
+        "original_hypothesis": "SYNTHETIC: explore target occupancy under an explicitly specified effective reservoir model."
+      },
+      "scope": {
+        "molecular_form": "Fixture Boreal-29",
+        "species": "human",
+        "target_compartment": "extracellular",
+        "binding_regime": "reversible_1_to_1",
+        "pk_regime": "linear_effective",
+        "competition": "absent_assumed",
+        "rationale": "SYNTHETIC software acceptance only: explicit cell-free effective model, no biological or clinical prediction."
+      },
+      "design": {
+        "duration_h": 24.0,
+        "administration": [
+          {
+            "kind": "infusion",
+            "start_h": 0.0,
+            "duration_h": 2.0,
+            "amount_mg": 2.0
+          }
+        ],
+        "initial_occupancy": 0.0,
+        "rationale": "SYNTHETIC software acceptance only: explicit cell-free effective model, no biological or clinical prediction."
+      },
+      "inputs": [
+        {
+          "parameter": "pk.volume_L",
+          "value": 3.0,
+          "unit": "L"
+        },
+        {
+          "parameter": "pk.clearance_L_h",
+          "value": 0.15,
+          "unit": "L/hour"
+        },
+        {
+          "parameter": "binding.association_nM_inv_h_inv",
+          "value": 0.02,
+          "unit": "nM^-1 hour^-1"
+        },
+        {
+          "parameter": "binding.dissociation_h_inv",
+          "value": 0.2,
+          "unit": "hour^-1"
+        },
+        {
+          "parameter": "molecular_weight_g_mol",
+          "value": 2000.0,
+          "unit": "g/mol"
+        },
+        {
+          "parameter": "body_mass_kg",
+          "value": 70.0,
+          "unit": "kg"
+        },
+        {
+          "parameter": "exposure_factor",
+          "value": 0.1,
+          "unit": "1"
+        }
+      ],
+      "initially_missing": "binding.dissociation_h_inv",
+      "expected_initial_state": "needs_inputs",
+      "expected_resumed_state": "ready_for_configuration"
+    }
+  ]
+}

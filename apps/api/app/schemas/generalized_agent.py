@@ -2,6 +2,7 @@
 from typing import Annotated, Literal
 from pydantic import Field, model_validator
 from app.schemas.contracts import Contract, SimulationResult, Interpretation
+from app.schemas.execution import ExecutionEvent, RunID
 from app.schemas.experiment_preparation import PreparationRequest, Text, Digest
 from app.schemas.preparation_workflow import PreparationUpdate, PreparationRecord
 
@@ -40,5 +41,7 @@ class AgentTurn(Contract):
     applied_changes: list[str] = Field(default_factory=list)
     parent_result_id: str | None = None
     tool_calls: list[str] = Field(default_factory=list)
+    execution_run_id: RunID | None = None
+    execution_events: Annotated[list[ExecutionEvent], Field(max_length=128)] = Field(default_factory=list)
     trace_id: str | None = None
     trace_status: str = 'not_collected'

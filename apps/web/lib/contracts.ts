@@ -44,3 +44,10 @@ export type AgentTurn = components["schemas"]["AgentTurn"];
 
 export type AgentJob = components["schemas"]["AgentJob"];
 export type Interpretation = components["schemas"]["Interpretation"];
+
+// 8A.1: authoritative execution metadata; live presentation follows in 8A.2.
+export type ExecutionEvent = components["schemas"]["ExecutionEvent"];
+export type ExecutionSummary = components["schemas"]["ExecutionSummary"];
+export type ExperimentSnapshot = components["schemas"]["ExperimentSnapshot"];
+export type ParameterSnapshot = components["schemas"]["ParameterSnapshot"];
+export type SolverReceipt = components["schemas"]["SolverReceipt"];

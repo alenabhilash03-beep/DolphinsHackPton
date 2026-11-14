@@ -4,17 +4,21 @@ from datetime import datetime, timezone
 import os
 from threading import BoundedSemaphore, Lock
 from uuid import uuid4
-from typing import Literal
+from typing import Annotated, Literal
 from pydantic import Field
 from app.schemas.contracts import Contract
 from app.schemas.generalized_agent import AgentTurn, AgentResearchRequest, AgentEditRequest
 from app.research.preparation_store import StalePreparation
+from app.schemas.execution import ExecutionEvent, RunID
+from app.research.execution_ledger import ExecutionLedger
 
 class AgentJob(Contract):
     job_id: str
     status: Literal['queued','running','completed','failed']
     mode: Literal['research','edit']
     events: list[str] = Field(default_factory=list)
+    execution_run_id: RunID | None = None
+    execution_events: Annotated[list[ExecutionEvent], Field(max_length=128)] = Field(default_factory=list)
     turn: AgentTurn | None = None
     preparation_id: str | None = None
     research_request: AgentResearchRequest | None = None
@@ -42,6 +46,11 @@ class AgentQueue:
                     except ProcessLookupError: alive=False
                     except PermissionError: pass
                 if job.status in {'queued','running'} and not alive:
+                    if job.execution_run_id:
+                        recovery=ExecutionLedger(run_id=job.execution_run_id,events=job.execution_events)
+                        recovery.interrupted()
+                        job.execution_events=recovery.events
+                    job.updated_at=datetime.now(timezone.utc).isoformat()
                     job.status='failed'; job.error_code='interrupted'; job.error_message='The local research process restarted. Reload its preparation before resuming.'
                     db.execute('UPDATE agent_jobs SET payload=? WHERE id=?',(job.model_dump_json(),key))
 
@@ -58,7 +67,7 @@ class AgentQueue:
 
     def submit(self,request,edit=False):
         if not self.slots.acquire(blocking=False): raise RuntimeError('Both local research slots are busy')
-        job=AgentJob(job_id=uuid4().hex,status='queued',mode='edit' if edit else 'research',updated_at=datetime.now(timezone.utc).isoformat(),preparation_id=getattr(request,"preparation_id",None),owner_pid=os.getpid(),research_request=None if edit else request,edit_text=getattr(request,"text",None) if edit else None)
+        job=AgentJob(job_id=uuid4().hex,execution_run_id='run-'+uuid4().hex,status='queued',mode='edit' if edit else 'research',updated_at=datetime.now(timezone.utc).isoformat(),preparation_id=getattr(request,"preparation_id",None),owner_pid=os.getpid(),research_request=None if edit else request,edit_text=getattr(request,"text",None) if edit else None)
         try:
             self.save(job)
             self.pool.submit(self._run,job.job_id,request,edit)
@@ -73,9 +82,15 @@ class AgentQueue:
                 job.events.append(message)
                 if message.startswith('Preparation saved: '): job.preparation_id=message.removeprefix('Preparation saved: ')
                 self.save(job)
+        def execution_progress(event):
+            with self.lock:
+                if event.run_id != job.execution_run_id or event.sequence != len(job.execution_events)+1:
+                    raise ValueError('Execution ledger run/sequence mismatch')
+                job.execution_events.append(event.model_copy(deep=True))
+                self.save(job)
         try:
             job.status='running'; self.save(job)
-            job.turn=self.service.run(request,edit=edit,on_progress=progress)
+            job.turn=self.service.run(request,edit=edit,on_progress=progress,on_execution=execution_progress,execution_run_id=job.execution_run_id)
             job.status='completed'; progress('Turn saved; scientific status: '+job.turn.status)
         except Exception as exc:
             job.status='failed'

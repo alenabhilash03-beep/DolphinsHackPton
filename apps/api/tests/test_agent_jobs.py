@@ -25,7 +25,7 @@ class FakeService:
     def __init__(self,tmp_path,gate=None,error=None):
         self.preparation=SimpleNamespace(store=PreparationStore(tmp_path/'jobs.sqlite3'))
         self.gate=gate;self.error=error
-    def run(self,request,edit=False,on_progress=None):
+    def run(self,request,edit=False,on_progress=None,**kwargs):
         on_progress('Tool requested: fake_scientific_tool')
         on_progress('Preparation saved: prep-synthetic')
         if self.gate: self.gate.wait(2)

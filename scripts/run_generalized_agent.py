@@ -41,10 +41,23 @@ def main():
         print(json.dumps({'status':'failed','reason':'Expected edited numerical result was not produced'})); return 1
     if args.mode=='research' and (turn.status!='needs_inputs' or turn.result is not None):
         print(json.dumps({'status':'failed','reason':'Expected honest missing-input outcome'})); return 1
+    events=turn.execution_events
+    if not events or events[0].state!='started' or events[-1].state not in {'succeeded','needs_inputs','unsupported'}:
+        print(json.dumps({'status':'failed','reason':'Missing completed execution ledger'})); return 1
+    if [e.sequence for e in events]!=list(range(1,len(events)+1)) or any(e.run_id!=turn.execution_run_id for e in events):
+        print(json.dumps({'status':'failed','reason':'Inconsistent execution sequence'})); return 1
+    receipts=[e.summary.result for e in events if e.summary and e.summary.result]
+    if turn.result and (not receipts or any(r.result_id!=turn.result.result_id or r.configuration_sha256!=turn.result.configuration_hash for r in receipts)):
+        print(json.dumps({'status':'failed','reason':'Execution receipt/result mismatch'})); return 1
     report={'status':turn.status,'mode':args.mode,'turn_id':turn.turn_id,'tool_calls':turn.tool_calls,
         'trace_id':turn.trace_id,'trace_status':turn.trace_status,'result_id':turn.result.result_id if turn.result else None,
         'preparation_id':turn.preparation.preparation.preparation_id if turn.preparation else None,
-        'questions':turn.questions,'applied_changes':turn.applied_changes}
+        'questions':turn.questions,'applied_changes':turn.applied_changes,
+        'execution_run_id':turn.execution_run_id,'execution_event_count':len(events),
+        'execution_events':[{'sequence':e.sequence,'kind':e.kind,'tool_name':e.tool_name,'state':e.state,
+            'elapsed_ms':e.elapsed_ms} for e in events],
+        'configured_experiments':[e.summary.experiment.model_dump(mode='json') for e in events if e.summary and e.summary.experiment],
+        'solver_receipts':[r.model_dump(mode='json') for r in receipts]}
     path=ROOT/'work'/f'generalized-agent-{args.mode}.json'
     path.write_text(json.dumps(report,indent=2)+'\n')
     print(json.dumps(report,indent=2))

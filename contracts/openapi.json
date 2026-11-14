@@ -93,6 +93,26 @@
             "title": "Events",
             "type": "array"
           },
+          "execution_events": {
+            "items": {
+              "$ref": "#/components/schemas/ExecutionEvent"
+            },
+            "maxItems": 128,
+            "title": "Execution Events",
+            "type": "array"
+          },
+          "execution_run_id": {
+            "anyOf": [
+              {
+                "pattern": "^run-[a-f0-9]{32}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Run Id"
+          },
           "job_id": {
             "title": "Job Id",
             "type": "string"
@@ -225,6 +245,26 @@
             },
             "title": "Applied Changes",
             "type": "array"
+          },
+          "execution_events": {
+            "items": {
+              "$ref": "#/components/schemas/ExecutionEvent"
+            },
+            "maxItems": 128,
+            "title": "Execution Events",
+            "type": "array"
+          },
+          "execution_run_id": {
+            "anyOf": [
+              {
+                "pattern": "^run-[a-f0-9]{32}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Run Id"
           },
           "interpretation": {
             "anyOf": [
@@ -1804,6 +1844,278 @@
         "title": "EvidenceSource",
         "type": "object"
       },
+      "ExecutionEvent": {
+        "additionalProperties": false,
+        "properties": {
+          "elapsed_ms": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elapsed Ms"
+          },
+          "event_id": {
+            "pattern": "^evt-[a-f0-9]{32}$",
+            "title": "Event Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "run",
+              "tool"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "run_id": {
+            "pattern": "^run-[a-f0-9]{32}$",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "sequence": {
+            "maximum": 128.0,
+            "minimum": 1.0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "stage": {
+            "enum": [
+              "run",
+              "preparation",
+              "literature",
+              "extraction",
+              "configuration",
+              "simulation",
+              "interpretation",
+              "editing"
+            ],
+            "title": "Stage",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "started",
+              "succeeded",
+              "rejected",
+              "needs_inputs",
+              "unsupported",
+              "failed",
+              "interrupted"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExecutionSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timestamp": {
+            "format": "date-time",
+            "title": "Timestamp",
+            "type": "string"
+          },
+          "tool_call_id": {
+            "anyOf": [
+              {
+                "pattern": "^exec-[a-f0-9]{32}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Call Id"
+          },
+          "tool_name": {
+            "anyOf": [
+              {
+                "enum": [
+                  "search_hypothesis_evidence",
+                  "retrieve_evidence_source",
+                  "extract_cited_parameters",
+                  "start_experiment_preparation",
+                  "read_experiment_preparation",
+                  "update_experiment_preparation",
+                  "configure_prepared_experiment",
+                  "prepare_reviewed_comparison",
+                  "simulate_current_comparison",
+                  "interpret_current_result",
+                  "read_current_experiment",
+                  "apply_requested_edit"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Name"
+          }
+        },
+        "required": [
+          "event_id",
+          "run_id",
+          "sequence",
+          "kind",
+          "stage",
+          "state",
+          "timestamp"
+        ],
+        "title": "ExecutionEvent",
+        "type": "object"
+      },
+      "ExecutionSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_count": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Count"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "enum": [
+                  "validation",
+                  "stale",
+                  "unavailable",
+                  "interrupted"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "experiment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExperimentSnapshot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "missing_input_count": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missing Input Count"
+          },
+          "outcome": {
+            "enum": [
+              "completed",
+              "rejected",
+              "needs_inputs",
+              "unsupported",
+              "unavailable",
+              "no_values",
+              "failed",
+              "interrupted"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "preparation_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preparation Id"
+          },
+          "preparation_state": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preparation State"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SolverReceipt"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_count": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Count"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceReference"
+            },
+            "maxItems": 20,
+            "title": "Sources",
+            "type": "array"
+          },
+          "sources_truncated": {
+            "default": false,
+            "title": "Sources Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "title": "ExecutionSummary",
+        "type": "object"
+      },
       "ExperimentConfig": {
         "additionalProperties": false,
         "properties": {
@@ -1940,6 +2252,68 @@
           "support"
         ],
         "title": "ExperimentPreparation",
+        "type": "object"
+      },
+      "ExperimentSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "configuration_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Configuration Sha256",
+            "type": "string"
+          },
+          "duration_h": {
+            "title": "Duration H",
+            "type": "number"
+          },
+          "experiment_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Experiment Id",
+            "type": "string"
+          },
+          "occupancy_threshold": {
+            "title": "Occupancy Threshold",
+            "type": "number"
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/ParameterSnapshot"
+            },
+            "maxItems": 48,
+            "title": "Parameters",
+            "type": "array"
+          },
+          "reference_configuration_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Configuration Sha256"
+          },
+          "schedules": {
+            "items": {
+              "$ref": "#/components/schemas/ScheduleSnapshot"
+            },
+            "maxItems": 3,
+            "title": "Schedules",
+            "type": "array"
+          }
+        },
+        "required": [
+          "experiment_id",
+          "configuration_sha256",
+          "duration_h",
+          "occupancy_threshold",
+          "parameters",
+          "schedules"
+        ],
+        "title": "ExperimentSnapshot",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -2384,6 +2758,55 @@
           "retrieved_at"
         ],
         "title": "LiteratureSearch",
+        "type": "object"
+      },
+      "MetricSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "concentration_auc_nM_h": {
+            "title": "Concentration Auc Nm H",
+            "type": "number"
+          },
+          "endpoint_occupancy": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Endpoint Occupancy",
+            "type": "number"
+          },
+          "occupancy_auc_h": {
+            "title": "Occupancy Auc H",
+            "type": "number"
+          },
+          "scenario_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "threshold_status": {
+            "enum": [
+              "never_reached",
+              "crossed_within_window",
+              "still_above_at_horizon",
+              "ambiguous_without_more_resolution"
+            ],
+            "title": "Threshold Status",
+            "type": "string"
+          },
+          "total_time_above_h": {
+            "title": "Total Time Above H",
+            "type": "number"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "endpoint_occupancy",
+          "occupancy_auc_h",
+          "concentration_auc_nM_h",
+          "threshold_status",
+          "total_time_above_h"
+        ],
+        "title": "MetricSnapshot",
         "type": "object"
       },
       "MissingPreparationInput": {
@@ -2954,6 +3377,158 @@
           "document_id"
         ],
         "title": "ParameterExtractionResult",
+        "type": "object"
+      },
+      "ParameterSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "change": {
+            "default": "not_compared",
+            "enum": [
+              "unchanged",
+              "changed",
+              "added",
+              "not_compared"
+            ],
+            "title": "Change",
+            "type": "string"
+          },
+          "comparison": {
+            "default": "none",
+            "enum": [
+              "baseline",
+              "previous_result",
+              "none"
+            ],
+            "title": "Comparison",
+            "type": "string"
+          },
+          "delta": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delta"
+          },
+          "evidence_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Id"
+          },
+          "parameter": {
+            "maxLength": 80,
+            "title": "Parameter",
+            "type": "string"
+          },
+          "provenance": {
+            "enum": [
+              "reported",
+              "calculated",
+              "assumed",
+              "user_supplied",
+              "design_input"
+            ],
+            "title": "Provenance",
+            "type": "string"
+          },
+          "reference_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Value"
+          },
+          "review_status": {
+            "enum": [
+              "candidate",
+              "reviewed",
+              "rejected",
+              "not_reviewed"
+            ],
+            "title": "Review Status",
+            "type": "string"
+          },
+          "scenario_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Id"
+          },
+          "source_ids": {
+            "items": {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 3,
+            "title": "Source Ids",
+            "type": "array"
+          },
+          "source_ids_truncated": {
+            "default": false,
+            "title": "Source Ids Truncated",
+            "type": "boolean"
+          },
+          "unit": {
+            "enum": [
+              "h",
+              "L",
+              "L/h",
+              "nM^-1 h^-1",
+              "h^-1",
+              "nM",
+              "g/mol",
+              "kg",
+              "1",
+              "nmol",
+              "mg"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "parameter",
+          "value",
+          "unit",
+          "provenance",
+          "review_status"
+        ],
+        "title": "ParameterSnapshot",
         "type": "object"
       },
       "ParsedHypothesis": {
@@ -4597,6 +5172,114 @@
         "title": "ScenarioSeries",
         "type": "object"
       },
+      "ScheduleSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "administration": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "hypothetical_bolus": "#/components/schemas/BolusEvent",
+                  "infusion": "#/components/schemas/InfusionEvent"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/InfusionEvent"
+                },
+                {
+                  "$ref": "#/components/schemas/BolusEvent"
+                }
+              ]
+            },
+            "maxItems": 100,
+            "title": "Administration",
+            "type": "array"
+          },
+          "changed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changed"
+          },
+          "comparison": {
+            "enum": [
+              "baseline",
+              "previous_result",
+              "none"
+            ],
+            "title": "Comparison",
+            "type": "string"
+          },
+          "intervention": {
+            "enum": [
+              "baseline",
+              "half_life_x3",
+              "affinity_x10",
+              "custom"
+            ],
+            "title": "Intervention",
+            "type": "string"
+          },
+          "parameter_evidence": {
+            "items": {
+              "$ref": "#/components/schemas/ParameterSnapshot"
+            },
+            "maxItems": 300,
+            "title": "Parameter Evidence",
+            "type": "array"
+          },
+          "reference_administration": {
+            "anyOf": [
+              {
+                "items": {
+                  "discriminator": {
+                    "mapping": {
+                      "hypothetical_bolus": "#/components/schemas/BolusEvent",
+                      "infusion": "#/components/schemas/InfusionEvent"
+                    },
+                    "propertyName": "kind"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/InfusionEvent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/BolusEvent"
+                    }
+                  ]
+                },
+                "maxItems": 100,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Administration"
+          },
+          "scenario_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Scenario Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "intervention",
+          "administration",
+          "comparison"
+        ],
+        "title": "ScheduleSnapshot",
+        "type": "object"
+      },
       "SimulationDiagnostics": {
         "additionalProperties": false,
         "properties": {
@@ -4747,6 +5430,68 @@
         "title": "SimulationResult",
         "type": "object"
       },
+      "SolverReceipt": {
+        "additionalProperties": false,
+        "properties": {
+          "client_revision": {
+            "title": "Client Revision",
+            "type": "integer"
+          },
+          "configuration_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Configuration Sha256",
+            "type": "string"
+          },
+          "experiment_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Experiment Id",
+            "type": "string"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/MetricSnapshot"
+            },
+            "maxItems": 3,
+            "title": "Metrics",
+            "type": "array"
+          },
+          "model_version": {
+            "maxLength": 120,
+            "title": "Model Version",
+            "type": "string"
+          },
+          "output_point_count": {
+            "maximum": 5000.0,
+            "minimum": 2.0,
+            "title": "Output Point Count",
+            "type": "integer"
+          },
+          "result_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Result Id",
+            "type": "string"
+          },
+          "solver_version": {
+            "maxLength": 120,
+            "title": "Solver Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "result_id",
+          "experiment_id",
+          "configuration_sha256",
+          "client_revision",
+          "model_version",
+          "solver_version",
+          "output_point_count",
+          "metrics"
+        ],
+        "title": "SolverReceipt",
+        "type": "object"
+      },
       "SourcePassage": {
         "additionalProperties": false,
         "properties": {
@@ -4775,6 +5520,97 @@
           "supporting_passage"
         ],
         "title": "SourcePassage",
+        "type": "object"
+      },
+      "SourceReference": {
+        "additionalProperties": false,
+        "properties": {
+          "content_kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "full_text",
+                  "abstract",
+                  "database_record",
+                  "product_label"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Kind"
+          },
+          "document_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Id"
+          },
+          "retrieval_status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "live",
+                  "cached",
+                  "unavailable"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieval Status"
+          },
+          "snapshot_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Sha256"
+          },
+          "source_handle": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Handle"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          }
+        },
+        "title": "SourceReference",
         "type": "object"
       },
       "SourceRetrievalResult": {

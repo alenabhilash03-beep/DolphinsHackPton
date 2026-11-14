@@ -1,0 +1,994 @@
+{
+  "status": "completed",
+  "mode": "edit",
+  "turn_id": "turn-0f63363cd72b4f329fdb64913a3910c2",
+  "tool_calls": [
+    "read_current_experiment",
+    "apply_requested_edit",
+    "simulate_current_comparison",
+    "interpret_current_result"
+  ],
+  "trace_id": "01a1dbd0-51db-7793-9ae7-dc2d3708b2bb",
+  "trace_status": "remote_verified",
+  "result_id": "sim-37be64afd628b0b89a6769b8",
+  "execution_run_id": "run-c691145031f640dea600c4876a08b89b",
+  "execution_event_count": 10,
+  "execution_events": [
+    {
+      "sequence": 1,
+      "kind": "run",
+      "tool_name": null,
+      "state": "started",
+      "elapsed_ms": null
+    },
+    {
+      "sequence": 2,
+      "kind": "tool",
+      "tool_name": "read_current_experiment",
+      "state": "started",
+      "elapsed_ms": null
+    },
+    {
+      "sequence": 3,
+      "kind": "tool",
+      "tool_name": "read_current_experiment",
+      "state": "succeeded",
+      "elapsed_ms": 3.703832859173417
+    },
+    {
+      "sequence": 4,
+      "kind": "tool",
+      "tool_name": "apply_requested_edit",
+      "state": "started",
+      "elapsed_ms": null
+    },
+    {
+      "sequence": 5,
+      "kind": "tool",
+      "tool_name": "apply_requested_edit",
+      "state": "succeeded",
+      "elapsed_ms": 5.523290950804949
+    },
+    {
+      "sequence": 6,
+      "kind": "tool",
+      "tool_name": "simulate_current_comparison",
+      "state": "started",
+      "elapsed_ms": null
+    },
+    {
+      "sequence": 7,
+      "kind": "tool",
+      "tool_name": "simulate_current_comparison",
+      "state": "succeeded",
+      "elapsed_ms": 73.52662505581975
+    },
+    {
+      "sequence": 8,
+      "kind": "tool",
+      "tool_name": "interpret_current_result",
+      "state": "started",
+      "elapsed_ms": null
+    },
+    {
+      "sequence": 9,
+      "kind": "tool",
+      "tool_name": "interpret_current_result",
+      "state": "succeeded",
+      "elapsed_ms": 1.5972091350704432
+    },
+    {
+      "sequence": 10,
+      "kind": "run",
+      "tool_name": null,
+      "state": "succeeded",
+      "elapsed_ms": 14054.391458863392
+    }
+  ],
+  "configured_experiments": [
+    {
+      "experiment_id": "edit-b5e862a594c2488f90fb44694c7a107f",
+      "configuration_sha256": "42f3a44aa9f29a32c0b5690f09432fed3a2bbb973215a4276d0b78a2547783f6",
+      "reference_configuration_sha256": "88327cc1a02ae82f8bfb2a51bf3b5fed8cd1350d20b18aac0ae77a059896c9ef",
+      "duration_h": 2880.0,
+      "occupancy_threshold": 0.9,
+      "parameters": [
+        {
+          "scenario_id": null,
+          "parameter": "duration_h",
+          "value": 2880.0,
+          "unit": "h",
+          "provenance": "design_input",
+          "review_status": "not_reviewed",
+          "evidence_id": null,
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 4320.0,
+          "delta": -1440.0,
+          "change": "changed"
+        },
+        {
+          "scenario_id": null,
+          "parameter": "occupancy_threshold",
+          "value": 0.9,
+          "unit": "1",
+          "provenance": "design_input",
+          "review_status": "not_reviewed",
+          "evidence_id": null,
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.9,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "baseline",
+          "parameter": "pk.volume_L",
+          "value": 2.62,
+          "unit": "L",
+          "provenance": "reported",
+          "review_status": "reviewed",
+          "evidence_id": "volume",
+          "source_ids": [
+            "S2"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 2.62,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "baseline",
+          "parameter": "pk.clearance_L_h",
+          "value": 0.005291666666666667,
+          "unit": "L/h",
+          "provenance": "reported",
+          "review_status": "reviewed",
+          "evidence_id": "clearance",
+          "source_ids": [
+            "S2"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.005291666666666667,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "baseline",
+          "parameter": "pk.elimination_half_life_h",
+          "value": 343.1897221544044,
+          "unit": "h",
+          "provenance": "calculated",
+          "review_status": "reviewed",
+          "evidence_id": "half",
+          "source_ids": [
+            "S2"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 343.1897221544044,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "baseline",
+          "parameter": "binding.association_nM_inv_h_inv",
+          "value": 2.2428,
+          "unit": "nM^-1 h^-1",
+          "provenance": "reported",
+          "review_status": "reviewed",
+          "evidence_id": "kon",
+          "source_ids": [
+            "S3"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 2.2428,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "baseline",
+          "parameter": "binding.dissociation_h_inv",
+          "value": 0.29376,
+          "unit": "h^-1",
+          "provenance": "reported",
+          "review_status": "reviewed",
+          "evidence_id": "koff",
+          "source_ids": [
+            "S3"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.29376,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "baseline",
+          "parameter": "binding.affinity_nM",
+          "value": 0.13097913322632426,
+          "unit": "nM",
+          "provenance": "calculated",
+          "review_status": "reviewed",
+          "evidence_id": "kd",
+          "source_ids": [
+            "S3"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.13097913322632426,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "baseline",
+          "parameter": "molecular_weight_g_mol",
+          "value": 148000.0,
+          "unit": "g/mol",
+          "provenance": "reported",
+          "review_status": "reviewed",
+          "evidence_id": "mw",
+          "source_ids": [
+            "S7"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 148000.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "baseline",
+          "parameter": "body_mass_kg",
+          "value": 66.0,
+          "unit": "kg",
+          "provenance": "assumed",
+          "review_status": "reviewed",
+          "evidence_id": "mass",
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 66.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "baseline",
+          "parameter": "exposure_factor",
+          "value": 1.0,
+          "unit": "1",
+          "provenance": "assumed",
+          "review_status": "reviewed",
+          "evidence_id": "alpha",
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 1.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "baseline",
+          "parameter": "initial_amount_nmol",
+          "value": 0.0,
+          "unit": "nmol",
+          "provenance": "design_input",
+          "review_status": "not_reviewed",
+          "evidence_id": null,
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "baseline",
+          "parameter": "initial_occupancy",
+          "value": 0.0,
+          "unit": "1",
+          "provenance": "design_input",
+          "review_status": "not_reviewed",
+          "evidence_id": null,
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "baseline",
+          "parameter": "dosing_interval_h",
+          "value": null,
+          "unit": "h",
+          "provenance": "design_input",
+          "review_status": "not_reviewed",
+          "evidence_id": null,
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": null,
+          "delta": null,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "parameter": "pk.volume_L",
+          "value": 2.62,
+          "unit": "L",
+          "provenance": "reported",
+          "review_status": "reviewed",
+          "evidence_id": "volume",
+          "source_ids": [
+            "S2"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 2.62,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "parameter": "pk.clearance_L_h",
+          "value": 0.0017638888888888888,
+          "unit": "L/h",
+          "provenance": "calculated",
+          "review_status": "reviewed",
+          "evidence_id": "clearance_third",
+          "source_ids": [
+            "S2"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.0017638888888888888,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "parameter": "pk.elimination_half_life_h",
+          "value": 1029.5691664632132,
+          "unit": "h",
+          "provenance": "calculated",
+          "review_status": "reviewed",
+          "evidence_id": "half_triple",
+          "source_ids": [
+            "S2"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 1029.5691664632132,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "parameter": "binding.association_nM_inv_h_inv",
+          "value": 2.2428,
+          "unit": "nM^-1 h^-1",
+          "provenance": "reported",
+          "review_status": "reviewed",
+          "evidence_id": "kon",
+          "source_ids": [
+            "S3"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 2.2428,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "parameter": "binding.dissociation_h_inv",
+          "value": 0.29376,
+          "unit": "h^-1",
+          "provenance": "reported",
+          "review_status": "reviewed",
+          "evidence_id": "koff",
+          "source_ids": [
+            "S3"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.29376,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "parameter": "binding.affinity_nM",
+          "value": 0.13097913322632426,
+          "unit": "nM",
+          "provenance": "calculated",
+          "review_status": "reviewed",
+          "evidence_id": "kd",
+          "source_ids": [
+            "S3"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.13097913322632426,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "parameter": "molecular_weight_g_mol",
+          "value": 148000.0,
+          "unit": "g/mol",
+          "provenance": "reported",
+          "review_status": "reviewed",
+          "evidence_id": "mw",
+          "source_ids": [
+            "S7"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 148000.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "parameter": "body_mass_kg",
+          "value": 66.0,
+          "unit": "kg",
+          "provenance": "assumed",
+          "review_status": "reviewed",
+          "evidence_id": "mass",
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 66.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "parameter": "exposure_factor",
+          "value": 1.0,
+          "unit": "1",
+          "provenance": "assumed",
+          "review_status": "reviewed",
+          "evidence_id": "alpha",
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 1.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "parameter": "initial_amount_nmol",
+          "value": 0.0,
+          "unit": "nmol",
+          "provenance": "design_input",
+          "review_status": "not_reviewed",
+          "evidence_id": null,
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "parameter": "initial_occupancy",
+          "value": 0.0,
+          "unit": "1",
+          "provenance": "design_input",
+          "review_status": "not_reviewed",
+          "evidence_id": null,
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "parameter": "dosing_interval_h",
+          "value": null,
+          "unit": "h",
+          "provenance": "design_input",
+          "review_status": "not_reviewed",
+          "evidence_id": null,
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": null,
+          "delta": null,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "parameter": "pk.volume_L",
+          "value": 2.62,
+          "unit": "L",
+          "provenance": "reported",
+          "review_status": "reviewed",
+          "evidence_id": "volume",
+          "source_ids": [
+            "S2"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 2.62,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "parameter": "pk.clearance_L_h",
+          "value": 0.005291666666666667,
+          "unit": "L/h",
+          "provenance": "reported",
+          "review_status": "reviewed",
+          "evidence_id": "clearance",
+          "source_ids": [
+            "S2"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.005291666666666667,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "parameter": "pk.elimination_half_life_h",
+          "value": 343.1897221544044,
+          "unit": "h",
+          "provenance": "calculated",
+          "review_status": "reviewed",
+          "evidence_id": "half",
+          "source_ids": [
+            "S2"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 343.1897221544044,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "parameter": "binding.association_nM_inv_h_inv",
+          "value": 2.2428,
+          "unit": "nM^-1 h^-1",
+          "provenance": "reported",
+          "review_status": "reviewed",
+          "evidence_id": "kon",
+          "source_ids": [
+            "S3"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 2.2428,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "parameter": "binding.dissociation_h_inv",
+          "value": 0.029376000000000003,
+          "unit": "h^-1",
+          "provenance": "calculated",
+          "review_status": "reviewed",
+          "evidence_id": "koff_tenth",
+          "source_ids": [
+            "S3"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.029376000000000003,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "parameter": "binding.affinity_nM",
+          "value": 0.013097913322632427,
+          "unit": "nM",
+          "provenance": "calculated",
+          "review_status": "reviewed",
+          "evidence_id": "kd_tenth",
+          "source_ids": [
+            "S3"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.013097913322632427,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "parameter": "molecular_weight_g_mol",
+          "value": 148000.0,
+          "unit": "g/mol",
+          "provenance": "reported",
+          "review_status": "reviewed",
+          "evidence_id": "mw",
+          "source_ids": [
+            "S7"
+          ],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 148000.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "parameter": "body_mass_kg",
+          "value": 66.0,
+          "unit": "kg",
+          "provenance": "assumed",
+          "review_status": "reviewed",
+          "evidence_id": "mass",
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 66.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "parameter": "exposure_factor",
+          "value": 1.0,
+          "unit": "1",
+          "provenance": "assumed",
+          "review_status": "reviewed",
+          "evidence_id": "alpha",
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 1.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "parameter": "initial_amount_nmol",
+          "value": 0.0,
+          "unit": "nmol",
+          "provenance": "design_input",
+          "review_status": "not_reviewed",
+          "evidence_id": null,
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "parameter": "initial_occupancy",
+          "value": 0.0,
+          "unit": "1",
+          "provenance": "design_input",
+          "review_status": "not_reviewed",
+          "evidence_id": null,
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": 0.0,
+          "delta": 0.0,
+          "change": "unchanged"
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "parameter": "dosing_interval_h",
+          "value": null,
+          "unit": "h",
+          "provenance": "design_input",
+          "review_status": "not_reviewed",
+          "evidence_id": null,
+          "source_ids": [],
+          "source_ids_truncated": false,
+          "comparison": "previous_result",
+          "reference_value": null,
+          "delta": null,
+          "change": "unchanged"
+        }
+      ],
+      "schedules": [
+        {
+          "scenario_id": "baseline",
+          "intervention": "baseline",
+          "administration": [
+            {
+              "kind": "infusion",
+              "start_h": 0.0,
+              "duration_h": 1.5,
+              "amount_mg": 528.0
+            }
+          ],
+          "comparison": "previous_result",
+          "reference_administration": [
+            {
+              "kind": "infusion",
+              "start_h": 0.0,
+              "duration_h": 1.5,
+              "amount_mg": 528.0
+            }
+          ],
+          "changed": false,
+          "parameter_evidence": [
+            {
+              "scenario_id": "baseline",
+              "parameter": "administration.0.start_h",
+              "value": 0.0,
+              "unit": "h",
+              "provenance": "design_input",
+              "review_status": "not_reviewed",
+              "evidence_id": null,
+              "source_ids": [],
+              "source_ids_truncated": false,
+              "comparison": "previous_result",
+              "reference_value": 0.0,
+              "delta": 0.0,
+              "change": "unchanged"
+            },
+            {
+              "scenario_id": "baseline",
+              "parameter": "administration.0.amount_mg",
+              "value": 528.0,
+              "unit": "mg",
+              "provenance": "design_input",
+              "review_status": "not_reviewed",
+              "evidence_id": null,
+              "source_ids": [],
+              "source_ids_truncated": false,
+              "comparison": "previous_result",
+              "reference_value": 528.0,
+              "delta": 0.0,
+              "change": "unchanged"
+            },
+            {
+              "scenario_id": "baseline",
+              "parameter": "administration.0.duration_h",
+              "value": 1.5,
+              "unit": "h",
+              "provenance": "design_input",
+              "review_status": "not_reviewed",
+              "evidence_id": null,
+              "source_ids": [],
+              "source_ids_truncated": false,
+              "comparison": "previous_result",
+              "reference_value": 1.5,
+              "delta": 0.0,
+              "change": "unchanged"
+            }
+          ]
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "intervention": "half_life_x3",
+          "administration": [
+            {
+              "kind": "infusion",
+              "start_h": 0.0,
+              "duration_h": 1.5,
+              "amount_mg": 528.0
+            }
+          ],
+          "comparison": "previous_result",
+          "reference_administration": [
+            {
+              "kind": "infusion",
+              "start_h": 0.0,
+              "duration_h": 1.5,
+              "amount_mg": 528.0
+            }
+          ],
+          "changed": false,
+          "parameter_evidence": [
+            {
+              "scenario_id": "half_life_x3",
+              "parameter": "administration.0.start_h",
+              "value": 0.0,
+              "unit": "h",
+              "provenance": "design_input",
+              "review_status": "not_reviewed",
+              "evidence_id": null,
+              "source_ids": [],
+              "source_ids_truncated": false,
+              "comparison": "previous_result",
+              "reference_value": 0.0,
+              "delta": 0.0,
+              "change": "unchanged"
+            },
+            {
+              "scenario_id": "half_life_x3",
+              "parameter": "administration.0.amount_mg",
+              "value": 528.0,
+              "unit": "mg",
+              "provenance": "design_input",
+              "review_status": "not_reviewed",
+              "evidence_id": null,
+              "source_ids": [],
+              "source_ids_truncated": false,
+              "comparison": "previous_result",
+              "reference_value": 528.0,
+              "delta": 0.0,
+              "change": "unchanged"
+            },
+            {
+              "scenario_id": "half_life_x3",
+              "parameter": "administration.0.duration_h",
+              "value": 1.5,
+              "unit": "h",
+              "provenance": "design_input",
+              "review_status": "not_reviewed",
+              "evidence_id": null,
+              "source_ids": [],
+              "source_ids_truncated": false,
+              "comparison": "previous_result",
+              "reference_value": 1.5,
+              "delta": 0.0,
+              "change": "unchanged"
+            }
+          ]
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "intervention": "affinity_x10",
+          "administration": [
+            {
+              "kind": "infusion",
+              "start_h": 0.0,
+              "duration_h": 1.5,
+              "amount_mg": 528.0
+            }
+          ],
+          "comparison": "previous_result",
+          "reference_administration": [
+            {
+              "kind": "infusion",
+              "start_h": 0.0,
+              "duration_h": 1.5,
+              "amount_mg": 528.0
+            }
+          ],
+          "changed": false,
+          "parameter_evidence": [
+            {
+              "scenario_id": "affinity_x10",
+              "parameter": "administration.0.start_h",
+              "value": 0.0,
+              "unit": "h",
+              "provenance": "design_input",
+              "review_status": "not_reviewed",
+              "evidence_id": null,
+              "source_ids": [],
+              "source_ids_truncated": false,
+              "comparison": "previous_result",
+              "reference_value": 0.0,
+              "delta": 0.0,
+              "change": "unchanged"
+            },
+            {
+              "scenario_id": "affinity_x10",
+              "parameter": "administration.0.amount_mg",
+              "value": 528.0,
+              "unit": "mg",
+              "provenance": "design_input",
+              "review_status": "not_reviewed",
+              "evidence_id": null,
+              "source_ids": [],
+              "source_ids_truncated": false,
+              "comparison": "previous_result",
+              "reference_value": 528.0,
+              "delta": 0.0,
+              "change": "unchanged"
+            },
+            {
+              "scenario_id": "affinity_x10",
+              "parameter": "administration.0.duration_h",
+              "value": 1.5,
+              "unit": "h",
+              "provenance": "design_input",
+              "review_status": "not_reviewed",
+              "evidence_id": null,
+              "source_ids": [],
+              "source_ids_truncated": false,
+              "comparison": "previous_result",
+              "reference_value": 1.5,
+              "delta": 0.0,
+              "change": "unchanged"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solver_receipts": [
+    {
+      "result_id": "sim-37be64afd628b0b89a6769b8",
+      "experiment_id": "edit-b5e862a594c2488f90fb44694c7a107f",
+      "configuration_sha256": "42f3a44aa9f29a32c0b5690f09432fed3a2bbb973215a4276d0b78a2547783f6",
+      "client_revision": 1,
+      "model_version": "one_compartment_effective_binding_v1.0.0",
+      "solver_version": "Radau-r1e-06-a1e-09-v1",
+      "output_point_count": 633,
+      "metrics": [
+        {
+          "scenario_id": "baseline",
+          "endpoint_occupancy": 0.968753969066224,
+          "occupancy_auc_h": 2864.3003755942686,
+          "concentration_auc_nM_h": 672175.810905884,
+          "threshold_status": "still_above_at_horizon",
+          "total_time_above_h": 2879.952178996917
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "endpoint_occupancy": 0.9993321379233542,
+          "occupancy_auc_h": 2879.122264146027,
+          "concentration_auc_nM_h": 1731450.6711037608,
+          "threshold_status": "still_above_at_horizon",
+          "total_time_above_h": 2879.952179514709
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "endpoint_occupancy": 0.9967850079847129,
+          "occupancy_auc_h": 2878.382396387784,
+          "concentration_auc_nM_h": 672175.810905884,
+          "threshold_status": "still_above_at_horizon",
+          "total_time_above_h": 2879.9524138420575
+        }
+      ]
+    },
+    {
+      "result_id": "sim-37be64afd628b0b89a6769b8",
+      "experiment_id": "edit-b5e862a594c2488f90fb44694c7a107f",
+      "configuration_sha256": "42f3a44aa9f29a32c0b5690f09432fed3a2bbb973215a4276d0b78a2547783f6",
+      "client_revision": 1,
+      "model_version": "one_compartment_effective_binding_v1.0.0",
+      "solver_version": "Radau-r1e-06-a1e-09-v1",
+      "output_point_count": 633,
+      "metrics": [
+        {
+          "scenario_id": "baseline",
+          "endpoint_occupancy": 0.968753969066224,
+          "occupancy_auc_h": 2864.3003755942686,
+          "concentration_auc_nM_h": 672175.810905884,
+          "threshold_status": "still_above_at_horizon",
+          "total_time_above_h": 2879.952178996917
+        },
+        {
+          "scenario_id": "half_life_x3",
+          "endpoint_occupancy": 0.9993321379233542,
+          "occupancy_auc_h": 2879.122264146027,
+          "concentration_auc_nM_h": 1731450.6711037608,
+          "threshold_status": "still_above_at_horizon",
+          "total_time_above_h": 2879.952179514709
+        },
+        {
+          "scenario_id": "affinity_x10",
+          "endpoint_occupancy": 0.9967850079847129,
+          "occupancy_auc_h": 2878.382396387784,
+          "concentration_auc_nM_h": 672175.810905884,
+          "threshold_status": "still_above_at_horizon",
+          "total_time_above_h": 2879.9524138420575
+        }
+      ]
+    }
+  ],
+  "verification": "Live pinned NVIDIA Nemotron edit in an isolated local store; LangSmith remote trace verified. No reviewed drug profile was added.",
+  "configuration_receipt_match": true
+}

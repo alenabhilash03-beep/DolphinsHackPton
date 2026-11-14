@@ -446,6 +446,10 @@ export interface components {
             error_message?: string | null;
             /** Events */
             events?: string[];
+            /** Execution Events */
+            execution_events?: components["schemas"]["ExecutionEvent"][];
+            /** Execution Run Id */
+            execution_run_id?: string | null;
             /** Job Id */
             job_id: string;
             /**
@@ -488,6 +492,10 @@ export interface components {
         AgentTurn: {
             /** Applied Changes */
             applied_changes?: string[];
+            /** Execution Events */
+            execution_events?: components["schemas"]["ExecutionEvent"][];
+            /** Execution Run Id */
+            execution_run_id?: string | null;
             interpretation?: components["schemas"]["Interpretation"] | null;
             /** Original Text */
             original_text: string;
@@ -1068,6 +1076,77 @@ export interface components {
              */
             version: string | null;
         };
+        /** ExecutionEvent */
+        ExecutionEvent: {
+            /** Elapsed Ms */
+            elapsed_ms?: number | null;
+            /** Event Id */
+            event_id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "run" | "tool";
+            /** Run Id */
+            run_id: string;
+            /**
+             * Schema Version
+             * @default 1.0
+             * @constant
+             */
+            schema_version: "1.0";
+            /** Sequence */
+            sequence: number;
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "run" | "preparation" | "literature" | "extraction" | "configuration" | "simulation" | "interpretation" | "editing";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "started" | "succeeded" | "rejected" | "needs_inputs" | "unsupported" | "failed" | "interrupted";
+            summary?: components["schemas"]["ExecutionSummary"] | null;
+            /**
+             * Timestamp
+             * Format: date-time
+             */
+            timestamp: string;
+            /** Tool Call Id */
+            tool_call_id?: string | null;
+            /** Tool Name */
+            tool_name?: ("search_hypothesis_evidence" | "retrieve_evidence_source" | "extract_cited_parameters" | "start_experiment_preparation" | "read_experiment_preparation" | "update_experiment_preparation" | "configure_prepared_experiment" | "prepare_reviewed_comparison" | "simulate_current_comparison" | "interpret_current_result" | "read_current_experiment" | "apply_requested_edit") | null;
+        };
+        /** ExecutionSummary */
+        ExecutionSummary: {
+            /** Candidate Count */
+            candidate_count?: number | null;
+            /** Error Code */
+            error_code?: ("validation" | "stale" | "unavailable" | "interrupted") | null;
+            experiment?: components["schemas"]["ExperimentSnapshot"] | null;
+            /** Missing Input Count */
+            missing_input_count?: number | null;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "completed" | "rejected" | "needs_inputs" | "unsupported" | "unavailable" | "no_values" | "failed" | "interrupted";
+            /** Preparation Id */
+            preparation_id?: string | null;
+            /** Preparation State */
+            preparation_state?: string | null;
+            result?: components["schemas"]["SolverReceipt"] | null;
+            /** Source Count */
+            source_count?: number | null;
+            /** Sources */
+            sources?: components["schemas"]["SourceReference"][];
+            /**
+             * Sources Truncated
+             * @default false
+             */
+            sources_truncated: boolean;
+        };
         /** ExperimentConfig */
         ExperimentConfig: {
             /** Assumptions */
@@ -1114,6 +1193,23 @@ export interface components {
             /** @default null */
             experiment: components["schemas"]["ExperimentConfig"] | null;
             support: components["schemas"]["SupportAssessment"];
+        };
+        /** ExperimentSnapshot */
+        ExperimentSnapshot: {
+            /** Configuration Sha256 */
+            configuration_sha256: string;
+            /** Duration H */
+            duration_h: number;
+            /** Experiment Id */
+            experiment_id: string;
+            /** Occupancy Threshold */
+            occupancy_threshold: number;
+            /** Parameters */
+            parameters: components["schemas"]["ParameterSnapshot"][];
+            /** Reference Configuration Sha256 */
+            reference_configuration_sha256?: string | null;
+            /** Schedules */
+            schedules: components["schemas"]["ScheduleSnapshot"][];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -1299,6 +1395,24 @@ export interface components {
              * Format: date-time
              */
             retrieved_at: string;
+        };
+        /** MetricSnapshot */
+        MetricSnapshot: {
+            /** Concentration Auc Nm H */
+            concentration_auc_nM_h: number;
+            /** Endpoint Occupancy */
+            endpoint_occupancy: number;
+            /** Occupancy Auc H */
+            occupancy_auc_h: number;
+            /** Scenario Id */
+            scenario_id: string;
+            /**
+             * Threshold Status
+             * @enum {string}
+             */
+            threshold_status: "never_reached" | "crossed_within_window" | "still_above_at_horizon" | "ambiguous_without_more_resolution";
+            /** Total Time Above H */
+            total_time_above_h: number;
         };
         /** MissingPreparationInput */
         MissingPreparationInput: {
@@ -1502,6 +1616,55 @@ export interface components {
              * @enum {string}
              */
             status: "candidates" | "no_values" | "unavailable" | "rejected";
+        };
+        /** ParameterSnapshot */
+        ParameterSnapshot: {
+            /**
+             * Change
+             * @default not_compared
+             * @enum {string}
+             */
+            change: "unchanged" | "changed" | "added" | "not_compared";
+            /**
+             * Comparison
+             * @default none
+             * @enum {string}
+             */
+            comparison: "baseline" | "previous_result" | "none";
+            /** Delta */
+            delta?: number | null;
+            /** Evidence Id */
+            evidence_id?: string | null;
+            /** Parameter */
+            parameter: string;
+            /**
+             * Provenance
+             * @enum {string}
+             */
+            provenance: "reported" | "calculated" | "assumed" | "user_supplied" | "design_input";
+            /** Reference Value */
+            reference_value?: number | null;
+            /**
+             * Review Status
+             * @enum {string}
+             */
+            review_status: "candidate" | "reviewed" | "rejected" | "not_reviewed";
+            /** Scenario Id */
+            scenario_id?: string | null;
+            /** Source Ids */
+            source_ids?: string[];
+            /**
+             * Source Ids Truncated
+             * @default false
+             */
+            source_ids_truncated: boolean;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "h" | "L" | "L/h" | "nM^-1 h^-1" | "h^-1" | "nM" | "g/mol" | "kg" | "1" | "nmol" | "mg";
+            /** Value */
+            value: number | null;
         };
         /** ParsedHypothesis */
         ParsedHypothesis: {
@@ -2067,6 +2230,29 @@ export interface components {
             /** Target Site Concentration Nm */
             target_site_concentration_nM: number[];
         };
+        /** ScheduleSnapshot */
+        ScheduleSnapshot: {
+            /** Administration */
+            administration: (components["schemas"]["InfusionEvent"] | components["schemas"]["BolusEvent"])[];
+            /** Changed */
+            changed?: boolean | null;
+            /**
+             * Comparison
+             * @enum {string}
+             */
+            comparison: "baseline" | "previous_result" | "none";
+            /**
+             * Intervention
+             * @enum {string}
+             */
+            intervention: "baseline" | "half_life_x3" | "affinity_x10" | "custom";
+            /** Parameter Evidence */
+            parameter_evidence?: components["schemas"]["ParameterSnapshot"][];
+            /** Reference Administration */
+            reference_administration?: (components["schemas"]["InfusionEvent"] | components["schemas"]["BolusEvent"])[] | null;
+            /** Scenario Id */
+            scenario_id: string;
+        };
         /** SimulationDiagnostics */
         SimulationDiagnostics: {
             /** Absolute Tolerance */
@@ -2117,6 +2303,25 @@ export interface components {
             /** Warnings */
             warnings: string[];
         };
+        /** SolverReceipt */
+        SolverReceipt: {
+            /** Client Revision */
+            client_revision: number;
+            /** Configuration Sha256 */
+            configuration_sha256: string;
+            /** Experiment Id */
+            experiment_id: string;
+            /** Metrics */
+            metrics: components["schemas"]["MetricSnapshot"][];
+            /** Model Version */
+            model_version: string;
+            /** Output Point Count */
+            output_point_count: number;
+            /** Result Id */
+            result_id: string;
+            /** Solver Version */
+            solver_version: string;
+        };
         /** SourcePassage */
         SourcePassage: {
             /** Locator */
@@ -2125,6 +2330,21 @@ export interface components {
             source_id: string;
             /** Supporting Passage */
             supporting_passage: string;
+        };
+        /** SourceReference */
+        SourceReference: {
+            /** Content Kind */
+            content_kind?: ("full_text" | "abstract" | "database_record" | "product_label") | null;
+            /** Document Id */
+            document_id?: string | null;
+            /** Retrieval Status */
+            retrieval_status?: ("live" | "cached" | "unavailable") | null;
+            /** Snapshot Sha256 */
+            snapshot_sha256?: string | null;
+            /** Source Handle */
+            source_handle?: string | null;
+            /** Source Id */
+            source_id?: string | null;
         };
         /** SourceRetrievalResult */
         SourceRetrievalResult: {

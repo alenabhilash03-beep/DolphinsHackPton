@@ -1,5 +1,5 @@
-from datetime import date
-from math import isclose, log
+from datetime import date, datetime
+from math import isclose, isfinite, log
 from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
@@ -51,6 +51,7 @@ class ParameterEvidence(Contract):
     context: dict[str, str] = Field(default_factory=dict)
     reviewed_on: date | None = None
     reviewer: str | None = None
+    entered_at: datetime | None = None
 
     @model_validator(mode="after")
     def provenance_requirements(self) -> Self:
@@ -60,6 +61,8 @@ class ParameterEvidence(Contract):
             raise ValueError("Calculated evidence requires parents and a formula")
         if self.provenance == "assumed" and not self.rationale:
             raise ValueError("Assumptions require a rationale")
+        if self.provenance == "user_supplied" and (not self.entered_at or not self.rationale):
+            raise ValueError("User-supplied values require entry time and rationale")
         if self.review_status == "reviewed" and (not self.reviewed_on or not self.reviewer):
             raise ValueError("Reviewed evidence requires a reviewer and date")
         return self
@@ -131,6 +134,7 @@ class ScenarioConfig(Contract):
     exposure_factor: Nonnegative
     initial_amount_nmol: Nonnegative = 0
     initial_occupancy: Fraction = 0
+    dosing_interval_h: Positive | None = None
     administration: Annotated[list[DoseEvent], Field(min_length=1, max_length=100)]
     assumption_ids: Annotated[list[Identifier], Field(min_length=1)]
     parameter_evidence: dict[str, Identifier]
@@ -142,6 +146,13 @@ class ScenarioConfig(Contract):
             if event.start_h < previous_end:
                 raise ValueError("Events must be sorted and must not overlap")
             previous_end = event.start_h + (event.duration_h if event.kind == "infusion" else 0)
+        if self.dosing_interval_h is not None:
+            if len(self.administration) < 2 or any(event.kind != "infusion" for event in self.administration):
+                raise ValueError("A dosing interval requires at least two infusion events")
+            first_start = self.administration[0].start_h
+            if any(not isclose(event.start_h, first_start + index * self.dosing_interval_h, rel_tol=1e-9, abs_tol=1e-9)
+                   for index, event in enumerate(self.administration)):
+                raise ValueError("Infusion starts must match the declared dosing interval")
         return self
 
 
@@ -213,18 +224,28 @@ class ExperimentConfig(Contract):
             visited.add(key)
         for key in evidence:
             visit(key, set())
-        inherited: dict[str, bool] = {}
-        def usable(key: str) -> bool:
+        inherited: dict[str, tuple[bool, bool]] = {}
+        def usable(key: str) -> tuple[bool, bool]:
             if key in inherited:
                 return inherited[key]
             item = evidence[key]
-            if item.review_status != "reviewed" or item.applicability == "not_applicable":
-                raise ValueError("Used evidence and all derivation parents must be reviewed and applicable")
+            if item.review_status == "rejected" or item.applicability == "not_applicable":
+                raise ValueError("Used evidence and derivation parents must be applicable and not rejected")
+            parent_user = False
             transferred = item.applicability == "conditional_transfer" or item.provenance in ("assumed", "user_supplied")
             for parent in item.parent_ids:
-                transferred = usable(parent) or transferred
-            inherited[key] = transferred
-            return transferred
+                parent_conditional, parent_has_user = usable(parent)
+                transferred = transferred or parent_conditional
+                parent_user = parent_user or parent_has_user
+            if item.review_status == "candidate":
+                if self.mode != "custom" or item.provenance not in ("user_supplied", "calculated"):
+                    raise ValueError("Unreviewed source values cannot be used as scientific parameters")
+                if item.provenance == "calculated" and not parent_user:
+                    raise ValueError("Candidate derivations require a user-supplied parent")
+                transferred = True
+            has_user = item.provenance == "user_supplied" or parent_user
+            inherited[key] = (transferred, has_user)
+            return inherited[key]
         required = {
             "pk.volume_L": "L", "pk.clearance_L_h": "L/hour", "pk.elimination_half_life_h": "hour",
             "binding.association_nM_inv_h_inv": "nM^-1 hour^-1", "binding.dissociation_h_inv": "hour^-1",
@@ -239,19 +260,23 @@ class ExperimentConfig(Contract):
                 if key not in evidence:
                     raise ValueError("Scenario references unknown parameter evidence")
                 item = evidence[key]
-                if item.review_status != "reviewed" or item.applicability == "not_applicable":
-                    raise ValueError("Runnable parameters require reviewed, applicable evidence")
-                if path in required and item.unit != required[path]:
+                usable(key)
+                expected_unit = required.get(path)
+                if path.startswith("administration.") and path.endswith(".amount_mg"):
+                    expected_unit = "mg"
+                if path == "dosing_interval_h":
+                    expected_unit = "hour"
+                if expected_unit and item.unit != expected_unit:
                     raise ValueError("Evidence unit must match the canonical parameter unit")
                 value = scenario.model_dump()
                 try:
                     for part in path.split("."):
-                        value = value[part]
-                except (KeyError, TypeError):
+                        value = value[int(part)] if isinstance(value, list) else value[part]
+                except (KeyError, TypeError, ValueError, IndexError):
                     raise ValueError("Unknown scenario parameter path") from None
                 if not isinstance(value, (int, float)) or not isclose(value, item.value, rel_tol=1e-6, abs_tol=1e-12):
                     raise ValueError("Scenario value does not match its evidence record")
-            if any([usable(key) for key in scenario.parameter_evidence.values()]):
+            if any(usable(key)[0] for key in scenario.parameter_evidence.values()):
                 if self.support.status != "conditional":
                     raise ValueError("Transferred or assumed scientific inputs require conditional scope")
             if scenario.intervention != "baseline" and self.support.status != "conditional":
@@ -277,6 +302,41 @@ class SimulationRequest(Contract):
     experiment: ExperimentConfig
     client_revision: Annotated[int, Field(ge=0)]
     output_points: Annotated[int, Field(ge=100, le=5000)] = 1000
+
+
+class ControlAdjustment(Contract):
+    experiment: ExperimentConfig
+    scenario_id: Identifier | None = None
+    field: Literal[
+        "dose_mg", "dosing_interval_h", "pk.volume_L", "pk.clearance_L_h",
+        "pk.elimination_half_life_h", "binding.association_nM_inv_h_inv",
+        "binding.dissociation_h_inv", "binding.affinity_nM", "exposure_factor",
+        "duration_h", "occupancy_threshold",
+    ]
+    value: Annotated[float, Field(strict=True)] | None
+    client_revision: Annotated[int, Field(ge=0)]
+    output_points: Annotated[int, Field(ge=100, le=5000)] = 1000
+
+    @model_validator(mode="after")
+    def target_and_value(self) -> Self:
+        global_edit = self.field in ("duration_h", "occupancy_threshold")
+        if global_edit != (self.scenario_id is None):
+            raise ValueError("Global controls omit scenario_id; scenario controls require it")
+        if self.value is None:
+            if self.field != "dosing_interval_h":
+                raise ValueError("Only the dosing interval can be cleared")
+            return self
+        if not isfinite(self.value):
+            raise ValueError("Control values must be finite")
+        if self.field == "occupancy_threshold":
+            if not 0 < self.value < 1:
+                raise ValueError("Occupancy threshold must be between zero and one")
+        elif self.field in ("dose_mg", "exposure_factor"):
+            if self.value < 0:
+                raise ValueError("Control value must be nonnegative")
+        elif self.value <= 0:
+            raise ValueError("Control value must be positive")
+        return self
 
 
 class ThresholdOutcome(Contract):
@@ -390,5 +450,5 @@ class ContractValidation(Contract):
     scenario_count: int
 
 
-ALL_CONTRACTS = [HypothesisRequest, ParsedHypothesis, ExperimentPreparation, SimulationRequest,
+ALL_CONTRACTS = [HypothesisRequest, ParsedHypothesis, ExperimentPreparation, SimulationRequest, ControlAdjustment,
                  SimulationResult, Interpretation, DrugProfile]

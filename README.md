@@ -12,6 +12,8 @@ An evidence-aware scientific hypothesis exploration platform.
 
 The existing web page and API can be run locally now using the commands below. The scientific plots and live controls arrive in Phase 2. Python computation is independent of the agent; no AI credentials are needed to run the numerical engine.
 
+Subphase **2A's technical integration is ready**: the [frontend integration handoff](docs/FRONTEND_INTEGRATION.md) documents same-origin simulation routes, a typed client, a headless React workspace hook, linked parameter controls, baseline protection, and user-edit provenance. A separate UI contributor can use these interfaces without keeping the current page design. The page itself still has no parameter panel or scientific plots.
+
 ## Requirements and installation
 
 - Python 3.12 (3.13 is also allowed by the project).
@@ -59,6 +61,7 @@ Set `API_BASE_URL` to change the server-to-server destination; restart Next.js a
 uv run npm run contracts:generate
 npm run contracts:check
 npm run typecheck
+npm run test:workspace --workspace apps/web
 uv run pytest
 npm run build
 ```
@@ -112,4 +115,4 @@ The script prints capability status and error categories, not secrets or raw HTT
 
 ## Next development step and when the app becomes visible
 
-**Phase 2 (subphases 2A–2C, roadmap hours 7–12)** connects live controls, Plotly graphs, and a synchronized timeline. This is the first interactive scientific workspace. The LangChain research workflow follows in **Phase 3 (hours 12–18)**, and the real 1N8Z molecular viewer in **Phase 4 (hours 18–24)**. These are roadmap estimates, not guarantees. Review the plan after each subphase and wait for the next green light.
+**2B** connects the 2A workspace data to Plotly concentration/occupancy graphs and a synchronized timeline. **2C** adds smooth rapid-edit behavior and stale-response protection. Together with the UI contributor's visual work, Phase 2 delivers the first interactive scientific workspace. The LangChain research workflow follows in **Phase 3 (roadmap hours 12–18)**, and the real 1N8Z molecular viewer in **Phase 4 (hours 18–24)**. These are roadmap estimates, not guarantees. Review the plan after each subphase and wait for the next green light.

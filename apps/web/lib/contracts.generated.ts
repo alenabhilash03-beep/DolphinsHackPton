@@ -61,6 +61,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/simulations/adjust": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Adjust And Simulate
+         * @description Apply one linked control edit and return the new deterministic result.
+         */
+        post: operations["adjust_and_simulate_api_simulations_adjust_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -110,6 +130,29 @@ export interface components {
              * @constant
              */
             valid: true;
+        };
+        /** ControlAdjustment */
+        ControlAdjustment: {
+            /** Client Revision */
+            client_revision: number;
+            experiment: components["schemas"]["ExperimentConfig"];
+            /**
+             * Field
+             * @enum {string}
+             */
+            field: "dose_mg" | "dosing_interval_h" | "pk.volume_L" | "pk.clearance_L_h" | "pk.elimination_half_life_h" | "binding.association_nM_inv_h_inv" | "binding.dissociation_h_inv" | "binding.affinity_nM" | "exposure_factor" | "duration_h" | "occupancy_threshold";
+            /**
+             * Output Points
+             * @default 1000
+             */
+            output_points: number;
+            /**
+             * Scenario Id
+             * @default null
+             */
+            scenario_id: string | null;
+            /** Value */
+            value: number | null;
         };
         /** DrugProfile */
         DrugProfile: {
@@ -347,6 +390,11 @@ export interface components {
                 [key: string]: string;
             };
             /**
+             * Entered At
+             * @default null
+             */
+            entered_at: string | null;
+            /**
              * Estimate Type
              * @enum {string}
              */
@@ -429,6 +477,11 @@ export interface components {
             binding: components["schemas"]["BindingParameters"];
             /** Body Mass Kg */
             body_mass_kg: number;
+            /**
+             * Dosing Interval H
+             * @default null
+             */
+            dosing_interval_h: number | null;
             /** Exposure Factor */
             exposure_factor: number;
             /**
@@ -652,6 +705,39 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["SimulationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimulationResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    adjust_and_simulate_api_simulations_adjust_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ControlAdjustment"];
             };
         };
         responses: {

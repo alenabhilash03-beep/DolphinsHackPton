@@ -220,6 +220,19 @@
           "title": "Context",
           "type": "object"
         },
+        "entered_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entered At"
+        },
         "estimate_type": {
           "enum": [
             "population_model_fit",
@@ -482,6 +495,19 @@
           "exclusiveMinimum": 0,
           "title": "Body Mass Kg",
           "type": "number"
+        },
+        "dosing_interval_h": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dosing Interval H"
         },
         "exposure_factor": {
           "minimum": 0,

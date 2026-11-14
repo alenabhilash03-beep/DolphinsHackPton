@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
 from app.config import Settings
-from app.schemas.contracts import ALL_CONTRACTS, ContractValidation, ExperimentConfig, HealthResponse, SimulationRequest, SimulationResult
+from app.schemas.contracts import ALL_CONTRACTS, ControlAdjustment, ContractValidation, ExperimentConfig, HealthResponse, SimulationRequest, SimulationResult
+from app.simulation.controls import adjust_experiment
 from app.simulation.service import run_simulation
 
 
@@ -31,6 +32,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         """Run the reviewed one-compartment model without an LLM call."""
         try:
             return run_simulation(request)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @api.post("/api/simulations/adjust", response_model=SimulationResult)
+    def adjust_and_simulate(adjustment: ControlAdjustment) -> SimulationResult:
+        """Apply one linked control edit and return the new deterministic result."""
+        try:
+            experiment = adjust_experiment(adjustment)
+            return run_simulation(SimulationRequest(
+                experiment=experiment,
+                client_revision=adjustment.client_revision,
+                output_points=adjustment.output_points,
+            ))
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 

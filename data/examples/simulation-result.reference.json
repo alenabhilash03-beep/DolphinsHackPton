@@ -1,7 +1,7 @@
 {
-  "result_id": "sim-c4fa13970eb1bab9360e76d2",
+  "result_id": "sim-e3d5ead2b81378ce0777f4c3",
   "client_revision": 7,
-  "configuration_hash": "bc152a2107f2c7f482c906c752b97b39aa7381e6f906dc35e32afece9e7fa949",
+  "configuration_hash": "717db0ee9e91c7b8bf19fe63e222b43f7b65e4703887adb1daea950e602300b3",
   "model_version": "one_compartment_effective_binding_v1.0.0",
   "solver_version": "Radau-r1e-06-a1e-09-v1",
   "configuration": {
@@ -126,7 +126,8 @@
           "transfer": "No Hylecta route or absorption parameters copied"
         },
         "reviewed_on": "2026-11-13",
-        "reviewer": "Codex technical audit 0A; no independent clinical validation"
+        "reviewer": "Codex technical audit 0A; no independent clinical validation",
+        "entered_at": null
       },
       {
         "evidence_id": "volume",
@@ -152,7 +153,8 @@
           "transfer": "Assumed sole-compartment volume"
         },
         "reviewed_on": "2026-11-13",
-        "reviewer": "Codex technical audit 0A; no independent clinical validation"
+        "reviewer": "Codex technical audit 0A; no independent clinical validation",
+        "entered_at": null
       },
       {
         "evidence_id": "clearance",
@@ -179,7 +181,8 @@
           "transfer": "Distribution and nonlinear elimination omitted"
         },
         "reviewed_on": "2026-11-13",
-        "reviewer": "Codex technical audit 0A; no independent clinical validation"
+        "reviewer": "Codex technical audit 0A; no independent clinical validation",
+        "entered_at": null
       },
       {
         "evidence_id": "kon",
@@ -206,7 +209,8 @@
           "interpretation": "Effective 1:1 apparent kinetics"
         },
         "reviewed_on": "2026-11-13",
-        "reviewer": "Codex technical audit 0A; no independent clinical validation"
+        "reviewer": "Codex technical audit 0A; no independent clinical validation",
+        "entered_at": null
       },
       {
         "evidence_id": "koff",
@@ -232,7 +236,8 @@
           "assay": "Same matched assay as kon; no 37 C extrapolation"
         },
         "reviewed_on": "2026-11-13",
-        "reviewer": "Codex technical audit 0A; no independent clinical validation"
+        "reviewer": "Codex technical audit 0A; no independent clinical validation",
+        "entered_at": null
       },
       {
         "evidence_id": "mass",
@@ -253,7 +258,8 @@
         "rationale": "Chosen example mass; not a patient record",
         "context": {},
         "reviewed_on": "2026-11-13",
-        "reviewer": "Codex technical audit 0A; no independent clinical validation"
+        "reviewer": "Codex technical audit 0A; no independent clinical validation",
+        "entered_at": null
       },
       {
         "evidence_id": "alpha",
@@ -274,7 +280,8 @@
         "rationale": "Idealized equal central and site exposure; not measured tumor penetration",
         "context": {},
         "reviewed_on": "2026-11-13",
-        "reviewer": "Codex technical audit 0A; no independent clinical validation"
+        "reviewer": "Codex technical audit 0A; no independent clinical validation",
+        "entered_at": null
       },
       {
         "evidence_id": "half",
@@ -298,7 +305,8 @@
         "rationale": null,
         "context": {},
         "reviewed_on": "2026-11-13",
-        "reviewer": "Codex technical audit 0A; no independent clinical validation"
+        "reviewer": "Codex technical audit 0A; no independent clinical validation",
+        "entered_at": null
       },
       {
         "evidence_id": "kd",
@@ -322,7 +330,8 @@
         "rationale": null,
         "context": {},
         "reviewed_on": "2026-11-13",
-        "reviewer": "Codex technical audit 0A; no independent clinical validation"
+        "reviewer": "Codex technical audit 0A; no independent clinical validation",
+        "entered_at": null
       },
       {
         "evidence_id": "clearance_third",
@@ -345,7 +354,8 @@
         "rationale": null,
         "context": {},
         "reviewed_on": "2026-11-13",
-        "reviewer": "Codex technical audit 0A; no independent clinical validation"
+        "reviewer": "Codex technical audit 0A; no independent clinical validation",
+        "entered_at": null
       },
       {
         "evidence_id": "half_triple",
@@ -368,7 +378,8 @@
         "rationale": null,
         "context": {},
         "reviewed_on": "2026-11-13",
-        "reviewer": "Codex technical audit 0A; no independent clinical validation"
+        "reviewer": "Codex technical audit 0A; no independent clinical validation",
+        "entered_at": null
       },
       {
         "evidence_id": "koff_tenth",
@@ -391,7 +402,8 @@
         "rationale": null,
         "context": {},
         "reviewed_on": "2026-11-13",
-        "reviewer": "Codex technical audit 0A; no independent clinical validation"
+        "reviewer": "Codex technical audit 0A; no independent clinical validation",
+        "entered_at": null
       },
       {
         "evidence_id": "kd_tenth",
@@ -414,7 +426,8 @@
         "rationale": null,
         "context": {},
         "reviewed_on": "2026-11-13",
-        "reviewer": "Codex technical audit 0A; no independent clinical validation"
+        "reviewer": "Codex technical audit 0A; no independent clinical validation",
+        "entered_at": null
       }
     ],
     "scenarios": [
@@ -438,6 +451,7 @@
         "exposure_factor": 1.0,
         "initial_amount_nmol": 0.0,
         "initial_occupancy": 0.0,
+        "dosing_interval_h": null,
         "administration": [
           {
             "kind": "infusion",
@@ -486,6 +500,7 @@
         "exposure_factor": 1.0,
         "initial_amount_nmol": 0.0,
         "initial_occupancy": 0.0,
+        "dosing_interval_h": null,
         "administration": [
           {
             "kind": "infusion",
@@ -534,6 +549,7 @@
         "exposure_factor": 1.0,
         "initial_amount_nmol": 0.0,
         "initial_occupancy": 0.0,
+        "dosing_interval_h": null,
         "administration": [
           {
             "kind": "infusion",

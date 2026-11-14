@@ -113,6 +113,76 @@
         "title": "ContractValidation",
         "type": "object"
       },
+      "ControlAdjustment": {
+        "additionalProperties": false,
+        "properties": {
+          "client_revision": {
+            "minimum": 0,
+            "title": "Client Revision",
+            "type": "integer"
+          },
+          "experiment": {
+            "$ref": "#/components/schemas/ExperimentConfig"
+          },
+          "field": {
+            "enum": [
+              "dose_mg",
+              "dosing_interval_h",
+              "pk.volume_L",
+              "pk.clearance_L_h",
+              "pk.elimination_half_life_h",
+              "binding.association_nM_inv_h_inv",
+              "binding.dissociation_h_inv",
+              "binding.affinity_nM",
+              "exposure_factor",
+              "duration_h",
+              "occupancy_threshold"
+            ],
+            "title": "Field",
+            "type": "string"
+          },
+          "output_points": {
+            "default": 1000,
+            "maximum": 5000,
+            "minimum": 100,
+            "title": "Output Points",
+            "type": "integer"
+          },
+          "scenario_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Scenario Id"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "experiment",
+          "field",
+          "value",
+          "client_revision"
+        ],
+        "title": "ControlAdjustment",
+        "type": "object"
+      },
       "DrugProfile": {
         "additionalProperties": false,
         "properties": {
@@ -708,6 +778,19 @@
             "title": "Context",
             "type": "object"
           },
+          "entered_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Entered At"
+          },
           "estimate_type": {
             "enum": [
               "population_model_fit",
@@ -970,6 +1053,19 @@
             "exclusiveMinimum": 0,
             "title": "Body Mass Kg",
             "type": "number"
+          },
+          "dosing_interval_h": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Dosing Interval H"
           },
           "exposure_factor": {
             "minimum": 0,
@@ -1530,6 +1626,45 @@
           }
         },
         "summary": "Simulate"
+      }
+    },
+    "/api/simulations/adjust": {
+      "post": {
+        "description": "Apply one linked control edit and return the new deterministic result.",
+        "operationId": "adjust_and_simulate_api_simulations_adjust_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ControlAdjustment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulationResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Adjust And Simulate"
       }
     }
   }

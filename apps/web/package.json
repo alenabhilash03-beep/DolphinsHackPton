@@ -6,7 +6,8 @@
     "dev": "next dev --hostname 127.0.0.1",
     "build": "next build --webpack",
     "start": "next start --hostname 127.0.0.1",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:workspace": "node --experimental-strip-types --test tests/workspace-state.test.mjs"
   },
   "dependencies": {
     "@next/env": "^16.0.0",

@@ -123,7 +123,8 @@ export const example: ExperimentConfig = {
         "transfer": "No Hylecta route or absorption parameters copied"
       },
       "reviewed_on": "2026-11-13",
-      "reviewer": "Codex technical audit 0A; no independent clinical validation"
+      "reviewer": "Codex technical audit 0A; no independent clinical validation",
+      "entered_at": null
     },
     {
       "evidence_id": "volume",
@@ -149,7 +150,8 @@ export const example: ExperimentConfig = {
         "transfer": "Assumed sole-compartment volume"
       },
       "reviewed_on": "2026-11-13",
-      "reviewer": "Codex technical audit 0A; no independent clinical validation"
+      "reviewer": "Codex technical audit 0A; no independent clinical validation",
+      "entered_at": null
     },
     {
       "evidence_id": "clearance",
@@ -176,7 +178,8 @@ export const example: ExperimentConfig = {
         "transfer": "Distribution and nonlinear elimination omitted"
       },
       "reviewed_on": "2026-11-13",
-      "reviewer": "Codex technical audit 0A; no independent clinical validation"
+      "reviewer": "Codex technical audit 0A; no independent clinical validation",
+      "entered_at": null
     },
     {
       "evidence_id": "kon",
@@ -203,7 +206,8 @@ export const example: ExperimentConfig = {
         "interpretation": "Effective 1:1 apparent kinetics"
       },
       "reviewed_on": "2026-11-13",
-      "reviewer": "Codex technical audit 0A; no independent clinical validation"
+      "reviewer": "Codex technical audit 0A; no independent clinical validation",
+      "entered_at": null
     },
     {
       "evidence_id": "koff",
@@ -229,7 +233,8 @@ export const example: ExperimentConfig = {
         "assay": "Same matched assay as kon; no 37 C extrapolation"
       },
       "reviewed_on": "2026-11-13",
-      "reviewer": "Codex technical audit 0A; no independent clinical validation"
+      "reviewer": "Codex technical audit 0A; no independent clinical validation",
+      "entered_at": null
     },
     {
       "evidence_id": "mass",
@@ -250,7 +255,8 @@ export const example: ExperimentConfig = {
       "rationale": "Chosen example mass; not a patient record",
       "context": {},
       "reviewed_on": "2026-11-13",
-      "reviewer": "Codex technical audit 0A; no independent clinical validation"
+      "reviewer": "Codex technical audit 0A; no independent clinical validation",
+      "entered_at": null
     },
     {
       "evidence_id": "alpha",
@@ -271,7 +277,8 @@ export const example: ExperimentConfig = {
       "rationale": "Idealized equal central and site exposure; not measured tumor penetration",
       "context": {},
       "reviewed_on": "2026-11-13",
-      "reviewer": "Codex technical audit 0A; no independent clinical validation"
+      "reviewer": "Codex technical audit 0A; no independent clinical validation",
+      "entered_at": null
     },
     {
       "evidence_id": "half",
@@ -295,7 +302,8 @@ export const example: ExperimentConfig = {
       "rationale": null,
       "context": {},
       "reviewed_on": "2026-11-13",
-      "reviewer": "Codex technical audit 0A; no independent clinical validation"
+      "reviewer": "Codex technical audit 0A; no independent clinical validation",
+      "entered_at": null
     },
     {
       "evidence_id": "kd",
@@ -319,7 +327,8 @@ export const example: ExperimentConfig = {
       "rationale": null,
       "context": {},
       "reviewed_on": "2026-11-13",
-      "reviewer": "Codex technical audit 0A; no independent clinical validation"
+      "reviewer": "Codex technical audit 0A; no independent clinical validation",
+      "entered_at": null
     },
     {
       "evidence_id": "clearance_third",
@@ -342,7 +351,8 @@ export const example: ExperimentConfig = {
       "rationale": null,
       "context": {},
       "reviewed_on": "2026-11-13",
-      "reviewer": "Codex technical audit 0A; no independent clinical validation"
+      "reviewer": "Codex technical audit 0A; no independent clinical validation",
+      "entered_at": null
     },
     {
       "evidence_id": "half_triple",
@@ -365,7 +375,8 @@ export const example: ExperimentConfig = {
       "rationale": null,
       "context": {},
       "reviewed_on": "2026-11-13",
-      "reviewer": "Codex technical audit 0A; no independent clinical validation"
+      "reviewer": "Codex technical audit 0A; no independent clinical validation",
+      "entered_at": null
     },
     {
       "evidence_id": "koff_tenth",
@@ -388,7 +399,8 @@ export const example: ExperimentConfig = {
       "rationale": null,
       "context": {},
       "reviewed_on": "2026-11-13",
-      "reviewer": "Codex technical audit 0A; no independent clinical validation"
+      "reviewer": "Codex technical audit 0A; no independent clinical validation",
+      "entered_at": null
     },
     {
       "evidence_id": "kd_tenth",
@@ -411,7 +423,8 @@ export const example: ExperimentConfig = {
       "rationale": null,
       "context": {},
       "reviewed_on": "2026-11-13",
-      "reviewer": "Codex technical audit 0A; no independent clinical validation"
+      "reviewer": "Codex technical audit 0A; no independent clinical validation",
+      "entered_at": null
     }
   ],
   "scenarios": [
@@ -435,6 +448,7 @@ export const example: ExperimentConfig = {
       "exposure_factor": 1.0,
       "initial_amount_nmol": 0.0,
       "initial_occupancy": 0.0,
+      "dosing_interval_h": null,
       "administration": [
         {
           "kind": "infusion",
@@ -483,6 +497,7 @@ export const example: ExperimentConfig = {
       "exposure_factor": 1.0,
       "initial_amount_nmol": 0.0,
       "initial_occupancy": 0.0,
+      "dosing_interval_h": null,
       "administration": [
         {
           "kind": "infusion",
@@ -531,6 +546,7 @@ export const example: ExperimentConfig = {
       "exposure_factor": 1.0,
       "initial_amount_nmol": 0.0,
       "initial_occupancy": 0.0,
+      "dosing_interval_h": null,
       "administration": [
         {
           "kind": "infusion",

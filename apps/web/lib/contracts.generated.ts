@@ -41,6 +41,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/research/evidence/trastuzumab": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Curated Trastuzumab Evidence
+         * @description Return the audited preset and labeled bibliographic cache; no live claim.
+         */
+        get: operations["curated_trastuzumab_evidence_api_research_evidence_trastuzumab_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/research/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search Literature
+         * @description Search current Europe PMC records; candidate metadata cannot become reviewed inputs.
+         */
+        get: operations["search_literature_api_research_search_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/simulations": {
         parameters: {
             query?: never;
@@ -113,6 +153,51 @@ export interface components {
             /** Start H */
             start_h: number;
         };
+        /** CachedSourceRecord */
+        CachedSourceRecord: {
+            /** Abstract Available */
+            abstract_available: boolean;
+            /** Cache Scope */
+            cache_scope: string;
+            /** Doi */
+            doi: string;
+            /**
+             * Full Text Status
+             * @enum {string}
+             */
+            full_text_status: "open_access_link" | "not_confirmed";
+            /** Full Text Url */
+            full_text_url: string | null;
+            /** Pmcid */
+            pmcid: string;
+            /** Pmid */
+            pmid: string;
+            /**
+             * Provider
+             * @constant
+             */
+            provider: "Europe PMC";
+            /** Provider Id */
+            provider_id: string;
+            /**
+             * Provider Source
+             * @constant
+             */
+            provider_source: "MED";
+            /** Publication Year */
+            publication_year: string | null;
+            /** Record Url */
+            record_url: string;
+            /**
+             * Retrieved At
+             * Format: date-time
+             */
+            retrieved_at: string;
+            /** Source Id */
+            source_id: string;
+            /** Title */
+            title: string;
+        };
         /** ContractValidation */
         ContractValidation: {
             /** Experiment Id */
@@ -174,6 +259,21 @@ export interface components {
             supported_routes: string[];
             /** Targets */
             targets: string[];
+        };
+        /** EvidenceProfile */
+        EvidenceProfile: {
+            experiment: components["schemas"]["ExperimentConfig"];
+            /** Literature */
+            literature: components["schemas"]["CachedSourceRecord"][];
+            /** Profile Id */
+            profile_id: string;
+            /**
+             * Retrieval Status
+             * @default cached
+             * @constant
+             */
+            retrieval_status: "cached";
+            structure: components["schemas"]["StructureReference"];
         };
         /** EvidenceSource */
         EvidenceSource: {
@@ -368,6 +468,73 @@ export interface components {
             limitations: string[];
             /** Result Id */
             result_id: string;
+        };
+        /** LiteratureRecord */
+        LiteratureRecord: {
+            /** Abstract */
+            abstract?: string | null;
+            /** Abstract Available */
+            abstract_available: boolean;
+            /** Doi */
+            doi?: string | null;
+            /**
+             * Full Text Status
+             * @enum {string}
+             */
+            full_text_status: "open_access_link" | "not_confirmed";
+            /** Full Text Url */
+            full_text_url?: string | null;
+            /** Pmcid */
+            pmcid?: string | null;
+            /** Pmid */
+            pmid?: string | null;
+            /**
+             * Provider
+             * @default Europe PMC
+             * @constant
+             */
+            provider: "Europe PMC";
+            /** Provider Id */
+            provider_id: string;
+            /** Provider Source */
+            provider_source: string;
+            /** Publication Year */
+            publication_year?: string | null;
+            /** Record Url */
+            record_url: string;
+            /**
+             * Retrieved At
+             * Format: date-time
+             */
+            retrieved_at: string;
+            /** Title */
+            title: string;
+        };
+        /** LiteratureSearch */
+        LiteratureSearch: {
+            /** Hit Count */
+            hit_count: number;
+            /**
+             * Provider
+             * @default Europe PMC
+             * @constant
+             */
+            provider: "Europe PMC";
+            /** Query */
+            query: string;
+            /** Records */
+            records: components["schemas"]["LiteratureRecord"][];
+            /**
+             * Retrieval Status
+             * @default live
+             * @constant
+             */
+            retrieval_status: "live";
+            /**
+             * Retrieved At
+             * Format: date-time
+             */
+            retrieved_at: string;
         };
         /** PKParameters */
         PKParameters: {
@@ -589,6 +756,19 @@ export interface components {
             /** Warnings */
             warnings: string[];
         };
+        /** StructureReference */
+        StructureReference: {
+            /** Chains */
+            chains: {
+                [key: string]: string;
+            };
+            /** Pdb Id */
+            pdb_id: string;
+            /** Scope */
+            scope: string;
+            /** Url */
+            url: string;
+        };
         /** SupportAssessment */
         SupportAssessment: {
             /** Missing Parameters */
@@ -691,6 +871,58 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    curated_trastuzumab_evidence_api_research_evidence_trastuzumab_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvidenceProfile"];
+                };
+            };
+        };
+    };
+    search_literature_api_research_search_get: {
+        parameters: {
+            query: {
+                q: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LiteratureSearch"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

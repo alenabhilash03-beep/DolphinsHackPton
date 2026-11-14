@@ -6,6 +6,7 @@ import { useSimulationTimeline } from "../hooks/useSimulationTimeline";
 import { ScientificPlot } from "./ScientificPlot";
 import { TimelineControls } from "./TimelineControls";
 import { PreviewControls } from "./PreviewControls";
+import { EvidencePanel } from "./EvidencePanel";
 
 /** Isolated functional preview; product styling belongs to the UI contributor. */
 export function PlotPreview({ initialExperiment }: { initialExperiment: ExperimentConfig }) {
@@ -30,6 +31,7 @@ export function PlotPreview({ initialExperiment }: { initialExperiment: Experime
       <ul>{timeline.readout?.scenarios.map((scenario) => <li key={scenario.scenarioId}>
         {scenario.label}: {scenario.centralConcentrationNM.toFixed(3)} nM central; {(scenario.occupancyFraction * 100).toFixed(2)}% occupied
       </li>)}</ul>
+      <EvidencePanel experiment={workspace.experiment} scenarioId={workspace.selectedScenarioId} />
     </> : <p role="status">{workspace.status === "loading" ? "Calculating simulation…" : "Simulation not loaded."}</p>}
   </main>;
 }

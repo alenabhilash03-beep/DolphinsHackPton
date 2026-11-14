@@ -100,3 +100,9 @@ npm run build
 ```
 
 The current root page is only an engine preview. The visual UI developer can replace that page and its styles while keeping the hook, generated types, and API routes.
+
+## Evidence handoff (3A)
+
+`EvidencePanel` in `apps/web/components/EvidencePanel.tsx` accepts the current `workspace.experiment` and optional `workspace.selectedScenarioId`. It renders source links, parameter provenance, scientific limits, and clearly labeled **cached** Europe PMC bibliographic metadata. The same-origin `/api/research/evidence/trastuzumab` route returns the audited profile and cache; generated TypeScript aliases `EvidenceProfile` and `LiteratureSearch` are exported from `apps/web/lib/contracts.ts`.
+
+Keep the experiment's `review_status` and `provenance` separate from `retrieval_status`. A recent live search does not independently validate a numerical parameter, and a user-edited input remains unreviewed even when the original source is still listed. If the evidence metadata route is unavailable, the panel keeps the current experiment's source links and values visible and marks only the cache status unavailable. See [the research evidence contract](RESEARCH_EVIDENCE.md).

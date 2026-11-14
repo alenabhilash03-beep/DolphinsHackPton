@@ -1,15 +1,18 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
 from app.config import Settings
+from app.research.europe_pmc import EuropePMCClient, LiteratureSearch, RetrievalError
+from app.research.registry import EvidenceProfile, load_evidence_profile
 from app.schemas.contracts import ALL_CONTRACTS, ControlAdjustment, ContractValidation, ExperimentConfig, HealthResponse, SimulationRequest, SimulationResult
 from app.simulation.controls import adjust_experiment
 from app.simulation.service import run_simulation
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+def create_app(settings: Settings | None = None, literature_client: EuropePMCClient | None = None) -> FastAPI:
     config = settings or Settings()
+    research = literature_client or EuropePMCClient()
     api = FastAPI(title="Hypothesim API", version="0.1.0", description="Deterministic scientific simulation API. Research-agent endpoints are not implemented yet.")
     api.add_middleware(CORSMiddleware, allow_origins=config.hypothesim_cors_origins,
                        allow_credentials=False, allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
@@ -47,6 +50,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             ))
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @api.get("/api/research/evidence/trastuzumab", response_model=EvidenceProfile)
+    def curated_trastuzumab_evidence() -> EvidenceProfile:
+        """Return the audited preset and labeled bibliographic cache; no live claim."""
+        return load_evidence_profile()
+
+    @api.get("/api/research/search", response_model=LiteratureSearch)
+    def search_literature(q: str = Query(min_length=1, max_length=500), limit: int = Query(default=5, ge=1, le=10)) -> LiteratureSearch:
+        """Search current Europe PMC records; candidate metadata cannot become reviewed inputs."""
+        try:
+            return research.search(q, page_size=limit)
+        except RetrievalError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
 
     def openapi() -> dict:
         if api.openapi_schema:

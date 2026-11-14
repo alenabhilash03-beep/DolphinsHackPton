@@ -77,6 +77,111 @@
         "title": "BolusEvent",
         "type": "object"
       },
+      "CachedSourceRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "abstract_available": {
+            "title": "Abstract Available",
+            "type": "boolean"
+          },
+          "cache_scope": {
+            "title": "Cache Scope",
+            "type": "string"
+          },
+          "doi": {
+            "title": "Doi",
+            "type": "string"
+          },
+          "full_text_status": {
+            "enum": [
+              "open_access_link",
+              "not_confirmed"
+            ],
+            "title": "Full Text Status",
+            "type": "string"
+          },
+          "full_text_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Text Url"
+          },
+          "pmcid": {
+            "title": "Pmcid",
+            "type": "string"
+          },
+          "pmid": {
+            "title": "Pmid",
+            "type": "string"
+          },
+          "provider": {
+            "const": "Europe PMC",
+            "title": "Provider",
+            "type": "string"
+          },
+          "provider_id": {
+            "title": "Provider Id",
+            "type": "string"
+          },
+          "provider_source": {
+            "const": "MED",
+            "title": "Provider Source",
+            "type": "string"
+          },
+          "publication_year": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publication Year"
+          },
+          "record_url": {
+            "title": "Record Url",
+            "type": "string"
+          },
+          "retrieved_at": {
+            "format": "date-time",
+            "title": "Retrieved At",
+            "type": "string"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "provider",
+          "provider_source",
+          "provider_id",
+          "pmid",
+          "pmcid",
+          "doi",
+          "title",
+          "publication_year",
+          "abstract_available",
+          "full_text_status",
+          "full_text_url",
+          "record_url",
+          "retrieved_at",
+          "cache_scope"
+        ],
+        "title": "CachedSourceRecord",
+        "type": "object"
+      },
       "ContractValidation": {
         "additionalProperties": false,
         "properties": {
@@ -257,6 +362,42 @@
           "limitations"
         ],
         "title": "DrugProfile",
+        "type": "object"
+      },
+      "EvidenceProfile": {
+        "additionalProperties": false,
+        "properties": {
+          "experiment": {
+            "$ref": "#/components/schemas/ExperimentConfig"
+          },
+          "literature": {
+            "items": {
+              "$ref": "#/components/schemas/CachedSourceRecord"
+            },
+            "title": "Literature",
+            "type": "array"
+          },
+          "profile_id": {
+            "title": "Profile Id",
+            "type": "string"
+          },
+          "retrieval_status": {
+            "const": "cached",
+            "default": "cached",
+            "title": "Retrieval Status",
+            "type": "string"
+          },
+          "structure": {
+            "$ref": "#/components/schemas/StructureReference"
+          }
+        },
+        "required": [
+          "profile_id",
+          "experiment",
+          "literature",
+          "structure"
+        ],
+        "title": "EvidenceProfile",
         "type": "object"
       },
       "EvidenceSource": {
@@ -730,6 +871,172 @@
           "follow_up_experiments"
         ],
         "title": "Interpretation",
+        "type": "object"
+      },
+      "LiteratureRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "abstract": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abstract"
+          },
+          "abstract_available": {
+            "title": "Abstract Available",
+            "type": "boolean"
+          },
+          "doi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doi"
+          },
+          "full_text_status": {
+            "enum": [
+              "open_access_link",
+              "not_confirmed"
+            ],
+            "title": "Full Text Status",
+            "type": "string"
+          },
+          "full_text_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Text Url"
+          },
+          "pmcid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pmcid"
+          },
+          "pmid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pmid"
+          },
+          "provider": {
+            "const": "Europe PMC",
+            "default": "Europe PMC",
+            "title": "Provider",
+            "type": "string"
+          },
+          "provider_id": {
+            "title": "Provider Id",
+            "type": "string"
+          },
+          "provider_source": {
+            "title": "Provider Source",
+            "type": "string"
+          },
+          "publication_year": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publication Year"
+          },
+          "record_url": {
+            "title": "Record Url",
+            "type": "string"
+          },
+          "retrieved_at": {
+            "format": "date-time",
+            "title": "Retrieved At",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider_source",
+          "provider_id",
+          "title",
+          "abstract_available",
+          "full_text_status",
+          "record_url",
+          "retrieved_at"
+        ],
+        "title": "LiteratureRecord",
+        "type": "object"
+      },
+      "LiteratureSearch": {
+        "additionalProperties": false,
+        "properties": {
+          "hit_count": {
+            "title": "Hit Count",
+            "type": "integer"
+          },
+          "provider": {
+            "const": "Europe PMC",
+            "default": "Europe PMC",
+            "title": "Provider",
+            "type": "string"
+          },
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/LiteratureRecord"
+            },
+            "title": "Records",
+            "type": "array"
+          },
+          "retrieval_status": {
+            "const": "live",
+            "default": "live",
+            "title": "Retrieval Status",
+            "type": "string"
+          },
+          "retrieved_at": {
+            "format": "date-time",
+            "title": "Retrieved At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query",
+          "hit_count",
+          "records",
+          "retrieved_at"
+        ],
+        "title": "LiteratureSearch",
         "type": "object"
       },
       "PKParameters": {
@@ -1376,6 +1683,38 @@
         "title": "SimulationResult",
         "type": "object"
       },
+      "StructureReference": {
+        "additionalProperties": false,
+        "properties": {
+          "chains": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Chains",
+            "type": "object"
+          },
+          "pdb_id": {
+            "title": "Pdb Id",
+            "type": "string"
+          },
+          "scope": {
+            "title": "Scope",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pdb_id",
+          "url",
+          "scope",
+          "chains"
+        ],
+        "title": "StructureReference",
+        "type": "object"
+      },
       "SupportAssessment": {
         "additionalProperties": false,
         "properties": {
@@ -1587,6 +1926,79 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/research/evidence/trastuzumab": {
+      "get": {
+        "description": "Return the audited preset and labeled bibliographic cache; no live claim.",
+        "operationId": "curated_trastuzumab_evidence_api_research_evidence_trastuzumab_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceProfile"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Curated Trastuzumab Evidence"
+      }
+    },
+    "/api/research/search": {
+      "get": {
+        "description": "Search current Europe PMC records; candidate metadata cannot become reviewed inputs.",
+        "operationId": "search_literature_api_research_search_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "maxLength": 500,
+              "minLength": 1,
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 5,
+              "maximum": 10,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiteratureSearch"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search Literature"
       }
     },
     "/api/simulations": {

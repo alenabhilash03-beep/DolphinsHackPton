@@ -1,6 +1,6 @@
 # Agent-callable evidence retrieval and parameter extraction — 7B.2
 
-Status: services and three real LangChain tools implemented. They are callable now; orchestration by the generalized Nemotron agent remains 7C, deterministic model applicability/configuration is 7B.3, and UI integration is 7D. The existing primary agent/workspace is unchanged. There is no new preparation HTTP execution route or new runnable drug in this chunk.
+Status: services and three real LangChain tools implemented. They are callable now; orchestration by the generalized Nemotron agent remains 7C, [deterministic model applicability/configuration](PREPARATION_WORKFLOW.md) is implemented in 7B.3, and UI integration is 7D. The existing primary agent/workspace is unchanged. 7B.2 adds no execution route; the 7B.3 runtime now provides the separate preparation API. No additional reviewed drug profile is claimed.
 
 ## Agent tool interfaces
 
@@ -24,7 +24,7 @@ Full-text payloads are limited to 2 MB with a seven-second request timeout. Sour
 
 When full text is unavailable or unusable, the first page may return the actual retrieved abstract with `content_kind:abstract` and a warning. A later full-text page never silently becomes an abstract. If neither content is accessible, return unavailable. Absence of access is not absence of scientific evidence. No source titles, whole missing papers or search snippets are promoted into numerical evidence.
 
-Each retrieved page has a distinct source ID so later configuration can reference the correct snapshot. The snapshot checksum covers the normalized source metadata, source segments, document ID and warnings (excluding the checksum field itself). It is not a checksum of the raw XML. Optional persistence writes under ignored `work/evidence-snapshots/`. Session lookups verify snapshot integrity and return deep copies. Explicit `restore(document_id)` validates safe filenames, payload size, schema, document ID and checksum, retains original retrieval time and marks the replay `cached`. There is no automatic cache-as-live fallback. Hashes detect corruption; they do not establish source truth or protect against a malicious trusted filesystem writer.
+Each retrieved page has a distinct source ID so later configuration can reference the correct snapshot. The snapshot checksum covers the normalized source metadata, source segments, document ID and warnings (excluding the checksum and original-digest-reference fields themselves). It is not a checksum of the raw XML. Optional persistence writes under ignored `work/evidence-snapshots/`. Session lookups verify snapshot integrity and return deep copies. Explicit `restore(document_id)` validates safe filenames, payload size, schema, document ID and checksum, retains original retrieval time and marks the replay `cached`. Replay also retains the verified original digest reference for 7B.3 source-version checks. There is no automatic cache-as-live fallback. Hashes detect corruption; they do not establish source truth or protect against a malicious trusted filesystem writer.
 
 ## Structured extraction and deterministic checks
 
@@ -66,4 +66,4 @@ Public schemas are exported in OpenAPI components and frontend aliases in `apps/
 
 API reference: [Europe PMC REST service](https://europepmc.org/RestfulWebService) and the official [Europe PMC tools example for fullTextXML](https://github.com/EuropePMC/epmc-tools/blob/main/docs/cli_usage.rst).
 
-Next: **7B.3 — deterministic applicability and experiment configuration**, including explicit missing-input resolution and persisted preparation revisions. Stop for that chunk's green light.
+7B.3 deterministic preparation/configuration is complete. Next is **7B.4 — real reference audit and experimental structures**, before the generalized agent and UI integration.

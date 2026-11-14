@@ -87,7 +87,8 @@ def _append_derived_evidence(
 
 
 def _set_custom_scope(experiment: ExperimentConfig, description: str, scenario_id: str | None) -> None:
-    experiment.mode = "custom"
+    if experiment.mode != "research_derived":
+        experiment.mode = "custom"
     experiment.support.status = "conditional"
     if "User-edited mathematical experiment; values are unreviewed." not in experiment.support.reasons:
         experiment.support.reasons.append("User-edited mathematical experiment; values are unreviewed.")
@@ -103,10 +104,22 @@ def _set_custom_scope(experiment: ExperimentConfig, description: str, scenario_i
             scenario.label = f"Custom: {scenario.label}"
 
 
-def adjust_experiment(adjustment: ControlAdjustment) -> ExperimentConfig:
+def adjust_experiment(adjustment: ControlAdjustment, *, preparation_store=None) -> ExperimentConfig:
     """Return a new validated configuration; never mutate the caller's baseline."""
     if not isinstance(adjustment, ControlAdjustment):
         raise TypeError("A validated ControlAdjustment is required")
+    store = None
+    if adjustment.experiment.mode == "research_derived":
+        from app.research.preparation import default_preparation_store
+        store = preparation_store or default_preparation_store()
+        store.require_configuration(adjustment.experiment)
+    def finish(experiment):
+        result = ExperimentConfig.model_validate(experiment.model_dump(mode="python"))
+        if store is not None:
+            from app.simulation.registry import validate_model_scope
+            validate_model_scope(result)
+            store.register_control_configuration(adjustment.experiment, result)
+        return result
     experiment = adjustment.experiment.model_copy(deep=True)
     field = adjustment.field
     value = adjustment.value
@@ -124,7 +137,7 @@ def adjust_experiment(adjustment: ControlAdjustment) -> ExperimentConfig:
         else:
             raise ValueError("Unknown global control")
         _set_custom_scope(experiment, f"User set {field} to {value}; this changes the common comparison window or analytical threshold.", None)
-        return ExperimentConfig.model_validate(experiment.model_dump(mode="python"))
+        return finish(experiment)
 
     scenario_index = next((i for i, s in enumerate(experiment.scenarios) if s.scenario_id == adjustment.scenario_id), None)
     if scenario_index is None:
@@ -224,4 +237,4 @@ def adjust_experiment(adjustment: ControlAdjustment) -> ExperimentConfig:
         raise ValueError("Unsupported scenario control")
 
     _set_custom_scope(experiment, f"User changed {field} for scenario {scenario.scenario_id} to {value}; baseline was preserved.", scenario.scenario_id)
-    return ExperimentConfig.model_validate(experiment.model_dump(mode="python"))
+    return finish(experiment)

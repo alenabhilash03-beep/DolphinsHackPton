@@ -41,6 +41,7 @@ def _text(element) -> str:
 def snapshot_digest(document: EvidenceSnapshot) -> str:
     payload = document.model_dump(mode="json")
     payload['source'].pop('snapshot_sha256', None)
+    payload.pop('original_snapshot_sha256', None)
     return sha256(json.dumps(payload, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
 
 
@@ -209,6 +210,8 @@ class SourceDocumentService:
                 raise ValueError('Cached snapshot integrity mismatch')
         except (OSError, ValueError) as exc:
             raise ValueError('Cached snapshot unavailable or invalid') from exc
+        # Set from the verified file, never from a cached claim about its own origin.
+        document.original_snapshot_sha256 = document.source.snapshot_sha256
         document.source.retrieval_status = 'cached'
         document.warnings.append('Explicit cached replay; original retrieval time retained.')
         document.source.snapshot_sha256 = snapshot_digest(document)

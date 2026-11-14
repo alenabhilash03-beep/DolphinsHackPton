@@ -14,6 +14,7 @@ class EvidenceSegment(Contract):
 
 
 class EvidenceSnapshot(Contract):
+    original_snapshot_sha256: Digest | None = None
     document_id: Annotated[str, Field(pattern=r"^[a-f0-9]{32}$")]
     source: PreparationSource
     segments: Annotated[list[EvidenceSegment], Field(min_length=1, max_length=32)]

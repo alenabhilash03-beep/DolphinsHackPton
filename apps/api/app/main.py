@@ -6,7 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import StreamingResponse
 
-from app.config import Settings
+from app.config import Settings, ROOT
+from app.research.preparation import PreparationService
+from app.research.preparation_store import PreparationStore, StalePreparation
+from app.schemas.preparation_workflow import (CreatePreparation, PreparationUpdate, PreparationRecord, PreparationVersion, ConfiguredPreparation, WORKFLOW_CONTRACTS)
 from app.research.europe_pmc import EuropePMCClient, LiteratureSearch, RetrievalError
 from app.research.registry import EvidenceProfile, load_evidence_profile
 from app.research.jobs import ResearchCapacityError, ResearchEvent, ResearchJob, ResearchJobService
@@ -22,11 +25,12 @@ from app.simulation.service import run_simulation
 
 
 def create_app(settings: Settings | None = None, literature_client: EuropePMCClient | None = None,
-               job_service: ResearchJobService | None = None, assessment_service: DrugAssessmentService | None = None) -> FastAPI:
+               job_service: ResearchJobService | None = None, assessment_service: DrugAssessmentService | None = None, preparation_service: PreparationService | None = None) -> FastAPI:
     config = settings or Settings()
     research = literature_client or EuropePMCClient()
     jobs = job_service or ResearchJobService(config)
     assessment = assessment_service or DrugAssessmentService()
+    preparations = preparation_service or PreparationService(store=PreparationStore(config.preparation_db_path or ROOT / "work/preparations.sqlite3"), assessment=assessment)
     @asynccontextmanager
     async def lifespan(_api):
         yield
@@ -34,6 +38,7 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
 
     api = FastAPI(title="Hypothesim API", version="0.1.0", description="Evidence-aware research jobs and deterministic scientific simulation.", lifespan=lifespan)
     api.state.research_jobs = jobs
+    api.state.preparations = preparations
     api.add_middleware(CORSMiddleware, allow_origins=config.hypothesim_cors_origins,
                        allow_credentials=False, allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
 
@@ -55,6 +60,11 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
     @api.post("/api/contracts/experiments/validate", response_model=ContractValidation)
     def validate_experiment(experiment: ExperimentConfig) -> ContractValidation:
         """Validate configuration structure and provenance, without running a simulation."""
+        if experiment.mode == "research_derived":
+            try:
+                preparations.store.require_configuration(experiment)
+            except ValueError as exc:
+                raise HTTPException(status_code=422, detail=str(exc)) from exc
         return ContractValidation(experiment_id=experiment.experiment_id, support_status=experiment.support.status,
                                   scenario_count=len(experiment.scenarios))
 
@@ -62,7 +72,7 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
     def simulate(request: SimulationRequest) -> SimulationResult:
         """Run the reviewed one-compartment model without an LLM call."""
         try:
-            return run_simulation(request)
+            return run_simulation(request, preparation_store=preparations.store)
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
@@ -70,14 +80,43 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
     def adjust_and_simulate(adjustment: ControlAdjustment) -> SimulationResult:
         """Apply one linked control edit and return the new deterministic result."""
         try:
-            experiment = adjust_experiment(adjustment)
+            experiment = adjust_experiment(adjustment, preparation_store=preparations.store)
             return run_simulation(SimulationRequest(
                 experiment=experiment,
                 client_revision=adjustment.client_revision,
                 output_points=adjustment.output_points,
-            ))
+            ), preparation_store=preparations.store)
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    def preparation_call(function, *args):
+        try:
+            return function(*args)
+        except StalePreparation as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="Preparation not found") from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @api.post("/api/preparations", response_model=PreparationRecord, tags=["Experiment preparation"], status_code=201)
+    def create_preparation(request: CreatePreparation):
+        """Resolve identity and report required structured inputs. No LLM, research search or solver call."""
+        return preparation_call(preparations.create, request)
+
+    @api.get("/api/preparations/{preparation_id}", response_model=PreparationRecord, tags=["Experiment preparation"])
+    def read_preparation(preparation_id: str, revision: int | None = Query(default=None, ge=0)):
+        return preparation_call(preparations.store.read, preparation_id, revision)
+
+    @api.post("/api/preparations/{preparation_id}/revise", response_model=PreparationRecord, tags=["Experiment preparation"])
+    def revise_preparation(preparation_id: str, update: PreparationUpdate):
+        """Apply cited evidence or explicit researcher inputs, revalidate and persist consecutive revisions."""
+        return preparation_call(preparations.revise, preparation_id, update)
+
+    @api.post("/api/preparations/{preparation_id}/configure", response_model=ConfiguredPreparation, tags=["Experiment preparation"])
+    def configure_preparation(preparation_id: str, version: PreparationVersion):
+        """Configure one conditional structured baseline and store its receipt. Does not run the solver or parse a hypothesis."""
+        return preparation_call(preparations.configure, preparation_id, version)
 
     @api.get("/api/research/evidence/trastuzumab", response_model=EvidenceProfile)
     def curated_trastuzumab_evidence() -> EvidenceProfile:
@@ -160,11 +199,11 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
             components[model.__name__] = item
         # New source-result contracts reuse published components without replacing the
         # serialization schemas of existing literature endpoints with input schemas.
-        for model in EVIDENCE_EXTRACTION_CONTRACTS:
+        for model in [*WORKFLOW_CONTRACTS, *EVIDENCE_EXTRACTION_CONTRACTS]:
             item = model.model_json_schema(ref_template="#/components/schemas/{model}")
             for name, definition in item.pop("$defs", {}).items():
                 components.setdefault(name, definition)
-            components[model.__name__] = item
+            components.setdefault(model.__name__, item)
         components["ResearchEvent"] = ResearchEvent.model_json_schema()
         api.openapi_schema = schema
         return schema

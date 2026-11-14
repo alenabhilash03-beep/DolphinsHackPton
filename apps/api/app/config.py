@@ -24,3 +24,5 @@ class Settings(BaseSettings):
     research_timeout_s: float = Field(default=180, gt=0, le=600)
     research_max_jobs: int = Field(default=4, ge=1, le=8)
     research_db_path: Path | None = None
+
+    preparation_db_path: Path | None = None

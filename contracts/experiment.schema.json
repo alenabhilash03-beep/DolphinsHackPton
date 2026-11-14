@@ -101,7 +101,8 @@
           "enum": [
             "primary_study",
             "product_label",
-            "structure_record"
+            "structure_record",
+            "database_record"
           ],
           "title": "Source Kind",
           "type": "string"
@@ -239,7 +240,8 @@
             "assay_fit",
             "approximate_property",
             "derivation",
-            "design_input"
+            "design_input",
+            "source_reported"
           ],
           "title": "Estimate Type",
           "type": "string"
@@ -672,7 +674,8 @@
     "mode": {
       "enum": [
         "reviewed_preset",
-        "custom"
+        "custom",
+        "research_derived"
       ],
       "title": "Mode",
       "type": "string"

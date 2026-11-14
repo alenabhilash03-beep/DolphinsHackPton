@@ -339,7 +339,7 @@ def test_extraction_schemas_published_without_execution_routes():
     schema = create_app().openapi()
     for name in ['EvidenceSearchResult','SourceRetrievalResult','ParameterExtractionResult','EvidenceSnapshot']:
         assert name in schema['components']['schemas']
-    assert not any('/extract' in route or '/preparations' in route for route in schema['paths'])
+    assert not any('/extract' in route for route in schema['paths'])
 
 
 def test_agent_can_read_later_bounded_source_pages(document_service):

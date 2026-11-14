@@ -31,7 +31,7 @@ Expected outcomes:
 
 ## Planned preparation workflow
 
-The revised Phase 7 plan adds a separate preparation workflow for drugs without reviewed presets: source-backed parameter extraction, model applicability checks, missing-input clarification, explicit researcher assumptions and deterministic configuration. It does not change the existing 7A assessment contract or make an identity match runnable. Reviewed profiles will be defaults/reference cases rather than the only permitted drug names. The next chunk is 7B.1 (contracts); this broader preparation workflow is not implemented yet. See `docs/IMPLEMENTATION_PLAN.md`.
+The revised Phase 7 plan adds a separate preparation workflow for drugs without reviewed presets: source-backed parameter extraction, model applicability checks, missing-input clarification, explicit researcher assumptions and deterministic configuration. It does not change the existing 7A assessment contract or make an identity match runnable. Reviewed profiles will be defaults/reference cases rather than the only permitted drug names. The contracts, retrieval/extraction tools and deterministic preparation runtime are implemented through 7B.3; see `PREPARATION_WORKFLOW.md`. Generalized agent orchestration and the UI remain pending. The next chunk is 7B.4 (reference audit). See `docs/IMPLEMENTATION_PLAN.md`.
 
 ## Inputs and result contract
 

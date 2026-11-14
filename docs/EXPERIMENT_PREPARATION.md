@@ -1,6 +1,6 @@
 # Experiment preparation contracts — 7B.1
 
-Status: contracts, model requirements, synthetic examples and tests implemented. Agent-callable [retrieval/extraction services](EVIDENCE_EXTRACTION.md) are implemented in 7B.2; applicability/configuration and persisted clarification are 7B.3; agent orchestration is 7C; workspace integration is 7D. There is no preparation HTTP endpoint or new runnable drug in this chunk.
+Status: 7B.1 contracts, 7B.2 retrieval/extraction tools and the [7B.3 preparation runtime](PREPARATION_WORKFLOW.md) are implemented. The runtime adds persistent clarification/configuration endpoints and tools. Generalized agent orchestration remains 7C and workspace integration remains 7D.
 
 ## Agent ownership and tool boundaries
 
@@ -14,10 +14,10 @@ Planned service/tool interfaces use the following records:
 | Retrieve/extract | Sources and `PreparationParameter` records → `ResearchPreparation` | Extraction proposes source-grounded candidates; no review promotion |
 | Assess applicability | Preparation evidence → checks and missing inputs or `ready_for_configuration` | Deterministic service checks supported model requirements and context |
 | Clarify/resume | `PreparationAnswers` with base revision/hash → new preparation revision | Researcher answers or explicit assumptions; service rejects stale answers and revalidates |
-| Configure/run | Validated preparation → `ExperimentConfig` → existing `SimulationResult` | Separate configuration/provenance and solver validation gates; planned for 7B.3 |
+| Configure/run | Validated preparation → `ExperimentConfig` → existing `SimulationResult` | Separate configuration/provenance and solver validation gates; implemented in 7B.3 |
 | Interpret | Current configuration/result IDs and numerical outputs → cited explanation | Agent explains actual returned results and limitations; 7C integration |
 
-These are service contracts, not implemented tool endpoints. Existing 7A assessment remains metadata-only and unchanged. The existing `ExperimentPreparation` in `schemas/contracts.py` is the legacy primary-agent outcome; the new `ResearchPreparation` deliberately has a distinct name and cannot be submitted to `/api/simulations`.
+The runtime interfaces and actual tool names are documented in `PREPARATION_WORKFLOW.md`. The reserved `PreparationAnswers` record is superseded for runtime updates by `PreparationUpdate`, which also carries typed scope/design, selections and snapshot references. Existing 7A assessment remains metadata-only and unchanged. The existing `ExperimentPreparation` in `schemas/contracts.py` is the legacy primary-agent outcome; the new `ResearchPreparation` deliberately has a distinct name and cannot be submitted to `/api/simulations`.
 
 ## Records and provenance
 
@@ -29,9 +29,9 @@ Each `PreparationParameter` carries a finite numeric value, unit, original value
 - `calculated`: parent parameter IDs and an explicit formula. Parent references must exist and be acyclic; selected ancestors must also be applicable. Formula strings are documentation, not executable code.
 - `researcher_assumed`: rationale and timezone-aware entry time. These values remain explicit hypothetical inputs rather than reported measurements.
 
-Keep all conflicting candidate records; `selected_parameters` identifies the evidence proposed for each model field. A selection must reference evidence for the same field. Ready records additionally require matching drug/target identities, canonical units, compatible/conditional selected evidence and derivation parents, all ten named check results, explicit model/exposure assumptions, a supported route/endpoint and no missing inputs. These are **record-integrity checks**, not verification that a cited passage is true, that extraction is faithful, or that the recorded applicability checks actually ran. 7B.2 must verify passages against retrieved content; 7B.3 must compute applicability results rather than trusting LLM-authored checks.
+Keep all conflicting candidate records; `selected_parameters` identifies the evidence proposed for each model field. A selection must reference evidence for the same field. Ready records additionally require matching drug/target identities, canonical units, compatible/conditional selected evidence and derivation parents, all ten named check results, explicit model/exposure assumptions, a supported route/endpoint and no missing inputs. These are **record-integrity checks**, not verification that a cited passage is true, that extraction is faithful, or that the recorded applicability checks actually ran. The 7B.2 service verifies quoted passages against retrieved content; the 7B.3 runtime computes defined applicability checks rather than trusting LLM-authored flags.
 
-`evidence_sha256` identifies a preparation evidence version. 7B.1 validates its format only. 7B.3 must define canonical hashing, recompute it server-side, persist revisions and reject stale answers. A client-provided hash, profile name or readiness state is never authorization to run. `base_experiment_id` and `base_configuration_sha256` appear together when preparation starts from an existing experiment; `parent_preparation_id` supports lineage. An existing audited profile can only be loaded through the registry in later configuration; schema fields cannot confer review status.
+`evidence_sha256` identifies a preparation evidence version. 7B.1 validates its format only. The 7B.3 runtime now computes canonical hashes server-side, persists immutable revisions and rejects stale updates. A client-provided hash, profile name or readiness state is never authorization to run. `base_experiment_id` and `base_configuration_sha256` appear together when preparation starts from an existing experiment; `parent_preparation_id` supports lineage. An existing audited profile can only be loaded through the registry in later configuration; schema fields cannot confer review status.
 
 ## Readiness states and revisions
 
@@ -45,7 +45,7 @@ Keep all conflicting candidate records; `selected_parameters` identifies the evi
 
 Every preparation record has **`runnable:false` and `configuration_required:true`**, including ready records. There is intentionally no `ready_for_conditional_simulation` state yet. Only a separately validated experiment can reach the simulator.
 
-`validate_preparation_transition(previous, current)` requires matching preparation ID and the next revision. Missing-input answers must return through research/revalidation before readiness; changed requests and changed ready records must also return to research. Recoverable source failures and unsupported outcomes can restart research. The helper does not persist records or enforce concurrency by itself; 7B.3 must invoke it inside its update service.
+`validate_preparation_transition(previous, current)` requires matching preparation ID and the next revision. Missing-input answers must return through research/revalidation before readiness; changed requests and changed ready records must also return to research. Recoverable source failures and unsupported outcomes can restart research. The helper does not persist records or enforce concurrency by itself; The 7B.3 update service invokes it within an atomic revision chain.
 
 ## Implemented mathematical model requirements
 
@@ -55,13 +55,13 @@ Canonical fields include volume (L), clearance (L/hour), half-life (hour), assoc
 
 Equilibrium-only occupancy, oral absorption, intracellular transport, ATP competition and downstream efficacy are not implemented. No automatic mapping of blood concentration to intracellular Abl exposure is permitted. KD alone cannot create kinetic rates. Adding a future equilibrium model requires documented equations and reference checks; merely adding its name to metadata does not implement it.
 
-Current `ExperimentConfig` accepts reviewed presets or existing hypothetical custom configurations, and restricts candidate evidence use. 7B.3 must deliberately introduce a research-derived configuration/provenance path with tests. Do not relabel candidates as reviewed or weaken current safeguards just to pass preparation into the solver.
+Current `ExperimentConfig` also accepts `research_derived` configuration. Candidate evidence remains unreviewed, and the public solver requires a matching server-owned configuration receipt. Existing reviewed/custom evidence rules remain intact; see `PREPARATION_WORKFLOW.md` for the separate gate.
 
 ## Inspect and test
 
 The five examples in `data/examples/preparation-contracts.json` cover a preset-path record, complete unregistered preparation, missing kinetics/exposure inputs, incompatible assays and unsupported mechanism. **All numeric values, compound identities and source passages are synthetic contract fixtures, not usable scientific evidence.** Zero-filled hash examples are placeholders, not computed evidence hashes. The preset-path example tests profile fields without asserting an actual audited profile.
 
-OpenAPI publishes these schemas under components; it adds no execution route. Frontend consumers can import the named types from `apps/web/lib/contracts.ts`. Standalone JSON Schema is `contracts/preparation.schema.json`; Python validators enforce cross-field checks beyond JSON Schema.
+OpenAPI publishes these metadata schemas; 7B.3 adds the separate preparation endpoints documented in `PREPARATION_WORKFLOW.md`. Frontend consumers can import the named types from `apps/web/lib/contracts.ts`. Standalone JSON Schema is `contracts/preparation.schema.json`; Python validators enforce cross-field checks beyond JSON Schema.
 
 ```sh
 .venv/bin/python -m pytest apps/api/tests/test_experiment_preparation.py
@@ -69,4 +69,4 @@ npm run contracts:check
 npm run typecheck
 ```
 
-7B.2 retrieval/extraction tools are complete. Next chunk: **7B.3**, deterministic applicability/configuration and missing-input resolution. Agent orchestration remains in 7C; these services will be called by that agent, not run as a substitute for it.
+7B.2 retrieval/extraction tools are complete. 7B.3 applicability/configuration is complete. Next chunk: **7B.4**, a real reference audit and experimental structure check. Agent orchestration remains in 7C; these services will be called by that agent, not run as a substitute for it.

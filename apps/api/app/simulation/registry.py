@@ -49,7 +49,7 @@ def validate_model_scope(experiment: ExperimentConfig) -> ModelDefinition:
             raise SimulationLimitError(f"A scenario exceeds the {MAX_EVENTS_PER_SCENARIO}-event MVP limit")
         if any(event.kind not in definition.supported_event_kinds for event in scenario.administration):
             raise ValueError("Administration kind is unsupported by this model")
-        if experiment.mode != "custom" and any(event.kind == "hypothetical_bolus" for event in scenario.administration):
+        if experiment.mode == "reviewed_preset" and any(event.kind == "hypothetical_bolus" for event in scenario.administration):
             raise ValueError("Hypothetical bolus requires custom mode")
     if experiment.mode == "reviewed_preset":
         # Schema consistency alone cannot confer scientific review on caller-supplied values.

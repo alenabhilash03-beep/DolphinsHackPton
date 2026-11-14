@@ -213,6 +213,66 @@
         "title": "CandidateConflict",
         "type": "object"
       },
+      "ConfiguredPreparation": {
+        "additionalProperties": false,
+        "properties": {
+          "classification": {
+            "default": "conditional_research_derived",
+            "enum": [
+              "conditional_research_derived",
+              "conditional_researcher_specified"
+            ],
+            "title": "Classification",
+            "type": "string"
+          },
+          "configuration_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Configuration Sha256",
+            "type": "string"
+          },
+          "evidence_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Evidence Sha256",
+            "type": "string"
+          },
+          "experiment": {
+            "$ref": "#/components/schemas/ExperimentConfig"
+          },
+          "hypothesis_parsed": {
+            "const": false,
+            "default": false,
+            "title": "Hypothesis Parsed",
+            "type": "boolean"
+          },
+          "original_hypothesis": {
+            "maxLength": 12000,
+            "minLength": 1,
+            "title": "Original Hypothesis",
+            "type": "string"
+          },
+          "preparation_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Preparation Id",
+            "type": "string"
+          },
+          "preparation_revision": {
+            "minimum": 0.0,
+            "title": "Preparation Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "original_hypothesis",
+          "preparation_id",
+          "preparation_revision",
+          "evidence_sha256",
+          "configuration_sha256",
+          "experiment"
+        ],
+        "title": "ConfiguredPreparation",
+        "type": "object"
+      },
       "ContractValidation": {
         "additionalProperties": false,
         "properties": {
@@ -317,6 +377,19 @@
           "client_revision"
         ],
         "title": "ControlAdjustment",
+        "type": "object"
+      },
+      "CreatePreparation": {
+        "additionalProperties": false,
+        "properties": {
+          "request": {
+            "$ref": "#/components/schemas/PreparationRequest"
+          }
+        },
+        "required": [
+          "request"
+        ],
+        "title": "CreatePreparation",
         "type": "object"
       },
       "DemoSnapshot": {
@@ -1043,6 +1116,19 @@
             "title": "Document Id",
             "type": "string"
           },
+          "original_snapshot_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Original Snapshot Sha256"
+          },
           "segments": {
             "items": {
               "$ref": "#/components/schemas/EvidenceSegment"
@@ -1096,7 +1182,8 @@
             "enum": [
               "primary_study",
               "product_label",
-              "structure_record"
+              "structure_record",
+              "database_record"
             ],
             "title": "Source Kind",
             "type": "string"
@@ -1184,7 +1271,8 @@
           "mode": {
             "enum": [
               "reviewed_preset",
-              "custom"
+              "custom",
+              "research_derived"
             ],
             "title": "Mode",
             "type": "string"
@@ -2054,7 +2142,8 @@
               "assay_fit",
               "approximate_property",
               "derivation",
-              "design_input"
+              "design_input",
+              "source_reported"
             ],
             "title": "Estimate Type",
             "type": "string"
@@ -2440,6 +2529,72 @@
         "title": "PreparationCheck",
         "type": "object"
       },
+      "PreparationDesign": {
+        "additionalProperties": false,
+        "properties": {
+          "administration": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "hypothetical_bolus": "#/components/schemas/BolusEvent",
+                  "infusion": "#/components/schemas/InfusionEvent"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/InfusionEvent"
+                },
+                {
+                  "$ref": "#/components/schemas/BolusEvent"
+                }
+              ]
+            },
+            "maxItems": 64,
+            "minItems": 1,
+            "title": "Administration",
+            "type": "array"
+          },
+          "duration_h": {
+            "exclusiveMinimum": 0.0,
+            "title": "Duration H",
+            "type": "number"
+          },
+          "initial_amount_nmol": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Initial Amount Nmol",
+            "type": "number"
+          },
+          "initial_occupancy": {
+            "default": 0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Initial Occupancy",
+            "type": "number"
+          },
+          "occupancy_threshold": {
+            "default": 0.9,
+            "exclusiveMaximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Occupancy Threshold",
+            "type": "number"
+          },
+          "rationale": {
+            "maxLength": 12000,
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          }
+        },
+        "required": [
+          "duration_h",
+          "administration",
+          "rationale"
+        ],
+        "title": "PreparationDesign",
+        "type": "object"
+      },
       "PreparationParameter": {
         "additionalProperties": false,
         "properties": {
@@ -2576,6 +2731,132 @@
         "title": "PreparationParameter",
         "type": "object"
       },
+      "PreparationRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "design": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PreparationDesign"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "document_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Document Ids",
+            "type": "array"
+          },
+          "identity_aliases": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Identity Aliases",
+            "type": "array"
+          },
+          "identity_assessment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DrugAssessmentResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "identity_molecular_form": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identity Molecular Form"
+          },
+          "identity_rationale": {
+            "anyOf": [
+              {
+                "maxLength": 12000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identity Rationale"
+          },
+          "identity_retrieval_status": {
+            "title": "Identity Retrieval Status",
+            "type": "string"
+          },
+          "identity_status": {
+            "title": "Identity Status",
+            "type": "string"
+          },
+          "input_parameters": {
+            "items": {
+              "$ref": "#/components/schemas/PreparationParameter"
+            },
+            "title": "Input Parameters",
+            "type": "array"
+          },
+          "input_selections": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "maxLength": 120,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Input Selections",
+            "type": "object"
+          },
+          "preparation": {
+            "$ref": "#/components/schemas/ResearchPreparation"
+          },
+          "scope": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PreparationScope"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "preparation",
+          "created_at",
+          "updated_at",
+          "identity_status",
+          "identity_retrieval_status"
+        ],
+        "title": "PreparationRecord",
+        "type": "object"
+      },
       "PreparationRequest": {
         "additionalProperties": false,
         "properties": {
@@ -2646,6 +2927,78 @@
           "original_hypothesis"
         ],
         "title": "PreparationRequest",
+        "type": "object"
+      },
+      "PreparationScope": {
+        "additionalProperties": false,
+        "properties": {
+          "binding_regime": {
+            "enum": [
+              "reversible_1_to_1",
+              "irreversible",
+              "cooperative",
+              "unknown"
+            ],
+            "title": "Binding Regime",
+            "type": "string"
+          },
+          "competition": {
+            "enum": [
+              "absent_assumed",
+              "effective_assay_rates",
+              "requires_explicit_model",
+              "unknown"
+            ],
+            "title": "Competition",
+            "type": "string"
+          },
+          "molecular_form": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Molecular Form",
+            "type": "string"
+          },
+          "pk_regime": {
+            "enum": [
+              "linear_effective",
+              "other",
+              "unknown"
+            ],
+            "title": "Pk Regime",
+            "type": "string"
+          },
+          "rationale": {
+            "maxLength": 12000,
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          },
+          "species": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Species",
+            "type": "string"
+          },
+          "target_compartment": {
+            "enum": [
+              "extracellular",
+              "intracellular",
+              "other"
+            ],
+            "title": "Target Compartment",
+            "type": "string"
+          }
+        },
+        "required": [
+          "molecular_form",
+          "species",
+          "target_compartment",
+          "binding_regime",
+          "pk_regime",
+          "competition",
+          "rationale"
+        ],
+        "title": "PreparationScope",
         "type": "object"
       },
       "PreparationSource": {
@@ -2724,6 +3077,134 @@
           "content_kind"
         ],
         "title": "PreparationSource",
+        "type": "object"
+      },
+      "PreparationUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "answers": {
+            "additionalProperties": {
+              "maxLength": 12000,
+              "minLength": 1,
+              "type": "string"
+            },
+            "title": "Answers",
+            "type": "object"
+          },
+          "base_evidence_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Base Evidence Sha256",
+            "type": "string"
+          },
+          "base_revision": {
+            "minimum": 0.0,
+            "title": "Base Revision",
+            "type": "integer"
+          },
+          "declare_hypothetical_identity": {
+            "anyOf": [
+              {
+                "const": true,
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Declare Hypothetical Identity"
+          },
+          "design": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PreparationDesign"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "document_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Document Ids",
+            "type": "array"
+          },
+          "identity_rationale": {
+            "anyOf": [
+              {
+                "maxLength": 12000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identity Rationale"
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/PreparationParameter"
+            },
+            "maxItems": 100,
+            "title": "Parameters",
+            "type": "array"
+          },
+          "scope": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PreparationScope"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "selected_parameters": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "maxLength": 120,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Selected Parameters",
+            "type": "object"
+          }
+        },
+        "required": [
+          "base_revision",
+          "base_evidence_sha256"
+        ],
+        "title": "PreparationUpdate",
+        "type": "object"
+      },
+      "PreparationVersion": {
+        "additionalProperties": false,
+        "properties": {
+          "base_evidence_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Base Evidence Sha256",
+            "type": "string"
+          },
+          "base_revision": {
+            "minimum": 0.0,
+            "title": "Base Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "base_revision",
+          "base_evidence_sha256"
+        ],
+        "title": "PreparationVersion",
         "type": "object"
       },
       "ResearchEvent": {
@@ -3885,6 +4366,213 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/preparations": {
+      "post": {
+        "description": "Resolve identity and report required structured inputs. No LLM, research search or solver call.",
+        "operationId": "create_preparation_api_preparations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePreparation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreparationRecord"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Preparation",
+        "tags": [
+          "Experiment preparation"
+        ]
+      }
+    },
+    "/api/preparations/{preparation_id}": {
+      "get": {
+        "operationId": "read_preparation_api_preparations__preparation_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "preparation_id",
+            "required": true,
+            "schema": {
+              "title": "Preparation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "revision",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Revision"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreparationRecord"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Preparation",
+        "tags": [
+          "Experiment preparation"
+        ]
+      }
+    },
+    "/api/preparations/{preparation_id}/configure": {
+      "post": {
+        "description": "Configure one conditional structured baseline and store its receipt. Does not run the solver or parse a hypothesis.",
+        "operationId": "configure_preparation_api_preparations__preparation_id__configure_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "preparation_id",
+            "required": true,
+            "schema": {
+              "title": "Preparation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreparationVersion"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfiguredPreparation"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Configure Preparation",
+        "tags": [
+          "Experiment preparation"
+        ]
+      }
+    },
+    "/api/preparations/{preparation_id}/revise": {
+      "post": {
+        "description": "Apply cited evidence or explicit researcher inputs, revalidate and persist consecutive revisions.",
+        "operationId": "revise_preparation_api_preparations__preparation_id__revise_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "preparation_id",
+            "required": true,
+            "schema": {
+              "title": "Preparation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreparationUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreparationRecord"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Revise Preparation",
+        "tags": [
+          "Experiment preparation"
+        ]
       }
     },
     "/api/research/assess": {

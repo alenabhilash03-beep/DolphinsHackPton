@@ -27,7 +27,7 @@ def compare_experiment(experiment: ExperimentConfig, *, deadline: float | None =
             scenario.administration,
             experiment.duration_h,
             initial_amount_nmol=scenario.initial_amount_nmol,
-            allow_hypothetical_bolus=experiment.mode == "custom",
+            allow_hypothetical_bolus=experiment.mode in ("custom", "research_derived"),
         )
         trajectory = solve_binding(
             pk,

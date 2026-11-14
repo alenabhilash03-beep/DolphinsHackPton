@@ -26,7 +26,7 @@ class EvidenceSource(Contract):
     title: Annotated[str, Field(min_length=1)]
     url: HttpUrl
     retrieved_on: date
-    source_kind: Literal["primary_study", "product_label", "structure_record"]
+    source_kind: Literal["primary_study", "product_label", "structure_record", "database_record"]
     version: str | None = None
     identifiers: dict[str, str] = Field(default_factory=dict)
 
@@ -40,7 +40,7 @@ class ParameterEvidence(Contract):
     original_unit: Annotated[str, Field(min_length=1)]
     normalization: str
     provenance: Literal["reported", "calculated", "assumed", "user_supplied"]
-    estimate_type: Literal["population_model_fit", "assay_fit", "approximate_property", "derivation", "design_input"]
+    estimate_type: Literal["population_model_fit", "assay_fit", "approximate_property", "derivation", "design_input", "source_reported"]
     review_status: Literal["candidate", "reviewed", "rejected"]
     applicability: Literal["direct", "conditional_transfer", "not_applicable"]
     source_ids: list[Identifier] = Field(default_factory=list)
@@ -179,7 +179,7 @@ class ExperimentConfig(Contract):
     schema_version: Literal["1.0"] = "1.0"
     experiment_id: Identifier
     title: str
-    mode: Literal["reviewed_preset", "custom"]
+    mode: Literal["reviewed_preset", "custom", "research_derived"]
     support: SupportAssessment
     drug: str
     target: str
@@ -196,7 +196,7 @@ class ExperimentConfig(Contract):
     def reference_integrity(self) -> Self:
         if self.support.status not in ("supported", "conditional"):
             raise ValueError("A runnable configuration requires supported or conditional scope")
-        if self.mode == "custom" and self.support.status != "conditional":
+        if self.mode in ("custom", "research_derived") and self.support.status != "conditional":
             raise ValueError("Custom experiments must be conditional")
         def unique(items: list[str], label: str) -> set[str]:
             if len(set(items)) != len(items):
@@ -238,9 +238,13 @@ class ExperimentConfig(Contract):
                 transferred = transferred or parent_conditional
                 parent_user = parent_user or parent_has_user
             if item.review_status == "candidate":
-                if self.mode != "custom" or item.provenance not in ("user_supplied", "calculated"):
+                if self.mode == "research_derived":
+                    # Actual execution additionally requires a server-owned configuration receipt.
+                    if self.support.status != "conditional":
+                        raise ValueError("Research-derived evidence requires conditional scope")
+                elif self.mode != "custom" or item.provenance not in ("user_supplied", "calculated"):
                     raise ValueError("Unreviewed source values cannot be used as scientific parameters")
-                if item.provenance == "calculated" and not parent_user:
+                if self.mode != "research_derived" and item.provenance == "calculated" and not parent_user:
                     raise ValueError("Candidate derivations require a user-supplied parent")
                 transferred = True
             has_user = item.provenance == "user_supplied" or parent_user

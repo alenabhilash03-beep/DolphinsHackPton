@@ -51,11 +51,14 @@ def _timeline(results: tuple[ScenarioComputation, ...], configuration: Experimen
     return times, boundaries
 
 
-def run_simulation(request: SimulationRequest, *, deadline: float | None = None) -> SimulationResult:
+def run_simulation(request: SimulationRequest, *, deadline: float | None = None, preparation_store=None) -> SimulationResult:
     """Compute without AI; a matching configuration yields the same result ID and values."""
     if not isinstance(request, SimulationRequest):
         raise TypeError("A validated SimulationRequest is required")
     end_time = deadline if deadline is not None else perf_counter() + MAX_RUNTIME_S
+    if request.experiment.mode == "research_derived":
+        from app.research.preparation import default_preparation_store
+        (preparation_store or default_preparation_store()).require_configuration(request.experiment)
     definition = validate_model_scope(request.experiment)
     _check_deadline(end_time)
     results = compare_experiment(request.experiment, deadline=end_time)
@@ -95,12 +98,14 @@ def run_simulation(request: SimulationRequest, *, deadline: float | None = None)
         "solver_version": solver_version,
     })
     warnings = list(definition.limitations)
+    if configuration.mode == "research_derived":
+        warnings.append("Conditional research-derived or researcher-specified inputs; server consistency checks do not confer scientific review or biological validation.")
     if configuration.mode == "custom":
         warnings.append("Custom inputs are hypothetical; drug identity and supplied parameters are not independently validated by running this model.")
     if any(item.metrics.threshold.status == "still_above_at_horizon" for item in results):
         warnings.append("At least one scenario remains above the analytical occupancy threshold at the horizon; its retention time is censored.")
     if any(event.kind == "hypothetical_bolus" for scenario in configuration.scenarios for event in scenario.administration):
-        warnings.append("Hypothetical IV bolus is a custom mathematical input, not the labeled trastuzumab administration route.")
+        warnings.append("Hypothetical IV bolus is a mathematical input; it does not establish a labeled route or target-site exposure.")
     return SimulationResult(
         result_id=f"sim-{result_hash[:24]}",
         client_revision=request.client_revision,

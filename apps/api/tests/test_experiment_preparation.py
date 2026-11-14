@@ -161,8 +161,8 @@ def test_capabilities_describe_only_implemented_model():
         get_preparation_requirements('equilibrium-not-yet-implemented')
 
 
-def test_preparation_schemas_published_without_new_execution_endpoint():
+def test_preparation_schemas_remain_metadata_only():
     schema = create_app().openapi()
     for name in ['ResearchPreparation', 'PreparationRequest', 'PreparationAnswers', 'ModelPreparationRequirements']:
         assert name in schema['components']['schemas']
-    assert not any('/preparations' in route for route in schema['paths'])
+    assert schema['components']['schemas']['ResearchPreparation']['properties']['runnable']['const'] is False

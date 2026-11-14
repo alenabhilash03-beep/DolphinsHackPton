@@ -61,6 +61,83 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/preparations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Preparation
+         * @description Resolve identity and report required structured inputs. No LLM, research search or solver call.
+         */
+        post: operations["create_preparation_api_preparations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/preparations/{preparation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Preparation */
+        get: operations["read_preparation_api_preparations__preparation_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/preparations/{preparation_id}/configure": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Configure Preparation
+         * @description Configure one conditional structured baseline and store its receipt. Does not run the solver or parse a hypothesis.
+         */
+        post: operations["configure_preparation_api_preparations__preparation_id__configure_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/preparations/{preparation_id}/revise": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Revise Preparation
+         * @description Apply cited evidence or explicit researcher inputs, revalidate and persist consecutive revisions.
+         */
+        post: operations["revise_preparation_api_preparations__preparation_id__revise_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/research/assess": {
         parameters: {
             query?: never;
@@ -304,6 +381,32 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** ConfiguredPreparation */
+        ConfiguredPreparation: {
+            /**
+             * Classification
+             * @default conditional_research_derived
+             * @enum {string}
+             */
+            classification: "conditional_research_derived" | "conditional_researcher_specified";
+            /** Configuration Sha256 */
+            configuration_sha256: string;
+            /** Evidence Sha256 */
+            evidence_sha256: string;
+            experiment: components["schemas"]["ExperimentConfig"];
+            /**
+             * Hypothesis Parsed
+             * @default false
+             * @constant
+             */
+            hypothesis_parsed: false;
+            /** Original Hypothesis */
+            original_hypothesis: string;
+            /** Preparation Id */
+            preparation_id: string;
+            /** Preparation Revision */
+            preparation_revision: number;
+        };
         /** ContractValidation */
         ContractValidation: {
             /** Experiment Id */
@@ -344,6 +447,10 @@ export interface components {
             scenario_id: string | null;
             /** Value */
             value: number | null;
+        };
+        /** CreatePreparation */
+        CreatePreparation: {
+            request: components["schemas"]["PreparationRequest"];
         };
         /** DemoSnapshot */
         DemoSnapshot: {
@@ -604,6 +711,11 @@ export interface components {
         EvidenceSnapshot: {
             /** Document Id */
             document_id: string;
+            /**
+             * Original Snapshot Sha256
+             * @default null
+             */
+            original_snapshot_sha256: string | null;
             /** Segments */
             segments: components["schemas"]["EvidenceSegment"][];
             source: components["schemas"]["PreparationSource"];
@@ -627,7 +739,7 @@ export interface components {
              * Source Kind
              * @enum {string}
              */
-            source_kind: "primary_study" | "product_label" | "structure_record";
+            source_kind: "primary_study" | "product_label" | "structure_record" | "database_record";
             /** Title */
             title: string;
             /**
@@ -660,7 +772,7 @@ export interface components {
              * Mode
              * @enum {string}
              */
-            mode: "reviewed_preset" | "custom";
+            mode: "reviewed_preset" | "custom" | "research_derived";
             /**
              * Occupancy Threshold
              * @default 0.9
@@ -990,7 +1102,7 @@ export interface components {
              * Estimate Type
              * @enum {string}
              */
-            estimate_type: "population_model_fit" | "assay_fit" | "approximate_property" | "derivation" | "design_input";
+            estimate_type: "population_model_fit" | "assay_fit" | "approximate_property" | "derivation" | "design_input" | "source_reported";
             /** Evidence Id */
             evidence_id: string;
             /**
@@ -1121,6 +1233,30 @@ export interface components {
             /** Reasons */
             reasons: string[];
         };
+        /** PreparationDesign */
+        PreparationDesign: {
+            /** Administration */
+            administration: (components["schemas"]["InfusionEvent"] | components["schemas"]["BolusEvent"])[];
+            /** Duration H */
+            duration_h: number;
+            /**
+             * Initial Amount Nmol
+             * @default 0
+             */
+            initial_amount_nmol: number;
+            /**
+             * Initial Occupancy
+             * @default 0
+             */
+            initial_occupancy: number;
+            /**
+             * Occupancy Threshold
+             * @default 0.9
+             */
+            occupancy_threshold: number;
+            /** Rationale */
+            rationale: string;
+        };
         /** PreparationParameter */
         PreparationParameter: {
             /**
@@ -1169,6 +1305,41 @@ export interface components {
             /** Value */
             value: number;
         };
+        /** PreparationRecord */
+        PreparationRecord: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            design?: components["schemas"]["PreparationDesign"] | null;
+            /** Document Ids */
+            document_ids?: string[];
+            /** Identity Aliases */
+            identity_aliases?: string[];
+            identity_assessment?: components["schemas"]["DrugAssessmentResponse"] | null;
+            /** Identity Molecular Form */
+            identity_molecular_form?: string | null;
+            /** Identity Rationale */
+            identity_rationale?: string | null;
+            /** Identity Retrieval Status */
+            identity_retrieval_status: string;
+            /** Identity Status */
+            identity_status: string;
+            /** Input Parameters */
+            input_parameters?: components["schemas"]["PreparationParameter"][];
+            /** Input Selections */
+            input_selections?: {
+                [key: string]: string | null;
+            };
+            preparation: components["schemas"]["ResearchPreparation"];
+            scope?: components["schemas"]["PreparationScope"] | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
         /** PreparationRequest */
         PreparationRequest: {
             /** Drug Name */
@@ -1195,6 +1366,35 @@ export interface components {
              * @default null
              */
             target: string | null;
+        };
+        /** PreparationScope */
+        PreparationScope: {
+            /**
+             * Binding Regime
+             * @enum {string}
+             */
+            binding_regime: "reversible_1_to_1" | "irreversible" | "cooperative" | "unknown";
+            /**
+             * Competition
+             * @enum {string}
+             */
+            competition: "absent_assumed" | "effective_assay_rates" | "requires_explicit_model" | "unknown";
+            /** Molecular Form */
+            molecular_form: string;
+            /**
+             * Pk Regime
+             * @enum {string}
+             */
+            pk_regime: "linear_effective" | "other" | "unknown";
+            /** Rationale */
+            rationale: string;
+            /** Species */
+            species: string;
+            /**
+             * Target Compartment
+             * @enum {string}
+             */
+            target_compartment: "extracellular" | "intracellular" | "other";
         };
         /** PreparationSource */
         PreparationSource: {
@@ -1231,6 +1431,38 @@ export interface components {
              * Format: uri
              */
             url: string;
+        };
+        /** PreparationUpdate */
+        PreparationUpdate: {
+            /** Answers */
+            answers?: {
+                [key: string]: string;
+            };
+            /** Base Evidence Sha256 */
+            base_evidence_sha256: string;
+            /** Base Revision */
+            base_revision: number;
+            /** Declare Hypothetical Identity */
+            declare_hypothetical_identity?: true | null;
+            design?: components["schemas"]["PreparationDesign"] | null;
+            /** Document Ids */
+            document_ids?: string[];
+            /** Identity Rationale */
+            identity_rationale?: string | null;
+            /** Parameters */
+            parameters?: components["schemas"]["PreparationParameter"][];
+            scope?: components["schemas"]["PreparationScope"] | null;
+            /** Selected Parameters */
+            selected_parameters?: {
+                [key: string]: string | null;
+            };
+        };
+        /** PreparationVersion */
+        PreparationVersion: {
+            /** Base Evidence Sha256 */
+            base_evidence_sha256: string;
+            /** Base Revision */
+            base_revision: number;
         };
         /** ResearchEvent */
         ResearchEvent: {
@@ -1669,6 +1901,142 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    create_preparation_api_preparations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePreparation"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparationRecord"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_preparation_api_preparations__preparation_id__get: {
+        parameters: {
+            query?: {
+                revision?: number | null;
+            };
+            header?: never;
+            path: {
+                preparation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparationRecord"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    configure_preparation_api_preparations__preparation_id__configure_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                preparation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreparationVersion"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConfiguredPreparation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revise_preparation_api_preparations__preparation_id__revise_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                preparation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreparationUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparationRecord"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

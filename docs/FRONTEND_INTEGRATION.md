@@ -27,13 +27,15 @@ Returned values and actions:
 | `experiment` | Latest server-validated configuration, including derived linked values, evidence, and custom-mode label |
 | `result` | Latest `SimulationResult` or `null` before the first successful run |
 | `status`, `busy`, `error` | `idle`, `loading`, `ready`, or `error`; render actionable API errors |
+| `pendingEdits` | Number of unsent control edits; `busy` covers pending and in-flight work |
+| `lastTransportMs`, `lastEditToResultMs` | Measured API round trip and latest edit-to-settled-result time in milliseconds; `null` until available |
 | `baseline`, `alternatives`, `editableScenarioIds` | Baseline is the first scenario and remains protected from scenario edits |
 | `selectedScenarioId`, `selectAlternative(id)` | Select the alternative to edit |
 | `applyControl(field, value)` | Submit one linked control edit and simulation in one request; resolves to `true` on success |
 | `resetToInitial()` | Restore the original reviewed configuration and rerun it |
 | `refresh()` | Rerun the current configuration without changing parameters |
 
-The UI should display values from `workspace.experiment` after a successful response. Do not compute clearance, half-life, or KD independently in a widget and then advertise that value as authoritative. Disable further edits while `busy` is true in this 2A implementation; Phase 2C will add rapid-edit debounce and more comprehensive stale-response handling.
+The UI should display values from `workspace.experiment` after a successful response. Do not compute clearance, half-life, or KD independently in a widget and then advertise that value as authoritative. Keep sliders interactive while `busy`: the controller coalesces rapid edits to one field with a 150 ms debounce and queues different fields in order. It publishes a new authoritative result only after the queue settles, so an intermediate or stale response cannot replace the displayed comparison. A newer edit to the in-flight field aborts the superseded request. Keep a local slider draft for immediate thumb movement and clear it when the authoritative configuration arrives. On a server error, the hook retains the last valid experiment/result and exposes `error`; offer reset or retry.
 
 ## Control fields
 
@@ -55,6 +57,8 @@ Global controls omit a scenario ID and affect the comparison equally: `duration_
 
 Changing a scientific parameter makes the experiment `mode="custom"` and keeps support `conditional`. The original reviewed evidence remains in the configuration. The user's new value is `user_supplied`, `candidate`, timestamped, and labeled unreviewed; a linked mathematical derivation is `calculated`, `candidate`, with parent IDs. The UI must not display those new values as source-reported or clinically reviewed. The 90% default threshold is an analytical choice, not a therapeutic cutoff.
 
+`apps/web/lib/log-control.ts` provides `KINETIC_RANGES`, `toLogPosition`, and `fromLogPosition` for association, dissociation, and KD sliders. The ranges are interface bounds, not literature support or model validity limits. `PreviewControls` is a working native-control example at `/preview/plots`; replace its presentation as needed. When a user changes KD, the backend holds association fixed and derives dissociation. Changing either rate derives KD. Display the returned linked values and provenance.
+
 ## Direct API access
 
 The same-origin routes are `POST /api/simulations` and `POST /api/simulations/adjust`. They forward to FastAPI without exposing `API_BASE_URL` or AI provider credentials to browser code. The typed helpers are `simulate` and `adjustAndSimulate` in `apps/web/lib/simulation-client.ts`. The API request and result types are exported from `apps/web/lib/contracts.ts` and generated from the Python OpenAPI schema. Avoid editing `contracts.generated.ts` manually.
@@ -63,7 +67,7 @@ The adjustable route accepts `{experiment, scenario_id, field, value, client_rev
 
 For graphs, use `result.time_h` as the only x-axis. Every scenario's `central_concentration_nM`, `target_site_concentration_nM`, and `occupancy` arrays are aligned to it. `result.diagnostics.event_boundaries_h` identifies dosing boundaries. `result.scenarios[*].metrics.threshold.above_threshold_intervals_h` identifies threshold spans. The output contains early-time samples and a pre-bolus sample, but dose/affinity changes do not alter PDB geometry.
 
-## Plots and synchronized timeline (2B)
+## Plots, controls, and synchronized timeline (2B–2C)
 
 The functional chart and timeline components are separate from the root page design. See `/preview/plots` while both local services are running. It mounts the real 0B fixture and demonstrates the following composition:
 

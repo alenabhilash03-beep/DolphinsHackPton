@@ -5,6 +5,7 @@ import { useExperimentWorkspace } from "../hooks/useExperimentWorkspace";
 import { useSimulationTimeline } from "../hooks/useSimulationTimeline";
 import { ScientificPlot } from "./ScientificPlot";
 import { TimelineControls } from "./TimelineControls";
+import { PreviewControls } from "./PreviewControls";
 
 /** Isolated functional preview; product styling belongs to the UI contributor. */
 export function PlotPreview({ initialExperiment }: { initialExperiment: ExperimentConfig }) {
@@ -13,6 +14,7 @@ export function PlotPreview({ initialExperiment }: { initialExperiment: Experime
   return <main style={{ maxWidth: 1100, margin: "0 auto", padding: 24 }}>
     <h1>Hypothesim plot integration preview</h1>
     <p>Conditional mathematical simulation · 90% is an analytical threshold, not a therapeutic cutoff.</p>
+    <PreviewControls workspace={workspace} />
     {workspace.error && <p role="alert">{workspace.error}</p>}
     {workspace.result ? <>
       <TimelineControls timeline={timeline} />

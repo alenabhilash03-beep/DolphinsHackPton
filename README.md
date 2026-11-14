@@ -8,11 +8,11 @@ An evidence-aware scientific hypothesis exploration platform.
 
 ## Current progress
 
-**Phases 0 and 1 are complete** (subphases 0A–1C). The repository has the evidence audit, service skeleton, canonical contracts, exact one-compartment PK, adaptive mass-action binding, baseline-versus-alternative numerical metrics, and a direct simulation API. The [1C review](docs/subphase-reviews/1C.md) records API checks and limits. There is not yet a graphing workspace.
+**Phases 0–2 are complete** (subphases 0A–2C). The repository has the evidence audit, service skeleton, canonical contracts, exact one-compartment PK, adaptive mass-action binding, baseline-versus-alternative numerical metrics, direct simulation API, typed frontend integration, and a functional technical simulation workspace. The [2C review](docs/subphase-reviews/2C.md) records browser and latency checks.
 
-The existing web page and API can be run locally now using the commands below. The scientific plots and live controls arrive in Phase 2. Python computation is independent of the agent; no AI credentials are needed to run the numerical engine.
+The web preview and API can be run locally now using the commands below. Python computation is independent of the agent; no AI credentials are needed to run the numerical engine.
 
-Subphase **2A's technical integration is ready**: the [frontend integration handoff](docs/FRONTEND_INTEGRATION.md) documents same-origin simulation routes, a typed client, a headless React workspace hook, linked parameter controls, baseline protection, and user-edit provenance. Subphase **2B adds Plotly charts and a synchronized timeline** at the separate technical preview route [`/preview/plots`](http://127.0.0.1:3000/preview/plots) while both local services run. A separate UI contributor can use these components without keeping the current page design. The root page itself still has no visual parameter panel or graphs.
+The [frontend integration handoff](docs/FRONTEND_INTEGRATION.md) documents same-origin simulation routes, a typed client, a headless React workspace hook, linked parameter controls, provenance, and rapid-edit behavior. The separate technical preview route [`/preview/plots`](http://127.0.0.1:3000/preview/plots) contains working controls, Plotly comparisons, and a synchronized timeline. A separate UI contributor can use these components without keeping the preview's plain styling. The root page remains the engine preview.
 
 ## Requirements and installation
 
@@ -44,7 +44,7 @@ In another terminal:
 npm run dev:web
 ```
 
-Open [http://127.0.0.1:3000](http://127.0.0.1:3000). The page checks the actual API and validates the example through the backend. If the backend is offline, it shows an error and offers retry. It does not display invented simulation results.
+Open [http://127.0.0.1:3000/preview/plots](http://127.0.0.1:3000/preview/plots) for the functional Phase 2 workspace. It runs the real numerical engine, edits alternative scenarios, and displays two synchronized Plotly graphs. The root page checks the actual API and validates the example through the backend. If the backend is offline, it shows an error and offers retry. Neither page displays invented simulation results.
 
 - API health: [http://127.0.0.1:8000/api/health](http://127.0.0.1:8000/api/health).
 - API reference: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
@@ -115,4 +115,4 @@ The script prints capability status and error categories, not secrets or raw HTT
 
 ## Next development step and when the app becomes visible
 
-**2C** adds smooth rapid-edit behavior and stale-response protection. Together with the UI contributor's visual work, Phase 2 delivers the first interactive scientific workspace. The LangChain research workflow follows in **Phase 3 (roadmap hours 12–18)**, and the real 1N8Z molecular viewer in **Phase 4 (hours 18–24)**. These are roadmap estimates, not guarantees. Review the plan after each subphase and wait for the next green light.
+**3A** begins the evidence registry and live scientific retrieval. Phase 2 already provides a working technical workspace with responsive controls and comparative plots; the UI contributor owns its visual design. The LangChain research workflow continues through **Phase 3 (roadmap hours 12–18)**, and the real 1N8Z molecular viewer follows in **Phase 4 (hours 18–24)**. These are roadmap estimates, not guarantees. Review the plan after each subphase and wait for the next green light.

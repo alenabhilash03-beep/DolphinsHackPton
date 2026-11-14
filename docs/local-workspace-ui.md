@@ -1,15 +1,16 @@
-# Local scientific workspace
+# Scientific workspace console
 
-The main `/` page and `/preview/plots` both open the complete functional workspace. The design integrates the teammate’s `frontend/subtle-glass-background-20261114` branch: warm stone glass, burgundy actions, serif headings and a navigation rail. Molecular controls and inspection use the same theme. Background and camera motion can be reduced independently.
+Both `/` and `/preview/plots` open the same workspace. The compact console uses a local system sans-serif font stack, tabular metrics, cool neutral surfaces, navy actions and cyan accents. No remote fonts or decorative motion are required.
 
-## Try the workspace
+## Layout and workflow
 
-1. Open http://127.0.0.1:3002/ and choose **Load saved demo** for reviewed trastuzumab results without a live agent request. Choose **Go to simulation** to explore them.
-2. Use **Research hypothesis** for live Nemotron tool-based research. Review activity, citations and requested missing inputs. Drug/model assessment and preparation recovery are expandable to keep the main path clear.
-3. Under **Adjust conditions**, select an alternative and change a slider. Curves recalculate through the deterministic API; the baseline stays fixed. KD edits change dissociation at fixed association. Exact values and timings are under expandable controls.
-4. Press **Play**, pause, or scrub time. Graph cursors/reveal, readouts and the schematic share the timeline. The experimental structure retains its deposited geometry.
-5. Use **Change in words** for agent-assisted experimental revisions. Supported examples remain visible in the expandable help.
-6. Open **Structure**, start the guided tour, toggle molecular layers, or inspect the closest interface pair. The sidebar should show GLY B:103 O ↔ LYS C:593 NZ at 2.417 Å for 1N8Z. Geometry does not establish binding energy or kinetics.
-7. On narrow screens, conditions appear above plots. **Hide conditions** gives the graphs more room. Chain identity uses readable text with color swatches.
+1. The question strip shows the hypothesis and its drug/target. **Edit hypothesis** expands the research form and factual agent activity. Model eligibility and saved-preparation recovery remain expandable. Missing-input questions and preparation answers remain visible outside the collapsed editor.
+2. **Load saved demo** opens reviewed trastuzumab reference results without live research. It remains explicitly labeled as saved.
+3. The **result snapshot** highlights server-computed endpoint occupancy, differences from the protected baseline, and threshold outcomes for every scenario. The interpretation boundary explicitly preserves censoring and conditional-model limitations. A higher endpoint is not presented as proof of longer retention, efficacy or safety.
+4. **Simulation** contains aligned PK/occupancy charts, one shared timeline and alternative controls. Charts appear side by side when space permits. Playback pauses when leaving this view. **Hide parameters** increases chart space. The synchronized binding schematic and time-specific values expand below the charts.
+5. **Evidence** consolidates result-linked agent interpretation, cited paper findings, connections to the curves, source limitations and parameter provenance. Repeated primary paper summaries are removed. Paper-to-graph links select the simulation view and open the appropriate chart. Previous interpretations are not applied to newly edited results.
+6. **Molecular structure** opens the cached experimental complex, guided tour and coordinate inspection. Switching views preserves the molecular selection and pauses a hidden camera tour. No model control deforms coordinates.
+7. **Model details** retains complete scenario inputs, numerical metrics, follow-up experiments and assumptions. Result identifiers are available under the provenance disclosure.
+8. **Change the experiment in words** expands the language editor. Edits use the current displayed result and selected alternative; drug/target/route changes require research.
 
-Scenario colors remain consistent across scientific views. Legends sit below plots to preserve graph width. Saved results, live research and hypothetical edits keep their provenance labels.
+The view tabs support arrow keys, Home and End. Navigation anchors reveal the corresponding view. On narrow screens, metrics compact into rows, plots stack, and controls can be collapsed. Native input labels, focus outlines and reduced-camera-motion support remain available.

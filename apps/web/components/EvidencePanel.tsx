@@ -5,8 +5,8 @@ import type { EvidenceProfile, ExperimentConfig } from "../lib/contracts";
 import { PaperSummaries } from "./PaperSummaries";
 
 /** Plain evidence view for the UI team to restyle; never upgrades cache metadata to reviewed data. */
-export function EvidencePanel({ experiment, scenarioId, resultPresent = false }: {
-  experiment: ExperimentConfig; scenarioId?: string | null; resultPresent?: boolean;
+export function EvidencePanel({ experiment, scenarioId, resultPresent = false, showSummaries = true }: {
+  experiment: ExperimentConfig; scenarioId?: string | null; resultPresent?: boolean; showSummaries?: boolean;
 }) {
   const [profile, setProfile] = useState<EvidenceProfile | null>(null);
   const [cacheError, setCacheError] = useState(false);
@@ -40,7 +40,7 @@ export function EvidencePanel({ experiment, scenarioId, resultPresent = false }:
       "Loading cached bibliographic metadata…"}</p>
     {cacheError && <button type="button" onClick={() => { setCacheError(false); setAttempt((value) => value + 1); }}>Retry evidence metadata</button>}
     <h3>Sources</h3>
-    {primary && profile?.paper_summaries && <PaperSummaries summaries={profile.paper_summaries} experiment={experiment} />}
+    {showSummaries && primary && profile?.paper_summaries && <PaperSummaries summaries={profile.paper_summaries} experiment={experiment} />}
     <ul>{experiment.sources.map((source) => {
       const cached = cacheBySource.get(source.source_id);
       return <li key={source.source_id}>
@@ -50,13 +50,13 @@ export function EvidencePanel({ experiment, scenarioId, resultPresent = false }:
           · cached {cached.retrieved_at.slice(0, 10)}</span>}
       </li>;
     })}</ul>
-    <h3>Inputs for {scenario.label}</h3>
+    <details><summary>Parameter provenance · {scenario.label}</summary>
     <ul>{values.map(({ path, item }) => item && <li key={path}>
       <strong>{path}</strong>: {item.value.toPrecision(6)} {item.unit} · {item.provenance} · {item.review_status}
       {(item.source_ids?.length ?? 0) > 0 && <> · {item.source_ids?.join(", ")}{item.locator ? `, ${item.locator}` : ""}</>}
       {item.provenance === "user_supplied" && <> · unreviewed hypothetical input</>}
     </li>)}</ul>
-    <h3>Limits</h3>
+    </details><h3>Limits</h3>
     <ul>{experiment.limitations.filter((limit) => !(resultPresent && limit === "Configuration fixture only: no simulator has run."))
       .map((limit) => <li key={limit}>{limit}</li>)}</ul>
   </section>;

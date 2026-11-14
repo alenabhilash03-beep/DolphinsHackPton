@@ -11,11 +11,11 @@ export function PaperSummaries({ summaries, experiment }: { summaries: PaperSumm
       return <article className="paper-card" key={summary.source_id}>
         <span className="scope-badge">{summary.source_id} · {reviewed ? "Reviewed reference inputs" : "Candidate source inputs · conditional"}</span>
         <h3><a href={source.url} target="_blank" rel="noreferrer">{source.title} ↗</a></h3>
-        <p>{summary.finding}</p><p><strong>Why it matters:</strong> {summary.hypothesis_relevance}</p>
+        <p className="paper-key-finding">{summary.finding}</p><details><summary>Hypothesis relevance & source locator</summary><p>{summary.hypothesis_relevance}</p><p>{summary.locator} · parameter records: {summary.evidence_ids.join(", ")}</p></details>
         <p><strong>Connection to your curves:</strong> {summary.use_in_model}</p>
         <div className="paper-plot-links">{summary.plot_ids.map((id) => <a key={id} href={`#plot-${id}`}>View {id === "concentration" ? "PK concentration" : "occupancy"} plot →</a>)}</div>
         <p className="paper-limit"><strong>Limit:</strong> {summary.limitation}</p>
-        <details><summary>Evidence locator</summary><p>{summary.locator} · parameter records: {summary.evidence_ids.join(", ")}</p></details>
+
       </article>;
     })}
   </div>;

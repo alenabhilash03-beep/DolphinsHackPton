@@ -682,3 +682,7 @@ The four-stop molecular camera tour and coordinate inspection sidebar are implem
 ### Workspace theme integration outcome
 
 The teammate’s frontend branch is integrated into the functional workspace, including the 7E molecular tour/sidebar. The main route now opens that workspace directly. See `docs/local-workspace-ui.md` and `docs/subphase-reviews/UI-theme-integration.md`. No material plan revision is needed; **5C → 6A → 6B** remain.
+
+### Compact workspace console outcome
+
+The user-requested usability revision consolidates research, cited papers, simulation and molecular inspection into a compact result-first console with focused views. Endpoint cards retain threshold censoring and scientific limitations; complete inputs and citations remain accessible. See `docs/local-workspace-ui.md` and `docs/subphase-reviews/UI-console.md`. No material scope or sequence revision is required; **5C → 6A → 6B** remain.

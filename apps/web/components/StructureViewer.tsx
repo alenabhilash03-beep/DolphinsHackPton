@@ -86,13 +86,13 @@ export function StructureViewer({kind="trastuzumab"}:{kind?:StructureKind}) {
       const digest=Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",bytes)),b=>b.toString(16).padStart(2,"0")).join("");
       if(digest!==profile.sha256)throw new Error("Experimental coordinate checksum mismatch");
       const pdb=new TextDecoder().decode(bytes),parsed=parseCoordinates(pdb);if(abort.signal.aborted)return;
-      lib.setSyncSurface(true);instance=lib.createViewer(element,{backgroundColor:"#f7f3ed",antialias:true});instance.addModel(pdb,"pdb");
+      lib.setSyncSurface(true);instance=lib.createViewer(element,{backgroundColor:"#f4f8fc",antialias:true});instance.addModel(pdb,"pdb");
       const bySerial=new Map(parsed.atoms.map(a=>[a.serial,a]));
       const click=(atom:AtomSpec)=>{const ref=bySerial.get(atom.serial ?? -1);if(ref&&role(ref,kind))choose(ref);};
       instance.setClickable({hetflag:false},true,click);
       if(imatinib)instance.setClickable({resn:"STI"},true,click);
       viewer.current=instance;instance.zoomTo({hetflag:false});instance.render();
-      resize=new ResizeObserver(()=>{instance?.resize();instance?.render();});resize.observe(element);
+      resize=new ResizeObserver(()=>{if(!element.clientWidth||!element.clientHeight){stop();return;}instance?.resize();instance?.render();});resize.observe(element);
       setModel(parsed);setVerified(true);setLoaded(true);
     }).catch(()=>{if(!abort.signal.aborted)setError("Experimental structure could not be verified or rendered. Scientific plots remain usable. Check the cached asset and WebGL support.");});
     return ()=>{abort.abort();cancelMotion();resize?.disconnect();instance?.clear();viewer.current=null;element.replaceChildren();};
@@ -112,7 +112,7 @@ export function StructureViewer({kind="trastuzumab"}:{kind?:StructureKind}) {
       v.addStyle({serial:pair.a.serial},{sphere:{radius:.32,color:"#e36536"}});
       v.addStyle({serial:pair.b.serial},{sphere:{radius:.32,color:"#18a4ad"}});
       v.addLine({start:{x:pair.a.x,y:pair.a.y,z:pair.a.z},end:{x:pair.b.x,y:pair.b.y,z:pair.b.z},color:"#283d34",linewidth:3});
-      v.addLabel(`${pair.distance.toFixed(2)} Å`,{position:{x:(pair.a.x+pair.b.x)/2,y:(pair.a.y+pair.b.y)/2,z:(pair.a.z+pair.b.z)/2},fontSize:15,inFront:true,backgroundColor:"#ffffff",fontColor:"#322d29",backgroundOpacity:.9});
+      v.addLabel(`${pair.distance.toFixed(2)} Å`,{position:{x:(pair.a.x+pair.b.x)/2,y:(pair.a.y+pair.b.y)/2,z:(pair.a.z+pair.b.z)/2},fontSize:15,inFront:true,backgroundColor:"#ffffff",fontColor:"#18283e",backgroundOpacity:.9});
     }
     v.render();
   },[loaded,visible,surface,contacts,selected,pair,interfacePairs,profile,imatinib]);

@@ -4,7 +4,6 @@ import type { AgentJob, AgentTurn, AgentResearchRequest, AgentEditRequest, DemoS
 import { RequestEpoch, linkedTurnResult, structureKind } from "../lib/agent-workspace";
 import { PlotPreview } from "./PlotPreview";
 import { StructureViewer } from "./StructureViewer";
-import { PaperSummaries } from "./PaperSummaries";
 import { VisualizationBoundary } from "./VisualizationBoundary";
 import { DrugSupportPanel } from "./DrugSupportPanel";
 import { PreparationAnswers } from "./PreparationAnswers";
@@ -15,6 +14,8 @@ const SCIENCE_REQUEST="hypothesim-scientific-request-v1";
 export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment: ExperimentConfig }) {
   const [text,setText]=useState(PRIMARY),[drug,setDrug]=useState("trastuzumab"),[target,setTarget]=useState("HER2"),[route,setRoute]=useState("iv_infusion");
   const [baseline,setBaseline]=useState(false);
+  const [researchOpen,setResearchOpen]=useState(false);
+  useEffect(()=>{const reveal=()=>{if(window.location.hash==="#research")setResearchOpen(true);if(window.location.hash==="#revise"){const element=document.getElementById("revise") as HTMLDetailsElement|null;if(element)element.open=true;}};reveal();window.addEventListener("hashchange",reveal);return()=>window.removeEventListener("hashchange",reveal);},[]);
   const [job,setJob]=useState<AgentJob|null>(null),[jobId,setJobId]=useState<string|null>(null);
   const [turn,setTurn]=useState<AgentTurn|null>(null),[record,setRecord]=useState<PreparationRecord|null>(null);
   const [prepared,setPrepared]=useState<SimulationResult|null>(null),[shown,setShown]=useState<SimulationResult|null>(null);
@@ -168,10 +169,10 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
   const structure=structureKind(structureIdentity.drug,structureIdentity.target);
   return <div className="hypothesim-workspace editorial-workspace">
     <aside className="workspace-rail" aria-label="Research navigation"><a href="/" className="rail-monogram" aria-label="Hypothesim home">h.</a><span className="rail-caption">Workspace</span><nav><a href="#research"><span>01</span>Question</a><a href="#experiment"><span>02</span>Simulation</a><a href="#structure"><span>03</span>Structure</a></nav><a href="/" className="rail-home">Workspace home ↗</a></aside>
-    <header className="workspace-header"><a className="workspace-brand" href="/">hypothesim<span>.</span></a><nav aria-label="Workspace sections"><a href="#research">Research</a><a href="#experiment">Simulation</a><a href="#structure">Structure</a></nav><span className="workspace-badge">Research workspace</span></header>
-    <div className="workspace-intro"><p className="eyebrow">Research request / PK and target engagement</p><h1>{drug || "Untitled experiment"}<span> / {target || "Target unspecified"}</span></h1><p>Explore how drug exposure and binding change target occupancy. Start with a question or try the saved trastuzumab experiment.</p><nav className="workspace-steps" aria-label="Getting started"><a href="#research">01 / Research a hypothesis</a><a href="#experiment">02 / Adjust and compare</a><a href="#structure">03 / Inspect the molecule</a></nav></div>
+    <header className="workspace-header"><a className="workspace-brand" href="/">hypothesim<span>.</span></a><nav aria-label="Workspace sections"><a href="#research">Research</a><a href="#experiment">Results</a><a href="#paper-evidence">Evidence</a><a href="#structure">Molecule</a></nav><span className="workspace-badge">Research workspace</span></header>
+    <div className="workspace-intro"><div><p className="eyebrow">Scientific exploration console</p><h1>Experiment workspace</h1><p>Evidence → exposure → target engagement</p></div><span className="workspace-badge">{busy?"Agent researching":saved?"Saved reviewed demo":"Interactive model"}</span></div>
     <details className="workspace-assessment"><summary>Drug and model assessment <span>Identity, route, and supported endpoints</span></summary><DrugSupportPanel /></details>
-    <section id="research" className="research-panel" aria-label="Hypothesis research"><div className="section-heading"><div><p className="eyebrow">01 / Research question</p><h2>What would you like to test?</h2></div><span className="scope-badge">Evidence required</span></div>
+    <section id="research" className="research-panel" aria-label="Hypothesis research"><details className="question-disclosure" open={researchOpen} onToggle={e=>setResearchOpen(e.currentTarget.open)}><summary><span><span className="eyebrow">Research question · {drug || "Drug unspecified"}{target?` / ${target}`:""}</span><strong>{text || "Enter your scientific hypothesis"}</strong></span><span className="disclosure-action">{researchOpen?"Close editor":"Edit hypothesis"}</span></summary>
       <div className="research-layout"><form onSubmit={research}><fieldset disabled={busy} style={{border:0,padding:0}}>
         <label>Scientific hypothesis<textarea required maxLength={12000} value={text} onChange={e=>setText(e.target.value)} rows={4}/></label>
         <div className="form-grid"><label>Drug name<input required maxLength={200} value={drug} onChange={e=>setDrug(e.target.value)}/></label><label>Biological target (optional)<input value={target} onChange={e=>setTarget(e.target.value)}/></label>
@@ -186,25 +187,21 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
         {job?.events?.length ? <ol>{job.events.map((event,i)=><li key={i}>{event}</li>)}</ol>:<p>Identity → papers → cited candidates → model assessment → numerical tool</p>}
         {turn && <details><summary>Agent record · {turn.status}</summary><p>Turn: {turn.turn_id}</p><p>Trace: {turn.trace_status} · {turn.trace_id ?? "not collected"}</p><p>Tools: {(turn.tool_calls ?? []).join(", ")}</p></details>}
       </section></div>
-      <div className="demo-entry"><div><h3>Explore a ready-made experiment</h3><p>Load reviewed trastuzumab curves and evidence, then try the sliders and playback. This uses saved results rather than live research.</p></div><button className="saved-demo-button" type="button" onClick={()=>void openDemo()}>Load saved demo</button><a href="#experiment">Go to simulation ↓</a></div>
+      </details><div className="demo-entry"><div><h3>Trastuzumab / HER2 demo</h3><p>Reviewed reference inputs · hypothetical alternatives · interactive results</p></div><button className="saved-demo-button" type="button" onClick={()=>void openDemo()}>Load saved demo</button><a href="#experiment">Go to simulation ↓</a></div>
       <details><summary>Resume a saved preparation</summary><label>Preparation ID<input value={resumeId} onChange={e=>setResumeId(e.target.value)} placeholder="prep-…"/></label><button type="button" disabled={!!busy} onClick={()=>void loadPreparation()}>Load preparation</button></details>
       {message && <p role="alert">{message}</p>}
       {turn?.questions?.length ? <section aria-label="Agent questions"><h3>What is needed next</h3><ul>{turn.questions.map(q=><li key={q}>{q}</li>)}</ul></section>:null}
       {record && <PreparationAnswers key={`${record.preparation.preparation_id}:${record.preparation.revision}`} record={record} busy={!!busy} onContinue={continueResearch} onReload={()=>void reloadPreparation()}/>}
-      {currentInterpretation && <section className="interpretation-panel" aria-label="Scientific interpretation"><p className="eyebrow">Result interpretation</p><h2>Predicted outcomes</h2><ul>{currentInterpretation.claims.map(c=><li key={c}>{c}</li>)}</ul>
-        {currentInterpretation.paper_summaries?.length ? <PaperSummaries summaries={currentInterpretation.paper_summaries} experiment={shown!.configuration}/> : <p>No source parameter summary was generated for this result. Review its explicit assumptions and evidence below.</p>}
-        <details><summary>Assumptions, follow-up experiments & limitations</summary><h3>Assumptions</h3><ul>{currentInterpretation.assumptions.map((s,i)=><li key={i}>{s}</li>)}</ul><h3>Follow-up experiments</h3><ul>{currentInterpretation.follow_up_experiments.map(s=><li key={s}>{s}</li>)}</ul><h3>Limitations</h3><ul>{currentInterpretation.limitations.map((s,i)=><li key={i}>{s}</li>)}</ul></details>
-      </section>}
       {explanation && !currentInterpretation && <p className="scope-note">The earlier explanation belongs to a different result. Current curves reflect your direct parameter changes.</p>}
     </section>
-    <section id="revise" className="research-panel experiment-revision" aria-label="Quick experimental edits"><h2>Change the experiment in words</h2><p>Edits apply to the displayed result. The baseline stays protected; selected alternative: <strong>{visible.scenarios.find(s=>s.scenario_id===selected)?.label ?? "none"}</strong>.</p>
+    <details id="revise" className="research-panel experiment-revision" onToggle={e=>{if(e.currentTarget.open)e.currentTarget.querySelector("input")?.focus();}}><summary>Change the experiment in words <span>Dose, affinity, schedule or duration</span></summary><p>Edits apply to the displayed result. The baseline stays protected; selected alternative: <strong>{visible.scenarios.find(s=>s.scenario_id===selected)?.label ?? "none"}</strong>.</p>
       <form onSubmit={submitEdit}><label>Experimental edit<input required disabled={!!busy} value={edit} onChange={e=>setEdit(e.target.value)} placeholder="Run this comparison for 120 days"/></label><button className="primary-button" disabled={!!busy || !shown || controlBusy}>Apply edit & simulate</button></form>
       <details><summary>Supported examples</summary><ul>{["Double the dose in the affinity alternative","Use a 21-day dosing interval in that alternative","Compare twofold and fivefold affinity improvement at fixed association rate","Run this comparison for 120 days"].map(s=><li key={s}><button type="button" disabled={!!busy} onClick={()=>setEdit(s)}>{s}</button></li>)}</ul><p>Unrecognized wording or extra instructions request clarification. Changes of drug, target or route require new research above.</p></details>
       {turn?.applied_changes?.length ? <ul>{turn.applied_changes.map(s=><li key={s}>{s}</li>)}</ul>:null}
-    </section>
-    <div className="saved-demo-banner" role="status">Displayed curves: {visible.drug} → {visible.target} · {shown?.result_id ?? "loading reference"}. {busy?"New research is pending; these are the last successful curves.":"Conditional model output; not clinical efficacy."}<a href="#experiment">Explore curves ↓</a></div>
-    <PlotPreview key={prepared?.result_id ?? "fallback"} initialExperiment={prepared?.configuration ?? fallbackExperiment} initialResult={prepared} onResultChange={onResult} editingLocked={!!busy}/>
-    {structure!=="unavailable" ? <VisualizationBoundary key={structure} label="Experimental structure"><StructureViewer kind={structure}/></VisualizationBoundary> : <section id="structure" className="structure-panel"><h2>Experimental structure unavailable</h2><p>No verified cached drug–target complex is available for {structureIdentity.drug} → {structureIdentity.target || "unspecified target"}. A structure is not required to run supported equations with compatible inputs.</p></section>}
+    </details>
+    <div className="saved-demo-banner" role="status"><span className="status-dot"/><strong>Displayed experiment</strong> {visible.drug} → {visible.target}{busy && <span> · Research pending; showing the last successful curves.</span>}</div>
+    <PlotPreview key={prepared?.result_id ?? "fallback"} initialExperiment={prepared?.configuration ?? fallbackExperiment} initialResult={prepared} onResultChange={onResult} editingLocked={!!busy} interpretation={currentInterpretation}
+      structure={structure!=="unavailable" ? <VisualizationBoundary key={structure} label="Experimental structure"><StructureViewer kind={structure}/></VisualizationBoundary> : <section id="structure" className="structure-panel"><h2>Experimental structure unavailable</h2><p>No verified cached drug–target complex is available for {structureIdentity.drug} → {structureIdentity.target || "unspecified target"}. Compatible numerical models can still run without a structure.</p></section>}/>
     <footer className="workspace-footer">Hypothesim · Conditional scientific exploration · Predictions are model outputs.</footer>
   </div>;
 }

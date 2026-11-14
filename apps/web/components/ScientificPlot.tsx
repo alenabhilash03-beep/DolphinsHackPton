@@ -104,7 +104,7 @@ export function ScientificPlot({ result, kind, cursorTimeHours, onSeekTime, show
       }}
     />
     <div ref={shadeRef} aria-hidden="true" style={{ display: "none", position: "absolute", background: "rgba(255,255,255,.97)", pointerEvents: "none", zIndex: 1 }} />
-    <div ref={lineRef} aria-hidden="true" style={{ display: "none", position: "absolute", width: 0, borderLeft: "2px dashed #087e95", pointerEvents: "none", zIndex: 2 }} />
+    <div ref={lineRef} aria-hidden="true" style={{ display: "none", position: "absolute", width: 0, borderLeft: "2px dashed #72383D", pointerEvents: "none", zIndex: 2 }} />
     <div ref={timeLabel} className="plot-time-label" aria-hidden="true" />
     {result.scenarios.map((series, i) => <div key={series.scenario_id} ref={(element) => { markerRefs.current[i] = element; }} aria-hidden="true"
       style={{ display: "none", position: "absolute", width: 11, height: 11, borderRadius: "50%", border: "2px solid white", background: scenarioColor(series.scenario_id, i), transform: "translate(-50%,-50%)", pointerEvents: "none", zIndex: 3, boxShadow: "0 0 0 2px #ffffff60" }} />)}

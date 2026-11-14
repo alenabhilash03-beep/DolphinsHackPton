@@ -1,1 +1,1 @@
-"""Provider compatibility checks. Research orchestration arrives in Phase 3."""
+"""Guarded research orchestration and provider compatibility checks."""

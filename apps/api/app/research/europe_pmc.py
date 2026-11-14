@@ -19,6 +19,10 @@ class RetrievalError(RuntimeError):
     """The provider failed or returned data that cannot be trusted."""
 
 
+class SourceMismatchError(RetrievalError):
+    """A provider response does not identify the exact requested publication."""
+
+
 class LiteratureRecord(BaseModel):
     model_config = ConfigDict(extra="forbid")
     provider: Literal["Europe PMC"] = "Europe PMC"
@@ -114,5 +118,5 @@ class EuropePMCClient:
         result = self.search(f"EXT_ID:{pmid} AND SRC:MED", page_size=3)
         matches = [record for record in result.records if record.provider_source == "MED" and record.pmid == pmid]
         if len(matches) != 1:
-            raise RetrievalError("Europe PMC did not return the exact requested PubMed record")
+            raise SourceMismatchError("Europe PMC did not return the exact requested PubMed record")
         return matches[0]

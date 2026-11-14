@@ -1,5 +1,5 @@
 /* Factual execution stays separate from the currently displayed experiment. */
-.editorial-workspace .investigation-panel { max-width:1600px; margin:0 auto 12px; border:1px solid var(--line); border-radius:18px; padding:16px 20px; background:#fffdfa; scroll-margin-top:88px; }
+.editorial-workspace .investigation-panel { max-width:1600px; margin:0 auto 12px; border:1px solid var(--line); border-radius:18px; padding:16px 20px; background:#ffffff; scroll-margin-top:88px; }
 .editorial-workspace .investigation-panel>details { border:0; padding:0; margin:0; }
 .editorial-workspace .investigation-panel>details>summary { display:flex; align-items:center; justify-content:space-between; gap:16px; list-style:none; }
 .editorial-workspace .investigation-panel>details>summary::after { content:"+"; font-size:20px; font-weight:400; color:var(--accent); }
@@ -8,15 +8,15 @@
 .editorial-workspace .investigation-heading>.eyebrow { display:block; margin-bottom:3px; }
 .editorial-workspace .investigation-heading>strong { display:block; font-size:14px; font-weight:600; }
 .editorial-workspace .execution-mode { font-size:10px; color:var(--muted); border:1px solid var(--line); border-radius:20px; padding:4px 9px; }
-.editorial-workspace .is-working { border-color:#a47579; box-shadow:inset 3px 0 0 var(--accent); }
+.editorial-workspace .is-working { border-color:#8eb7c4; box-shadow:inset 3px 0 0 var(--accent); }
 .editorial-workspace .investigation-idle { margin:8px 0 0; font-size:11px; color:var(--muted); }
-.editorial-workspace .investigation-state { border-left:2px solid var(--accent); padding:8px 12px; margin:14px 0; background:#f4efea; font-size:12px; color:#50463f; }
+.editorial-workspace .investigation-state { border-left:2px solid var(--accent); padding:8px 12px; margin:14px 0; background:#f0f6fa; font-size:12px; color:var(--ink); }
 .editorial-workspace .execution-connection-note { padding:8px 12px; background:#fff3de; border:1px solid #e6cfab; border-radius:6px; font-size:11px; }
 .editorial-workspace .investigation-stages { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); list-style:none; padding:0; gap:8px; margin:14px 0 10px; }
-.editorial-workspace .investigation-stages>li { margin:0; padding:10px 12px; background:#f6f3ee; border:1px solid #e3dcd4; border-radius:8px; min-width:0; }
+.editorial-workspace .investigation-stages>li { margin:0; padding:10px 12px; background:#f5f8fc; border:1px solid var(--line); border-radius:8px; min-width:0; }
 .editorial-workspace .investigation-stages strong { font-size:11px; display:block; font-weight:550; }
 .editorial-workspace .investigation-stages span { display:block; font-size:10px; color:var(--muted); margin-top:4px; }
-.editorial-workspace .investigation-stages [data-state=started] { background:#f2e8e7; border-color:#a47579; }
+.editorial-workspace .investigation-stages [data-state=started] { background:#e8f5f9; border-color:#8eb7c4; }
 .editorial-workspace .investigation-stages [data-state=started] span { color:var(--accent); }
 .editorial-workspace .investigation-stages [data-state=succeeded] { border-top:2px solid #548074; }
 .editorial-workspace .investigation-stages [data-state=failed],.editorial-workspace .investigation-stages [data-state=rejected],.editorial-workspace .investigation-stages [data-state=interrupted] { background:#fff2e4; border-color:#d7b58d; }
@@ -31,12 +31,12 @@
 .editorial-workspace .investigation-table-scroll { overflow-x:auto; margin:10px 0; }
 .editorial-workspace .investigation-panel table { width:100%; text-align:left; border-collapse:collapse; font-size:11px; min-width:610px; }
 .editorial-workspace .investigation-panel caption { text-align:left; font-size:10px; color:var(--muted); padding-bottom:8px; }
-.editorial-workspace .investigation-panel th,.editorial-workspace .investigation-panel td { padding:9px 12px; border-bottom:1px solid #e7e1d9; vertical-align:top; }
-.editorial-workspace .investigation-panel thead { background:#f2eee8; }
+.editorial-workspace .investigation-panel th,.editorial-workspace .investigation-panel td { padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+.editorial-workspace .investigation-panel thead { background:#edf3f8; }
 .editorial-workspace .investigation-panel tbody th { font-weight:500; }
 .editorial-workspace .investigation-panel td:nth-child(2),.editorial-workspace .investigation-panel td:nth-child(3) { font-variant-numeric:tabular-nums; }
 .editorial-workspace .investigation-panel small { display:block; font-size:10px; color:var(--muted); margin-top:3px; font-weight:400; }
-.editorial-workspace .parameter-provenance { display:inline-block; border-radius:4px; padding:1px 5px; background:#eee8df; font-size:10px; }
+.editorial-workspace .parameter-provenance { display:inline-block; border-radius:4px; padding:1px 5px; background:#e7f0f7; font-size:10px; }
 .editorial-workspace .execution-schedule { padding:10px 0; border-top:1px solid var(--line); }
 .editorial-workspace .execution-schedule h4 { font-size:12px; font-weight:600; margin:0; }
 .editorial-workspace .execution-schedule p,.editorial-workspace .execution-schedule ol { font-size:11px; }
@@ -45,10 +45,10 @@
 .editorial-workspace .execution-receipt.unaccepted { border-color:#d7b58d; background:#fff8ef; }
 .editorial-workspace .execution-metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin:12px 0; }
 .editorial-workspace .execution-metrics>div { padding-left:12px; border-left:1px solid #cbd7d0; }
-.editorial-workspace .execution-metrics span { display:block; font-size:11px; color:#50463f; }
+.editorial-workspace .execution-metrics span { display:block; font-size:11px; color:var(--ink); }
 .editorial-workspace .execution-metrics strong { font-size:24px; font-weight:550; color:#355b50; font-variant-numeric:tabular-nums; }
 .editorial-workspace .execution-tools>ol { list-style:none; padding:0; margin-top:12px; max-height:420px; overflow:auto; }
-.editorial-workspace .execution-tools>ol>li { border-left:2px solid var(--line); padding:8px 12px; margin:0 0 8px; background:#f7f4ef; }
+.editorial-workspace .execution-tools>ol>li { border-left:2px solid var(--line); padding:8px 12px; margin:0 0 8px; background:#f5f8fc; }
 .editorial-workspace .execution-tools>ol>li[data-state=started] { border-color:var(--accent); }
 .editorial-workspace .execution-tools>ol>li[data-state=succeeded] { border-color:#548074; }
 .editorial-workspace .execution-tools>ol>li>div { display:flex; justify-content:space-between; gap:14px; font-size:11px; }

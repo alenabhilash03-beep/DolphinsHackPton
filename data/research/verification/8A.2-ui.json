@@ -31,5 +31,6 @@
   "saved_demo_no_live_execution_label": true,
   "narrow_viewport_width": 390,
   "narrow_layout_verified": true,
-  "frontend_tests": 46
+  "frontend_tests": 43,
+  "integration_note": "Preserved upstream frontend revert 6c7c01a; retained and restyled the investigation panel for the restored console. Three reverted navigation tests were removed upstream."
 }

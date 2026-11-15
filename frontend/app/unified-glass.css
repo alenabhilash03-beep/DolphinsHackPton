@@ -1,0 +1,77 @@
+/* One visual language for every workspace page: the Experiments page's dark glass.
+   Applied after the per-page stylesheets so flat brown backgrounds and cream panels give way. */
+.workspace-stage .instrument-app[data-experiment-surface=glass] {
+  --glass-panel: linear-gradient(140deg, #33302c59, #151414c2);
+  --glass-inset: #0b0b0b4d;
+  --glass-line: #eee7df24;
+  --glass-line-strong: #eee7df38;
+  --glass-ink: #f1ede7;
+  --glass-copy: #cec8c0;
+  --glass-muted: #b9b2a9;
+  --glass-accent: #e2b1b8;
+}
+/* Same charcoal gradient behind every page, including per-environment overrides. */
+.workspace-stage .instrument-app[data-experiment-surface=glass][data-environment] .main-shell {
+  background: radial-gradient(ellipse at 88% 18%, #ac9c8d14, transparent 46%), linear-gradient(135deg, #0d0d0dd9, #171514c7 64%, #0c0c0ce8);
+}
+.workspace-stage .instrument-app[data-experiment-surface=glass][data-environment] .topbar { background: #161514b8; backdrop-filter: blur(18px); }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content { color: var(--glass-copy); }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(h1, h2, h3, h4) { color: var(--glass-ink); }
+/* Page titles receive focus for screen readers after navigation; that is not a reason to draw a box around them. */
+.workspace-stage .instrument-app :is(h1, h2)[tabindex="-1"]:focus { outline: none; }
+.workspace-stage .instrument-app[data-experiment-surface=glass] :is(.page-heading .eyebrow, .eyebrow) { color: var(--glass-muted); }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .page-heading p { color: var(--glass-copy); }
+
+/* Panels: rounded glass instead of flat tiles and cream sheets. */
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(
+  .desk-tile, .note-editor, .notes-index, .export-preview, .account-form, .security-panel,
+  .experiment-list, .paper-list, .empty-state, .research-tool, .model-details, .model-intro, .export-options > *, .library-footnote
+) {
+  background: var(--glass-panel);
+  border: 1px solid var(--glass-line);
+  border-radius: 20px;
+  backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px #fff8f410, 0 16px 48px #0002;
+  color: var(--glass-copy);
+}
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .desk-tile { overflow: hidden; transition: border-color .25s, transform .25s; }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .desk-tile:is(:hover, :focus-visible) { border-color: var(--glass-line-strong); transform: translateY(-2px); }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .desk-tile > * { background: transparent; border-color: var(--glass-line); }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(.note-editor, .export-preview) { padding: 28px; }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .notes-index { padding: 16px; }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .empty-state { padding: 40px; }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .library-footnote { padding: 14px 18px; border-radius: 14px; }
+/* Text inside the former cream panels was dark; make it legible on glass. */
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(.note-editor, .export-preview, .account-form, .security-panel, .desk-tile, .empty-state) :is(h2, h3, h4, strong, dt, .note-title-input) { color: var(--glass-ink); }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(.note-editor, .export-preview, .account-form, .security-panel, .desk-tile, .empty-state) :is(p, span, small, label, li, dd, td, th) { color: var(--glass-copy); }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(.note-editor, .export-preview) :is(hr, .export-meta, dl > div, tr) { border-color: var(--glass-line); }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(.note-editor, .export-preview) svg { color: var(--glass-copy); }
+
+/* Inputs: the Experiments page's dark inset fields. */
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]), select, textarea) {
+  background: #11111199;
+  color: var(--glass-ink);
+  border: 1px solid var(--glass-line-strong);
+  border-radius: 10px;
+}
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(input, textarea)::placeholder { color: #aaa39b; opacity: 1; }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content option { background: #1b1918; color: var(--glass-ink); }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .search-field { background: #11111199; border: 1px solid var(--glass-line-strong); border-radius: 12px; padding-inline: 12px; }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .search-field input { border: 0; background: transparent; }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(.note-title-input, .note-editor > textarea) { background: var(--glass-inset); }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(button, a, input, select, textarea, summary):focus-visible { outline: 2px solid var(--glass-accent); outline-offset: 3px; }
+
+/* Rows and lists sit inside glass panels without their own heavy fills. */
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(.experiment-row, .paper-row, .revision-row, .list-header, .collection-toolbar) { background: transparent; border-color: var(--glass-line); }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(.experiment-row, .paper-row):hover { background: #ffffff06; }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .library-tabs { border-color: var(--glass-line); }
+/* Refinements: no panel inside a panel, single-border search fields, padded option groups. */
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(.note-editor, .export-preview, .research-tool, .paper-list, .experiment-list) .empty-state { background: none; border: 0; box-shadow: none; backdrop-filter: none; padding: 24px 0; }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .search-field > input:not([type]) ,
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .search-field > input { border: 0; background: transparent; border-radius: 0; box-shadow: none; }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .export-options > * { padding: 16px 20px; margin-bottom: 16px; }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .export-preview :is(p, small) { color: var(--glass-muted); }
+/* The shared field rule is very specific (several :not() checks); the field inside a search box must still be borderless. */
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .search-field > input { border: 0 !important; background: transparent !important; outline-offset: 0; }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content :is(.account-form, .security-panel) { padding: 28px; }
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-content .research-tool { padding: 28px; }

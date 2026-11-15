@@ -1,0 +1,42 @@
+/* The main graph and the article summaries side by side; secondary graphs stay full width below. */
+.workspace-stage .instrument-app .backend-workspace .plots-with-articles { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr); gap: 20px; align-items: stretch; margin-bottom: 20px; }
+.workspace-stage .instrument-app .backend-workspace .plots-with-articles > .chart-card { margin: 0; min-width: 0; }
+.workspace-stage .instrument-app .backend-workspace .article-summaries {
+  display: flex; flex-direction: column; min-width: 0; max-height: 560px; padding: 20px;
+  background: linear-gradient(140deg, #33302c59, #151414c2); border: 1px solid #eee7df22; border-radius: 24px;
+  box-shadow: inset 0 1px #fff8f408;
+}
+.workspace-stage .instrument-app .backend-workspace .article-summaries-heading { padding-bottom: 12px; border-bottom: 1px solid #eee7df1c; margin-bottom: 4px; }
+.workspace-stage .instrument-app .backend-workspace .article-summaries-heading h3 { margin: 0 0 4px; font-size: 14px; }
+.workspace-stage .instrument-app .backend-workspace .article-summaries-heading span { font-size: 11px; color: #b9b2a9; }
+.workspace-stage .instrument-app .backend-workspace .article-list { list-style: none; margin: 0; padding: 0 4px 0 0; overflow-y: auto; flex: 1; min-height: 0; scrollbar-width: thin; }
+.workspace-stage .instrument-app .backend-workspace .article-card { padding: 14px 0; border-bottom: 1px solid #eee7df14; }
+.workspace-stage .instrument-app .backend-workspace .article-card:last-child { border-bottom: 0; }
+.workspace-stage .instrument-app .backend-workspace .article-title { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; font-weight: 550; line-height: 1.4; color: #f1ede7; }
+.workspace-stage .instrument-app .backend-workspace .article-title > svg { flex: none; margin-top: 2px; color: #b9b2a9; }
+.workspace-stage .instrument-app .backend-workspace .article-title a { color: #f1ede7; text-decoration: none; }
+.workspace-stage .instrument-app .backend-workspace .article-title a:hover { color: #e2b1b8; }
+.workspace-stage .instrument-app .backend-workspace .article-title a > svg { margin-left: 4px; vertical-align: -1px; }
+.workspace-stage .instrument-app .backend-workspace .article-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0 22px; }
+.workspace-stage .instrument-app .backend-workspace .article-tags span { font-size: 10px; padding: 2px 8px; border-radius: 999px; border: 1px solid #eee7df26; color: #cec8c0; }
+.workspace-stage .instrument-app .backend-workspace .article-tags span[data-access=abstract] { border-color: #c6a67f66; color: #e3cfae; }
+.workspace-stage .instrument-app .backend-workspace .article-summary { margin: 8px 0 0 22px; font-size: 13px; line-height: 1.6; color: #e4ded6; }
+.workspace-stage .instrument-app .backend-workspace .article-plots { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0 22px; }
+.workspace-stage .instrument-app .backend-workspace .article-plots button { font-size: 11px; padding: 4px 10px; border-radius: 999px; border: 1px solid #e2b1b855; background: transparent; color: #e2b1b8; cursor: pointer; }
+.workspace-stage .instrument-app .backend-workspace .article-plots button:hover { background: #e2b1b814; }
+.workspace-stage .instrument-app .backend-workspace .article-card details { margin: 8px 0 0 22px; border: 0; padding: 0; }
+.workspace-stage .instrument-app .backend-workspace .article-card summary { font-size: 11px; color: #b9b2a9; cursor: pointer; }
+.workspace-stage .instrument-app .backend-workspace .article-card blockquote { margin: 8px 0 0; padding: 8px 12px; border-left: 2px solid #eee7df30; font-size: 12px; line-height: 1.6; color: #cec8c0; }
+.workspace-stage .instrument-app .backend-workspace .article-card blockquote small { display: block; margin-top: 4px; font-size: 10px; color: #b9b2a9; }
+.workspace-stage .instrument-app .backend-workspace .article-card details p { margin: 8px 0 0; font-size: 12px; line-height: 1.6; }
+.workspace-stage .instrument-app .backend-workspace .article-limit { color: #b9b2a9; }
+.workspace-stage .instrument-app .backend-workspace .article-empty { font-size: 12px; line-height: 1.7; color: #b9b2a9; margin: 12px 0 0; }
+/* A summary's graph link briefly outlines the graph it refers to. */
+.workspace-stage .instrument-app .backend-workspace .chart-card.is-linked { animation: linked-plot 1.6s ease-out; }
+@keyframes linked-plot { 0%, 40% { box-shadow: 0 0 0 2px #e2b1b8aa; } 100% { box-shadow: 0 0 0 2px transparent; } }
+@media (prefers-reduced-motion: reduce) { .workspace-stage .instrument-app .backend-workspace .chart-card.is-linked { animation: none; box-shadow: 0 0 0 2px #e2b1b8aa; } }
+@media (max-width: 1180px) { .workspace-stage .instrument-app .backend-workspace .plots-with-articles { grid-template-columns: minmax(0, 1fr); } .workspace-stage .instrument-app .backend-workspace .article-summaries { max-height: none; } }
+/* The graph sets the row height; the summaries fill it and scroll, rather than stretching the graph. */
+@media (min-width: 1181px) {
+  .workspace-stage .instrument-app .backend-workspace .article-summaries { contain: size; max-height: none; height: 100%; }
+}

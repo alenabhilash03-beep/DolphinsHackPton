@@ -859,3 +859,8 @@
     gap: 24px;
   }
 }
+
+/* Primary buttons reserve 6px on the right for an icon circle; without an icon, balance the padding. */
+.workspace-stage .instrument-app :is(.btn.primary):not(:has(> svg)) { padding-right: 22px; justify-content: center; }
+.workspace-stage .instrument-app .btn.primary:not(:has(> svg))::after { clip-path: circle(0% at 50% 50%); }
+.workspace-stage .instrument-app .btn.primary:not(:has(> svg)):is(:hover, :focus-visible):not(:disabled)::after { clip-path: circle(150% at 50% 50%); }

@@ -134,7 +134,7 @@
 .workspace-stage .collection-toolbar > span:last-child { color: #AC9C8D; }
 .workspace-stage .empty-state { color: #D1C7BD; background: #D1C7BD05; border-color: #D1C7BD33; }
 .workspace-stage .empty-state > svg { color: #D1C7BD; }
-.workspace-stage .empty-state h3 { color: #D9D9D9; font-family: 'Newsreader', Georgia, serif; font-size: 29px; }
+.workspace-stage .empty-state h3 { color: #D9D9D9; font-family: var(--editorial); font-size: 29px; }
 .workspace-stage .empty-state p { color: #D1C7BD; }
 /* Experiments and numerical controls. */
 .workspace-stage .experiment-status { border-color: var(--ws-line); color: #D1C7BD; }

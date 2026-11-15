@@ -1,42 +1,36 @@
+/* Inter for all text and IBM Plex Mono for identifiers. Both SIL Open Font License; files bundled locally. */
 @font-face {
-  font-family: 'Geist';
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url(/fonts/geist-400.ttf) format('truetype');
+  src: url(/fonts/inter-400.woff2) format('woff2');
 }
 @font-face {
-  font-family: 'Geist';
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url(/fonts/geist-500.ttf) format('truetype');
+  src: url(/fonts/inter-500.woff2) format('woff2');
 }
 @font-face {
-  font-family: 'Geist';
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url(/fonts/geist-600.ttf) format('truetype');
+  src: url(/fonts/inter-600.woff2) format('woff2');
 }
 @font-face {
-  font-family: 'Newsreader';
+  font-family: 'IBM Plex Mono';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url(/fonts/newsreader-400.ttf) format('truetype');
+  src: url(/fonts/ibm-plex-mono-400.woff2) format('woff2');
 }
 @font-face {
-  font-family: 'Newsreader';
+  font-family: 'IBM Plex Mono';
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url(/fonts/newsreader-500.ttf) format('truetype');
-}
-@font-face {
-  font-family: 'Newsreader';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(/fonts/newsreader-600.ttf) format('truetype');
+  src: url(/fonts/ibm-plex-mono-500.woff2) format('woff2');
 }

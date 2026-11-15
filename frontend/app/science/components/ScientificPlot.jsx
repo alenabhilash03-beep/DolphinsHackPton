@@ -72,7 +72,7 @@ export function ScientificPlot({ result, kind, cursorTimeHours, onSeekTime, show
                 paper_bgcolor: '#181716',
                 plot_bgcolor: '#181716',
                 font: {
-                    family: 'Geist, Arial, sans-serif',
+                    family: 'Inter, Helvetica Neue, Arial, sans-serif',
                     color: '#d2ccc5',
                     size: 11
                 },
@@ -87,7 +87,7 @@ export function ScientificPlot({ result, kind, cursorTimeHours, onSeekTime, show
                     bgcolor: '#24211f',
                     bordercolor: '#6f665e',
                     font: {
-                        family: 'Geist, Arial, sans-serif',
+                        family: 'Inter, Helvetica Neue, Arial, sans-serif',
                         size: 12,
                         color: '#f1ede7'
                     }

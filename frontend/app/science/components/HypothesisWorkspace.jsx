@@ -590,6 +590,7 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                                 editingLocked: !!busy || !backendAvailable,
                                 interpretation: currentInterpretation,
                                 answerShown: answer === 'current',
+                                turn: turn,
                                 structure: structure !== "unavailable" ? /*#__PURE__*/ _jsx(VisualizationBoundary, {
                                     label: "Experimental structure",
                                     children: /*#__PURE__*/ _jsx(StructureViewer, {

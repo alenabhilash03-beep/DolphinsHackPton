@@ -1,0 +1,59 @@
+/* The start page is a single screen: header, hero and footer always fit the viewport; nothing scrolls. */
+.entry-page { height: 100dvh; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+/* The framed sculpture sits behind the content instead of taking 900px of page height. */
+.entry-page::after, .entry-page .entry-scene-bg { position: absolute !important; inset: clamp(8px, 2.4vh, 24px) clamp(8px, 1.7vw, 24px) !important; height: auto !important; width: auto !important; margin: 0 !important; z-index: 0; }
+.entry-page::after { z-index: 1; pointer-events: none; }
+.entry-page :is(.entry-header, .entry-main, .entry-footer) { position: relative; z-index: 2; }
+.entry-page .entry-header { flex: none; height: clamp(60px, 10.5vh, 102px); min-height: 0; padding-block: 0; margin-top: clamp(8px, 2.4vh, 24px); }
+.entry-page .entry-main { flex: 1 1 auto; min-height: 0; display: flex; }
+.entry-page .entry-hero {
+  flex: 1 1 auto; min-height: 0 !important; height: auto;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 280px); grid-template-rows: auto auto; align-content: space-between;
+  column-gap: clamp(24px, 4vw, 64px); row-gap: 0; align-items: end;
+  padding: clamp(8px, 2.5vh, 32px) 0 clamp(12px, 3vh, 36px) !important;
+}
+.entry-page .entry-wordmark {
+  position: relative; inset: auto; grid-column: 1 / -1; grid-row: 1; margin: 0; width: 100%;
+  font-size: min(14.5vw, 21vh); line-height: .88; letter-spacing: -.06em;
+}
+.entry-page .entry-hero-copy { grid-column: 1; grid-row: 2; align-self: end; padding: 0 0 0 clamp(0px, 2vw, 40px) !important; min-width: 0; }
+.entry-page .entry-kicker { margin: 0; }
+.entry-page .entry-hero h1 { font-size: clamp(28px, min(3.6vw, 5.6vh), 52px); line-height: 1.08; letter-spacing: -.025em; margin: clamp(8px, 1.6vh, 20px) 0 clamp(8px, 1.4vh, 16px); }
+.entry-page .entry-hero h1 em { font-size: 1em; letter-spacing: inherit; line-height: inherit; }
+.entry-page .entry-hero-copy > p { font-size: clamp(12px, 1.7vh, 14px); line-height: 1.7; max-width: 46ch; margin: 0 0 clamp(12px, 2.4vh, 28px); }
+.entry-page .entry-action-caption { margin-top: 8px; }
+/* Destinations sit in one row under the action instead of a tall list. */
+.entry-page .home-destinations { flex-direction: row; max-width: 760px; gap: 24px; margin: clamp(12px, 2.6vh, 28px) 0 0; }
+.entry-page .home-destinations > button { flex: 1 1 0; min-width: 0; min-height: 0; padding: 10px 0; border-bottom: 0; border-top: 1px solid #EFE9E124; }
+.entry-page .home-destination-preview { position: relative; inset: auto; grid-column: 2; grid-row: 2; align-self: end; width: auto; margin-bottom: 4px; }
+.entry-page .home-destination-preview > svg { margin-bottom: clamp(8px, 2vh, 24px); }
+.entry-page .home-destination-preview > h2 { font-size: clamp(22px, 3.4vh, 30px); margin: 10px 0; }
+.entry-page .home-destination-preview > p { margin: 0 0 12px; }
+.entry-page .entry-footer { flex: none; padding: clamp(8px, 1.6vh, 18px) 0; }
+.entry-page .entry-footer, .entry-page .entry-footer > span { font-size: 10px; font-family: var(--font); letter-spacing: .02em; }
+/* Short or narrow windows drop secondary detail rather than scroll. */
+@media (max-height: 700px) { .entry-page .home-destinations small, .entry-page .entry-action-caption { display: none; } }
+@media (max-height: 600px) { .entry-page .entry-kicker, .entry-page .entry-footer { display: none; } }
+@media (max-width: 900px) {
+  .entry-page .entry-hero { grid-template-columns: minmax(0, 1fr); }
+  .entry-page .home-destination-preview { display: none; }
+}
+@media (max-width: 600px) {
+  .entry-page .entry-navigation, .entry-page .entry-preferences span { display: none; }
+  .entry-page .home-destinations { flex-direction: column; gap: 0; }
+  .entry-page .home-destinations > button { padding: 8px 0; }
+  .entry-page .home-destinations small { display: none; }
+  .entry-page .entry-footer > span:not(:first-child) { display: none; }
+}
+
+/* Room for the wordmark's descenders, a wider text column, and single-line destination links. */
+.entry-page .entry-wordmark { margin-bottom: .16em; }
+.entry-page .entry-hero-copy { max-width: min(780px, 100%) !important; }
+.entry-page .entry-hero-copy > p, .entry-page .entry-hero h1 { max-width: 30ch; }
+.entry-page .entry-hero-copy > p { max-width: 52ch; }
+.entry-page .home-destinations > button > span:not(.home-choice-index) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.entry-page .home-destinations small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-height: 820px) { .entry-page .home-destinations small { display: none; } }
+/* Keep the footer inside the frame rather than on its edge. */
+.entry-page .entry-footer { margin-bottom: calc(clamp(8px, 2.4vh, 24px) + 2px); border-top: 0; padding-top: 4px; }
+.entry-page .entry-footer, .entry-page .entry-footer > span, .entry-page .entry-footer b { color: #ac9c8d; }

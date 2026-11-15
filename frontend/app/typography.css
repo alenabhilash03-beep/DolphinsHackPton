@@ -1,0 +1,8 @@
+/* Professional type scale: Inter throughout, medium-weight headings with tight tracking, tabular figures for data. */
+body, .experience-root { font-family: var(--font); font-feature-settings: 'cv11', 'ss01'; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+.experience-root :is(h1, h2, h3) { font-family: var(--editorial); font-weight: 500; letter-spacing: -0.022em; }
+.experience-root h1 { line-height: 1.08; }
+.experience-root :is(h4, strong, b, th, dt, legend) { font-weight: 550; }
+.experience-root :is(em) { font-style: normal; }
+.experience-root :is(table, output, td, .outcome-card strong, .answer-chips strong, .measurement-distance, input[type=number], .history-steps ul) { font-variant-numeric: tabular-nums; }
+.experience-root :is(code, kbd, samp) { font-family: var(--mono); font-size: .92em; }

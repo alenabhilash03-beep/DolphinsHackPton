@@ -13,7 +13,8 @@
     "dev:web": "next dev --hostname 127.0.0.1 --port 3011",
     "test:science": "node --test app/science/tests/*.mjs",
     "test:visual": "node scripts/verify-visual-experiment.cjs",
-    "test:hypothesis": "node scripts/verify-hypothesis-start.cjs"
+    "test:hypothesis": "node scripts/verify-hypothesis-start.cjs",
+    "test:ui": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "jspdf": "^4.2.1",

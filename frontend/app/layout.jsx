@@ -22,5 +22,9 @@ import './experiment-disclosure.css';
 import './scientific-workspace-base.css';
 import './scientific-experiment.css';
 import './experiment-glass.css';
+import './unified-glass.css';
+import './typography.css';
+import './homepage-single.css';
+import './article-summaries.css';
 export const metadata = {icons:{icon:[{url:'/favicon.svg',type:'image/svg+xml'},{url:'/favicon.ico',sizes:'any'}]},title:'Hypothesim — Research workbench',description:'Turn scientific hypotheses into interactive computational experiments.'};
-export default function Layout({children}){return <html lang="en"><head><link rel="preload" href="/fonts/geist-400.ttf" as="font" type="font/ttf" crossOrigin="anonymous"/><link rel="preload" href="/fonts/newsreader-400.ttf" as="font" type="font/ttf" crossOrigin="anonymous"/></head><body>{children}</body></html>}
+export default function Layout({children}){return <html lang="en"><head><link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/><link rel="preload" href="/fonts/inter-500.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/></head><body>{children}</body></html>}

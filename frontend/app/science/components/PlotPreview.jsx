@@ -11,6 +11,7 @@ import { ScenarioComparison } from "./ScenarioComparison.jsx";
 import { BindingCanvas } from "./BindingCanvas.jsx";
 import { VisualizationBoundary } from "./VisualizationBoundary.jsx";
 import { PaperSummaries } from "./PaperSummaries.jsx";
+import ArticleSummaries from "../../article-summaries.jsx";
 const VIEWS = [
     {
         id: "simulation",
@@ -33,7 +34,7 @@ const VIEWS = [
         hint: "Full metrics & assumptions"
     }
 ];
-export function PlotPreview({ initialExperiment, initialResult = null, onResultIdChange, onResultChange, editingLocked = false, structure, interpretation, answerShown = false }) {
+export function PlotPreview({ initialExperiment, initialResult = null, onResultIdChange, onResultChange, editingLocked = false, structure, interpretation, answerShown = false, turn = null }) {
     const [focusPlot, setFocusPlot] = useState(true), [view, setView] = useState("simulation");
     const [structureVisited, setStructureVisited] = useState(false);
     const workspace = useExperimentWorkspace(initialExperiment, 600, initialResult);
@@ -162,26 +163,36 @@ export function PlotPreview({ initialExperiment, initialResult = null, onResultI
                             /*#__PURE__*/ _jsx(TimelineControls, {
                                 timeline: timeline
                             }),
-                            /*#__PURE__*/ _jsxs("section", {
-                                id: "plot-occupancy",
-                                className: "chart-card occupancy-hero",
-                                "aria-label": "Occupancy comparison",
+                            /*#__PURE__*/ _jsxs("div", {
+                                className: "plots-with-articles",
                                 children: [
-                                    /*#__PURE__*/ _jsx("div", {
-                                        className: "chart-heading",
-                                        children: /*#__PURE__*/ _jsx("h3", {
-                                            children: "Target occupancy"
-                                        })
+                                    /*#__PURE__*/ _jsxs("section", {
+                                        id: "plot-occupancy",
+                                        className: "chart-card occupancy-hero",
+                                        "aria-label": "Occupancy comparison",
+                                        children: [
+                                            /*#__PURE__*/ _jsx("div", {
+                                                className: "chart-heading",
+                                                children: /*#__PURE__*/ _jsx("h3", {
+                                                    children: "Target occupancy"
+                                                })
+                                            }),
+                                            /*#__PURE__*/ _jsx(VisualizationBoundary, {
+                                                label: "Target occupancy plot",
+                                                children: /*#__PURE__*/ _jsx(ScientificPlot, {
+                                                    result: workspace.result,
+                                                    kind: "occupancy",
+                                                    cursorTimeHours: timeline.timeHours,
+                                                    revealProgress: timeline.revealCurves,
+                                                    onSeekTime: timeline.seekTime
+                                                })
+                                            })
+                                        ]
                                     }),
-                                    /*#__PURE__*/ _jsx(VisualizationBoundary, {
-                                        label: "Target occupancy plot",
-                                        children: /*#__PURE__*/ _jsx(ScientificPlot, {
-                                            result: workspace.result,
-                                            kind: "occupancy",
-                                            cursorTimeHours: timeline.timeHours,
-                                            revealProgress: timeline.revealCurves,
-                                            onSeekTime: timeline.seekTime
-                                        })
+                                    /*#__PURE__*/ _jsx(ArticleSummaries, {
+                                        turn: turn,
+                                        interpretation: currentInterpretation,
+                                        experiment: workspace.experiment
                                     })
                                 ]
                             }),

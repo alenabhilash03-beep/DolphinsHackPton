@@ -97,3 +97,5 @@
 .community-view .community-design { color: var(--community-muted); }
 .community-view details summary { cursor: pointer; color: var(--community-copy); font-size: 12px; }
 .community-view .community-disclaimer { color: var(--community-muted); font-size: 11px; }
+.instrument-app .signin-error { margin: -8px 0 22px; padding: 12px 14px; border: 1px solid #e2b1b866; border-radius: 12px; background: #e2b1b814; color: #ecc5ca; font-size: 13px; line-height: 1.55; }
+.instrument-app .signin-error strong { color: var(--community-ink); font-weight: 500; }

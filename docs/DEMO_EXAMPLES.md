@@ -4,12 +4,12 @@ These are the questions for the judged demo, chosen from repeated **live** runs 
 
 ## Demo mode: recorded replays (default on)
 
-For the judged demo, the two questions below are answered by **replaying a recorded live agent run** instead of calling the model, so they always work and take a predictable time. The replay files in `data/demo/replay/` were produced from real runs through the app's job API (`scripts/record_demo_replay.py`): the same tool calls and outcomes, papers, extracted values, solver result, 1N8Z measurements and cited answer. The server re-emits the recorded steps through the normal execution ledger, paced like the recording and capped at 60 s for the question and 30 s for the follow-up, and stores the result exactly as a live run does (history, proposals, sharing and reload all work). Result IDs are the solver's deterministic hashes, identical to a live run.
+For the judged demo, the two questions below are answered by **replaying a recorded live agent run** instead of calling the model, so they always work and take a predictable time. The replay files in `data/demo/replay/` were produced from real runs through the app's job API (`scripts/record_demo_replay.py`): the same tool calls and outcomes, papers, extracted values, solver result, 1N8Z measurements and cited answer. The server re-emits the recorded steps through the normal execution ledger, paced like the recording and capped at 25 s for the question and 15 s for the follow-up, and stores the result exactly as a live run does (history, proposals, sharing and reload all work). Result IDs are the solver's deterministic hashes, identical to a live run.
 
 | Step | What to do | Replay |
 | --- | --- | --- |
-| 1 | Experiments → **Use the trastuzumab example** → **Research and simulate** | about 60 s, endpoint occupancy 62.90% / 99.82% / 94.44%, answer *Mixed* |
-| 2 | Click the **Run this comparison for 120 days** suggestion → **Update and simulate** | about 30 s, the comparison rerun over 120 days, answer *Follow-up experiment result* |
+| 1 | Experiments → **Use the trastuzumab example** → **Research and simulate** | about 25 s, endpoint occupancy 62.90% / 99.82% / 94.44%, answer *Mixed* |
+| 2 | Click the **Run this comparison for 120 days** suggestion → **Update and simulate** | about 15 s, the comparison rerun over 120 days, answer *Follow-up experiment result* |
 
 Matching is exact (typographic apostrophes, case, spacing and a trailing "?" or "." are tolerated). The follow-up replays from the Q1 result or from **Load reference** (same result ID), and can be run more than once (later runs become branches). Any other question or edit runs the live agent. Replayed turns are labelled `recorded_replay` under **Run identifiers & trace**, with the recorded run ID. Turn it off with `DEMO_REPLAY=false`; pace with `DEMO_REPLAY_RESEARCH_S` and `DEMO_REPLAY_EDIT_S`. To re-record, run each question live through the app, save the completed job JSON, then:
 

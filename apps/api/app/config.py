@@ -26,8 +26,8 @@ class Settings(BaseSettings):
     # MVP demo mode: the two judged demo requests replay a recorded live agent run (data/demo/replay) instead of
     # calling the model. Every other request runs the live agent. Durations cap the replay's wall time.
     demo_replay: bool = True
-    demo_replay_research_s: float = Field(default=60, ge=0, le=600)
-    demo_replay_edit_s: float = Field(default=30, ge=0, le=600)
+    demo_replay_research_s: float = Field(default=25, ge=0, le=600)
+    demo_replay_edit_s: float = Field(default=15, ge=0, le=600)
     research_max_jobs: int = Field(default=4, ge=1, le=8)
     research_db_path: Path | None = None
 

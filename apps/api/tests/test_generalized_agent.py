@@ -528,3 +528,168 @@ def test_successful_research_after_retries_cannot_finish_before_simulation(tmp_p
     assert turn.status=='completed' and turn.tool_calls.count('extract_cited_parameters')==4
     assert {'prepare_reviewed_comparison'} in bindings
     assert {'prepare_reviewed_comparison','AgentDecision'} not in bindings
+
+
+def test_repeated_or_none_pmid_searches_reuse_results_and_stay_compact(tmp_path,monkeypatch):
+    # Live 5C.1b finding: the model sent pmid "None" (rejected) and repeated identical searches, spending the
+    # four-search budget and growing provider requests until NVIDIA returned 502.
+    seen=[]
+    class RepeatSearch(DrivingModel):
+        _repeats:int=PrivateAttr(default=0)
+        def _generate(self,messages,**kwargs):
+            searches=[m for m in messages if isinstance(m,ToolMessage) and m.name=='search_hypothesis_evidence']
+            seen[:]=[json.loads(m.content) for m in searches]
+            if searches and self._repeats<2:
+                self._repeats+=1
+                return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':'search_hypothesis_evidence',
+                    'args':{'request':self.request,'focus':'binding','pmid':'None'},'id':f'repeat-{self._repeats}'}]))])
+            return super()._generate(messages,**kwargs)
+    calls=[]
+    original=EuropePMCClient.search
+    monkeypatch.setattr(EuropePMCClient,'search',lambda self,*a,**k:calls.append(1) or original(self,*a,**k))
+    agent,req=research_service(tmp_path)
+    agent.model=RepeatSearch(request=req)
+    turn=agent.run(AgentResearchRequest(request=req,structured_baseline=True))
+    assert turn.status=='completed' and turn.result is not None
+    assert len(calls)==1
+    states=[e.state for e in turn.execution_events if e.tool_name=='search_hypothesis_evidence' and e.state!='started']
+    assert states==['succeeded']*3
+    assert len(seen)==3 and all('search' not in s and s['results'] for s in seen)
+    assert all(len(r['abstract_excerpt'])<=360 for s in seen for r in s['results'])
+    assert 'Identical search' in seen[1]['note']
+
+
+def test_step_limit_ends_with_recorded_needs_inputs_not_a_graph_error(tmp_path):
+    class Looping(DrivingModel):
+        def _generate(self,messages,**kwargs):
+            done={m.name for m in messages if isinstance(m,ToolMessage)}
+            if 'extract_cited_parameters' in done:
+                record=next(json.loads(m.content) for m in reversed(messages) if isinstance(m,ToolMessage) and m.name in {'start_experiment_preparation','read_experiment_preparation'} and 'preparation' in json.loads(m.content))
+                self._step+=1
+                return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':'read_experiment_preparation',
+                    'args':{'preparation_id':record['preparation']['preparation_id']},'id':f'loop-{self._step}'}]))])
+            return super()._generate(messages,**kwargs)
+    agent,req=research_service(tmp_path)
+    agent.model=Looping(request=req)
+    turn=agent.run(AgentResearchRequest(request=req))
+    assert turn.status=='needs_inputs' and turn.result is None and turn.questions
+    assert turn.execution_events[-1].state=='needs_inputs'
+    assert sum(e.tool_name=='read_experiment_preparation' and e.state!='started' for e in turn.execution_events)>=5
+    # The fallback still records the verified-structure check and the cited-answer attempt before concluding.
+    assert turn.structure is not None and turn.synthesis is not None
+
+
+def test_compact_history_shrinks_old_bulky_results_but_keeps_identifiers_and_extractions():
+    from langchain_core.messages import HumanMessage
+    from app.agent.generalized import compact_history
+    page={'status':'retrieved','next_start_block':12,'document':{'document_id':'a'*32,'source':{'title':'Paper'},
+        'segments':[{'locator':f'full_text:block-{i}:0','text':'x'*1900} for i in range(10)]}}
+    prep={'preparation':{'preparation_id':'prep-'+'b'*32,'revision':3,'evidence_sha256':'c'*64,'state':'needs_inputs',
+        'missing_inputs':[{'input_id':'parameter:pk.volume_L','question':'q'*500}],'request':{'original_hypothesis':'h'*9000}}}
+    extraction={'status':'candidates','parameters':[{'parameter':'pk.volume_L','supporting_passage':'p'*3000}]}
+    messages=[HumanMessage(content='start'),
+        ToolMessage(content=json.dumps(prep),name='start_experiment_preparation',tool_call_id='1'),
+        ToolMessage(content=json.dumps(page),name='retrieve_evidence_source',tool_call_id='2'),
+        ToolMessage(content=json.dumps(extraction),name='extract_cited_parameters',tool_call_id='3'),
+        ToolMessage(content=json.dumps(page),name='retrieve_evidence_source',tool_call_id='4'),
+        ToolMessage(content=json.dumps(page),name='retrieve_evidence_source',tool_call_id='5')]
+    assert compact_history(messages,budget_chars=10**7)==messages
+    out=compact_history(messages,budget_chars=45000)
+    assert sum(len(m.content) for m in out)<=45000
+    shrunk_prep=json.loads(out[1].content)['preparation']
+    assert shrunk_prep=={'preparation_id':'prep-'+'b'*32,'revision':3,'evidence_sha256':'c'*64,'state':'needs_inputs','missing_inputs':['parameter:pk.volume_L']}
+    shrunk_page=json.loads(out[2].content)['document']
+    assert shrunk_page['document_id']=='a'*32 and len(shrunk_page['locators'])==10 and 'segments' not in shrunk_page
+    assert out[3].content==messages[3].content  # cited extractions are never shortened
+    assert out[4].content==messages[4].content and out[5].content==messages[5].content  # most recent results kept whole
+
+
+def test_wrap_up_window_offers_only_closing_tools_near_the_budget(tmp_path):
+    offered=[]
+    class Recording(DrivingModel):
+        _names:list=PrivateAttr(default_factory=list)
+        def bind_tools(self,tools,**kwargs):
+            self._names=[getattr(t,'name',None) or t.get('name') for t in tools]; return self
+        def _generate(self,messages,**kwargs):
+            offered.append(sorted(n for n in self._names if n))
+            done={m.name for m in messages if isinstance(m,ToolMessage)}
+            if 'extract_cited_parameters' in done:
+                if 'synthesize_grounded_answer' in done:
+                    return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':'AgentDecision','args':{'status':'needs_inputs'},'id':'final'}]))])
+                name='inspect_verified_structure' if 'inspect_verified_structure' in self._names else 'synthesize_grounded_answer' if 'synthesize_grounded_answer' in self._names else 'search_hypothesis_evidence'
+                self._step+=1
+                return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':name,'args':{},'id':f'w-{self._step}'}]))])
+            return super()._generate(messages,**kwargs)
+    import app.agent.generalized as generalized
+    agent,req=research_service(tmp_path)
+    agent.model=Recording(request=req)
+    original=generalized.WRAP_UP_CALLS
+    generalized.WRAP_UP_CALLS=4
+    try: turn=agent.run(AgentResearchRequest(request=req))
+    finally: generalized.WRAP_UP_CALLS=original
+    assert ['inspect_verified_structure'] in offered and ['synthesize_grounded_answer'] in offered
+    assert turn.status=='needs_inputs' and turn.structure is not None and turn.synthesis is not None
+
+
+def test_wrap_up_first_requires_extraction_of_retrieved_sources(tmp_path):
+    # Live finding: forcing a decision before a retrieved paper was extracted failed the run's honesty check.
+    offered=[]
+    class Recording(DrivingModel):
+        _names:list=PrivateAttr(default_factory=list)
+        def bind_tools(self,tools,**kwargs):
+            self._names=[getattr(t,'name',None) or t.get('name') for t in tools]; return self
+        def _generate(self,messages,**kwargs):
+            offered.append(sorted(n for n in self._names if n))
+            done={m.name for m in messages if isinstance(m,ToolMessage)}
+            if 'extract_cited_parameters' in done and 'synthesize_grounded_answer' not in done:
+                name='inspect_verified_structure' if 'inspect_verified_structure' not in done else 'synthesize_grounded_answer'
+                self._step+=1
+                return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':name,'args':{},'id':f'w-{self._step}'}]))])
+            if 'synthesize_grounded_answer' in done:
+                return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':'AgentDecision','args':{'status':'needs_inputs'},'id':'final'}]))])
+            return super()._generate(messages,**kwargs)
+    import app.agent.generalized as generalized
+    agent,req=research_service(tmp_path)
+    agent.model=Recording(request=req)
+    original=generalized.WRAP_UP_CALLS
+    generalized.WRAP_UP_CALLS=3   # reached right after start, search and retrieve
+    try: turn=agent.run(AgentResearchRequest(request=req))
+    finally: generalized.WRAP_UP_CALLS=original
+    assert offered[3]==['extract_cited_parameters']
+    assert turn.status=='needs_inputs' and turn.research_papers and turn.synthesis is not None
+
+
+def test_plain_text_ending_concludes_from_recorded_state(tmp_path):
+    # Live finding: a model that answered in prose instead of the decision schema failed the whole run.
+    class Prose(DrivingModel):
+        def _generate(self,messages,**kwargs):
+            done={m.name for m in messages if isinstance(m,ToolMessage)}
+            if 'extract_cited_parameters' in done:
+                return ChatResult(generations=[ChatGeneration(message=AIMessage(content='I think more data is needed.'))])
+            return super()._generate(messages,**kwargs)
+    agent,req=research_service(tmp_path)
+    agent.model=Prose(request=req)
+    turn=agent.run(AgentResearchRequest(request=req))
+    assert turn.status=='needs_inputs' and turn.result is None
+    assert turn.structure is not None and turn.synthesis is not None
+
+
+def test_transient_provider_errors_are_recognized_for_retry():
+    from app.agent.generalized import transient_provider_error
+    class ChunkedEncodingError(Exception): pass
+    assert transient_provider_error(ChunkedEncodingError('Response ended prematurely'))
+    assert transient_provider_error(Exception("[502] Bad Gateway {'_content': b'upstream request failed'}"))
+    assert not transient_provider_error(ValueError('Agent parameter must be an unchanged cited extraction'))
+
+
+def test_model_claiming_unsupported_for_a_supported_request_reports_recorded_state(tmp_path):
+    class ClaimsUnsupported(DrivingModel):
+        def _generate(self,messages,**kwargs):
+            done={m.name for m in messages if isinstance(m,ToolMessage)}
+            if 'extract_cited_parameters' in done:
+                return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':'AgentDecision','args':{'status':'unsupported'},'id':'final'}]))])
+            return super()._generate(messages,**kwargs)
+    agent,req=research_service(tmp_path)
+    agent.model=ClaimsUnsupported(request=req)
+    turn=agent.run(AgentResearchRequest(request=req))
+    assert turn.status=='needs_inputs' and turn.result is None and turn.structure is not None

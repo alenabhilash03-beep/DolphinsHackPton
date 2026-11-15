@@ -122,7 +122,7 @@ class LangChainParameterExtractor:
 
 def configured_extractor() -> LangChainParameterExtractor:
     from app.config import Settings
-    from langchain_nvidia_ai_endpoints import ChatNVIDIA
+    from app.llm import StreamingChatNVIDIA as ChatNVIDIA
     settings = Settings()
     if not settings.nvidia_api_key or not settings.nvidia_api_key.get_secret_value():
         raise RuntimeError('NVIDIA extraction credentials are not configured')

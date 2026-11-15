@@ -1,0 +1,701 @@
+{
+  "subphase": "5C.1b",
+  "provider": "NVIDIA Nemotron (live)",
+  "literature": "Europe PMC (live)",
+  "diagnosis": [
+    "Non-streaming completions longer than ~30 s fail with 502 \"upstream request failed\" (reproduced: 30.3 s non-streaming fails; same request streamed succeeds in 40.9 s).",
+    "The model sent pmid \"None\" (rejected) and repeated identical searches, exhausting the search budget.",
+    "Step-limit, missing-decision and deadline endings raised errors instead of reporting recorded state."
+  ],
+  "batches": [
+    {
+      "code": "search fixes only (pmid, duplicates, compact search results, graceful step limit)",
+      "runs": [
+        {
+          "name": "b-baseline-run1",
+          "status": "failed",
+          "elapsed_s": 86.4,
+          "category": "Exception",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "[502] Bad Gateway\n{'_content': b'upstream request failed', '_content_consumed': True, '_next': None, 'status_code': 502,",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "b-baseline-run2",
+          "status": "failed",
+          "elapsed_s": 70.2,
+          "category": "Exception",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "[502] Bad Gateway\n{'_content': b'upstream request failed', '_content_consumed': True, '_next': None, 'status_code': 502,",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "b-baseline-run3",
+          "status": "failed",
+          "elapsed_s": 111.7,
+          "category": "Exception",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "[502] Bad Gateway\n{'_content': b'upstream request failed', '_content_consumed': True, '_next': None, 'status_code': 502,",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "b-imatinib-run1",
+          "status": "failed",
+          "elapsed_s": 59.1,
+          "category": "Exception",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "[502] Bad Gateway\n{'_content': b'upstream request failed', '_content_consumed': True, '_next': None, 'status_code': 502,",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "b-imatinib-run2",
+          "status": "failed",
+          "elapsed_s": 82.5,
+          "category": "Exception",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "[502] Bad Gateway\n{'_content': b'upstream request failed', '_content_consumed': True, '_next': None, 'status_code': 502,",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "b-imatinib-run3",
+          "status": "failed",
+          "elapsed_s": 66.4,
+          "category": "Exception",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "[502] Bad Gateway\n{'_content': b'upstream request failed', '_content_consumed': True, '_next': None, 'status_code': 502,",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "b-primary-run1",
+          "status": "completed",
+          "elapsed_s": 92.7,
+          "category": null,
+          "result_id": "sim-262bc1bc1e17aefb3d6995d5",
+          "synthesis_status": "grounded",
+          "verdict": "mixed",
+          "structure": "1N8Z",
+          "reason": null,
+          "tool_calls": 14,
+          "papers": [
+            {
+              "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal ",
+              "extraction_status": "rejected",
+              "candidates": []
+            },
+            {
+              "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Targe",
+              "extraction_status": "candidates",
+              "candidates": [
+                "molecular_weight_g_mol = 100.0 kDa"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "b-primary-run2",
+          "status": "completed",
+          "elapsed_s": 84.1,
+          "category": null,
+          "result_id": "sim-262bc1bc1e17aefb3d6995d5",
+          "synthesis_status": "grounded",
+          "verdict": "mixed",
+          "structure": "1N8Z",
+          "reason": null,
+          "tool_calls": 13,
+          "papers": [
+            {
+              "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal ",
+              "extraction_status": "candidates",
+              "candidates": [
+                "pk.clearance_L_h = 0.127 L/day",
+                "pk.volume_L = 2.62 L"
+              ]
+            },
+            {
+              "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Targe",
+              "extraction_status": "no_values",
+              "candidates": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "+ bounded model context (compaction)",
+      "runs": [
+        {
+          "name": "c-baseline-run1",
+          "status": "failed",
+          "elapsed_s": 94.1,
+          "category": "Exception",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "[502] Bad Gateway\n{'_content': b'upstream request failed', '_content_consumed': True, '_next': None, 'status_code': 502,",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "c-baseline-run2",
+          "status": "failed",
+          "elapsed_s": 46.9,
+          "category": "Exception",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "[502] Bad Gateway\n{'_content': b'upstream request failed', '_content_consumed': True, '_next': None, 'status_code': 502,",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "c-baseline-run3",
+          "status": "failed",
+          "elapsed_s": 92.5,
+          "category": "Exception",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "[502] Bad Gateway\n{'_content': b'upstream request failed', '_content_consumed': True, '_next': None, 'status_code': 502,",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "c-imatinib-run1",
+          "status": "failed",
+          "elapsed_s": 84.8,
+          "category": "ProxyError",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "HTTPSConnectionPool(host='integrate.api.nvidia.com', port=443): Max retries exceeded with url: /v1/chat/completions (Cau",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "c-imatinib-run2",
+          "status": "needs_inputs",
+          "elapsed_s": 156.3,
+          "category": null,
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": null,
+          "tool_calls": 14,
+          "papers": [
+            {
+              "title": "Quantification of Binding of Small Molecules to Native Kinases by Flow Cytometry Reveals Divergence from Biochemical Aff",
+              "extraction_status": "candidates",
+              "candidates": [
+                "binding.affinity_nM = 1.1 nM",
+                "binding.affinity_nM = 21.0 nM"
+              ]
+            },
+            {
+              "title": "Pharmacokinetic profiling of imatinib in relation to CYP3A4 activity in leukaemia patients.",
+              "extraction_status": "rejected",
+              "candidates": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "+ streaming model responses",
+      "runs": [
+        {
+          "name": "d-baseline-run1",
+          "status": "failed",
+          "elapsed_s": 195.3,
+          "category": "TimeoutError",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "Agent deadline exhausted",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "d-baseline-run2",
+          "status": "needs_inputs",
+          "elapsed_s": 131.6,
+          "category": null,
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": null,
+          "tool_calls": 26,
+          "papers": [
+            {
+              "title": "From Payload-First Toward Dual-Mechanism Antibody-Drug Conjugates.",
+              "extraction_status": "rejected",
+              "candidates": []
+            },
+            {
+              "title": "A Head-to-Head Comparison of Two Antibodies for HER2 Pretargeted PET Imaging via Bioorthogonal Click Chemistry.",
+              "extraction_status": "candidates",
+              "candidates": [
+                "binding.affinity_nM = 11.46 nM",
+                "binding.affinity_nM = 14.29 nM"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "d-imatinib-run1",
+          "status": "failed",
+          "elapsed_s": 180.8,
+          "category": "TimeoutError",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "Agent deadline exhausted",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "d-imatinib-run2",
+          "status": "failed",
+          "elapsed_s": 200.1,
+          "category": "TimeoutError",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "Agent deadline exhausted",
+          "tool_calls": 0,
+          "papers": []
+        }
+      ]
+    },
+    {
+      "code": "+ wrap-up window (incomplete batch; superseded)",
+      "runs": [
+        {
+          "name": "e-baseline-run1",
+          "status": "failed",
+          "elapsed_s": 60.1,
+          "category": "ValueError",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "Retrieved sources must undergo cited parameter extraction before concluding",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "e-imatinib-run1",
+          "status": "needs_inputs",
+          "elapsed_s": 136.6,
+          "category": null,
+          "result_id": null,
+          "synthesis_status": "grounded",
+          "verdict": "undetermined",
+          "structure": "1IEP",
+          "reason": null,
+          "tool_calls": 20,
+          "papers": [
+            {
+              "title": "Quantification of Binding of Small Molecules to Native Kinases by Flow Cytometry Reveals Divergence from Biochemical Aff",
+              "extraction_status": "candidates",
+              "candidates": [
+                "binding.affinity_nM = 1.1 nM",
+                "binding.affinity_nM = 21.0 nM"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "+ extraction-first wrap-up",
+      "runs": [
+        {
+          "name": "f-baseline-run1",
+          "status": "failed",
+          "elapsed_s": 122.7,
+          "category": "ValidationError",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "1 validation error for AgentDecision\n  Input should be a valid dictionary or instance of AgentDecision [type=model_type,",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "f-baseline-run2",
+          "status": "failed",
+          "elapsed_s": 161.0,
+          "category": "ValidationError",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "1 validation error for AgentDecision\n  Input should be a valid dictionary or instance of AgentDecision [type=model_type,",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "f-baseline-run3",
+          "status": "needs_inputs",
+          "elapsed_s": 171.6,
+          "category": null,
+          "result_id": null,
+          "synthesis_status": "unavailable",
+          "verdict": null,
+          "structure": "1N8Z",
+          "reason": null,
+          "tool_calls": 25,
+          "papers": [
+            {
+              "title": "From Payload-First Toward Dual-Mechanism Antibody-Drug Conjugates.",
+              "extraction_status": "rejected",
+              "candidates": []
+            },
+            {
+              "title": "A Head-to-Head Comparison of Two Antibodies for HER2 Pretargeted PET Imaging via Bioorthogonal Click Chemistry.",
+              "extraction_status": "candidates",
+              "candidates": [
+                "binding.affinity_nM = 11.46 nM",
+                "binding.affinity_nM = 14.29 nM"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "f-imatinib-run1",
+          "status": "failed",
+          "elapsed_s": 180.4,
+          "category": "TimeoutError",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "Agent deadline exhausted",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "f-imatinib-run2",
+          "status": "failed",
+          "elapsed_s": 183.7,
+          "category": "TimeoutError",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "Agent deadline exhausted",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "f-imatinib-run3",
+          "status": "needs_inputs",
+          "elapsed_s": 160.1,
+          "category": null,
+          "result_id": null,
+          "synthesis_status": "rejected",
+          "verdict": null,
+          "structure": "1IEP",
+          "reason": null,
+          "tool_calls": 28,
+          "papers": [
+            {
+              "title": "Quantification of Binding of Small Molecules to Native Kinases by Flow Cytometry Reveals Divergence from Biochemical Aff",
+              "extraction_status": "candidates",
+              "candidates": [
+                "binding.affinity_nM = 21.0 nM",
+                "binding.affinity_nM = 1.1 nM"
+              ]
+            },
+            {
+              "title": "Target Attainment and Clinical and Biochemical Parameters Associated with the Pharmacokinetics of 12 Tyrosine Kinase Inh",
+              "extraction_status": "candidates",
+              "candidates": [
+                "body_mass_kg = 80.0 kg"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "f-primary-run1",
+          "status": "failed",
+          "elapsed_s": 14.2,
+          "category": "ChunkedEncodingError",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "Response ended prematurely",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "f-primary-run2",
+          "status": "completed",
+          "elapsed_s": 92.7,
+          "category": null,
+          "result_id": "sim-262bc1bc1e17aefb3d6995d5",
+          "synthesis_status": "grounded",
+          "verdict": "undetermined",
+          "structure": "1N8Z",
+          "reason": null,
+          "tool_calls": 14,
+          "papers": [
+            {
+              "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal ",
+              "extraction_status": "candidates",
+              "candidates": [
+                "pk.clearance_L_h = 0.127 L/day",
+                "pk.volume_L = 2.62 L"
+              ]
+            },
+            {
+              "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Targe",
+              "extraction_status": "rejected",
+              "candidates": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "+ transient retry and conclusions from recorded state (final code, except the invalid-unsupported fallback added after this batch)",
+      "runs": [
+        {
+          "name": "g-baseline-run1",
+          "status": "needs_inputs",
+          "elapsed_s": 160.7,
+          "category": null,
+          "result_id": null,
+          "synthesis_status": "rejected",
+          "verdict": null,
+          "structure": "1N8Z",
+          "reason": null,
+          "tool_calls": 14,
+          "papers": [
+            {
+              "title": "A Head-to-Head Comparison of Two Antibodies for HER2 Pretargeted PET Imaging via Bioorthogonal Click Chemistry.",
+              "extraction_status": "candidates",
+              "candidates": [
+                "binding.affinity_nM = 11.46 nM",
+                "binding.affinity_nM = 14.29 nM",
+                "pk.elimination_half_life_h = 106.0 h"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "g-baseline-run2",
+          "status": "needs_inputs",
+          "elapsed_s": 184.2,
+          "category": null,
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": null,
+          "tool_calls": 18,
+          "papers": [
+            {
+              "title": "A Head-to-Head Comparison of Two Antibodies for HER2 Pretargeted PET Imaging via Bioorthogonal Click Chemistry.",
+              "extraction_status": "candidates",
+              "candidates": [
+                "binding.affinity_nM = 11.46 nM"
+              ]
+            },
+            {
+              "title": "Mechanistic PBPK Modeling of Antibody-Drug Conjugates: Integration of Antibody Disposition, Linker Deconjugation, and Pa",
+              "extraction_status": "no_values",
+              "candidates": []
+            }
+          ]
+        },
+        {
+          "name": "g-followup-run1",
+          "status": "completed",
+          "elapsed_s": 22.9,
+          "category": null,
+          "result_id": "sim-a82cc676db1fc888c839293b",
+          "synthesis_status": "grounded",
+          "verdict": "undetermined",
+          "structure": null,
+          "reason": null,
+          "tool_calls": 5,
+          "papers": []
+        },
+        {
+          "name": "g-imatinib-run1",
+          "status": "needs_inputs",
+          "elapsed_s": 169.2,
+          "category": null,
+          "result_id": null,
+          "synthesis_status": "unavailable",
+          "verdict": null,
+          "structure": "1IEP",
+          "reason": null,
+          "tool_calls": 22,
+          "papers": [
+            {
+              "title": "Quantification of Binding of Small Molecules to Native Kinases by Flow Cytometry Reveals Divergence from Biochemical Aff",
+              "extraction_status": "candidates",
+              "candidates": [
+                "binding.affinity_nM = 1.1 nM",
+                "binding.affinity_nM = 21.0 nM"
+              ]
+            },
+            {
+              "title": "Pharmacokinetic profiling of imatinib in relation to CYP3A4 activity in leukaemia patients.",
+              "extraction_status": "unavailable",
+              "candidates": []
+            },
+            {
+              "title": "Target Attainment and Clinical and Biochemical Parameters Associated with the Pharmacokinetics of 12 Tyrosine Kinase Inh",
+              "extraction_status": "rejected",
+              "candidates": []
+            }
+          ]
+        },
+        {
+          "name": "g-imatinib-run2",
+          "status": "needs_inputs",
+          "elapsed_s": 168.8,
+          "category": null,
+          "result_id": null,
+          "synthesis_status": "rejected",
+          "verdict": null,
+          "structure": "1IEP",
+          "reason": null,
+          "tool_calls": 16,
+          "papers": [
+            {
+              "title": "Quantification of Binding of Small Molecules to Native Kinases by Flow Cytometry Reveals Divergence from Biochemical Aff",
+              "extraction_status": "candidates",
+              "candidates": [
+                "binding.affinity_nM = 1.1 nM",
+                "binding.affinity_nM = 21.0 nM"
+              ]
+            },
+            {
+              "title": "Target Attainment and Clinical and Biochemical Parameters Associated with the Pharmacokinetics of 12 Tyrosine Kinase Inh",
+              "extraction_status": "rejected",
+              "candidates": []
+            },
+            {
+              "title": "Pharmacokinetic profiling of imatinib in relation to CYP3A4 activity in leukaemia patients.",
+              "extraction_status": "no_values",
+              "candidates": []
+            },
+            {
+              "title": "Central nervous system penetration of imatinib in acute lymphoblastic leukemia: Pharmacokinetic analysis and clinical im",
+              "extraction_status": "rejected",
+              "candidates": []
+            }
+          ]
+        },
+        {
+          "name": "g-primary-run1",
+          "status": "completed",
+          "elapsed_s": 131.0,
+          "category": null,
+          "result_id": "sim-262bc1bc1e17aefb3d6995d5",
+          "synthesis_status": "grounded",
+          "verdict": "mixed",
+          "structure": "1N8Z",
+          "reason": null,
+          "tool_calls": 15,
+          "papers": [
+            {
+              "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal ",
+              "extraction_status": "candidates",
+              "candidates": [
+                "pk.clearance_L_h = 0.127 L/day",
+                "pk.volume_L = 2.62 L"
+              ]
+            },
+            {
+              "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Targe",
+              "extraction_status": "candidates",
+              "candidates": [
+                "molecular_weight_g_mol = 100.0 kDa"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "g-primary-run2",
+          "status": "failed",
+          "elapsed_s": 182.5,
+          "category": "ValueError",
+          "result_id": null,
+          "synthesis_status": null,
+          "verdict": null,
+          "structure": null,
+          "reason": "Unsupported status requires deterministic model assessment",
+          "tool_calls": 0,
+          "papers": []
+        },
+        {
+          "name": "g-primary-run3",
+          "status": "completed",
+          "elapsed_s": 83.7,
+          "category": null,
+          "result_id": "sim-262bc1bc1e17aefb3d6995d5",
+          "synthesis_status": "grounded",
+          "verdict": "mixed",
+          "structure": "1N8Z",
+          "reason": null,
+          "tool_calls": 14,
+          "papers": [
+            {
+              "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal ",
+              "extraction_status": "candidates",
+              "candidates": [
+                "pk.clearance_L_h = 0.127 L/day",
+                "pk.volume_L = 2.62 L"
+              ]
+            },
+            {
+              "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Targe",
+              "extraction_status": "rejected",
+              "candidates": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

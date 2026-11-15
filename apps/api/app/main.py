@@ -1,4 +1,6 @@
 import asyncio
+import logging
+from time import monotonic
 from contextlib import asynccontextmanager
 
 from fastapi import Body, Depends, FastAPI, Header, HTTPException, Query
@@ -7,6 +9,8 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.responses import Response, StreamingResponse
 
 from app.config import Settings, ROOT
+
+log = logging.getLogger("hypothesim.api")
 from app.agent.generalized import GeneralizedAgentService
 from app.research.agent_jobs import AgentQueue, AgentJob
 from app.schemas.generalized_agent import AgentResearchRequest, AgentEditRequest, AgentTurn
@@ -252,18 +256,31 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
         return Response(pdf_cache[article.key], media_type="application/pdf",
                         headers={"Content-Disposition": f'inline; filename="{article.key}.pdf"', "Cache-Control": "private, max-age=3600"})
 
+    # Reading and asking about one open-access paper needs no account (the reader is public); a shared cap on
+    # signed-out questions protects the provider key. Signed-in researchers are not capped.
+    chat_window: list[float] = []
+    ANON_CHAT_LIMIT, ANON_CHAT_WINDOW_S = 60, 600
+
     @api.post("/api/papers/{paper_key}/chat", response_model=PaperChatAnswer, tags=["Paper reader"])
-    def paper_chat(paper_key: str, request: PaperChatRequest, _user: User = Depends(signed_in)) -> PaperChatAnswer:
+    def paper_chat(paper_key: str, request: PaperChatRequest, user: User | None = Depends(viewer)) -> PaperChatAnswer:
         """Answer a question about one article with Nemotron, grounded only in that article's text."""
         if request.messages[-1].role != "user":
             raise HTTPException(status_code=422, detail="The last message must be the user's question.")
+        if user is None:
+            now = monotonic()
+            chat_window[:] = [t for t in chat_window if now - t < ANON_CHAT_WINDOW_S]
+            if len(chat_window) >= ANON_CHAT_LIMIT:
+                raise HTTPException(status_code=429, detail="Many people are asking questions right now. Sign in with Google, or try again in a few minutes.")
+            chat_window.append(now)
         article = read_paper(paper_key)
         responder = api.state.paper_chat
         if responder is None:
             try: responder = configured_paper_chat(config)
-            except RuntimeError as exc: raise HTTPException(status_code=503, detail="Connect an NVIDIA key to chat with papers.") from exc
+            except RuntimeError as exc: raise HTTPException(status_code=503, detail="The NVIDIA key is not configured on this server.") from exc
         try: answer = responder(article, request.messages)
-        except Exception as exc: raise HTTPException(status_code=503, detail="Nemotron did not answer in time. Please ask again.") from exc
+        except Exception as exc:
+            log.warning("paper chat failed for %s: %s", article.key, type(exc).__name__)
+            raise HTTPException(status_code=503, detail="Nemotron could not answer just now. Please ask again.") from exc
         return PaperChatAnswer(answer=answer, content_kind=article.content_kind, context_truncated=article_context(article)[1])
 
     @api.get("/api/auth/me", tags=["Community"])

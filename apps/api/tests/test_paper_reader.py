@@ -63,7 +63,7 @@ def test_seeded_demo_papers_render_without_network():
     assert article.pmcid == 'PMC6394489' and any('0.127' in p for s in article.sections for p in s.paragraphs)
 
 
-def test_api_serves_text_and_pdf_signed_out_but_chat_needs_sign_in(tmp_path):
+def test_api_serves_text_pdf_and_chat_signed_out_with_a_shared_cap(tmp_path):
     settings = Settings(_env_file=None, auth_mode='supabase', supabase_url='https://example.supabase.co', supabase_anon_key='anon',
                         workspaces_dir=tmp_path / 'ws', preparation_db_path=tmp_path / 'p.sqlite3')
     api = create_app(settings)
@@ -78,9 +78,14 @@ def test_api_serves_text_and_pdf_signed_out_but_chat_needs_sign_in(tmp_path):
     assert pdf.status_code == 200 and pdf.headers['content-type'] == 'application/pdf' and pdf.content.startswith(b'%PDF-')
     assert client.get('/api/papers/not-a-paper').status_code == 422
     question = {'messages': [{'role': 'user', 'content': 'What was the clearance?'}]}
-    assert client.post('/api/papers/PMC123456/chat', json=question).status_code == 401
+    signed_out = client.post('/api/papers/PMC123456/chat', json=question)
+    assert signed_out.status_code == 200 and signed_out.json()['answer'] == 'Results: "0.127 L/day".'
     answer = client.post('/api/papers/PMC123456/chat', json=question, headers={'Authorization': 'Bearer ' + token})
     assert answer.status_code == 200 and answer.json() == {'answer': 'Results: "0.127 L/day".', 'content_kind': 'full_text', 'context_truncated': False}
-    assert seen == [('PMC123456', ['What was the clearance?'])]
+    assert seen == [('PMC123456', ['What was the clearance?'])] * 2
+    # Signed-out questions share a cap that protects the provider key; signed-in researchers are not capped.
+    for _ in range(59): client.post('/api/papers/PMC123456/chat', json=question)
+    assert client.post('/api/papers/PMC123456/chat', json=question).status_code == 429
+    assert client.post('/api/papers/PMC123456/chat', json=question, headers={'Authorization': 'Bearer ' + token}).status_code == 200
     ends_with_assistant = {'messages': [{'role': 'user', 'content': 'q'}, {'role': 'assistant', 'content': 'a'}]}
     assert client.post('/api/papers/PMC123456/chat', json=ends_with_assistant, headers={'Authorization': 'Bearer ' + token}).status_code == 422

@@ -23,7 +23,7 @@ KEY = re.compile(r'(?:PMC([0-9]{1,12})|PMID([0-9]{6,10}))')
 FONTS = Path(__file__).resolve().parents[1] / 'assets' / 'fonts'
 SEED_DIR = Path(__file__).resolve().parents[4] / 'data' / 'papers'
 MAX_ARTICLE_CHARS = 400_000
-MAX_CONTEXT_CHARS = 90_000
+MAX_CONTEXT_CHARS = 60_000
 
 
 class ArticleSection(BaseModel):
@@ -371,9 +371,12 @@ class LangChainPaperChat:
 
     def __call__(self, article: PaperArticle, messages: list[PaperChatMessage]) -> str:
         context, _ = article_context(article)
-        prompt = [('system', f'{SYSTEM}\n\n<article>\n{context}\n</article>')]
-        prompt += [('human' if message.role == 'user' else 'ai', message.content) for message in messages[-12:]]
-        response = self.model.invoke(prompt)
+        turns = [('human' if message.role == 'user' else 'ai', message.content) for message in messages[-12:]]
+        try:
+            response = self.model.invoke([('system', f'{SYSTEM}\n\n<article>\n{context}\n</article>'), *turns])
+        except Exception:
+            # One retry with a shorter excerpt: long articles or a busy endpoint can fail the first request.
+            response = self.model.invoke([('system', f'{SYSTEM}\n\n<article>\n{context[:25_000]}\n</article>'), *turns[-4:]])
         text = response.content if isinstance(response.content, str) else ''.join(part.get('text', '') for part in response.content if isinstance(part, dict))
         text = re.sub(r'<think>.*?</think>', '', text, flags=re.S).strip()
         if not text:

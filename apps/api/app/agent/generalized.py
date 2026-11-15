@@ -184,6 +184,10 @@ class GeneralizedAgentService:
         self.synthesizer = synthesizer
         self.structures = StructureService()
         self.turns = AgentTurnStore(self.preparation.store)
+        self.replay = None
+        if self.settings.demo_replay:
+            from app.agent.demo_replay import DemoReplay
+            self.replay = DemoReplay()
         from app.research.demo import load_demo
         try: self.turns.seed(load_demo().result, origin='saved_demo', label='Saved reviewed demo: trastuzumab half-life ×3 versus affinity ×10')
         except (OSError, ValueError): pass  # A missing saved demo must not prevent independent research.
@@ -219,14 +223,26 @@ class GeneralizedAgentService:
         started = execution.active[None][1]
         pending_terminal = None
         try:
-            turn = self._run(request, edit=edit, require_remote_trace=require_remote_trace,
-                on_progress=on_progress, execution=execution)
+            # Replays stand in for the production model only; an injected model (tests, evaluation) always runs.
+            replay = self.replay.match(request, edit) if self.replay and self.model is None else None
+            branch = bool(edit and request.branch)
+            if replay:
+                # Demo mode: re-emit the recorded run at its recorded pace, capped for the presentation.
+                cap = self.settings.demo_replay_edit_s if edit else self.settings.demo_replay_research_s
+                self.replay.pace = min(1.0, cap / replay.duration_s) if replay.duration_s else 0.0
+                turn = self.replay.run(replay, execution, on_progress)
+                if edit:
+                    _, child = self.turns.result(request.base_result_id)
+                    branch = branch or child is not None  # rehearsing the follow-up twice must never fail the demo
+            else:
+                turn = self._run(request, edit=edit, require_remote_trace=require_remote_trace,
+                    on_progress=on_progress, execution=execution)
             pending_terminal = execution.finish(None, 'succeeded' if turn.status == 'completed' else turn.status,
                 ExecutionSummary(outcome=turn.status), notify=False)
             turn.execution_run_id = execution.run_id
             turn.execution_events = list(execution.events)
             proposal = turn.applied_proposal
-            saved = self.turns.save(turn, branch=bool(edit and request.branch),
+            saved = self.turns.save(turn, branch=branch,
                 origin='proposal' if proposal else 'agent_edit' if edit else 'research',
                 label=proposal.title if proposal else turn.original_text)
         except Exception as exc:

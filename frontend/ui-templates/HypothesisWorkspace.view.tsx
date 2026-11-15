@@ -31,7 +31,7 @@
             <SignInPrompt action="run the research agent"/>
             <button className="primary-button" disabled={!!busy||!researchAvailable||!backendAvailable||!text.trim()||!drug.trim()}>{busy?'Researching…':'Research and simulate'}<span aria-hidden="true">↗</span></button>
           </form>
-
+          <div className="agent-suggestions demo-example"><span>Example</span><button type="button" disabled={!!busy} onClick={()=>{setText(PRIMARY);setDrug("trastuzumab");setTarget("HER2");setRoute("iv_infusion");}}>Use the trastuzumab example<span aria-hidden="true">↗</span></button></div>
         </div>
         {(record||turn?.questions?.length||staleExplanation)?<section className="agent-continuation" aria-label="Research continuation">{turn?.questions?.length?<><h3>What is needed next</h3><ul>{turn.questions.map(question=><li key={question}>{question}</li>)}</ul></>:null}{record&&<PreparationAnswers key={`${record.preparation.preparation_id}:${record.preparation.revision}`} record={record} busy={!!busy||!researchAvailable} onContinue={continueResearch} onReload={()=>void reloadPreparation()}/>} {staleExplanation&&<p className="scope-note">The previous explanation describes an earlier result. Ask the agent to interpret the updated comparison.</p>}</section>:null}
         {(busy||job||message)&&<details className="agent-activity" open={!!busy||undefined}><summary>Agent activity<span>{busy?'Running':job?.status==='completed'?'Completed':job?.status==='failed'?'Needs attention':'No active run'}</span></summary><InvestigationPanel job={job} submitting={submitting} saved={saved} displayedResult={shown} config={visible} message={message} viewer={structure} onFocusMeasurement={focusMeasurement}/></details>}

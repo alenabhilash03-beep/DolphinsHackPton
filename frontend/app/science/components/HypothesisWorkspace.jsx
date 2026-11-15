@@ -855,139 +855,166 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                                     }) : null
                                 ]
                             }),
-                            /*#__PURE__*/ _jsx("div", {
+                            /*#__PURE__*/ _jsxs("div", {
                                 id: "agent-panel-research",
                                 role: prepared ? "tabpanel" : undefined,
                                 "aria-labelledby": prepared ? "agent-tab-research" : undefined,
                                 hidden: !!prepared && agentMode !== 'research',
-                                children: /*#__PURE__*/ _jsxs("form", {
-                                    onSubmit: research,
-                                    className: "agent-composer",
-                                    children: [
-                                        /*#__PURE__*/ _jsx("label", {
-                                            htmlFor: "scientific-hypothesis",
-                                            children: "Hypothesis"
-                                        }),
-                                        /*#__PURE__*/ _jsx("textarea", {
-                                            id: "scientific-hypothesis",
-                                            rows: 5,
-                                            placeholder: "What do you predict, and which conditions would you like to compare?",
-                                            required: true,
-                                            maxLength: 12000,
-                                            value: text,
-                                            onChange: (event)=>setText(event.target.value),
-                                            disabled: !!busy
-                                        }),
-                                        /*#__PURE__*/ _jsxs("fieldset", {
-                                            className: "hypothesis-system",
-                                            disabled: !!busy,
-                                            children: [
-                                                /*#__PURE__*/ _jsx("legend", {
-                                                    children: "Biological system"
-                                                }),
-                                                /*#__PURE__*/ _jsxs("div", {
-                                                    className: "hypothesis-system-names",
-                                                    children: [
-                                                        /*#__PURE__*/ _jsxs("label", {
-                                                            children: [
-                                                                "Drug or antibody",
-                                                                /*#__PURE__*/ _jsx("input", {
-                                                                    placeholder: "Drug name",
-                                                                    required: true,
-                                                                    maxLength: 200,
-                                                                    value: drug,
-                                                                    onChange: (event)=>setDrug(event.target.value)
-                                                                })
-                                                            ]
-                                                        }),
-                                                        /*#__PURE__*/ _jsxs("label", {
-                                                            children: [
-                                                                "Target ",
-                                                                /*#__PURE__*/ _jsx("span", {
-                                                                    className: "field-optional",
-                                                                    children: "(optional)"
-                                                                }),
-                                                                /*#__PURE__*/ _jsx("input", {
-                                                                    placeholder: "Target name",
-                                                                    value: target,
-                                                                    onChange: (event)=>setTarget(event.target.value)
-                                                                })
-                                                            ]
-                                                        })
-                                                    ]
-                                                }),
-                                                /*#__PURE__*/ _jsxs("details", {
-                                                    className: "agent-system-fields",
-                                                    children: [
-                                                        /*#__PURE__*/ _jsx("summary", {
-                                                            children: "Experimental options"
-                                                        }),
-                                                        /*#__PURE__*/ _jsxs("label", {
-                                                            children: [
-                                                                "Administration route",
-                                                                /*#__PURE__*/ _jsxs("select", {
-                                                                    value: route,
-                                                                    onChange: (event)=>setRoute(event.target.value),
-                                                                    children: [
-                                                                        /*#__PURE__*/ _jsx("option", {
-                                                                            value: "",
-                                                                            children: "Ask the agent"
-                                                                        }),
-                                                                        /*#__PURE__*/ _jsx("option", {
-                                                                            value: "iv_infusion",
-                                                                            children: "IV infusion"
-                                                                        }),
-                                                                        /*#__PURE__*/ _jsx("option", {
-                                                                            value: "hypothetical_iv_bolus",
-                                                                            children: "Hypothetical IV bolus"
-                                                                        }),
-                                                                        /*#__PURE__*/ _jsx("option", {
-                                                                            value: "oral",
-                                                                            children: "Oral · model assessment"
-                                                                        }),
-                                                                        /*#__PURE__*/ _jsx("option", {
-                                                                            value: "subcutaneous",
-                                                                            children: "Subcutaneous · model assessment"
-                                                                        })
-                                                                    ]
-                                                                })
-                                                            ]
-                                                        }),
-                                                        /*#__PURE__*/ _jsxs("label", {
-                                                            className: "agent-checkbox",
-                                                            children: [
-                                                                /*#__PURE__*/ _jsx("input", {
-                                                                    type: "checkbox",
-                                                                    checked: baseline,
-                                                                    onChange: (event)=>setBaseline(event.target.checked)
-                                                                }),
-                                                                "Prepare a baseline with compatible evidence."
-                                                            ]
-                                                        })
-                                                    ]
-                                                })
-                                            ]
-                                        }),
-                                        researchRouteNotice(drug, route) && /*#__PURE__*/ _jsx("p", {
-                                            className: "scope-note",
-                                            children: researchRouteNotice(drug, route)
-                                        }),
-                                        /*#__PURE__*/ _jsx(SignInPrompt, {
-                                            action: "run the research agent"
-                                        }),
-                                        /*#__PURE__*/ _jsxs("button", {
-                                            className: "primary-button",
-                                            disabled: !!busy || !researchAvailable || !backendAvailable || !text.trim() || !drug.trim(),
-                                            children: [
-                                                busy ? 'Researching…' : 'Research and simulate',
-                                                /*#__PURE__*/ _jsx("span", {
-                                                    "aria-hidden": "true",
-                                                    children: "↗"
-                                                })
-                                            ]
-                                        })
-                                    ]
-                                })
+                                children: [
+                                    /*#__PURE__*/ _jsxs("form", {
+                                        onSubmit: research,
+                                        className: "agent-composer",
+                                        children: [
+                                            /*#__PURE__*/ _jsx("label", {
+                                                htmlFor: "scientific-hypothesis",
+                                                children: "Hypothesis"
+                                            }),
+                                            /*#__PURE__*/ _jsx("textarea", {
+                                                id: "scientific-hypothesis",
+                                                rows: 5,
+                                                placeholder: "What do you predict, and which conditions would you like to compare?",
+                                                required: true,
+                                                maxLength: 12000,
+                                                value: text,
+                                                onChange: (event)=>setText(event.target.value),
+                                                disabled: !!busy
+                                            }),
+                                            /*#__PURE__*/ _jsxs("fieldset", {
+                                                className: "hypothesis-system",
+                                                disabled: !!busy,
+                                                children: [
+                                                    /*#__PURE__*/ _jsx("legend", {
+                                                        children: "Biological system"
+                                                    }),
+                                                    /*#__PURE__*/ _jsxs("div", {
+                                                        className: "hypothesis-system-names",
+                                                        children: [
+                                                            /*#__PURE__*/ _jsxs("label", {
+                                                                children: [
+                                                                    "Drug or antibody",
+                                                                    /*#__PURE__*/ _jsx("input", {
+                                                                        placeholder: "Drug name",
+                                                                        required: true,
+                                                                        maxLength: 200,
+                                                                        value: drug,
+                                                                        onChange: (event)=>setDrug(event.target.value)
+                                                                    })
+                                                                ]
+                                                            }),
+                                                            /*#__PURE__*/ _jsxs("label", {
+                                                                children: [
+                                                                    "Target ",
+                                                                    /*#__PURE__*/ _jsx("span", {
+                                                                        className: "field-optional",
+                                                                        children: "(optional)"
+                                                                    }),
+                                                                    /*#__PURE__*/ _jsx("input", {
+                                                                        placeholder: "Target name",
+                                                                        value: target,
+                                                                        onChange: (event)=>setTarget(event.target.value)
+                                                                    })
+                                                                ]
+                                                            })
+                                                        ]
+                                                    }),
+                                                    /*#__PURE__*/ _jsxs("details", {
+                                                        className: "agent-system-fields",
+                                                        children: [
+                                                            /*#__PURE__*/ _jsx("summary", {
+                                                                children: "Experimental options"
+                                                            }),
+                                                            /*#__PURE__*/ _jsxs("label", {
+                                                                children: [
+                                                                    "Administration route",
+                                                                    /*#__PURE__*/ _jsxs("select", {
+                                                                        value: route,
+                                                                        onChange: (event)=>setRoute(event.target.value),
+                                                                        children: [
+                                                                            /*#__PURE__*/ _jsx("option", {
+                                                                                value: "",
+                                                                                children: "Ask the agent"
+                                                                            }),
+                                                                            /*#__PURE__*/ _jsx("option", {
+                                                                                value: "iv_infusion",
+                                                                                children: "IV infusion"
+                                                                            }),
+                                                                            /*#__PURE__*/ _jsx("option", {
+                                                                                value: "hypothetical_iv_bolus",
+                                                                                children: "Hypothetical IV bolus"
+                                                                            }),
+                                                                            /*#__PURE__*/ _jsx("option", {
+                                                                                value: "oral",
+                                                                                children: "Oral · model assessment"
+                                                                            }),
+                                                                            /*#__PURE__*/ _jsx("option", {
+                                                                                value: "subcutaneous",
+                                                                                children: "Subcutaneous · model assessment"
+                                                                            })
+                                                                        ]
+                                                                    })
+                                                                ]
+                                                            }),
+                                                            /*#__PURE__*/ _jsxs("label", {
+                                                                className: "agent-checkbox",
+                                                                children: [
+                                                                    /*#__PURE__*/ _jsx("input", {
+                                                                        type: "checkbox",
+                                                                        checked: baseline,
+                                                                        onChange: (event)=>setBaseline(event.target.checked)
+                                                                    }),
+                                                                    "Prepare a baseline with compatible evidence."
+                                                                ]
+                                                            })
+                                                        ]
+                                                    })
+                                                ]
+                                            }),
+                                            researchRouteNotice(drug, route) && /*#__PURE__*/ _jsx("p", {
+                                                className: "scope-note",
+                                                children: researchRouteNotice(drug, route)
+                                            }),
+                                            /*#__PURE__*/ _jsx(SignInPrompt, {
+                                                action: "run the research agent"
+                                            }),
+                                            /*#__PURE__*/ _jsxs("button", {
+                                                className: "primary-button",
+                                                disabled: !!busy || !researchAvailable || !backendAvailable || !text.trim() || !drug.trim(),
+                                                children: [
+                                                    busy ? 'Researching…' : 'Research and simulate',
+                                                    /*#__PURE__*/ _jsx("span", {
+                                                        "aria-hidden": "true",
+                                                        children: "↗"
+                                                    })
+                                                ]
+                                            })
+                                        ]
+                                    }),
+                                    /*#__PURE__*/ _jsxs("div", {
+                                        className: "agent-suggestions demo-example",
+                                        children: [
+                                            /*#__PURE__*/ _jsx("span", {
+                                                children: "Example"
+                                            }),
+                                            /*#__PURE__*/ _jsxs("button", {
+                                                type: "button",
+                                                disabled: !!busy,
+                                                onClick: ()=>{
+                                                    setText(PRIMARY);
+                                                    setDrug("trastuzumab");
+                                                    setTarget("HER2");
+                                                    setRoute("iv_infusion");
+                                                },
+                                                children: [
+                                                    "Use the trastuzumab example",
+                                                    /*#__PURE__*/ _jsx("span", {
+                                                        "aria-hidden": "true",
+                                                        children: "↗"
+                                                    })
+                                                ]
+                                            })
+                                        ]
+                                    })
+                                ]
                             }),
                             record || turn?.questions?.length || staleExplanation ? /*#__PURE__*/ _jsxs("section", {
                                 className: "agent-continuation",

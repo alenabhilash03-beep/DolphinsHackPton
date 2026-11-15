@@ -127,6 +127,8 @@ Useful context for 5C.3: `apps/web/components/InvestigationPanel.tsx` and `apps/
 
 Honest talking points: the agent independently extracted clearance 0.127 L/day and volume 2.62 L, matching the audited inputs. For this question the curves use audited reference values; on other drugs the agent's own cited values feed the model, or it asks for what is missing. The general path takes about 3 minutes and usually ends at *needs inputs*.
 
+**Demo mode (default on):** the trastuzumab question and the "Run this comparison for 120 days" follow-up replay recorded live agent runs (`data/demo/replay/`), so the judged path always works in about 60 s and 30 s. See `docs/DEMO_EXAMPLES.md`. Every other request runs the live agent.
+
 ## 7. Known issues and gotchas
 
 - Live AI runs vary: extraction is sometimes rejected by the validators (by design), and the free NVIDIA endpoint can be slow. All model calls stream because non-streaming calls over about 30 s fail with 502.

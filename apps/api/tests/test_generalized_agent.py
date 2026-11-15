@@ -21,7 +21,7 @@ from app.research.source_documents import SourceDocumentService
 from app.research.europe_pmc import EuropePMCClient, LiteratureSearch
 from app.config import Settings
 
-SETTINGS = Settings(_env_file=None, langsmith_tracing=False, nvidia_api_key=None, langsmith_api_key=None)
+SETTINGS = Settings(_env_file=None, langsmith_tracing=False, nvidia_api_key=None, langsmith_api_key=None, demo_replay=False)  # live-agent tests; replay has its own
 
 class DrivingModel(BaseChatModel):
     mode: str = 'research'

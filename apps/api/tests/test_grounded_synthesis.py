@@ -416,14 +416,41 @@ def test_censored_durations_cannot_decide_a_how_long_question():
     rejected, seen = run(g, answered('supported'), answered('not_supported'))
     assert rejected.status == 'rejected' and 'cut off by the observation window' in seen[1]['previous_validation_errors'][0]
     # The model is told this solver fact before it writes, with scenario labels rather than identifiers.
-    assert 'cut off by the observation window' in seen[0]['server_rules_for_this_answer'][0]
-    assert '_x3' not in seen[0]['server_rules_for_this_answer'][0]
+    facts, censoring = seen[0]['server_rules_for_this_answer']
+    assert facts.startswith('Threshold outcomes of THIS result:') and 'cut off by the observation window' in censoring
+    assert '_x3' not in facts + censoring
     assert run(g, answered('mixed'))[0].status == 'grounded'
     assert run(g, answered('undetermined'))[0].status == 'grounded'
     # A question that is not about duration may still be decided from solver fields.
     other = grounding(text='Does tripling the half-life raise endpoint occupancy more than improving affinity tenfold?', documents=[])
     accepted, seen = run(other, answered('supported'))
-    assert accepted.status == 'grounded' and seen[0]['server_rules_for_this_answer'] == []
+    assert accepted.status == 'grounded' and len(seen[0]['server_rules_for_this_answer']) == 1   # threshold outcomes only
+
+
+def test_current_threshold_outcomes_are_stated_and_a_false_all_above_summary_is_refused():
+    # At a 95% threshold only the longer half-life scenario is still above when the window ends.
+    base = load_demo().result
+    stricter = run_simulation(SimulationRequest(experiment=adjust_experiment(ControlAdjustment(experiment=base.configuration, scenario_id=None,
+        field='occupancy_threshold', value=0.95, client_revision=1)), client_revision=1, output_points=600))
+    assert [s.metrics.threshold.status for s in stricter.scenarios] == ['crossed_within_window', 'still_above_at_horizon', 'crossed_within_window']
+    g = grounding(result=stricter, documents=[], text='Would tripling the half-life maintain occupancy longer than improving affinity tenfold?')
+    refs = [{'scenario_id': s.scenario_id, 'metric': 'threshold_status'} for s in stricter.scenarios[1:]]
+    def answered(statement, verdict='supported'):
+        return proposal(g, evidence_findings=[], answer={'verdict': verdict, 'metric_refs': refs, 'statement': statement})
+    wrong = answered('Both scenarios remain above the threshold at the horizon, so duration is censored.', 'undetermined')
+    right = answered('The longer half-life scenario is still above the threshold when the window ends, while the stronger affinity scenario falls below it.')
+    rejected, seen = run(g, wrong, wrong)
+    assert rejected.status == 'rejected' and 'at least one compared scenario does not' in seen[1]['previous_validation_errors'][0]
+    (facts,) = seen[0]['server_rules_for_this_answer']
+    assert 'Threefold longer half-life is still above the threshold when the window ends' in facts
+    assert 'stays above the threshold longer than Baseline, Tenfold stronger affinity' in facts and 'shown by the simulation' in facts
+    # With one scenario still above and the other below, the ordering is shown, so a determined verdict is allowed.
+    accepted, _ = run(g, right)
+    assert accepted.status == 'grounded' and accepted.answer.verdict == 'supported'
+    # The same sentence is fine when it is true.
+    true_case = grounding(documents=[], text='Does occupancy stay high?')
+    both = proposal(true_case, evidence_findings=[], answer={'verdict': 'undetermined', 'statement': 'Both alternatives remain above the threshold at the horizon.'})
+    assert run(true_case, both)[0].status == 'grounded'
 
 
 def test_after_one_corrective_retry_invalid_items_are_omitted_and_the_valid_answer_is_kept():

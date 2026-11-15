@@ -8,10 +8,10 @@ export function proposalMatches(proposal: ExperimentProposal, shown: SimulationR
 }
 
 /** Only the proposal ID is sent; the server re-derives and applies the changes. The text is a readable label. */
-export function proposalRequest(proposal: ExperimentProposal, shown: SimulationResult | null): AgentEditRequest {
+export function proposalRequest(proposal: ExperimentProposal, shown: SimulationResult | null, branch = false): AgentEditRequest {
   if (!shown || !proposalMatches(proposal, shown)) throw new Error("This proposal belongs to a different result. Reload the proposals for the displayed curves.");
   return { base_result_id: shown.result_id, base_experiment_id: shown.configuration.experiment_id, base_configuration_sha256: shown.configuration_hash,
-    client_revision: shown.client_revision + 1, selected_scenario_id: null, text: proposal.edit_text, proposal_id: proposal.proposal_id };
+    client_revision: shown.client_revision + 1, selected_scenario_id: null, text: proposal.edit_text, proposal_id: proposal.proposal_id, branch };
 }
 
 export const changeText = (change: ExperimentProposal["changes"][number]): string =>

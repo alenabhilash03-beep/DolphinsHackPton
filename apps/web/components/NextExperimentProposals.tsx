@@ -25,9 +25,8 @@ export function NextExperimentProposals({ shown, busy, onRun }: { shown: Simulat
       <span>Derived from this result's solver values · exact changes shown before anything runs</span></div>
     {failed ? <p className="answer-access-note">Follow-up proposals are unavailable for these curves right now. You can still change the experiment in words or with the controls.</p>
       : !set ? <p className="answer-access-note" role="status">Checking this result for follow-up experiments…</p>
-      : set.status === "superseded" ? <p className="answer-access-note">{set.note}</p>
       : !proposals.length ? <p className="answer-access-note">No follow-up experiment is suggested for this result. You can still change the experiment in words or with the controls.</p>
-      : <ul className="proposal-cards">{proposals.map(proposal => <li key={proposal.proposal_id}>
+      : <>{set.status === "superseded" && <p className="history-branch" role="status">{set.note}</p>}<ul className="proposal-cards">{proposals.map(proposal => <li key={proposal.proposal_id}>
         <h3>{proposal.title}</h3>
         <p className="proposal-question"><strong>Tests:</strong> {proposal.question_tested}</p>
         <p><strong>Because:</strong> {proposal.observation} {proposal.rationale}</p>
@@ -35,6 +34,6 @@ export function NextExperimentProposals({ shown, busy, onRun }: { shown: Simulat
         <p className="proposal-scope">{proposal.scope_note} Base result {proposal.base_result_id}.</p>
         <button type="button" className="primary-button" disabled={busy} onClick={() => onRun(proposal)}>Run this experiment →</button>
         <small>Same as typing: “{proposal.edit_text}”</small>
-      </li>)}</ul>}
+      </li>)}</ul></>}
   </section>;
 }

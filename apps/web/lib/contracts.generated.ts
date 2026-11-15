@@ -21,6 +21,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/agent/investigations/{result_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Investigation History
+         * @description The tree of results this one belongs to, with bounded summaries and no time series.
+         */
+        get: operations["investigation_history_api_agent_investigations__result_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/agent/jobs/edits": {
         parameters: {
             query?: never;
@@ -83,6 +103,26 @@ export interface paths {
         put?: never;
         /** Generalized Research */
         post: operations["generalized_research_api_agent_research_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agent/results/{result_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stored Result
+         * @description Reopen a stored result exactly as it was computed. No recalculation and no LLM call.
+         */
+        get: operations["stored_result_api_agent_results__result_id__get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -509,6 +549,11 @@ export interface components {
             base_experiment_id: string;
             /** Base Result Id */
             base_result_id: string;
+            /**
+             * Branch
+             * @default false
+             */
+            branch: boolean;
             /** Client Revision */
             client_revision: number;
             /** Proposal Id */
@@ -1448,6 +1493,67 @@ export interface components {
             /** Tracing Credentials Configured */
             tracing_credentials_configured: boolean;
         };
+        /** HistoryEntry */
+        HistoryEntry: {
+            /** Changes */
+            changes?: string[];
+            /**
+             * Child Count
+             * @default 0
+             */
+            child_count: number;
+            /** Client Revision */
+            client_revision: number;
+            /** Configuration Sha256 */
+            configuration_sha256: string;
+            /** Created At */
+            created_at?: string | null;
+            /** Depth */
+            depth: number;
+            /** Drug */
+            drug: string;
+            /** Duration H */
+            duration_h: number;
+            /** Experiment Id */
+            experiment_id: string;
+            /** Finding */
+            finding?: string | null;
+            /**
+             * Has Follow Up Experiment
+             * @default false
+             */
+            has_follow_up_experiment: boolean;
+            /** Occupancy Threshold */
+            occupancy_threshold: number;
+            /**
+             * Origin
+             * @enum {string}
+             */
+            origin: "research" | "agent_edit" | "proposal" | "direct_control" | "direct_simulation" | "saved_demo";
+            /** Outcomes */
+            outcomes: components["schemas"]["ScenarioOutcome"][];
+            /**
+             * Paper Count
+             * @default 0
+             */
+            paper_count: number;
+            /** Papers */
+            papers?: string[];
+            /** Parent Result Id */
+            parent_result_id?: string | null;
+            /** Result Id */
+            result_id: string;
+            /** Structure Pdb Id */
+            structure_pdb_id?: string | null;
+            /** Target */
+            target: string;
+            /** Title */
+            title: string;
+            /** Turn Id */
+            turn_id?: string | null;
+            /** Verdict */
+            verdict?: ("supported" | "not_supported" | "mixed" | "undetermined") | null;
+        };
         /** HypothesisRequest */
         HypothesisRequest: {
             /**
@@ -1541,6 +1647,22 @@ export interface components {
             paper_summaries?: components["schemas"]["PaperSummary"][];
             /** Result Id */
             result_id: string;
+        };
+        /** InvestigationHistory */
+        InvestigationHistory: {
+            /** Entries */
+            entries: components["schemas"]["HistoryEntry"][];
+            /** Question */
+            question?: string | null;
+            /** Requested Result Id */
+            requested_result_id: string;
+            /** Root Result Id */
+            root_result_id: string;
+            /**
+             * Truncated
+             * @default false
+             */
+            truncated: boolean;
         };
         /** LiteratureRecord */
         LiteratureRecord: {
@@ -2576,6 +2698,22 @@ export interface components {
             occupancy_auc_h: number;
             threshold: components["schemas"]["ThresholdOutcome"];
         };
+        /** ScenarioOutcome */
+        ScenarioOutcome: {
+            /** Endpoint Occupancy */
+            endpoint_occupancy: number;
+            /** Label */
+            label: string;
+            /** Scenario Id */
+            scenario_id: string;
+            /**
+             * Threshold Status
+             * @enum {string}
+             */
+            threshold_status: "never_reached" | "crossed_within_window" | "still_above_at_horizon" | "ambiguous_without_more_resolution";
+            /** Total Time Above H */
+            total_time_above_h: number;
+        };
         /** ScenarioSeries */
         ScenarioSeries: {
             /** Central Concentration Nm */
@@ -2837,6 +2975,24 @@ export interface components {
              * @enum {string}
              */
             status: "retrieved" | "unavailable" | "rejected";
+        };
+        /**
+         * StoredResult
+         * @description A stored result reopened for display, with the agent turn that produced it when there was one.
+         */
+        StoredResult: {
+            /** Child Count */
+            child_count: number;
+            /**
+             * Origin
+             * @enum {string}
+             */
+            origin: "research" | "agent_edit" | "proposal" | "direct_control" | "direct_simulation" | "saved_demo";
+            /** Parent Result Id */
+            parent_result_id?: string | null;
+            result: components["schemas"]["SimulationResult"];
+            /** Turn Id */
+            turn_id?: string | null;
         };
         /**
          * StructuralObservation
@@ -3114,6 +3270,37 @@ export interface operations {
             };
         };
     };
+    investigation_history_api_agent_investigations__result_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                result_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvestigationHistory"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     queue_agent_edit_api_agent_jobs_edits_post: {
         parameters: {
             query?: never;
@@ -3231,6 +3418,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AgentTurn"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stored_result_api_agent_results__result_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                result_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StoredResult"];
                 };
             };
             /** @description Validation Error */

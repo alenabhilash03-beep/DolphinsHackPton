@@ -41,6 +41,8 @@ class AgentEditRequest(Contract):
     text: Text
     # Set by "Run this experiment": the server re-derives this proposal from the stored base and applies exactly it.
     proposal_id: ProposalID | None = None
+    # Explicitly continue from a result that already has a newer experiment. Starts a new branch; nothing is overwritten.
+    branch: bool = False
 
 class AgentDecision(Contract):
     status: Literal['completed', 'needs_inputs', 'unsupported']

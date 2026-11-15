@@ -11,7 +11,7 @@ const proposal=(changes={})=>({proposal_id:'prop-0123456789abcdef',title:'Extend
 
 test('running a proposal sends only its ID against the displayed result and advances the revision',()=>{
   assert.deepEqual(proposalRequest(proposal(),shown()),{base_result_id:'sim-one',base_experiment_id:'exp',base_configuration_sha256:HASH,
-    client_revision:4,selected_scenario_id:null,text:'Run this comparison for 360 days',proposal_id:'prop-0123456789abcdef'});
+    client_revision:4,selected_scenario_id:null,text:'Run this comparison for 360 days',proposal_id:'prop-0123456789abcdef',branch:false});
   assert(!('changes' in proposalRequest(proposal(),shown())));
 });
 test('a proposal for another result, configuration or revision cannot be run',()=>{

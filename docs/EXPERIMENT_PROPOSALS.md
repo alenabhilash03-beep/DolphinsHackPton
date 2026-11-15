@@ -12,7 +12,7 @@ Every stored numerical result now offers a short list of follow-up experiments t
 - `edit_text`: the same change in the supported edit language;
 - `proposal_id`: a hash of the base result, its configuration hash and the change.
 
-`GET /api/agent/results/{result_id}/proposals` returns a `ProposalSet`. It works for any stored result, including results created by direct control edits. If an experiment has already been run from that result, the status is `superseded` and the list is empty.
+`GET /api/agent/results/{result_id}/proposals` returns a `ProposalSet`. It works for any stored result, including results created by direct control edits. If an experiment has already been run from that result, the status is `superseded`; the proposals are still listed, with a note that running one starts a new branch (8D.2).
 
 ## Rules
 
@@ -40,7 +40,7 @@ Changed values are hypothetical design inputs. When run, they are recorded with 
 
 The completed turn records `applied_proposal` and `parent_result_id`. The answer panel shows which proposal produced the result and from which base. The `text` of such a request is only a label; the applied change is always the proposal's.
 
-Only one experiment can be run from a result (the existing linear edit rule). The new result has its own proposals.
+By default only one experiment can be run from a result. The new result has its own proposals. Since 8D.2 an earlier result can be reopened and continued as an explicit branch; see [INVESTIGATION_HISTORY.md](INVESTIGATION_HISTORY.md).
 
 ## Edit language
 

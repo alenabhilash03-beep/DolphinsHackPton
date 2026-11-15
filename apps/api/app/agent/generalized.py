@@ -131,8 +131,23 @@ class GeneralizedAgentService:
         self.structures = StructureService()
         self.turns = AgentTurnStore(self.preparation.store)
         from app.research.demo import load_demo
-        try: self.turns.seed(load_demo().result)
+        try: self.turns.seed(load_demo().result, origin='saved_demo', label='Saved reviewed demo: trastuzumab half-life ×3 versus affinity ×10')
         except (OSError, ValueError): pass  # A missing saved demo must not prevent independent research.
+
+    def investigation_context(self, result_id):
+        """At most six earlier steps ending at this result, each a few short strings, plus the original research question."""
+        from app.research.synthesis import plain
+        chain, _ = self.turns.lineage(result_id, limit=64)
+        question = None
+        steps = []
+        for meta in chain:
+            entry = self.turns.entry(meta, 0, 0)
+            if entry.origin == 'research' and entry.turn_id and question is None:
+                question = self.turns.read(entry.turn_id).original_text[:700]
+            steps.append({'step': entry.title[:200], 'kind': entry.origin, 'changes': entry.changes[:4],
+                'outcomes': [f'{o.label[:80]}: endpoint occupancy {plain(o.endpoint_occupancy * 100)}%, {o.threshold_status.replace("_", " ")}' for o in entry.outcomes],
+                'verdict': entry.verdict, 'finding': entry.finding[:300] if entry.finding else None})
+        return steps[-6:], question
 
     def _model(self):
         if self.model is not None: return self.model
@@ -156,7 +171,10 @@ class GeneralizedAgentService:
                 ExecutionSummary(outcome=turn.status), notify=False)
             turn.execution_run_id = execution.run_id
             turn.execution_events = list(execution.events)
-            saved = self.turns.save(turn)
+            proposal = turn.applied_proposal
+            saved = self.turns.save(turn, branch=bool(edit and request.branch),
+                origin='proposal' if proposal else 'agent_edit' if edit else 'research',
+                label=proposal.title if proposal else turn.original_text)
         except Exception as exc:
             if pending_terminal is not None:
                 execution.events.pop()  # An uncommitted final decision is not a completed run.
@@ -186,7 +204,7 @@ class GeneralizedAgentService:
         base = None
         if edit:
             base, child = self.turns.result(request.base_result_id)
-            if child: raise StalePreparation('A newer edit exists; reload that result')
+            if child and not request.branch: raise StalePreparation('A newer edit exists; reload that result')
             # Validate all base identifiers before any provider call.
             if base.configuration.experiment_id != request.base_experiment_id or base.configuration_hash != request.base_configuration_sha256 or request.client_revision <= base.client_revision:
                 raise StalePreparation('Stale or inconsistent edit base')
@@ -198,6 +216,8 @@ class GeneralizedAgentService:
                 if record.preparation.request != request.request: raise ValueError('Continuation must retain its original scientific request; start a new preparation for identity/scope changes')
                 if request.researcher_update: record = prep.revise(request.preparation_id, request.researcher_update)
                 ledger['record'] = record
+        # Bounded background for follow-ups: the original question and short summaries of earlier steps. No time series.
+        earlier_steps, question = self.investigation_context(base.result_id) if edit else ([], None)
         reviewed_available = not edit and scope_request(HypothesisRequest(text=text,drug=request.request.drug_name,
             target=request.request.target,route=request.request.route)) is None
         def research_ready():
@@ -337,7 +357,7 @@ class GeneralizedAgentService:
                 drug=base.configuration.drug if edit else request.request.drug_name,
                 target=base.configuration.target if edit else request.request.target,
                 documents=evidence.documents.documents.values(), reviews=paper_reviews, result=result, record=ledger['record'],
-                structure=ledger['structure'],
+                structure=ledger['structure'], question=question, earlier_steps=earlier_steps,
                 lineage=None if result is None or not paper_reviews else 'reviewed_reference_separate'
                     if result.configuration.mode == 'reviewed_preset' else 'see_parameter_lineage')
             # Reserve time for the final decision call: a slow synthesis must never cost an accepted result.
@@ -521,7 +541,8 @@ class GeneralizedAgentService:
         agent = create_agent(self._model(), tools=tools, response_format=ToolStrategy(AgentDecision), system_prompt=SYSTEM_PROMPT, middleware=[enforce_budget,retry_model_timeout])
         context = {'mode':'edit' if edit else 'research', 'request':request.model_dump(mode='json'),
             'reviewed_comparison_available':reviewed_available,
-            'current_preparation':ledger['record'].model_dump(mode='json') if ledger['record'] else None}
+            'current_preparation':ledger['record'].model_dump(mode='json') if ledger['record'] else None,
+            'investigation_context':{'original_question':question,'earlier_steps':earlier_steps} if edit else None}
         if context['reviewed_comparison_available']:
             from app.research.registry import load_curated_profile
             context['reviewed_reference_papers'] = [{'title':s.title,'pmid':s.identifiers['pmid']}

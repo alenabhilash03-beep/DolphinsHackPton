@@ -30,6 +30,23 @@ from app.schemas.structure_analysis import InterfaceContacts, ResidueDistance, R
 from app.structures.service import StructureService, resolve as resolve_structure
 from app.schemas.experiment_proposals import ProposalSet
 from app.research.proposals import propose
+from app.schemas.investigation import InvestigationHistory, StoredResult
+from app.simulation.service import _canonical_hash
+
+
+CONTROL_NAMES = {'dose_mg': ('Dose per infusion', ' mg'), 'dosing_interval_h': ('Dosing interval', ' h'), 'pk.volume_L': ('Volume', ' L'),
+    'pk.clearance_L_h': ('Clearance', ' L/h'), 'pk.elimination_half_life_h': ('Half-life', ' h'),
+    'binding.association_nM_inv_h_inv': ('Association rate', ' per nM per h'), 'binding.dissociation_h_inv': ('Dissociation rate', ' per h'),
+    'binding.affinity_nM': ('Affinity (KD)', ' nM'), 'exposure_factor': ('Exposure factor', ''), 'duration_h': ('Observation window', ' h'),
+    'occupancy_threshold': ('Occupancy threshold', '')}
+
+
+def control_label(adjustment: ControlAdjustment) -> str:
+    """A readable history title for one direct control edit, using the scenario's own label."""
+    name, unit = CONTROL_NAMES[adjustment.field]
+    scenario = next((item.label for item in adjustment.experiment.scenarios if item.scenario_id == adjustment.scenario_id), None)
+    change = f'{name} set to {adjustment.value:g}{unit}' if adjustment.value is not None else f'{name} cleared'
+    return (change + (f' in {scenario}' if scenario else ''))[:700]
 
 
 def create_app(settings: Settings | None = None, literature_client: EuropePMCClient | None = None,
@@ -96,8 +113,24 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
         try: result, child = api.state.generalized_agent.turns.result(result_id)
         except KeyError as exc: raise HTTPException(status_code=404, detail="Unknown result") from exc
         if child:
-            return ProposalSet(base_result_id=result_id, status="superseded", note="A newer experiment was already run from this result. Open that result to continue.")
+            return ProposalSet(base_result_id=result_id, status="superseded", proposals=propose(result),
+                note="A newer experiment was already run from this result. Running one of these starts a new branch; nothing is overwritten.")
         return ProposalSet(base_result_id=result_id, status="available", proposals=propose(result))
+
+    @api.get("/api/agent/results/{result_id}", response_model=StoredResult, tags=["Generalized agent"])
+    def stored_result(result_id: str) -> StoredResult:
+        """Reopen a stored result exactly as it was computed. No recalculation and no LLM call."""
+        turns = api.state.generalized_agent.turns
+        try: result, _ = turns.result(result_id); meta = turns.meta(result_id)
+        except KeyError as exc: raise HTTPException(status_code=404, detail="Unknown result") from exc
+        return StoredResult(result=result, turn_id=meta["turn_id"], origin=meta["origin"] or "direct_simulation",
+            parent_result_id=meta["parent"], child_count=meta["child_count"])
+
+    @api.get("/api/agent/investigations/{result_id}", response_model=InvestigationHistory, tags=["Generalized agent"])
+    def investigation_history(result_id: str) -> InvestigationHistory:
+        """The tree of results this one belongs to, with bounded summaries and no time series."""
+        try: return api.state.generalized_agent.turns.history(result_id)
+        except KeyError as exc: raise HTTPException(status_code=404, detail="Unknown result") from exc
 
     @api.get("/api/agent/turns/{turn_id}", response_model=AgentTurn, tags=["Generalized agent"])
     def generalized_turn(turn_id: str):
@@ -172,7 +205,9 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
                 client_revision=adjustment.client_revision,
                 output_points=adjustment.output_points,
             ), preparation_store=preparations.store)
-            generalized.turns.seed(result)
+            # History: this result follows the stored result whose configuration was edited.
+            generalized.turns.seed(result, origin='direct_control', parent_configuration_sha256=_canonical_hash(adjustment.experiment.model_dump(mode="json")),
+                label=control_label(adjustment))
             return result
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc

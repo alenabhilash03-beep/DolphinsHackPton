@@ -257,7 +257,7 @@ def test_provider_failure_after_solver_preserves_receipt_but_does_not_finish_run
 
 def test_failed_turn_commit_never_publishes_run_success(tmp_path,monkeypatch):
     agent,req,_=edit_service(tmp_path)
-    def reject(turn):raise StalePreparation('concurrent child')
+    def reject(turn,**kwargs):raise StalePreparation('concurrent child')
     monkeypatch.setattr(agent.turns,'save',reject)
     observed=[]
     with pytest.raises(StalePreparation):agent.run(req,edit=True,on_execution=observed.append)

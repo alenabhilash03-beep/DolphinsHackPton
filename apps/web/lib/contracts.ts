@@ -64,3 +64,8 @@ export type StructureMeasurement = components["schemas"]["StructureMeasurement"]
 // Typed follow-up experiments (8D): derived by the server from solver facts of one stored result.
 export type ExperimentProposal = components["schemas"]["ExperimentProposal"];
 export type ProposalSet = components["schemas"]["ProposalSet"];
+
+// Investigation history (8D.2): an immutable tree of stored results with bounded summaries.
+export type InvestigationHistory = components["schemas"]["InvestigationHistory"];
+export type HistoryEntry = components["schemas"]["HistoryEntry"];
+export type StoredResult = components["schemas"]["StoredResult"];

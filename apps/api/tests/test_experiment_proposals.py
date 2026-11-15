@@ -204,4 +204,6 @@ def test_api_serves_proposals_for_stored_results_including_direct_control_edits(
         # After an experiment is run from a result, that result's proposals are superseded.
         service.run(request(BASE, proposal_id=served['proposals'][0]['proposal_id']), edit=True)
         superseded = client.get(f'/api/agent/results/{BASE.result_id}/proposals').json()
-        assert superseded['status'] == 'superseded' and superseded['proposals'] == [] and 'newer experiment' in superseded['note']
+        # The earlier result keeps its proposals, flagged: running one now starts a new branch (8D.2).
+        assert superseded['status'] == 'superseded' and 'new branch' in superseded['note']
+        assert [p['proposal_id'] for p in superseded['proposals']] == [p['proposal_id'] for p in served['proposals']]

@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
-import type { AgentJob, AgentTurn, AgentResearchRequest, AgentEditRequest, DemoSnapshot, ExperimentProposal, ExperimentConfig, PreparationRecord, PreparationUpdate, SimulationResult, Interpretation } from "../lib/contracts";
+import type { AgentJob, AgentTurn, AgentResearchRequest, AgentEditRequest, DemoSnapshot, ExperimentProposal, InvestigationHistory, StoredResult, ExperimentConfig, PreparationRecord, PreparationUpdate, SimulationResult, Interpretation } from "../lib/contracts";
 import { RequestEpoch, linkedTurnResult, structureKind, researchRouteNotice } from "../lib/agent-workspace";
 import { PlotPreview } from "./PlotPreview";
 import { StructureViewer, type ViewerFocus } from "./StructureViewer";
@@ -14,9 +14,12 @@ import { ScientificAnswer } from "./ScientificAnswer";
 import { answerState, type MeasurementCard } from "../lib/synthesis-view";
 import { NextExperimentProposals } from "./NextExperimentProposals";
 import { proposalRequest } from "../lib/proposal-view";
+import { InvestigationHistoryPanel } from "./InvestigationHistoryPanel";
+import { branchRequired, historyFor } from "../lib/history-view";
 const PRIMARY="Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const STORAGE="hypothesim-agent-job-v1";
 const SCIENCE_REQUEST="hypothesim-scientific-request-v1";
+const DISPLAYED="hypothesim-displayed-result-v1";
 
 export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment: ExperimentConfig }) {
   const [text,setText]=useState(PRIMARY),[drug,setDrug]=useState("trastuzumab"),[target,setTarget]=useState("HER2"),[route,setRoute]=useState("iv_infusion");
@@ -31,6 +34,8 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
   const [message,setMessage]=useState<string|null>(null),[submitting,setSubmitting]=useState(false),[saved,setSaved]=useState(false);
   const [resumeId,setResumeId]=useState("");
   const [structureFocus,setStructureFocus]=useState<ViewerFocus|null>(null);
+  const [history,setHistory]=useState<InvestigationHistory|null>(null);
+  const reopenTicket=useRef(0), restoreResult=useRef<string|null>(null);
   const [edit,setEdit]=useState("Run this comparison for 120 days");
   const epoch=useRef(new RequestEpoch()), activeTicket=useRef(0), activeJob=useRef<string|null>(null);
   const [structureIdentity,setStructureIdentity]=useState({drug:fallbackExperiment.drug,target:fallbackExperiment.target});
@@ -62,7 +67,11 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
       if(original && typeof original.drug_name==="string" && typeof original.original_hypothesis==="string") {
         setDrug(original.drug_name);setTarget(original.target ?? "");setRoute(original.route ?? "");setText(original.original_hypothesis);
       }
+      const displayed=localStorage.getItem(DISPLAYED);
+      if(displayed && /^[A-Za-z0-9-]{1,120}$/.test(displayed)) restoreResult.current=displayed;
       const id=localStorage.getItem(STORAGE);
+      // No saved job: restore the last displayed result directly (for example after direct control edits).
+      if(!(id && /^[a-f0-9]{32}$/.test(id)) && restoreResult.current){const saved=restoreResult.current;restoreResult.current=null;void reopen(saved,true);}
       if(id && /^[a-f0-9]{32}$/.test(id)) { activeTicket.current=epoch.current.next();activeJob.current=id;setJobId(id); }
     } catch { /* Local storage is optional. */ }
     return ()=>{epoch.current.next();};
@@ -94,7 +103,11 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
         if(next.status==="completed" && next.turn) {
           const execution=investigationView(next);
           if(execution.invalid || (!execution.legacy && next.turn.status==="completed" && !execution.accepted)){setMessage("Agent execution/result linkage could not be verified. Earlier curves are preserved.");return;}
-          acceptTurn(next.turn);return;
+          acceptTurn(next.turn);
+          // After a reload, return to the result that was on screen if it was a later step than this job's.
+          const saved=restoreResult.current;restoreResult.current=null;
+          if(saved && saved!==next.turn.result?.result_id)void reopen(saved,true);
+          return;
         }
         if(next.status==="failed") {
           setMessage(next.error_message ?? "Research failed; prior curves remain available.");
@@ -113,6 +126,33 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
     void poll();
     return ()=>{closed=true;abort.abort();clearTimeout(timer);};
   },[jobId,acceptTurn]);
+  // Reopen a stored result exactly as computed, with the answer of the turn that produced it. Nothing is rerun.
+  async function reopen(resultId:string,quiet=false) {
+    const ticket=++reopenTicket.current;
+    try {
+      const response=await fetch(`/api/agent/results/${encodeURIComponent(resultId)}`,{cache:"no-store"});
+      if(!response.ok)throw new Error("That stored result is no longer available.");
+      const stored=await response.json() as StoredResult;
+      let producing:AgentTurn|null=null;
+      if(stored.turn_id){const read=await fetch(`/api/agent/turns/${stored.turn_id}`,{cache:"no-store"});if(read.ok)producing=await read.json() as AgentTurn;}
+      if(ticket!==reopenTicket.current)return;   // a newer reopen request wins
+      setPrepared(stored.result);setShown(stored.result);setTurn(producing);setExplanation(producing?.interpretation ?? null);setRecord(null);setSaved(false);
+      setStructureIdentity({drug:stored.result.configuration.drug,target:stored.result.configuration.target});
+      if(!quiet){setMessage(null);requestAnimationFrame(()=>document.getElementById(producing?.synthesis?"answer":"experiment")?.scrollIntoView({block:"start",behavior:"auto"}));}
+    } catch(e){if(ticket===reopenTicket.current&&!quiet)setMessage(e instanceof Error?e.message:"Could not reopen that result.");}
+  }
+  const shownId=shown?.result_id ?? null;
+  useEffect(()=>{if(shownId)try{localStorage.setItem(DISPLAYED,shownId);}catch{}},[shownId]);
+  // The history of whatever is displayed; refreshed when the displayed result changes.
+  useEffect(()=>{
+    if(!shownId){setHistory(null);return;}
+    const abort=new AbortController();
+    fetch(`/api/agent/investigations/${encodeURIComponent(shownId)}`,{cache:"no-store",signal:abort.signal})
+      .then(async response=>response.ok?await response.json() as InvestigationHistory:null)
+      .then(value=>{if(!abort.signal.aborted)setHistory(value);}).catch(()=>{if(!abort.signal.aborted)setHistory(null);});
+    return ()=>abort.abort();
+  },[shownId]);
+  const currentHistory=historyFor(history,shownId), branch=branchRequired(currentHistory,shownId);
   async function submitJob(mode:"research"|"edits",body:AgentResearchRequest|AgentEditRequest) {
     if(busy) return;
     const ticket=epoch.current.next(); activeTicket.current=ticket;activeJob.current=null;setJobId(null);
@@ -176,12 +216,12 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
   function submitEdit(event:FormEvent) {
     event.preventDefault();if(!shown || controlBusy)return;
     void submitJob("edits",{base_result_id:shown.result_id,base_experiment_id:shown.configuration.experiment_id,base_configuration_sha256:shown.configuration_hash,
-      client_revision:shown.client_revision+1,selected_scenario_id:selected,text:edit});
+      client_revision:shown.client_revision+1,selected_scenario_id:selected,text:edit,branch});
   }
   // "Run this experiment": the proposal must belong to the displayed result; only its ID is sent to the server.
   function runProposal(proposal:ExperimentProposal) {
     if(controlBusy)return;
-    try{const body=proposalRequest(proposal,shown);setEdit(proposal.edit_text);void submitJob("edits",body);}
+    try{const body=proposalRequest(proposal,shown,branch);setEdit(proposal.edit_text);void submitJob("edits",body);}
     catch(e){setMessage(e instanceof Error?e.message:"This proposal cannot be run against the displayed curves.");}
   }
   const currentInterpretation=explanation?.result_id===shown?.result_id ? explanation : null;
@@ -195,7 +235,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
   },[]);
   return <div className="hypothesim-workspace editorial-workspace">
     <aside className="workspace-rail" aria-label="Research navigation"><a href="/" className="rail-monogram" aria-label="Hypothesim home">h.</a><span className="rail-caption">Workspace</span><nav><a href="#research"><span>01</span>Question</a><a href="#experiment"><span>02</span>Simulation</a><a href="#structure"><span>03</span>Structure</a></nav><a href="/" className="rail-home">Workspace home ↗</a></aside>
-    <header className="workspace-header"><a className="workspace-brand" href="/">hypothesim<span>.</span></a><nav aria-label="Workspace sections"><a href="#research">Research</a><a href="#answer">Answer</a><a href="#experiment">Results</a><a href="#paper-evidence">Evidence</a><a href="#structure">Molecule</a></nav><span className="workspace-badge">Research workspace</span></header>
+    <header className="workspace-header"><a className="workspace-brand" href="/">hypothesim<span>.</span></a><nav aria-label="Workspace sections"><a href="#research">Research</a><a href="#answer">Answer</a><a href="#history">History</a><a href="#experiment">Results</a><a href="#paper-evidence">Evidence</a><a href="#structure">Molecule</a></nav><span className="workspace-badge">Research workspace</span></header>
     <div className="workspace-intro"><div><p className="eyebrow">Scientific exploration console</p><h1>Experiment workspace</h1><p>Evidence → exposure → target engagement</p></div><span className="workspace-badge">{busy?"Agent researching":saved?"Saved reviewed demo":"Interactive model"}</span></div>
     <details className="workspace-assessment"><summary>Drug and model assessment <span>Identity, route, and supported endpoints</span></summary><DrugSupportPanel /></details>
     <section id="research" className="research-panel" aria-label="Hypothesis research"><details className="question-disclosure" open={researchOpen} onToggle={e=>setResearchOpen(e.currentTarget.open)}><summary><span><span className="eyebrow">Research question · {drug || "Drug unspecified"}{target?` / ${target}`:""}</span><strong>{text || "Enter your scientific hypothesis"}</strong></span><span className="disclosure-action">{researchOpen?"Close editor":"Edit hypothesis"}</span></summary>
@@ -217,6 +257,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
     <InvestigationPanel job={job} submitting={submitting} saved={saved} displayedResult={shown} config={visible} message={message} viewer={structure} onFocusMeasurement={focusMeasurement}/>
     <ScientificAnswer turn={turn} shown={shown} viewer={structure} onFocusMeasurement={focusMeasurement}/>
     <NextExperimentProposals shown={shown} busy={!!busy || controlBusy} onRun={runProposal}/>
+    <InvestigationHistoryPanel history={currentHistory} shownId={shownId} busy={!!busy || controlBusy} branch={branch} onReopen={id=>void reopen(id)}/>
     <ResearchPaperReview papers={turn?.research_papers ?? []}/>
     {(record || turn?.questions?.length || staleExplanation) ? <section className="research-panel" aria-label="Research continuation">
       {turn?.questions?.length ? <section aria-label="Agent questions"><h3>What is needed next</h3><ul>{turn.questions.map(q=><li key={q}>{q}</li>)}</ul></section>:null}

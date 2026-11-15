@@ -1,0 +1,103 @@
+{
+  "verification_kind": "8D.2 investigation history, reopen, branching and contextual follow-up",
+  "date": "2026-11-15",
+  "environment_note": "Cloud verification environment: Europe PMC is blocked, so live research here uses the SYNTHETIC software-test abstract as literature. Agent, extractor, synthesizer, solver and structure files are real.",
+  "automated": {
+    "backend_tests_passed": 414,
+    "backend_tests_new": 6,
+    "backend_tests_failed": 1,
+    "backend_failure": "pre-existing machine-dependent saved-demo float mismatch (test_saved_demo_matches_current_solver_and_public_asset)",
+    "frontend_tests_passed": 64,
+    "frontend_tests_new": 4,
+    "typecheck": "passed",
+    "contracts_check": "passed",
+    "production_build": "passed"
+  },
+  "live_research_then_follow_up": {
+    "description": "Live pinned Nemotron: reviewed trastuzumab research, then \"Set the occupancy threshold to 95%\" as a follow-up with remote LangSmith trace.",
+    "research": {
+      "elapsed_s": 62.7,
+      "status": "completed",
+      "verdict": "mixed"
+    },
+    "follow_up": {
+      "elapsed_s": 22.4,
+      "status": "completed",
+      "trace_status": "remote_verified",
+      "trace_id": "01a1dd04-ec7d-71d7-abb3-1c997d3b17ca",
+      "tool_calls": [
+        "read_current_experiment",
+        "apply_requested_edit",
+        "simulate_current_comparison",
+        "interpret_current_result",
+        "synthesize_grounded_answer"
+      ],
+      "answers_question": "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?",
+      "change": "Set the occupancy threshold to 95%",
+      "synthesis_status": "grounded",
+      "notes": [],
+      "verdict": "supported",
+      "answer": "Tripling trastuzumab's half-life keeps HER2 occupancy above the 95% threshold longer than improving binding affinity tenfold, because the half-life scenario remains above threshold at the end of the 180-day window while the affinity scenario falls below threshold within the window.",
+      "implications": [
+        "Tripling half-life keeps occupancy above the 95% threshold for the full 180-day horizon, whereas tenfold stronger affinity falls below threshold before the horizon ends."
+      ]
+    },
+    "history": [
+      [
+        "research",
+        "Would tripling trastuzumab's half-life maintain HER2 occupan",
+        "mixed"
+      ],
+      [
+        "agent_edit",
+        "Set the occupancy threshold to 95%",
+        "supported"
+      ]
+    ]
+  },
+  "live_observation": "Before the threshold-facts change the same follow-up said both scenarios stay above 95%, which contradicted the solver; earlier-step text had biased it. That sentence is now refused and the current outcomes are stated to the model.",
+  "browser_check": {
+    "description": "scripts/serve_investigation_ui_checks.py --complete-research: actual agent graph, solver and stores; scripted provider and synthetic evidence. Chromium 1440 px and 390 px.",
+    "path": "research → direct control edit → follow-up proposal → reopen step 1 → change in words from it → reopen step 1 again → follow-up as a new branch → reload → direct edit → reload",
+    "history_heading": "3 steps · Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?",
+    "steps_after_follow_up": 3,
+    "direct_control_step": "Dose per infusion set to 529 mg in Threefold longer half-life",
+    "follow_up_answer_addresses": "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?",
+    "reopened_first_step": {
+      "displayedIsFirst": true,
+      "answerStale": 0,
+      "answerHeading": "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?",
+      "structureCards": 5,
+      "branchNotice": 0,
+      "displayedBadge": 1
+    },
+    "branch_notice": "You are viewing an earlier version. An experiment was already run from it. A change in words or a follow-up experiment from here starts a new branch; nothing earlier is overwritten.",
+    "proposal_branch_note": "A newer experiment was already run from this result. Running one of these starts a new branch; nothing is overwritten.",
+    "branch_run": "Investigation complete",
+    "final_step_count": 5,
+    "indent_by_depth": [
+      "0px",
+      "18px",
+      "36px",
+      "18px",
+      "18px"
+    ],
+    "distinct_results": 5,
+    "after_reload": {
+      "displayedIsLast": true,
+      "steps": 5,
+      "answer": 1
+    },
+    "after_direct_edit_and_reload": {
+      "displayedIsSliderResult": true,
+      "steps": 6
+    },
+    "mobile_horizontal_overflow": false,
+    "page_errors": []
+  },
+  "not_verified": [
+    "History with live real-paper research (Europe PMC blocked here).",
+    "Two browser tabs racing on the same result; the refusal is covered by backend tests.",
+    "Very long investigations in a browser; the 80-entry cap and six-step context are covered by backend tests."
+  ]
+}

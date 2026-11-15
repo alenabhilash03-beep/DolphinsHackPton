@@ -17,6 +17,11 @@
             "title": "Base Result Id",
             "type": "string"
           },
+          "branch": {
+            "default": false,
+            "title": "Branch",
+            "type": "boolean"
+          },
           "client_revision": {
             "exclusiveMinimum": 0.0,
             "title": "Client Revision",
@@ -2740,6 +2745,208 @@
         "title": "HealthResponse",
         "type": "object"
       },
+      "HistoryEntry": {
+        "additionalProperties": false,
+        "properties": {
+          "changes": {
+            "items": {
+              "maxLength": 700,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "title": "Changes",
+            "type": "array"
+          },
+          "child_count": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Child Count",
+            "type": "integer"
+          },
+          "client_revision": {
+            "title": "Client Revision",
+            "type": "integer"
+          },
+          "configuration_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Configuration Sha256",
+            "type": "string"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "depth": {
+            "minimum": 0.0,
+            "title": "Depth",
+            "type": "integer"
+          },
+          "drug": {
+            "maxLength": 200,
+            "title": "Drug",
+            "type": "string"
+          },
+          "duration_h": {
+            "title": "Duration H",
+            "type": "number"
+          },
+          "experiment_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Experiment Id",
+            "type": "string"
+          },
+          "finding": {
+            "anyOf": [
+              {
+                "maxLength": 700,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finding"
+          },
+          "has_follow_up_experiment": {
+            "default": false,
+            "title": "Has Follow Up Experiment",
+            "type": "boolean"
+          },
+          "occupancy_threshold": {
+            "title": "Occupancy Threshold",
+            "type": "number"
+          },
+          "origin": {
+            "enum": [
+              "research",
+              "agent_edit",
+              "proposal",
+              "direct_control",
+              "direct_simulation",
+              "saved_demo"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "outcomes": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioOutcome"
+            },
+            "maxItems": 3,
+            "title": "Outcomes",
+            "type": "array"
+          },
+          "paper_count": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Paper Count",
+            "type": "integer"
+          },
+          "papers": {
+            "items": {
+              "maxLength": 700,
+              "type": "string"
+            },
+            "maxItems": 4,
+            "title": "Papers",
+            "type": "array"
+          },
+          "parent_result_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Result Id"
+          },
+          "result_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Result Id",
+            "type": "string"
+          },
+          "structure_pdb_id": {
+            "anyOf": [
+              {
+                "maxLength": 4,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Structure Pdb Id"
+          },
+          "target": {
+            "maxLength": 200,
+            "title": "Target",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 700,
+            "title": "Title",
+            "type": "string"
+          },
+          "turn_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turn Id"
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "enum": [
+                  "supported",
+                  "not_supported",
+                  "mixed",
+                  "undetermined"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verdict"
+          }
+        },
+        "required": [
+          "result_id",
+          "origin",
+          "depth",
+          "title",
+          "drug",
+          "target",
+          "experiment_id",
+          "configuration_sha256",
+          "client_revision",
+          "duration_h",
+          "occupancy_threshold",
+          "outcomes"
+        ],
+        "title": "HistoryEntry",
+        "type": "object"
+      },
       "HypothesisRequest": {
         "additionalProperties": false,
         "properties": {
@@ -3045,6 +3252,55 @@
           "follow_up_experiments"
         ],
         "title": "Interpretation",
+        "type": "object"
+      },
+      "InvestigationHistory": {
+        "additionalProperties": false,
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryEntry"
+            },
+            "maxItems": 80,
+            "title": "Entries",
+            "type": "array"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "maxLength": 700,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "requested_result_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Requested Result Id",
+            "type": "string"
+          },
+          "root_result_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Root Result Id",
+            "type": "string"
+          },
+          "truncated": {
+            "default": false,
+            "title": "Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "root_result_id",
+          "requested_result_id",
+          "entries"
+        ],
+        "title": "InvestigationHistory",
         "type": "object"
       },
       "LiteratureRecord": {
@@ -6025,6 +6281,49 @@
         "title": "ScenarioMetrics",
         "type": "object"
       },
+      "ScenarioOutcome": {
+        "additionalProperties": false,
+        "properties": {
+          "endpoint_occupancy": {
+            "title": "Endpoint Occupancy",
+            "type": "number"
+          },
+          "label": {
+            "maxLength": 200,
+            "title": "Label",
+            "type": "string"
+          },
+          "scenario_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "threshold_status": {
+            "enum": [
+              "never_reached",
+              "crossed_within_window",
+              "still_above_at_horizon",
+              "ambiguous_without_more_resolution"
+            ],
+            "title": "Threshold Status",
+            "type": "string"
+          },
+          "total_time_above_h": {
+            "title": "Total Time Above H",
+            "type": "number"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "label",
+          "endpoint_occupancy",
+          "threshold_status",
+          "total_time_above_h"
+        ],
+        "title": "ScenarioOutcome",
+        "type": "object"
+      },
       "ScenarioSeries": {
         "additionalProperties": false,
         "properties": {
@@ -6943,6 +7242,63 @@
         "title": "SourceRetrievalResult",
         "type": "object"
       },
+      "StoredResult": {
+        "additionalProperties": false,
+        "description": "A stored result reopened for display, with the agent turn that produced it when there was one.",
+        "properties": {
+          "child_count": {
+            "minimum": 0.0,
+            "title": "Child Count",
+            "type": "integer"
+          },
+          "origin": {
+            "enum": [
+              "research",
+              "agent_edit",
+              "proposal",
+              "direct_control",
+              "direct_simulation",
+              "saved_demo"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "parent_result_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Result Id"
+          },
+          "result": {
+            "$ref": "#/components/schemas/SimulationResult"
+          },
+          "turn_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turn Id"
+          }
+        },
+        "required": [
+          "result",
+          "origin",
+          "child_count"
+        ],
+        "title": "StoredResult",
+        "type": "object"
+      },
       "StructuralObservation": {
         "additionalProperties": false,
         "description": "Geometric context from deposited coordinates. It never decides a verdict.",
@@ -7759,6 +8115,49 @@
         ]
       }
     },
+    "/api/agent/investigations/{result_id}": {
+      "get": {
+        "description": "The tree of results this one belongs to, with bounded summaries and no time series.",
+        "operationId": "investigation_history_api_agent_investigations__result_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "result_id",
+            "required": true,
+            "schema": {
+              "title": "Result Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvestigationHistory"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Investigation History",
+        "tags": [
+          "Generalized agent"
+        ]
+      }
+    },
     "/api/agent/jobs/edits": {
       "post": {
         "operationId": "queue_agent_edit_api_agent_jobs_edits_post",
@@ -7919,6 +8318,49 @@
           }
         },
         "summary": "Generalized Research",
+        "tags": [
+          "Generalized agent"
+        ]
+      }
+    },
+    "/api/agent/results/{result_id}": {
+      "get": {
+        "description": "Reopen a stored result exactly as it was computed. No recalculation and no LLM call.",
+        "operationId": "stored_result_api_agent_results__result_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "result_id",
+            "required": true,
+            "schema": {
+              "title": "Result Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoredResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Stored Result",
         "tags": [
           "Generalized agent"
         ]

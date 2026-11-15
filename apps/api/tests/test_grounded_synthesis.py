@@ -619,8 +619,10 @@ def test_edit_synthesis_is_simulation_only_and_unavailable_synthesis_keeps_the_r
     with pytest.raises(ValueError, match='stale'): require_current(turn.synthesis, second.result)
 
 
-def test_synthesis_is_skipped_rather_than_spending_the_final_decision_budget(tmp_path):
+def test_synthesis_is_skipped_rather_than_spending_the_final_decision_budget(tmp_path, monkeypatch):
     from test_generalized_agent import DrivingModel, SETTINGS
+    import app.agent.generalized as generalized
+    monkeypatch.setattr(generalized, 'CLOSING_GRACE_S', 0)  # no closing grace left: the budget rule itself is under test
     from app.agent.generalized import GeneralizedAgentService
     from app.research.preparation import PreparationService
     from app.research.preparation_store import PreparationStore

@@ -716,3 +716,22 @@ def test_wrap_up_still_runs_the_reviewed_comparison_when_research_finishes_late(
     assert offered[4]==['prepare_reviewed_comparison'] and offered[5]==['simulate_current_comparison']
     assert turn.status=='completed' and turn.result.configuration==load_demo().experiment
     assert turn.structure is not None and turn.synthesis is not None
+
+
+def test_deadline_after_the_simulation_keeps_the_result_and_closes_the_turn(tmp_path, monkeypatch):
+    # Live finding (2026-11-15): slow model turns reached the deadline between the simulation and the cited answer;
+    # the run then failed and discarded its accepted result. An accepted result earns a bounded closing grace.
+    import app.agent.generalized as generalized
+    clock={'offset':0.0}
+    real=generalized.monotonic
+    monkeypatch.setattr(generalized,'monotonic',lambda: real()+clock['offset'])
+    class SlowAfterSimulation(ReviewedResearchModel):
+        def _generate(self,messages,**kwargs):
+            if any(isinstance(m,ToolMessage) and m.name=='simulate_current_comparison' for m in messages):
+                clock['offset']=SETTINGS.research_timeout_s+generalized.CLOSING_GRACE_S/2   # past the deadline, inside the grace
+            return super()._generate(messages,**kwargs)
+    agent,_=research_service(tmp_path)
+    agent.model=SlowAfterSimulation()
+    turn=agent.run(AgentResearchRequest(request=PRIMARY_REQUEST))
+    assert turn.status=='completed' and turn.result is not None and turn.interpretation is not None
+    assert turn.structure is not None and turn.synthesis is not None

@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     langsmith_project: str = "hypothesim-development"
     langsmith_endpoint: str = "https://api.smith.langchain.com"
     langsmith_workspace_id: str | None = None
-    research_timeout_s: float = Field(default=180, gt=0, le=600)
+    research_timeout_s: float = Field(default=300, gt=0, le=600)  # slow free-endpoint turns need headroom (2026-11-15)
     research_max_jobs: int = Field(default=4, ge=1, le=8)
     research_db_path: Path | None = None
 

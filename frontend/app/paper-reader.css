@@ -1,0 +1,92 @@
+/* Delve deeper (paper list + reader) and the Investigation tab. Black-glass theme; scoped to the workspace. */
+/* The reader takes the full width: the agent desk steps aside while a paper is open. */
+.workspace-stage .instrument-app .backend-workspace .scientific-scene:has(#view-reader:not([hidden])){grid-template-columns:minmax(0,1fr)}
+.workspace-stage .instrument-app .backend-workspace .scientific-scene:has(#view-reader:not([hidden]))>.agent-desk{display:none}
+.workspace-stage .instrument-app .backend-workspace .workspace-viewbar>button[data-tab=reader]{display:inline-flex;align-items:center;gap:8px;color:#e2b1b8}
+.workspace-stage .instrument-app .backend-workspace .viewbar-reader-dot{width:6px;height:6px;border-radius:50%;background:#e2b1b8;box-shadow:0 0 0 3px #e2b1b822}
+
+/* Evidence tab: papers */
+.workspace-stage .instrument-app .backend-workspace .paper-list{margin:0 0 24px;padding:24px;border:1px solid #eee7df20;border-radius:24px;background:linear-gradient(130deg,#38332e35,#161515cc);box-shadow:inset 0 1px #fff8f407}
+.workspace-stage .instrument-app .backend-workspace .paper-list-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.workspace-stage .instrument-app .backend-workspace .paper-list-head h2{margin:0;font-size:20px;font-weight:400;color:#f1ede7;letter-spacing:-.01em}
+.workspace-stage .instrument-app .backend-workspace .paper-list-head p{margin:0;font-size:12px;color:#b9b2a9}
+.workspace-stage .instrument-app .backend-workspace .paper-list ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.workspace-stage .instrument-app .backend-workspace .paper-list li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center;padding:16px 18px;border-radius:16px;border:1px solid #eee7df1c;background:#0b0b0b4d;transition:border-color .2s,background .2s}
+.workspace-stage .instrument-app .backend-workspace .paper-list li:hover{border-color:#eee7df38;background:#1514137a}
+.workspace-stage .instrument-app .backend-workspace .paper-list-text{display:grid;gap:5px;min-width:0}
+.workspace-stage .instrument-app .backend-workspace .paper-list-text strong{font-size:14px;font-weight:500;line-height:1.45;color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace .paper-list-text small{font:400 11px/1.4 'IBM Plex Mono',ui-monospace,monospace;color:#9d958c}
+.workspace-stage .instrument-app .backend-workspace .paper-list-text p{margin:2px 0 0;font-size:12px;line-height:1.55;color:#cec8c0}
+.workspace-stage .instrument-app .backend-workspace .paper-list-tags{display:flex;flex-wrap:wrap;gap:6px}
+.workspace-stage .instrument-app .backend-workspace .paper-list-tags span{font-size:10.5px;padding:2px 9px;border-radius:999px;border:1px solid #eee7df24;color:#b9b2a9}
+.workspace-stage .instrument-app .backend-workspace .paper-list-tags span:first-child{border-color:#e2b1b84d;color:#e2b1b8}
+.workspace-stage .instrument-app .backend-workspace .paper-list-actions{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.workspace-stage .instrument-app .backend-workspace .paper-list-actions .primary-button{min-height:38px;padding:9px 16px;gap:10px;white-space:nowrap}
+.workspace-stage .instrument-app .backend-workspace .paper-list-actions a{font-size:11px;color:#b9b2a9;text-decoration:none}
+.workspace-stage .instrument-app .backend-workspace .paper-list-actions a:hover{color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace .paper-list-unavailable{font-size:11px;color:#9d958c}
+
+/* Reader: PDF left, chat right */
+.workspace-stage .instrument-app .backend-workspace #view-reader{animation:reader-in .35s ease-out;scroll-margin-top:calc(var(--workspace-header-height,72px) + 72px)}
+.workspace-stage .instrument-app .backend-workspace .paper-reader{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr);gap:20px;align-items:stretch;height:min(860px,calc(100dvh - 190px));min-height:560px}
+.workspace-stage .instrument-app .backend-workspace .paper-reader-doc,.workspace-stage .instrument-app .backend-workspace .paper-chat{display:flex;flex-direction:column;min-height:0;border:1px solid #eee7df20;border-radius:24px;background:linear-gradient(140deg,#33302c59,#151414c2);box-shadow:inset 0 1px #fff8f410,0 16px 48px #0002;overflow:hidden}
+.workspace-stage .instrument-app .backend-workspace .paper-reader-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;padding:18px 20px 14px;border-bottom:1px solid #eee7df1c}
+.workspace-stage .instrument-app .backend-workspace .paper-reader-head h2{margin:0;font-size:16px;font-weight:500;line-height:1.4;color:#f1ede7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.workspace-stage .instrument-app .backend-workspace .paper-reader-eyebrow{margin:0 0 5px;font:400 10.5px/1.4 'IBM Plex Mono',ui-monospace,monospace;color:#9d958c}
+.workspace-stage .instrument-app .backend-workspace .paper-reader-actions{display:flex;gap:8px;flex-shrink:0}
+.workspace-stage .instrument-app .backend-workspace .paper-reader-actions :is(a,button){display:inline-flex;align-items:center;min-height:32px;padding:6px 12px;border-radius:999px;border:1px solid #eee7df2e;background:#eee7df08;color:#cec8c0;font-size:11px;text-decoration:none;cursor:pointer;white-space:nowrap}
+.workspace-stage .instrument-app .backend-workspace .paper-reader-actions :is(a,button):hover{border-color:#eee7df5c;color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace .paper-reader-frame{position:relative;flex:1;min-height:0;background:#0d0c0b}
+.workspace-stage .instrument-app .backend-workspace .paper-reader-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#2b2826}
+.workspace-stage .instrument-app .backend-workspace .paper-reader-frame[data-state=loading] iframe{opacity:0}
+.workspace-stage .instrument-app .backend-workspace .paper-reader-loading{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:14px;color:#b9b2a9;font-size:12px}
+.workspace-stage .instrument-app .backend-workspace .paper-reader-loading span{width:42px;height:54px;border-radius:8px;border:1px solid #eee7df38;background:linear-gradient(180deg,transparent 45%,#e2b1b833 50%,transparent 55%) 0 0/100% 200%;animation:reader-scan 1.6s linear infinite}
+.workspace-stage .instrument-app .backend-workspace .paper-reader-note{margin:0;padding:10px 20px 12px;border-top:1px solid #eee7df14;font-size:10.5px;line-height:1.5;color:#9d958c}
+.workspace-stage .instrument-app .backend-workspace .paper-chat>header{display:flex;align-items:center;gap:12px;padding:18px 20px 14px;border-bottom:1px solid #eee7df1c}
+.workspace-stage .instrument-app .backend-workspace .paper-chat>header .agent-mark{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;border:1px solid #eee7df2e;background:#eee7df0a;color:#e2b1b8;font:500 14px/1 'Inter',sans-serif}
+.workspace-stage .instrument-app .backend-workspace .paper-chat>header h3{margin:0;font-size:14px;font-weight:500;color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace .paper-chat>header p{margin:2px 0 0;font-size:11px;color:#9d958c}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-log{flex:1;min-height:0;overflow:auto;list-style:none;margin:0;padding:18px 20px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-intro p{margin:0 0 14px;font-size:12.5px;line-height:1.6;color:#cec8c0}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-starters{display:grid;gap:8px}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-starters button{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;border:1px solid #eee7df1f;background:#0b0b0b4d;color:#e8e2da;font-size:12px;text-align:left;cursor:pointer;transition:border-color .2s,background .2s}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-starters button:hover:not(:disabled){border-color:#e2b1b866;background:#e2b1b80d}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-starters button span{color:#e2b1b8}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-message{display:grid;gap:5px;max-width:92%;animation:reader-in .3s ease-out}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-message[data-role=user]{align-self:flex-end;justify-items:end}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-message>div{padding:11px 14px;border-radius:16px;font-size:12.8px;line-height:1.62;color:#ece6de}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-message>div p{margin:0}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-message>div p+p{margin-top:7px}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-message[data-role=user]>div{background:#794047b8;border:1px solid #d7a0a644;border-bottom-right-radius:5px;color:#fff5f2}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-message[data-role=assistant]>div{background:#0b0b0b5c;border:1px solid #eee7df1c;border-bottom-left-radius:5px}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-message[data-failed]>div{border-color:#d38e8366;color:#efc3bb}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-who{font-size:10px;letter-spacing:.04em;color:#9d958c}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-typing{display:flex;gap:5px;padding:14px 16px!important}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-typing i{width:6px;height:6px;border-radius:50%;background:#e2b1b8;opacity:.35;animation:reader-dot 1.2s ease-in-out infinite}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-typing i:nth-child(2){animation-delay:.15s}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-typing i:nth-child(3){animation-delay:.3s}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end;padding:14px 16px 8px;border-top:1px solid #eee7df1c}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-form textarea{resize:none;min-height:44px;max-height:140px;padding:11px 14px;border-radius:14px;border:1px solid #eee7df2e;background:#0b0b0b66;color:#f1ede7;font:400 12.5px/1.5 'Inter',sans-serif}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-form textarea:focus{outline:none;border-color:#e2b1b880}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-form .primary-button{min-height:44px;padding:10px 16px;gap:10px}
+.workspace-stage .instrument-app .backend-workspace .paper-chat-note{margin:0;padding:0 16px 12px;font-size:10px;color:#857e76}
+
+/* Investigation tab */
+.workspace-stage .instrument-app .backend-workspace .investigation-view{display:grid;gap:20px}
+.workspace-stage .instrument-app .backend-workspace .investigation-view>*{margin-top:0}
+.workspace-stage .instrument-app .backend-workspace .investigation-block{padding:22px 24px;border:1px solid #eee7df20;border-radius:24px;background:linear-gradient(130deg,#38332e35,#161515cc)}
+.workspace-stage .instrument-app .backend-workspace .investigation-block>h2{margin:0 0 4px;font-size:18px;font-weight:400;color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace .investigation-lede{margin:0 0 14px;font-size:12px;color:#b9b2a9}
+
+@keyframes reader-in{from{opacity:0;transform:translateY(6px)}}
+@keyframes reader-scan{to{background-position:0 -200%}}
+@keyframes reader-dot{50%{opacity:1;transform:translateY(-2px)}}
+@media(prefers-reduced-motion:reduce){.workspace-stage .instrument-app .backend-workspace :is(#view-reader,.paper-chat-message,.paper-reader-loading span,.paper-chat-typing i){animation:none}}
+@media(max-width:960px){
+  .workspace-stage .instrument-app .backend-workspace .paper-reader{grid-template-columns:1fr;height:auto}
+  .workspace-stage .instrument-app .backend-workspace .paper-reader-frame{min-height:70dvh}
+  .workspace-stage .instrument-app .backend-workspace .paper-chat{min-height:520px}
+  .workspace-stage .instrument-app .backend-workspace .paper-reader-head{flex-direction:column}
+  .workspace-stage .instrument-app .backend-workspace .paper-list li{grid-template-columns:1fr}
+  .workspace-stage .instrument-app .backend-workspace .paper-list-actions{flex-direction:row;align-items:center;justify-content:space-between}
+}

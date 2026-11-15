@@ -283,7 +283,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
       {turn?.applied_changes?.length ? <ul>{turn.applied_changes.map(s=><li key={s}>{s}</li>)}</ul>:null}
     </details>
     <div className="saved-demo-banner" role="status"><span className="status-dot"/><strong>Displayed experiment</strong> {visible.drug} → {visible.target}{busy && <span> · Research pending; showing the last successful curves.</span>}</div>
-    <PlotPreview key={prepared?.result_id ?? "fallback"} initialExperiment={prepared?.configuration ?? fallbackExperiment} initialResult={prepared} onResultChange={onResult} editingLocked={!!busy} interpretation={currentInterpretation} answerShown={answer==="current" && turn?.synthesis?.status==="grounded"}
+    <PlotPreview key={prepared?.result_id ?? "fallback"} initialExperiment={prepared?.configuration ?? fallbackExperiment} initialResult={prepared} onResultChange={onResult} turn={turn} editingLocked={!!busy} interpretation={currentInterpretation} answerShown={answer==="current" && turn?.synthesis?.status==="grounded"}
       structure={structure!=="unavailable" ? <VisualizationBoundary key={structure} label="Experimental structure"><StructureViewer kind={structure} focusRequest={structureFocus}/></VisualizationBoundary> : <section id="structure" className="structure-panel"><h2>Experimental structure unavailable</h2><p>No verified cached drug–target complex is available for {structureIdentity.drug} → {structureIdentity.target || "unspecified target"}. Compatible numerical models can still run without a structure.</p></section>}/>
     <footer className="workspace-footer">Hypothesim · Conditional scientific exploration · Predictions are model outputs.</footer>
   </div>;

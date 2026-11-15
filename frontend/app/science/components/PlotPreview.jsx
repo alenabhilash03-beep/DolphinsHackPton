@@ -1,6 +1,6 @@
 "use client";
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useExperimentWorkspace } from "../hooks/useExperimentWorkspace.js";
 import { useSimulationTimeline } from "../hooks/useSimulationTimeline.js";
 import { ScientificPlot } from "./ScientificPlot.jsx";
@@ -12,6 +12,8 @@ import { BindingCanvas } from "./BindingCanvas.jsx";
 import { VisualizationBoundary } from "./VisualizationBoundary.jsx";
 import { PaperSummaries } from "./PaperSummaries.jsx";
 import ArticleSummaries from "../../article-summaries.jsx";
+import { PaperList, PaperReader } from "./PaperReader.jsx";
+import { listPapers } from "../lib/paper-list.js";
 const VIEWS = [
     {
         id: "simulation",
@@ -32,11 +34,25 @@ const VIEWS = [
         id: "details",
         label: "Model details",
         hint: "Full metrics & assumptions"
+    },
+    {
+        id: "investigation",
+        label: "Investigation",
+        hint: "Agent steps, history & sharing"
     }
 ];
-export function PlotPreview({ initialExperiment, initialResult = null, onResultIdChange, onResultChange, editingLocked = false, structure, interpretation, answerShown = false, turn = null }) {
+const HASH = {
+    structure: "#structure",
+    evidence: "#paper-evidence",
+    details: "#model-details",
+    investigation: "#investigation",
+    reader: "#paper-reader"
+};
+export function PlotPreview({ initialExperiment, initialResult = null, onResultIdChange, onResultChange, editingLocked = false, structure, interpretation, answerShown = false, turn = null, investigation }) {
     const [focusPlot, setFocusPlot] = useState(true), [view, setView] = useState("simulation");
     const [structureVisited, setStructureVisited] = useState(false);
+    // Delve deeper: the paper open in the reader tab, if any.
+    const [reader, setReader] = useState(null);
     const workspace = useExperimentWorkspace(initialExperiment, 600, initialResult);
     useEffect(()=>onResultIdChange?.(workspace.result?.result_id ?? null), [
         workspace.result?.result_id,
@@ -64,6 +80,7 @@ export function PlotPreview({ initialExperiment, initialResult = null, onResultI
                 setStructureVisited(true);
             } else if (hash === "#paper-evidence") setView("evidence");
             else if (hash === "#model-details") setView("details");
+            else if (hash === "#investigation") setView("investigation");
             else if (hash === "#experiment" || hash.startsWith("#plot-")) setView("simulation");
             else return;
             // Reveal the target before native anchor scrolling completes.
@@ -78,7 +95,32 @@ export function PlotPreview({ initialExperiment, initialResult = null, onResultI
     function selectView(next) {
         setView(next);
         if (next === "structure") setStructureVisited(true);
-        window.history.replaceState(null, "", next === "structure" ? "#structure" : next === "evidence" ? "#paper-evidence" : next === "details" ? "#model-details" : "#experiment");
+        window.history.replaceState(null, "", HASH[next] ?? "#experiment");
+    }
+    const papers = useMemo(()=>listPapers(turn, workspace.experiment), [
+        turn,
+        workspace.experiment
+    ]);
+    const tabs = reader ? [
+        ...VIEWS,
+        {
+            id: "reader",
+            label: "Delve deeper",
+            hint: reader.title
+        }
+    ] : VIEWS;
+    function openPaper(paper) {
+        setReader(paper);
+        setView("reader");
+        window.history.replaceState(null, "", "#paper-reader");
+        requestAnimationFrame(()=>document.getElementById("view-reader")?.scrollIntoView({
+                block: "start",
+                behavior: "smooth"
+            }));
+    }
+    function closePaper() {
+        setReader(null);
+        selectView("evidence");
     }
     useEffect(()=>{
         if (view !== "simulation") timeline.pause();
@@ -102,7 +144,7 @@ export function PlotPreview({ initialExperiment, initialResult = null, onResultI
                 className: "workspace-viewbar",
                 role: "tablist",
                 "aria-label": "Experiment views",
-                children: VIEWS.map((item)=>/*#__PURE__*/ _jsx("button", {
+                children: tabs.map((item)=>/*#__PURE__*/ _jsx("button", {
                         id: `tab-${item.id}`,
                         role: "tab",
                         "aria-selected": view === item.id,
@@ -116,13 +158,22 @@ export function PlotPreview({ initialExperiment, initialResult = null, onResultI
                                 'End'
                             ].includes(event.key)) {
                                 event.preventDefault();
-                                const index = VIEWS.findIndex((v)=>v.id === view), next = event.key === 'Home' ? 0 : event.key === 'End' ? VIEWS.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + VIEWS.length) % VIEWS.length;
-                                selectView(VIEWS[next].id);
-                                document.getElementById(`tab-${VIEWS[next].id}`)?.focus();
+                                const index = tabs.findIndex((v)=>v.id === view), next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+                                selectView(tabs[next].id);
+                                document.getElementById(`tab-${tabs[next].id}`)?.focus();
                             }
                         },
                         onClick: ()=>selectView(item.id),
-                        children: item.label
+                        "data-tab": item.id,
+                        children: item.id === 'reader' ? /*#__PURE__*/ _jsxs(_Fragment, {
+                            children: [
+                                /*#__PURE__*/ _jsx("span", {
+                                    className: "viewbar-reader-dot",
+                                    "aria-hidden": "true"
+                                }),
+                                item.label
+                            ]
+                        }) : item.label
                     }, item.id))
             }),
             workspace.error && /*#__PURE__*/ _jsx("p", {
@@ -275,6 +326,10 @@ export function PlotPreview({ initialExperiment, initialResult = null, onResultI
                 "aria-labelledby": "tab-evidence",
                 hidden: view !== 'evidence',
                 children: [
+                    /*#__PURE__*/ _jsx(PaperList, {
+                        papers: papers,
+                        onOpen: openPaper
+                    }),
                     currentInterpretation && (!answerShown || !!currentInterpretation.paper_summaries?.length) && /*#__PURE__*/ _jsxs("section", {
                         className: "agent-findings",
                         children: [
@@ -310,25 +365,45 @@ export function PlotPreview({ initialExperiment, initialResult = null, onResultI
                     busy: workspace.busy
                 })
             }),
-            /*#__PURE__*/ _jsxs("details", {
-                className: "result-record",
+            /*#__PURE__*/ _jsxs("div", {
+                id: "view-investigation",
+                role: "tabpanel",
+                "aria-labelledby": "tab-investigation",
+                hidden: view !== 'investigation',
+                className: "investigation-view",
                 children: [
-                    /*#__PURE__*/ _jsx("summary", {
-                        children: "Result provenance and identifiers"
-                    }),
-                    /*#__PURE__*/ _jsxs("p", {
+                    investigation,
+                    /*#__PURE__*/ _jsxs("details", {
+                        className: "result-record",
                         children: [
-                            workspace.result?.result_id ?? 'Pending',
-                            " · ",
-                            workspace.experiment.drug,
-                            " → ",
-                            workspace.experiment.target
+                            /*#__PURE__*/ _jsx("summary", {
+                                children: "Result provenance and identifiers"
+                            }),
+                            /*#__PURE__*/ _jsxs("p", {
+                                children: [
+                                    workspace.result?.result_id ?? 'Pending',
+                                    " · ",
+                                    workspace.experiment.drug,
+                                    " → ",
+                                    workspace.experiment.target
+                                ]
+                            }),
+                            /*#__PURE__*/ _jsx("p", {
+                                children: "All curves and metrics use the accepted scientific service result."
+                            })
                         ]
-                    }),
-                    /*#__PURE__*/ _jsx("p", {
-                        children: "All curves and metrics use the accepted scientific service result."
                     })
                 ]
+            }),
+            /*#__PURE__*/ _jsx("div", {
+                id: "view-reader",
+                role: "tabpanel",
+                "aria-labelledby": "tab-reader",
+                hidden: view !== 'reader',
+                children: reader && /*#__PURE__*/ _jsx(PaperReader, {
+                    paper: reader,
+                    onClose: closePaper
+                })
             })
         ]
     });

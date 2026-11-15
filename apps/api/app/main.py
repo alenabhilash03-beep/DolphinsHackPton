@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import Body, Depends, FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 
 from app.config import Settings, ROOT
 from app.agent.generalized import GeneralizedAgentService
@@ -31,6 +31,7 @@ from app.auth import AuthError, AuthUnavailable, Authenticator, User, supabase_l
 from app.workspaces import Workspace, WorkspaceRegistry
 from app.research.sharing import ShareStore, build_share, configured_summarizer
 from app.schemas.sharing import SharedExperiment, ShareList, ShareRequest
+from app.research.paper_reader import PaperArticle, PaperChatAnswer, PaperChatRequest, PaperReader, article_context, configured_paper_chat, render_pdf
 from app.structures.service import StructureService, resolve as resolve_structure
 from app.schemas.experiment_proposals import ProposalSet
 from app.research.proposals import propose
@@ -223,6 +224,47 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
         try: shares.delete(share_id, user.id)
         except KeyError as exc: raise HTTPException(status_code=404, detail="Shared experiment not found") from exc
         except PermissionError as exc: raise HTTPException(status_code=403, detail=str(exc)) from exc
+
+    # --- Delve deeper: one open-access article as a PDF, with a chat grounded in its text ---
+    papers = PaperReader(workspaces_dir.parent / 'papers', literature=research)
+    api.state.paper_reader = papers
+    api.state.paper_chat = None  # tests inject a scripted responder; production builds one per request
+    pdf_cache: dict[str, bytes] = {}
+
+    def read_paper(key: str) -> PaperArticle:
+        try: return api.state.paper_reader.article(key)
+        except ValueError as exc: raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except Exception as exc: raise HTTPException(status_code=503, detail="Europe PMC did not return this article in time. Please retry.") from exc
+
+    @api.get("/api/papers/{paper_key}", response_model=PaperArticle, tags=["Paper reader"])
+    def paper_article(paper_key: str) -> PaperArticle:
+        """The open-access text of one article (PMCID or PMID), as ordered sections."""
+        return read_paper(paper_key)
+
+    @api.get("/api/papers/{paper_key}/pdf", tags=["Paper reader"], response_class=Response,
+             responses={200: {"content": {"application/pdf": {}}, "description": "A readable PDF of the open-access text"}})
+    def paper_pdf(paper_key: str) -> Response:
+        """A readable PDF rendered from the article's open-access text (Europe PMC does not permit framing its own PDFs)."""
+        article = read_paper(paper_key)
+        if article.key not in pdf_cache:
+            if len(pdf_cache) > 32: pdf_cache.clear()
+            pdf_cache[article.key] = render_pdf(article)
+        return Response(pdf_cache[article.key], media_type="application/pdf",
+                        headers={"Content-Disposition": f'inline; filename="{article.key}.pdf"', "Cache-Control": "private, max-age=3600"})
+
+    @api.post("/api/papers/{paper_key}/chat", response_model=PaperChatAnswer, tags=["Paper reader"])
+    def paper_chat(paper_key: str, request: PaperChatRequest, _user: User = Depends(signed_in)) -> PaperChatAnswer:
+        """Answer a question about one article with Nemotron, grounded only in that article's text."""
+        if request.messages[-1].role != "user":
+            raise HTTPException(status_code=422, detail="The last message must be the user's question.")
+        article = read_paper(paper_key)
+        responder = api.state.paper_chat
+        if responder is None:
+            try: responder = configured_paper_chat(config)
+            except RuntimeError as exc: raise HTTPException(status_code=503, detail="Connect an NVIDIA key to chat with papers.") from exc
+        try: answer = responder(article, request.messages)
+        except Exception as exc: raise HTTPException(status_code=503, detail="Nemotron did not answer in time. Please ask again.") from exc
+        return PaperChatAnswer(answer=answer, content_kind=article.content_kind, context_truncated=article_context(article)[1])
 
     @api.get("/api/auth/me", tags=["Community"])
     def who_am_i(user: User | None = Depends(viewer)) -> dict:

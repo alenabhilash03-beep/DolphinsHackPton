@@ -240,6 +240,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/papers/{paper_key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Paper Article
+         * @description The open-access text of one article (PMCID or PMID), as ordered sections.
+         */
+        get: operations["paper_article_api_papers__paper_key__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/papers/{paper_key}/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Paper Chat
+         * @description Answer a question about one article with Nemotron, grounded only in that article's text.
+         */
+        post: operations["paper_chat_api_papers__paper_key__chat_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/papers/{paper_key}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Paper Pdf
+         * @description A readable PDF rendered from the article's open-access text (Europe PMC does not permit framing its own PDFs).
+         */
+        get: operations["paper_pdf_api_papers__paper_key__pdf_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/preparations": {
         parameters: {
             query?: never;
@@ -725,6 +785,15 @@ export interface components {
             trace_status: string;
             /** Turn Id */
             turn_id: string;
+        };
+        /** ArticleSection */
+        ArticleSection: {
+            /** Heading */
+            heading: string;
+            /** Level */
+            level: number;
+            /** Paragraphs */
+            paragraphs: string[];
         };
         /** Assumption */
         Assumption: {
@@ -1947,6 +2016,74 @@ export interface components {
             elimination_half_life_h: number;
             /** Volume L */
             volume_L: number;
+        };
+        /** PaperArticle */
+        PaperArticle: {
+            /**
+             * Authors
+             * @default []
+             */
+            authors: string[];
+            /**
+             * Content Kind
+             * @enum {string}
+             */
+            content_kind: "full_text" | "abstract";
+            /** Doi */
+            doi?: string | null;
+            /** Journal */
+            journal?: string | null;
+            /** Key */
+            key: string;
+            /** Original Url */
+            original_url: string;
+            /** Pmcid */
+            pmcid?: string | null;
+            /** Pmid */
+            pmid?: string | null;
+            /**
+             * Retrieved At
+             * Format: date-time
+             */
+            retrieved_at: string;
+            /** Sections */
+            sections: components["schemas"]["ArticleSection"][];
+            /** Title */
+            title: string;
+            /**
+             * Truncated
+             * @default false
+             */
+            truncated: boolean;
+            /** Year */
+            year?: string | null;
+        };
+        /** PaperChatAnswer */
+        PaperChatAnswer: {
+            /** Answer */
+            answer: string;
+            /**
+             * Content Kind
+             * @enum {string}
+             */
+            content_kind: "full_text" | "abstract";
+            /** Context Truncated */
+            context_truncated: boolean;
+        };
+        /** PaperChatMessage */
+        PaperChatMessage: {
+            /** Content */
+            content: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "user" | "assistant";
+        };
+        /** PaperChatRequest */
+        PaperChatRequest: {
+            /** Messages */
+            messages: components["schemas"]["PaperChatMessage"][];
         };
         /** PaperSummary */
         PaperSummary: {
@@ -3890,6 +4027,105 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    paper_article_api_papers__paper_key__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                paper_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaperArticle"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    paper_chat_api_papers__paper_key__chat_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                paper_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaperChatRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaperChatAnswer"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    paper_pdf_api_papers__paper_key__pdf_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                paper_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A readable PDF of the open-access text */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

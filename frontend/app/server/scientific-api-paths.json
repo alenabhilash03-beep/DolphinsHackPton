@@ -38,6 +38,15 @@
   "/api/health": [
     "get"
   ],
+  "/api/papers/{paper_key}": [
+    "get"
+  ],
+  "/api/papers/{paper_key}/chat": [
+    "post"
+  ],
+  "/api/papers/{paper_key}/pdf": [
+    "get"
+  ],
   "/api/preparations": [
     "post"
   ],

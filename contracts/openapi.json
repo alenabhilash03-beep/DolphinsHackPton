@@ -475,6 +475,35 @@
         "title": "AgentTurn",
         "type": "object"
       },
+      "ArticleSection": {
+        "additionalProperties": false,
+        "properties": {
+          "heading": {
+            "title": "Heading",
+            "type": "string"
+          },
+          "level": {
+            "maximum": 3.0,
+            "minimum": 1.0,
+            "title": "Level",
+            "type": "integer"
+          },
+          "paragraphs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Paragraphs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "heading",
+          "level",
+          "paragraphs"
+        ],
+        "title": "ArticleSection",
+        "type": "object"
+      },
       "Assumption": {
         "additionalProperties": false,
         "properties": {
@@ -3933,6 +3962,193 @@
           "elimination_half_life_h"
         ],
         "title": "PKParameters",
+        "type": "object"
+      },
+      "PaperArticle": {
+        "additionalProperties": false,
+        "properties": {
+          "authors": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Authors",
+            "type": "array"
+          },
+          "content_kind": {
+            "enum": [
+              "full_text",
+              "abstract"
+            ],
+            "title": "Content Kind",
+            "type": "string"
+          },
+          "doi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doi"
+          },
+          "journal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Journal"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "original_url": {
+            "title": "Original Url",
+            "type": "string"
+          },
+          "pmcid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pmcid"
+          },
+          "pmid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pmid"
+          },
+          "retrieved_at": {
+            "format": "date-time",
+            "title": "Retrieved At",
+            "type": "string"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/ArticleSection"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "truncated": {
+            "default": false,
+            "title": "Truncated",
+            "type": "boolean"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          }
+        },
+        "required": [
+          "key",
+          "title",
+          "content_kind",
+          "sections",
+          "original_url",
+          "retrieved_at"
+        ],
+        "title": "PaperArticle",
+        "type": "object"
+      },
+      "PaperChatAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "answer": {
+            "title": "Answer",
+            "type": "string"
+          },
+          "content_kind": {
+            "enum": [
+              "full_text",
+              "abstract"
+            ],
+            "title": "Content Kind",
+            "type": "string"
+          },
+          "context_truncated": {
+            "title": "Context Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "answer",
+          "content_kind",
+          "context_truncated"
+        ],
+        "title": "PaperChatAnswer",
+        "type": "object"
+      },
+      "PaperChatMessage": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Content",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "content"
+        ],
+        "title": "PaperChatMessage",
+        "type": "object"
+      },
+      "PaperChatRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/PaperChatMessage"
+            },
+            "maxItems": 24,
+            "minItems": 1,
+            "title": "Messages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "messages"
+        ],
+        "title": "PaperChatRequest",
         "type": "object"
       },
       "PaperSummary": {
@@ -9370,6 +9586,157 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/papers/{paper_key}": {
+      "get": {
+        "description": "The open-access text of one article (PMCID or PMID), as ordered sections.",
+        "operationId": "paper_article_api_papers__paper_key__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "paper_key",
+            "required": true,
+            "schema": {
+              "title": "Paper Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaperArticle"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Paper Article",
+        "tags": [
+          "Paper reader"
+        ]
+      }
+    },
+    "/api/papers/{paper_key}/chat": {
+      "post": {
+        "description": "Answer a question about one article with Nemotron, grounded only in that article's text.",
+        "operationId": "paper_chat_api_papers__paper_key__chat_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "paper_key",
+            "required": true,
+            "schema": {
+              "title": "Paper Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaperChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaperChatAnswer"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Paper Chat",
+        "tags": [
+          "Paper reader"
+        ]
+      }
+    },
+    "/api/papers/{paper_key}/pdf": {
+      "get": {
+        "description": "A readable PDF rendered from the article's open-access text (Europe PMC does not permit framing its own PDFs).",
+        "operationId": "paper_pdf_api_papers__paper_key__pdf_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "paper_key",
+            "required": true,
+            "schema": {
+              "title": "Paper Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/pdf": {}
+            },
+            "description": "A readable PDF of the open-access text"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Paper Pdf",
+        "tags": [
+          "Paper reader"
+        ]
       }
     },
     "/api/preparations": {

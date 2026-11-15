@@ -596,6 +596,38 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                                 interpretation: currentInterpretation,
                                 answerShown: answer === 'current',
                                 turn: turn,
+                                investigation: /*#__PURE__*/ _jsxs(_Fragment, {
+                                    children: [
+                                        shown && /*#__PURE__*/ _jsx(NextExperimentProposals, {
+                                            shown: proposalResultForTurn(turn, shown),
+                                            busy: !!busy || controlBusy || !researchAvailable || !backendAvailable,
+                                            onRun: runProposal
+                                        }),
+                                        /*#__PURE__*/ _jsx(InvestigationHistoryPanel, {
+                                            history: currentHistory,
+                                            shownId: shownId,
+                                            busy: !!busy || controlBusy,
+                                            branch: branch,
+                                            onReopen: (id)=>void reopen(id)
+                                        }),
+                                        shown && /*#__PURE__*/ _jsx(ShareExperiment, {
+                                            resultId: shownId,
+                                            defaultTitle: history?.question ?? text,
+                                            busy: !!busy || controlBusy
+                                        }),
+                                        /*#__PURE__*/ _jsxs("details", {
+                                            className: "science-records",
+                                            children: [
+                                                /*#__PURE__*/ _jsx("summary", {
+                                                    children: "Agent paper review"
+                                                }),
+                                                /*#__PURE__*/ _jsx(ResearchPaperReview, {
+                                                    papers: turn?.research_papers ?? []
+                                                })
+                                            ]
+                                        })
+                                    ]
+                                }),
                                 structure: structure !== "unavailable" ? /*#__PURE__*/ _jsx(VisualizationBoundary, {
                                     label: "Experimental structure",
                                     children: /*#__PURE__*/ _jsx(StructureViewer, {
@@ -646,42 +678,6 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                                 shown: shown,
                                 viewer: structure,
                                 onFocusMeasurement: focusMeasurement
-                            }),
-                            shown && /*#__PURE__*/ _jsxs("details", {
-                                className: "science-follow-ups",
-                                children: [
-                                    /*#__PURE__*/ _jsx("summary", {
-                                        children: "Follow-up experiments"
-                                    }),
-                                    /*#__PURE__*/ _jsx(NextExperimentProposals, {
-                                        shown: proposalResultForTurn(turn, shown),
-                                        busy: !!busy || controlBusy || !researchAvailable || !backendAvailable,
-                                        onRun: runProposal
-                                    })
-                                ]
-                            }),
-                            /*#__PURE__*/ _jsx(InvestigationHistoryPanel, {
-                                history: currentHistory,
-                                shownId: shownId,
-                                busy: !!busy || controlBusy,
-                                branch: branch,
-                                onReopen: (id)=>void reopen(id)
-                            }),
-                            shown && /*#__PURE__*/ _jsx(ShareExperiment, {
-                                resultId: shownId,
-                                defaultTitle: history?.question ?? text,
-                                busy: !!busy || controlBusy
-                            }),
-                            /*#__PURE__*/ _jsxs("details", {
-                                className: "science-records",
-                                children: [
-                                    /*#__PURE__*/ _jsx("summary", {
-                                        children: "Papers and sources"
-                                    }),
-                                    /*#__PURE__*/ _jsx(ResearchPaperReview, {
-                                        papers: turn?.research_papers ?? []
-                                    })
-                                ]
                             })
                         ]
                     }),

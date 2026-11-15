@@ -5,12 +5,14 @@
       <div className="hypothesis-glass-art" aria-hidden="true" hidden={!!prepared||!!busy||!!turn||!!record||!!message}><i/><i/><i/></div>
       <div className="visual-stage" hidden={!prepared&&!busy&&!record&&!turn&&!message}>
         {prepared?<PlotPreview initialExperiment={prepared?.configuration ?? fallbackExperiment} initialResult={prepared} onResultChange={onResult} editingLocked={!!busy||!backendAvailable} interpretation={currentInterpretation} answerShown={answer==='current'} turn={turn}
+          investigation={<>
+            {shown&&<NextExperimentProposals shown={proposalResultForTurn(turn,shown)} busy={!!busy||controlBusy||!researchAvailable||!backendAvailable} onRun={runProposal}/>}
+            <InvestigationHistoryPanel history={currentHistory} shownId={shownId} busy={!!busy||controlBusy} branch={branch} onReopen={id=>void reopen(id)}/>
+            {shown&&<ShareExperiment resultId={shownId} defaultTitle={history?.question ?? text} busy={!!busy||controlBusy}/>}
+            <details className="science-records"><summary>Agent paper review</summary><ResearchPaperReview papers={turn?.research_papers??[]}/></details>
+          </>}
           structure={structure!=="unavailable" ? <VisualizationBoundary key={structure} label="Experimental structure"><StructureViewer kind={structure} focusRequest={structureFocus}/></VisualizationBoundary> : <section id="structure" className="structure-panel"><h2>Structure unavailable</h2><p>No verified deposited complex is available for {structureIdentity.drug} → {structureIdentity.target||'unspecified target'}. A compatible numerical experiment can still run without one.</p></section>}/>:<section className="research-waiting" aria-live="polite"><div className={busy?"research-orbit is-running":"research-orbit"} aria-hidden="true"><i/><i/><i/></div><h2>{busy?"Research in progress":record?"Review the missing inputs":message?"The experiment needs attention":"Research prepared"}</h2><p>{busy?"The agent is working from your hypothesis.":record?"Complete the requested inputs to continue.":"Results will appear here when a simulation is accepted."}</p></section>}
         <ScientificAnswer turn={turn} shown={shown} viewer={structure} onFocusMeasurement={focusMeasurement}/>
-        {shown&&<details className="science-follow-ups"><summary>Follow-up experiments</summary><NextExperimentProposals shown={proposalResultForTurn(turn,shown)} busy={!!busy||controlBusy||!researchAvailable||!backendAvailable} onRun={runProposal}/></details>}
-        <InvestigationHistoryPanel history={currentHistory} shownId={shownId} busy={!!busy||controlBusy} branch={branch} onReopen={id=>void reopen(id)}/>
-        {shown&&<ShareExperiment resultId={shownId} defaultTitle={history?.question ?? text} busy={!!busy||controlBusy}/>}
-        <details className="science-records"><summary>Papers and sources</summary><ResearchPaperReview papers={turn?.research_papers??[]}/></details>
       </div>
       <aside className={prepared?"agent-desk":"agent-desk hypothesis-desk"} id="research" aria-label="Research agent">
         <div className="agent-desk-heading"><span className="agent-mark" aria-hidden="true">h.</span><div><h2>{prepared?"Research agent":"Your hypothesis"}</h2><p>{busy?'Working through the scientific tools':researchAvailable?'Ready':'Provider not connected'}</p></div><span className={'agent-presence '+(busy?'working':'')}/></div>

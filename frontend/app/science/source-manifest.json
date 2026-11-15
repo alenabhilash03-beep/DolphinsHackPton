@@ -1,6 +1,6 @@
 {
   "repository": "alenabhilash03-beep/DolphinsHackPton",
-  "revision": "8c876acfdb7abdf5b83d0d6c714289ff95eaa788",
+  "revision": "2c4b62648421b9509c92b3193edcbe16ded97779",
   "files": [
     {
       "path": "lib/example.generated.ts",
@@ -28,7 +28,7 @@
     },
     {
       "path": "components/HypothesisWorkspace.tsx",
-      "source_sha256": "65c01c02426cab6d87a1baab826d3f439b7b194d03953b12b40f33d6e91c6062"
+      "source_sha256": "623d9c9658f06345d4e0f33acccca8849de04907a061682e2bee57a713127c8e"
     },
     {
       "path": "components/InvestigationHistoryPanel.tsx",
@@ -43,12 +43,16 @@
       "source_sha256": "4d16f52e8f9c01795ccc5e865d83133e44f2732294dd4dc6e324d6ac85673d45"
     },
     {
+      "path": "components/PaperReader.tsx",
+      "source_sha256": "4d9b40060b1cafc7dfc86c0bd4f07320f3837af59a7287405ec601ea86c795f1"
+    },
+    {
       "path": "components/PaperSummaries.tsx",
       "source_sha256": "2441815f941c113b1a3dac16f2ae7c87fcdcafe5bfcddaaf64d1c6d3729f3542"
     },
     {
       "path": "components/PlotPreview.tsx",
-      "source_sha256": "55868da527f0e81fdcc6c06da8cfbb085d4ab383cd0d889d4cb0944195449ace"
+      "source_sha256": "eab53fd2ef35576f6d5c9e5ea0ffcb3920361e458852bf19093ce347954a2899"
     },
     {
       "path": "components/PreparationAnswers.tsx",
@@ -132,7 +136,7 @@
     },
     {
       "path": "lib/contracts.generated.ts",
-      "source_sha256": "5a98dcc10f052d01bb38e11e468708770238c78385ed0ea8661396ece878ac94"
+      "source_sha256": "8ac93d5e89c6445c1afb80fb82ff933a804c23b931f118488209d4d97d4b6af2"
     },
     {
       "path": "lib/contracts.ts",
@@ -149,6 +153,10 @@
     {
       "path": "lib/log-control.ts",
       "source_sha256": "94c110e18a768b34b5528add9959651f1e8ab4973fe214ab819a00774330d5dd"
+    },
+    {
+      "path": "lib/paper-list.ts",
+      "source_sha256": "6cc9190be6c8b91dbab35de5ac2f2cb35b95768833ce8cff71f2f8a260261504"
     },
     {
       "path": "lib/plot-spec.ts",

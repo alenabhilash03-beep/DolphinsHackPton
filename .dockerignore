@@ -11,3 +11,6 @@ work
 *.db
 *.db-shm
 *.db-wal
+frontend/.next
+frontend/.next-local-dev
+frontend/.local-preview

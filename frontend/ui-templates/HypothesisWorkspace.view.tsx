@@ -1,5 +1,5 @@
   return <div className="hypothesim-workspace editorial-workspace science-experiment" data-has-result={!!prepared}>
-    <header className="science-heading"><div><p className="eyebrow">{prepared?<>Experiment · {visible.drug} / {visible.target}</>:"Hypothesis → Evidence → Simulation"}</p><h1>{prepared?visible.title:"New experiment"}</h1>{!prepared&&<p className="hypothesis-intro">Start with the hypothesis you want to test.</p>}</div><div className="science-heading-actions">{toolbar}<span className="preview-revision">Local preview · 03</span><button type="button" className="quiet-button" onClick={()=>void openDemo()} disabled={!!busy}>Load reference</button></div></header>
+    <header className="science-heading"><div><p className="eyebrow">{prepared?<>Experiment · {visible.drug} / {visible.target}</>:"Hypothesis → Evidence → Simulation"}</p><h1>{prepared?visible.title:"New experiment"}</h1>{!prepared&&<p className="hypothesis-intro">Start with the hypothesis you want to test.</p>}</div><div className="science-heading-actions">{toolbar}<button type="button" className="quiet-button" onClick={()=>void openDemo()} disabled={!!busy}>Load reference</button></div></header>
     {prepared&&<div className="study-context"><span className="study-state-dot"/><span>{saved&&shown?.result_id===prepared?.result_id?'Saved reference':busy?'Agent running':'Simulation result'}</span></div>}
     <div className="scientific-scene">
       <div className="hypothesis-glass-art" aria-hidden="true" hidden={!!prepared||!!busy||!!turn||!!record||!!message}><i/><i/><i/></div>
@@ -9,6 +9,7 @@
         <ScientificAnswer turn={turn} shown={shown} viewer={structure} onFocusMeasurement={focusMeasurement}/>
         {shown&&<details className="science-follow-ups"><summary>Follow-up experiments</summary><NextExperimentProposals shown={proposalResultForTurn(turn,shown)} busy={!!busy||controlBusy||!researchAvailable||!backendAvailable} onRun={runProposal}/></details>}
         <InvestigationHistoryPanel history={currentHistory} shownId={shownId} busy={!!busy||controlBusy} branch={branch} onReopen={id=>void reopen(id)}/>
+        {shown&&<ShareExperiment resultId={shownId} defaultTitle={history?.question ?? text} busy={!!busy||controlBusy}/>}
         <details className="science-records"><summary>Papers and sources</summary><ResearchPaperReview papers={turn?.research_papers??[]}/></details>
       </div>
       <aside className={prepared?"agent-desk":"agent-desk hypothesis-desk"} id="research" aria-label="Research agent">
@@ -27,6 +28,7 @@
           <form onSubmit={research} className="agent-composer"><label htmlFor="scientific-hypothesis">Hypothesis</label><textarea id="scientific-hypothesis" rows={5} placeholder="What do you predict, and which conditions would you like to compare?" required maxLength={12000} value={text} onChange={event=>setText(event.target.value)} disabled={!!busy}/>
             <fieldset className="hypothesis-system" disabled={!!busy}><legend>Biological system</legend><div className="hypothesis-system-names"><label>Drug or antibody<input placeholder="Drug name" required maxLength={200} value={drug} onChange={event=>setDrug(event.target.value)}/></label><label>Target <span className="field-optional">(optional)</span><input placeholder="Target name" value={target} onChange={event=>setTarget(event.target.value)}/></label></div><details className="agent-system-fields"><summary>Experimental options</summary><label>Administration route<select value={route} onChange={event=>setRoute(event.target.value)}><option value="">Ask the agent</option><option value="iv_infusion">IV infusion</option><option value="hypothetical_iv_bolus">Hypothetical IV bolus</option><option value="oral">Oral · model assessment</option><option value="subcutaneous">Subcutaneous · model assessment</option></select></label><label className="agent-checkbox"><input type="checkbox" checked={baseline} onChange={event=>setBaseline(event.target.checked)}/>Prepare a baseline with compatible evidence.</label></details></fieldset>
             {researchRouteNotice(drug,route)&&<p className="scope-note">{researchRouteNotice(drug,route)}</p>}
+            <SignInPrompt action="run the research agent"/>
             <button className="primary-button" disabled={!!busy||!researchAvailable||!backendAvailable||!text.trim()||!drug.trim()}>{busy?'Researching…':'Research and simulate'}<span aria-hidden="true">↗</span></button>
           </form>
 

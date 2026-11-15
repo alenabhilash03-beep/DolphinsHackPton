@@ -15,6 +15,8 @@ import { answerState } from "../lib/synthesis-view.js";
 import { NextExperimentProposals } from "./NextExperimentProposals.jsx";
 import { proposalRequest, proposalResultForTurn } from "../lib/proposal-view.js";
 import { InvestigationHistoryPanel } from "./InvestigationHistoryPanel.jsx";
+import { SignInPrompt } from "./AccountMenu.jsx";
+import { ShareExperiment } from "./ShareExperiment.jsx";
 import { branchRequired, historyFor, restorationAfterJob } from "../lib/history-view.js";
 const PRIMARY = "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const STORAGE = "hypothesim-agent-job-v1";
@@ -540,10 +542,6 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                         className: "science-heading-actions",
                         children: [
                             toolbar,
-                            /*#__PURE__*/ _jsx("span", {
-                                className: "preview-revision",
-                                children: "Local preview · 03"
-                            }),
                             /*#__PURE__*/ _jsx("button", {
                                 type: "button",
                                 className: "quiet-button",
@@ -661,6 +659,11 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                                 busy: !!busy || controlBusy,
                                 branch: branch,
                                 onReopen: (id)=>void reopen(id)
+                            }),
+                            shown && /*#__PURE__*/ _jsx(ShareExperiment, {
+                                resultId: shownId,
+                                defaultTitle: history?.question ?? text,
+                                busy: !!busy || controlBusy
                             }),
                             /*#__PURE__*/ _jsxs("details", {
                                 className: "science-records",
@@ -968,6 +971,9 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                                         researchRouteNotice(drug, route) && /*#__PURE__*/ _jsx("p", {
                                             className: "scope-note",
                                             children: researchRouteNotice(drug, route)
+                                        }),
+                                        /*#__PURE__*/ _jsx(SignInPrompt, {
+                                            action: "run the research agent"
                                         }),
                                         /*#__PURE__*/ _jsxs("button", {
                                             className: "primary-button",

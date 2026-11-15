@@ -226,7 +226,7 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
 
     @api.get("/api/auth/me", tags=["Community"])
     def who_am_i(user: User | None = Depends(viewer)) -> dict:
-        return {'signed_in': user is not None, 'auth_mode': config.auth_mode,
+        return {'signed_in': user is not None, 'auth_mode': config.auth_mode, 'id': user.id if user else None,
                 'name': user.name if user else None, 'avatar_url': user.avatar_url if user else None}
 
     @api.get("/api/health", response_model=HealthResponse)

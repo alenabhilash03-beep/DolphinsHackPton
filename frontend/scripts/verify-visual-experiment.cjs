@@ -24,7 +24,8 @@ async function main(){await swc.loadBindings();const originalJS=require.extensio
  assert.ok(document.querySelector('.binding-panel canvas'));
  assert.equal(document.getElementById('experiment-conditions').hidden,true,'Numbers are available on demand');
  assert.ok(document.querySelector('.study-context').textContent.includes('Saved reference'));
- assert.ok(document.querySelector('.agent-connection-note'),'Provider availability is explicit');
+ const researchAvailable=(await (await realFetch(new URL('/api/health',process.env.HYPOTHESIM_TEST_URL||'http://127.0.0.1:3011'))).json()).research_available;
+ assert.equal(!!document.querySelector('.agent-connection-note'),!researchAvailable,'Provider availability is explicit');
  const originalId=document.querySelector('.result-record p').textContent;
  const buttons=()=>[...document.querySelectorAll('button')],button=label=>buttons().find(button=>button.textContent.trim()===label);
  await act(async()=>button('Show conditions').click());
@@ -36,7 +37,7 @@ async function main(){await swc.loadBindings();const originalJS=require.extensio
  for(let attempt=0;attempt<60&&(!document.querySelector('.history-panel')||!document.querySelector('.proposal-cards'));attempt++)await act(async()=>delay(100));
  assert.ok(document.querySelector('.proposal-cards'),'Follow-up proposals are returned by the latest scientific API');
  assert.ok(document.querySelectorAll('.history-steps>li').length>=2,'The direct scientific edit appears in persistent investigation history');
- assert.ok([...document.querySelectorAll('.proposal-cards button')].every(node=>node.disabled),'Running an agent proposal requires a connected provider');
+ assert.ok([...document.querySelectorAll('.proposal-cards button')].every(node=>node.disabled===!researchAvailable),'Running an agent proposal requires a connected provider');
  await act(async()=>button('Reopen').click());
  for(let attempt=0;attempt<60&&document.querySelector('.result-record p').textContent!==originalId;attempt++)await act(async()=>delay(100));
  assert.equal(document.querySelector('.result-record p').textContent,originalId,'History reopens the exact earlier result');
@@ -52,7 +53,7 @@ async function main(){await swc.loadBindings();const originalJS=require.extensio
  await act(async()=>button('Model details').click());assert.equal(document.getElementById('view-details').hidden,false);
  await act(async()=>button('New hypothesis').click());assert.equal(document.getElementById('agent-panel-research').hidden,false);
  assert.ok(document.getElementById('scientific-hypothesis').value.includes('half-life'));
- assert.equal(document.querySelector('#agent-panel-research .primary-button').disabled,true,'An absent key cannot look like a successful research run');
+ assert.equal(document.querySelector('#agent-panel-research .primary-button').disabled,!researchAvailable,'An absent key cannot look like a successful research run; a configured one enables research');
  await act(async()=>root.render(React.createElement(ScientificExperiment,{key:'another-new',intent:{mode:'research',nonce:2}})));
  assert.equal(document.getElementById('scientific-hypothesis').value,'','A second New experiment starts blank');
  assert.equal(document.querySelectorAll('[data-test-chart=Plotly]').length,0,'A second New experiment clears the previous result');

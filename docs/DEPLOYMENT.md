@@ -1,6 +1,6 @@
 # Going live — the simplest pipeline
 
-Hypothesim ships as **one Docker image** (`Dockerfile`). The web app listens on the public port and the scientific API runs inside the same container. Any host that runs a Dockerfile can serve it. Sign-in uses **Supabase Auth with Google**; experiments and the community feed live in the container's data folder (`/data`).
+Hypothesim ships as **one Docker image** (`Dockerfile`). The visual web app (`frontend/`) listens on the public port and the scientific API runs inside the same container. Any host that runs a Dockerfile can serve it. Sign-in uses **Supabase Auth with Google**; experiments, each user's notes, papers and saved experiments (`/data/workspaces/visual`), and the community feed live in the container's data folder (`/data`).
 
 You need **three environment variables**:
 
@@ -22,7 +22,7 @@ Railway builds the Dockerfile straight from GitHub and keeps `/data` on a volume
 4. **Settings → Networking → Generate Domain**. This is your live URL (`https://<name>.up.railway.app`).
 5. Finish Google sign-in (next section) with that URL.
 
-Health check: `https://<your-url>/api/backend-health` should show `"status":"ok"` and `"ai_credentials_configured": true`.
+Health check: `https://<your-url>/api/health` should show `"status":"ok"` and `"ai_credentials_configured": true`.
 
 ## Google sign-in (Supabase + Google Cloud), about 10 minutes
 
@@ -48,7 +48,7 @@ docker run -p 3000:3000 -v hypothesim-data:/data -e NVIDIA_API_KEY=... -e SUPABA
 cloudflared tunnel --url http://localhost:3000
 ```
 
-`cloudflared` prints a public `https://<random>.trycloudflare.com` address; no Cloudflare account is needed. Without Docker, put the same three variables plus `AUTH_MODE=supabase` in `.env` and run `uv run python scripts/start_local.py --build`, then tunnel port 3002.
+`cloudflared` prints a public `https://<random>.trycloudflare.com` address; no Cloudflare account is needed. Without Docker, run `bash scripts/start_container.sh` from a checkout after `uv sync --locked --no-dev` and `cd frontend && npm ci && npm run build`, with the same three variables plus `DATA_DIR` and `PORT=3000` exported, then tunnel port 3000.
 
 ## Acceptance on the live URL
 

@@ -1,4 +1,4 @@
-# Railway: deploy the root Dockerfile; the web health route also checks the API behind it.
+# Railway: deploy the root Dockerfile; /api/health passes through the web app to the API behind it.
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
@@ -6,6 +6,6 @@ dockerfilePath = "Dockerfile"
 [deploy]
 # Overrides any start command left in the dashboard (for example "npm start" from auto-detection).
 startCommand = "bash scripts/start_container.sh"
-healthcheckPath = "/api/backend-health"
+healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"

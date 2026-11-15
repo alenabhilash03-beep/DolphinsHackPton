@@ -21,6 +21,7 @@ Researchers can run follow-up experiments, keep an investigation history, sign i
 | Code | GitHub `alenabhilash03-beep/DolphinsHackPton`, branch **`claude/fervent-planck-cvxgmf`** (all current work; `main` is older and has no Dockerfile) |
 | Hosting | Railway: the service behind hypothesimweb-production.up.railway.app; one Docker container (web + API) |
 | Sign-in | Supabase project `quxdunkxdtxnjgbxxovc` (Auth → Google provider) + a Google Cloud OAuth client |
+| Website code | `frontend/` (the dark glass visual frontend; this is what Railway serves). Science screens in `frontend/app/science` are generated from `apps/web` by `frontend/scripts/sync-science-local.cjs`; `apps/web` stays as the technical source and is not deployed. |
 | Roadmap and status | `docs/IMPLEMENTATION_PLAN.md` (canonical) |
 | Demo script | `docs/DEMO_EXAMPLES.md` (the two demo questions and what to say) |
 | Deployment guide | `docs/DEPLOYMENT.md` |
@@ -45,7 +46,7 @@ Edit, commit and push to that branch. A build takes about 5–10 minutes, and th
 These were the causes of the first failed deploys:
 
 - **Settings → Source → Branch connected to production:** `claude/fervent-planck-cvxgmf` (or `main` after a merge; see below).
-- **Settings → Source → Watch Paths:** **empty.** Railway auto-filled `/apps/web/**`, which ignores pushes outside `apps/web`.
+- **Settings → Source → Watch Paths:** **empty.** Railway auto-filled `/apps/web/**`, which ignores pushes elsewhere, including `frontend/`.
 - **Settings → Deploy → Custom Start Command:** **empty.** Railway auto-filled an `npm` command; `railway.toml` now sets `bash scripts/start_container.sh`, which also takes precedence.
 - **Builder:** Dockerfile (from `railway.toml`).
 - **Variables:** `NVIDIA_API_KEY`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `PORT=3000`. Values live only in Railway, never in the repo.
@@ -70,16 +71,10 @@ Open a pull request from `claude/fervent-planck-cvxgmf` into `main`, merge it, t
 Requirements: Python 3.12, Node 22, [uv](https://docs.astral.sh/uv/).
 
 ```bash
-uv sync --locked && npm ci && cp .env.example .env
+python3 frontend/start_preview.py
 ```
 
-Set `NVIDIA_API_KEY` in `.env`. Leave the Supabase variables unset for single-user local mode with no sign-in.
-
-```bash
-uv run python scripts/start_local.py --build
-```
-
-Open http://127.0.0.1:3002. Or run exactly what Railway runs:
+This installs what it needs, starts the API and the visual frontend, and opens the page (normally http://127.0.0.1:3011). It runs as a single local researcher with no sign-in; the NVIDIA key can be entered on the setup page. Or run exactly what Railway runs, with sign-in when the Supabase variables are set:
 
 ```bash
 docker build -t hypothesim . && docker run -p 3000:3000 -v hypothesim-data:/data -e NVIDIA_API_KEY=... hypothesim
@@ -94,6 +89,12 @@ uv run pytest
 ```bash
 npm run typecheck && npm run test:workspace --workspace apps/web && npm run contracts:check && npm run build
 ```
+
+```bash
+cd frontend && npm run build && npm run test:science && npm run test:ui && npm run test:models && npm run test:entry
+```
+
+With the preview running: `HYPOTHESIM_TEST_URL=http://127.0.0.1:3011 npm run test:visual` (also `test:hypothesis`, `test:research`, `test:glass`, `test:reveal`). After changing `apps/web` science components, run `node scripts/sync-science-local.cjs ..` from `frontend/` and rerun the checks.
 
 After changing Python schemas, regenerate contracts with `uv run npm run contracts:generate`.
 

@@ -106,9 +106,11 @@ import { PaperSummaries } from "./PaperSummaries.jsx";
                                     cached.pmid,
                                     " · abstract ",
                                     cached.abstract_available ? "indexed" : "not indexed",
-                                    "· full text ",
+                                    " · ",
+                                    "full text ",
                                     cached.full_text_status === "open_access_link" ? "open-access link indexed" : "not confirmed",
-                                    "· cached ",
+                                    " · ",
+                                    "cached ",
                                     cached.retrieved_at.slice(0, 10)
                                 ]
                             })

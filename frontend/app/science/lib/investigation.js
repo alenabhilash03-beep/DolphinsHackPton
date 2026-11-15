@@ -195,6 +195,28 @@ export function parameterLabel(path) {
     };
     return names[path] ?? path.replace(/^administration\.(\d+)\./, (_, n)=>`Dose ${Number(n) + 1} · `).replace("amount_mg", "amount").replace("start_h", "start").replace("duration_h", "infusion duration");
 }
+/** "1 tool invocation", "3 tool invocations". */ export function plural(count, singular, pluralForm = `${singular}s`) {
+    return `${count} ${count === 1 ? singular : pluralForm}`;
+}
+const SUPERSCRIPT = {
+    "-": "⁻",
+    "0": "⁰",
+    "1": "¹",
+    "2": "²",
+    "3": "³",
+    "4": "⁴",
+    "5": "⁵",
+    "6": "⁶",
+    "7": "⁷",
+    "8": "⁸",
+    "9": "⁹"
+};
+/** Display form of a canonical unit: "nM^-1 h^-1" → "nM⁻¹ h⁻¹"; the dimensionless "1" is omitted. */ export function unitLabel(unit) {
+    if (!unit || unit === "1") return "";
+    return unit.replace(/\^(-?\d+)/g, (_, power)=>[
+            ...power
+        ].map((c)=>SUPERSCRIPT[c] ?? c).join(""));
+}
 export function scientificNumber(value) {
     if (value == null) return "None";
     if (value !== 0 && (Math.abs(value) < .001 || Math.abs(value) >= 100000)) return value.toExponential(3);

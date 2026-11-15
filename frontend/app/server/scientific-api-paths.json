@@ -26,6 +26,9 @@
   "/api/agent/turns/{turn_id}": [
     "get"
   ],
+  "/api/auth/me": [
+    "get"
+  ],
   "/api/contracts/experiments/validate": [
     "post"
   ],
@@ -66,6 +69,14 @@
     "get"
   ],
   "/api/research/search": [
+    "get"
+  ],
+  "/api/shares": [
+    "get",
+    "post"
+  ],
+  "/api/shares/{share_id}": [
+    "delete",
     "get"
   ],
   "/api/simulations": [

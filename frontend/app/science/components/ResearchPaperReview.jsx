@@ -1,4 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { plural, unitLabel } from "../lib/investigation.js";
 export function ResearchPaperReview({ papers }) {
     if (!papers.length) return null;
     return /*#__PURE__*/ _jsxs("section", {
@@ -35,8 +36,7 @@ export function ResearchPaperReview({ papers }) {
                                 " · ",
                                 paper.source.retrieval_status,
                                 " · ",
-                                (paper.extraction.parameters ?? []).length,
-                                " cited candidate value(s)"
+                                plural((paper.extraction.parameters ?? []).length, "cited candidate value")
                             ]
                         }),
                         paper.use_in_simulation === "reviewed_reference_separate" && /*#__PURE__*/ _jsx("p", {
@@ -67,7 +67,7 @@ export function ResearchPaperReview({ papers }) {
                                                             ": ",
                                                             value.original_value,
                                                             " ",
-                                                            value.original_unit
+                                                            unitLabel(value.original_unit)
                                                         ]
                                                     }),
                                                     " · reported candidate · applicability not yet approved"

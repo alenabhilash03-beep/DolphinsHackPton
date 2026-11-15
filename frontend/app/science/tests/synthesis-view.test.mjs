@@ -44,6 +44,7 @@ test('no-result research gives an evidence-only answer that earlier curves canno
   assert.equal(answerState(t,result('sim-earlier')),'evidence_only');
   assert.deepEqual(keyQuantities(t),[]);
   assert.equal(verdictLabel(t.synthesis),'Not determined');
+  assert.equal(verdictLabel(t.synthesis,true),'Follow-up experiment result');
   assert.match(basisLabel(t.synthesis),/no simulation was run/);
   assert.equal(findingLinks(t,t.synthesis.evidence_findings[0])[0].simulationUse,'No simulation was run from this source.');
 });

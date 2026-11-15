@@ -46,7 +46,7 @@ def test_local_mode_needs_no_sign_in(tmp_path):
 
 def test_agent_and_preparations_require_sign_in_but_simulation_and_demo_do_not(hosted):
     client = TestClient(hosted)
-    assert client.get('/api/auth/me').json() == {'signed_in': False, 'auth_mode': 'supabase', 'name': None, 'avatar_url': None}
+    assert client.get('/api/auth/me').json() == {'signed_in': False, 'auth_mode': 'supabase', 'id': None, 'name': None, 'avatar_url': None}
     assert simulate(client).status_code == 200
     assert client.get('/api/demo').status_code == 200
     for method, path in [('post', '/api/agent/jobs/research'), ('get', '/api/agent/jobs/' + 'a' * 32), ('get', '/api/agent/results/x'),
@@ -55,6 +55,7 @@ def test_agent_and_preparations_require_sign_in_but_simulation_and_demo_do_not(h
         assert response.status_code == 401, path
     assert client.get('/api/shares', headers={'Authorization': 'Bearer not-a-real-token-0000000'}).status_code == 401
     assert client.get('/api/auth/me', headers=ALICE).json()['name'] == 'Alice Ng'
+    assert client.get('/api/auth/me', headers=ALICE).json()['id'] == USERS['token-alice-0123456789abcdef']['id']
     # Follow-up proposals are deterministic and visible signed out; running one still needs an account.
     anonymous = simulate(client).json()
     assert client.get(f"/api/agent/results/{anonymous['result_id']}/proposals").status_code == 200

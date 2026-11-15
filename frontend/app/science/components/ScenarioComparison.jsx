@@ -86,8 +86,8 @@ import { scenarioColor } from "../lib/plot-spec.js";
                                     }),
                                     /*#__PURE__*/ _jsxs("dd", {
                                         children: [
-                                            scenario.administration.length,
-                                            " event(s) · first amount ",
+                                            scenario.administration.length === 1 ? "1 dose" : `${scenario.administration.length} doses`,
+                                            " · first amount ",
                                             scenario.administration[0].amount_mg.toFixed(1),
                                             " mg"
                                         ]

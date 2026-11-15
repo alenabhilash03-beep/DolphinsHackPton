@@ -26,5 +26,7 @@ import './unified-glass.css';
 import './typography.css';
 import './homepage-single.css';
 import './article-summaries.css';
+import './community.css';
+import {AuthProvider} from './science/lib/auth.jsx';
 export const metadata = {icons:{icon:[{url:'/favicon.svg',type:'image/svg+xml'},{url:'/favicon.ico',sizes:'any'}]},title:'Hypothesim — Research workbench',description:'Turn scientific hypotheses into interactive computational experiments.'};
-export default function Layout({children}){return <html lang="en"><head><link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/><link rel="preload" href="/fonts/inter-500.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/></head><body>{children}</body></html>}
+export default function Layout({children}){return <html lang="en"><head><link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/><link rel="preload" href="/fonts/inter-500.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/></head><body><AuthProvider>{children}</AuthProvider></body></html>}

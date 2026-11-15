@@ -1,8 +1,8 @@
 # Hypothesim visual frontend
 
-This is the reviewed black-glass frontend: the animated entry page, research desk, blank hypothesis-first experiments, visual simulation workspace, paper library, notes and exports. It uses the existing Python scientific backend in `../apps/api`; it does not replace or modify that backend or the technical frontend in `../apps/web`.
+This is the reviewed black-glass frontend: the animated entry page, research desk, blank hypothesis-first experiments, visual simulation workspace, paper library, notes and exports. It uses the Python scientific backend in `../apps/api`, and it is the website deployed by the root `Dockerfile` (Railway). The technical frontend in `../apps/web` remains the source of the generated science screens.
 
-The scientific presentation is synchronized from repository revision `14896c873f325832539ddde17b35bd425081a9e8`, including grounded answers, structural measurement handoff, exact follow-up proposals and investigation history/branching. New experiments start blank. References and saved results open only through an explicit user action.
+The scientific presentation is synchronized from `apps/web` (revision recorded in `app/science/source-manifest.json`), including grounded answers, structural measurement handoff, exact follow-up proposals and investigation history/branching. New experiments start blank. References and saved results open only through an explicit user action.
 
 ## Start
 
@@ -16,7 +16,7 @@ Requires Node.js 22+ and an existing Python 3 launcher. The script installs lock
 
 The NVIDIA key can be entered in the local browser form. It is kept in `frontend/.local-preview/provider.env`, ignored by Git. Existing backend environment configuration remains supported. No key is required to explicitly load the reference, use the SciPy controls, or inspect its molecular structure. Live research, natural-language revisions and proposal execution need a working provider.
 
-The local preview uses a local identity and local notes/files. It is not a public account-authentication deployment.
+The local preview uses a local identity and local notes/files. When hosted (`HYPOTHESIM_HOSTED=1`, set by `scripts/start_container.sh`), users sign in with Google through Supabase; the sign-in token is forwarded to the scientific API, which verifies it, and each user's notes, papers and experiments are stored separately under `$WORKSPACES_DIR/visual`. Sharing and the Community feed use the API's `/api/shares` endpoints.
 
 ## Development and checks
 

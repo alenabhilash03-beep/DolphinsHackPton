@@ -22,7 +22,7 @@ export function StructureViewer({ kind = "trastuzumab", focusRequest = null }) {
     const [scriptReady, setScriptReady] = useState(false), [loaded, setLoaded] = useState(false), [error, setError] = useState(null), [attempt, setAttempt] = useState(0);
     const [model, setModel] = useState(null), [verified, setVerified] = useState(false);
     const [visible, setVisible] = useState(profile.chains.map((c)=>c.id)), [surface, setSurface] = useState(false), [contacts, setContacts] = useState(true);
-    const [selected, setSelected] = useState(null), [pair, setPair] = useState(null), [notice, setNotice] = useState("Click a protein residue or the imatinib ligand to inspect deposited geometry.");
+    const [selected, setSelected] = useState(null), [pair, setPair] = useState(null), [notice, setNotice] = useState(imatinib ? "Click a protein residue or the imatinib ligand to inspect deposited geometry." : "Click a residue on the antibody or HER2 to inspect deposited geometry.");
     const [inspectChain, setInspectChain] = useState(imatinib ? "A" : "C"), [residueNumber, setResidueNumber] = useState(imatinib ? "315" : "557");
     const [step, setStep] = useState(-1), [playing, setPlaying] = useState(false), [systemReduced, setSystemReduced] = useState(false), [reduceMotion, setReduceMotion] = useState(false);
     const reduced = systemReduced || reduceMotion;
@@ -280,7 +280,7 @@ export function StructureViewer({ kind = "trastuzumab", focusRequest = null }) {
             if (refs.length) v.addStyle(selection(refs), {
                 stick: {
                     radius: .15,
-                    colorscheme: "element",
+                    colorscheme: "Jmol",
                     opacity: pair ? 0.25 : 1
                 }
             });

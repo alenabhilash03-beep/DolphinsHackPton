@@ -134,7 +134,7 @@ export function buildScientificPlot(result, kind, cursorTimeHours, options = {})
             paper_bgcolor: "#302b27",
             plot_bgcolor: "#302b27",
             font: {
-                family: "Inter, Helvetica Neue, Arial, sans-serif",
+                family: "Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
                 color: "#b9ada2",
                 size: 10
             },

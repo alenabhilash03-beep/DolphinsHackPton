@@ -131,7 +131,7 @@ function Chips({ chips }) {
                             /*#__PURE__*/ _jsx("span", {
                                 className: "answer-verdict",
                                 "data-verdict": synthesis.answer?.verdict ?? synthesis.status,
-                                children: verdictLabel(synthesis)
+                                children: verdictLabel(synthesis, !!turn?.parent_result_id)
                             }),
                             /*#__PURE__*/ _jsx("span", {
                                 className: "answer-basis",

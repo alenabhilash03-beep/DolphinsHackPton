@@ -147,14 +147,6 @@
 
 /* Editorial research workspace: open composition, soft working surfaces, precise copy. */
 .backend-workspace .editorial-workspace { --ink:#322D29; --muted:#65594F; --line:#AC9C8D45; --accent:#72383D; color:var(--ink); font:14px/1.7 Arial,Helvetica,sans-serif; padding:0 48px 48px 144px; }
-.backend-workspace .editorial-workspace .workspace-rail { position:fixed; inset:0 auto 0 0; z-index:12; width:96px; background:#39322e; color:#d1c7bd; display:flex; flex-direction:column; align-items:center; padding:32px 8px 24px; overflow-y:auto; }
-.backend-workspace .editorial-workspace .rail-monogram { font:italic 36px Georgia,serif; text-decoration:none; color:#d1c7bd; margin-bottom:32px; }
-.backend-workspace .rail-caption { font-size:10px; color:#d1c7bd; margin-bottom:24px; }
-.backend-workspace .workspace-rail nav { width:100%; display:flex; flex-direction:column; gap:16px; }
-.backend-workspace .editorial-workspace .workspace-rail nav a { display:flex; flex-direction:column; gap:8px; align-items:center; padding:12px 4px; font-size:11px; color:#d1c7bd; text-decoration:none; border-radius:16px; }
-.backend-workspace .workspace-rail nav a span { font:18px Georgia,serif; color:#d1c7bd; }
-.backend-workspace .editorial-workspace .workspace-rail nav a:hover { background:#39322e; color:#d1c7bd; }
-.backend-workspace .editorial-workspace .rail-home { color:#d1c7bd; font-size:10px; margin-top:auto; padding-top:48px; text-decoration:none; }
 .backend-workspace .editorial-workspace .workspace-header { padding:24px 0; max-width:1440px; gap:24px; }
 .backend-workspace .editorial-workspace .workspace-brand { color:#d1c7bd!important; font-size:23px; font-weight:500; }
 .backend-workspace .editorial-workspace .workspace-brand span { color:#d1c7bd; }
@@ -290,7 +282,7 @@
 .backend-workspace ::selection { background:#39322e; }
 .backend-workspace .editorial-workspace { --ink:#18283e; --muted:#56677c; --line:#d8e1ec; --accent:#087e95; font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; font-size:13px; line-height:1.55; background:#39322e; padding:0 32px 24px; min-height:100vh; }
 .backend-workspace .editorial-workspace [hidden] { display:none!important; }
-.backend-workspace .editorial-workspace .workspace-rail,.backend-workspace .editorial-workspace .workspace-steps { display:none; }
+.backend-workspace .editorial-workspace .workspace-steps { display:none; }
 .backend-workspace .editorial-workspace .workspace-header { max-width:1600px; padding:16px 0; border-bottom:1px solid var(--line); gap:20px; }
 .backend-workspace .editorial-workspace .workspace-brand { font-size:22px; font-weight:700; letter-spacing:-.8px; color:#d1c7bd!important; }
 .backend-workspace .editorial-workspace .workspace-brand span { color:#d1c7bd; }
@@ -461,8 +453,8 @@
  .backend-workspace .editorial-workspace .workspace-viewbar>button { min-width:115px; padding:10px; font-size:11px; }
  .backend-workspace .editorial-workspace .workspace-viewbar>button span { display:none; }
  .backend-workspace .editorial-workspace .experiment-layout { grid-template-columns:1fr; }
- .backend-workspace .editorial-workspace .controls-panel { grid-column:1; grid-row:1; position:static; max-height:none; }
- .backend-workspace .editorial-workspace .experiment-results { grid-column:1; grid-row:2; }
+ .backend-workspace .editorial-workspace .controls-panel { grid-column:1; grid-row:2; position:static; max-height:none; }
+ .backend-workspace .editorial-workspace .experiment-results { grid-column:1; grid-row:1; }
  .backend-workspace .editorial-workspace .structure-inspection-layout { grid-template-columns:1fr; }
  .backend-workspace .editorial-workspace .residue-sidebar { max-height:none; }
  .backend-workspace .editorial-workspace .molecular-canvas { height:340px; }
@@ -488,6 +480,13 @@
  .backend-workspace .editorial-workspace .workspace-viewbar>button { min-width:0; padding:9px 10px; }
  .backend-workspace .editorial-workspace .chart-card,.backend-workspace .editorial-workspace #paper-evidence,.backend-workspace .editorial-workspace #structure { scroll-margin-top:90px!important; }
 }
+
+/* Theme consistency: keep every panel on the console palette and grid. */
+.backend-workspace .editorial-workspace .workspace-assessment .drug-support-panel { max-width:none; margin:10px 0 14px; }
+.backend-workspace .editorial-workspace .workspace-intro h1 { max-width:34ch; }
+.backend-workspace .editorial-workspace .workspace-intro>div>p:last-child { max-width:96ch; font-size:13px; }
+.backend-workspace .editorial-workspace .agent-findings>details { margin-top:12px; }
+.backend-workspace .editorial-workspace #view-evidence>.agent-findings { margin-bottom:22px; }
 
 /* Factual execution stays separate from the currently displayed experiment. */
 .backend-workspace .editorial-workspace .investigation-panel { max-width:1600px; margin:0 auto 12px; border:1px solid var(--line); border-radius:18px; padding:16px 20px; background:#39322e; scroll-margin-top:88px; }

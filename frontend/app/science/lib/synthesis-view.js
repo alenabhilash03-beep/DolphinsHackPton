@@ -1,4 +1,5 @@
-/** Presentation logic for the grounded scientific answer. Pure: no fetching, no invented text or numbers. */ export const METRIC_LABELS = {
+/** Presentation logic for the grounded scientific answer. Pure: no fetching, no invented text or numbers. */ import { unitLabel } from "./investigation.js";
+export const METRIC_LABELS = {
     endpoint_occupancy: "Endpoint occupancy",
     occupancy_auc_h: "Occupancy AUC",
     concentration_auc_nM_h: "Concentration AUC",
@@ -36,7 +37,7 @@ const quantitiesOf = (synthesis)=>[
     if (synthesis.result_id == null) return "evidence_only";
     return shown && shown.result_id === synthesis.result_id && shown.configuration_hash === synthesis.configuration_sha256 && shown.client_revision === synthesis.client_revision ? "current" : "stale";
 }
-export function verdictLabel(synthesis) {
+/** A follow-up edit is an experiment change, so its verdict is always undetermined; label it as a result instead. */ export function verdictLabel(synthesis, followUp = false) {
     const answer = synthesis.answer;
     if (!answer) return synthesis.status === "rejected" ? "Written answer not accepted" : "Written answer unavailable";
     const basis = {
@@ -49,7 +50,7 @@ export function verdictLabel(synthesis) {
         supported: "Supported",
         not_supported: "Not supported",
         mixed: "Mixed",
-        undetermined: "Not determined"
+        undetermined: followUp ? "Follow-up experiment result" : "Not determined"
     }[answer.verdict];
     return answer.verdict === "undetermined" || !basis ? verdict : `${verdict} ${basis}`;
 }
@@ -98,12 +99,12 @@ export const basisLabel = (synthesis)=>({
             // A candidate already used as a simulation input is listed once, as its parameter record.
             candidates: (paper?.extraction.parameters ?? []).filter((item)=>!records.some((record)=>record.parameter === item.parameter)).map((item)=>({
                     parameter: item.parameter,
-                    text: `${item.parameter} = ${item.original_value} ${item.original_unit}`,
+                    text: `${item.parameter} = ${item.original_value} ${unitLabel(item.original_unit)}`.trimEnd(),
                     plots: parameterPlots(item.parameter)
                 })),
             records: records.map((item)=>({
                     evidenceId: item.evidence_id,
-                    text: `${item.parameter} = ${item.original_value} ${item.original_unit} · ${item.review_status}`,
+                    text: `${item.parameter} = ${item.original_value}${unitLabel(item.original_unit) ? ` ${unitLabel(item.original_unit)}` : ""} · ${item.review_status}`,
                     plots: parameterPlots(item.parameter)
                 }))
         };

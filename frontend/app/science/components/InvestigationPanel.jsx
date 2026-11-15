@@ -1,7 +1,7 @@
 "use client";
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { useEffect, useMemo, useState } from "react";
-import { changedParameters, investigationView, parameterLabel, scientificNumber, stageSummary, stateLabel, toolLabel } from "../lib/investigation.js";
+import { changedParameters, investigationView, parameterLabel, plural, scientificNumber, stageSummary, stateLabel, toolLabel, unitLabel } from "../lib/investigation.js";
 import { measurementCards } from "../lib/synthesis-view.js";
 import { MeasurementCards } from "./ScientificAnswer.jsx";
 function ParameterTable({ rows, config, experimentId }) {
@@ -47,7 +47,7 @@ function ParameterTable({ rows, config, experimentId }) {
                                         scientificNumber(p.value),
                                         " ",
                                         /*#__PURE__*/ _jsx("span", {
-                                            children: p.unit
+                                            children: unitLabel(p.unit)
                                         })
                                     ]
                                 }),
@@ -56,7 +56,7 @@ function ParameterTable({ rows, config, experimentId }) {
                                         children: [
                                             scientificNumber(p.reference_value),
                                             " → ",
-                                            p.change === "unchanged" ? "unchanged" : p.delta != null ? `${p.delta > 0 ? "+" : ""}${scientificNumber(p.delta)} ${p.unit}` : "added / changed",
+                                            p.change === "unchanged" ? "unchanged" : p.delta != null ? `${p.delta > 0 ? "+" : ""}${scientificNumber(p.delta)} ${unitLabel(p.unit)}` : "added / changed",
                                             /*#__PURE__*/ _jsx("small", {
                                                 children: p.comparison === "baseline" ? "vs protected baseline" : "vs previous result"
                                             })
@@ -113,8 +113,8 @@ function ConfigurationDetails({ snapshot, config }) {
                 children: [
                     /*#__PURE__*/ _jsxs("p", {
                         children: [
-                            changed.length,
-                            " parameter changes against the stated reference. Linked values are included."
+                            plural(changed.length, "parameter change"),
+                            " against the stated reference. Linked values are included."
                         ]
                     }),
                     /*#__PURE__*/ _jsx(ParameterTable, {
@@ -124,11 +124,8 @@ function ConfigurationDetails({ snapshot, config }) {
                     }),
                     changed.length > 6 && /*#__PURE__*/ _jsxs("details", {
                         children: [
-                            /*#__PURE__*/ _jsxs("summary", {
-                                children: [
-                                    changed.length - 6,
-                                    " more parameter changes"
-                                ]
+                            /*#__PURE__*/ _jsx("summary", {
+                                children: plural(changed.length - 6, "more parameter change")
                             }),
                             /*#__PURE__*/ _jsx(ParameterTable, {
                                 rows: changed.slice(6),
@@ -161,8 +158,7 @@ function ConfigurationDetails({ snapshot, config }) {
                                     children: [
                                         s.intervention === "baseline" ? "Protected baseline" : "Alternative",
                                         " · ",
-                                        s.administration.length,
-                                        " administration event(s)",
+                                        plural(s.administration.length, "administration event"),
                                         s.changed === false ? " · schedule unchanged" : s.changed ? " · schedule changed" : ""
                                     ]
                                 }),
@@ -289,16 +285,13 @@ export function InvestigationPanel({ job, submitting, saved, displayedResult, co
                                     /*#__PURE__*/ _jsxs("div", {
                                         className: "execution-totals",
                                         children: [
-                                            /*#__PURE__*/ _jsxs("span", {
-                                                children: [
-                                                    view.attempts.length,
-                                                    " tool invocation(s)"
-                                                ]
+                                            /*#__PURE__*/ _jsx("span", {
+                                                children: plural(view.attempts.length, "tool invocation")
                                             }),
                                             /*#__PURE__*/ _jsxs("span", {
                                                 children: [
-                                                    view.sourceCount,
-                                                    " distinct source(s) retrieved"
+                                                    plural(view.sourceCount, "distinct source"),
+                                                    " retrieved"
                                                 ]
                                             }),
                                             view.active && /*#__PURE__*/ _jsxs("span", {
@@ -378,8 +371,7 @@ export function InvestigationPanel({ job, submitting, saved, displayedResult, co
                                             /*#__PURE__*/ _jsxs("summary", {
                                                 children: [
                                                     "Tool-by-tool execution · ",
-                                                    view.attempts.length,
-                                                    " invocation(s)"
+                                                    plural(view.attempts.length, "invocation")
                                                 ]
                                             }),
                                             /*#__PURE__*/ _jsx("ol", {
@@ -401,9 +393,9 @@ export function InvestigationPanel({ job, submitting, saved, displayedResult, co
                                                             }),
                                                             attempt.outcome?.summary && /*#__PURE__*/ _jsxs("p", {
                                                                 children: [
-                                                                    attempt.outcome.summary.source_count != null && `${attempt.outcome.summary.source_count} source handle(s)/record(s). `,
-                                                                    attempt.outcome.summary.candidate_count != null && `${attempt.outcome.summary.candidate_count} cited candidate value(s). `,
-                                                                    attempt.outcome.summary.missing_input_count != null && `${attempt.outcome.summary.missing_input_count} outstanding input(s). `,
+                                                                    attempt.outcome.summary.source_count != null && `${plural(attempt.outcome.summary.source_count, "source record")}. `,
+                                                                    attempt.outcome.summary.candidate_count != null && `${plural(attempt.outcome.summary.candidate_count, "cited candidate value")}. `,
+                                                                    attempt.outcome.summary.missing_input_count != null && `${plural(attempt.outcome.summary.missing_input_count, "outstanding input")}. `,
                                                                     attempt.outcome.summary.preparation_state && `Preparation: ${attempt.outcome.summary.preparation_state.replaceAll("_", " ")}. `,
                                                                     attempt.outcome.summary.outcome === "no_values" && "Extraction finished without numerical candidates. ",
                                                                     attempt.outcome.summary.error_code && `Outcome: ${attempt.outcome.summary.error_code}. `
@@ -417,8 +409,8 @@ export function InvestigationPanel({ job, submitting, saved, displayedResult, co
                                                                             attempt.outcome.summary.structure.pdb_id,
                                                                             attempt.outcome.summary.structure.interface_residue_pair_count != null ? ` · ${attempt.outcome.summary.structure.interface_residue_pair_count} interface residue pairs within 4 Å` : "",
                                                                             " · ",
-                                                                            (attempt.outcome.summary.structure.measurement_ids ?? []).length,
-                                                                            " measurement(s) returned. Geometry only."
+                                                                            plural((attempt.outcome.summary.structure.measurement_ids ?? []).length, "measurement"),
+                                                                            " returned. Geometry only."
                                                                         ]
                                                                     }),
                                                                     /*#__PURE__*/ _jsx(MeasurementCards, {

@@ -24,3 +24,6 @@ export const DocIcon = ({ size = 18 }: { size?: number }) => <svg {...base} widt
 export const CheckIcon = ({ size = 14 }: { size?: number }) => <svg {...base} width={size} height={size} strokeWidth={2.2}><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>;
 export const CrossIcon = ({ size = 14 }: { size?: number }) => <svg {...base} width={size} height={size} strokeWidth={2.2}><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>;
 export const ArrowIcon = ({ size = 16 }: { size?: number }) => <svg {...base} width={size} height={size}><path d="M4 12h15m-5-5 5 5-5 5"/></svg>;
+export const BracesIcon = ({ size = 24 }: { size?: number }) => <svg {...base} width={size} height={size}><path d="M8.5 4c-2 0-2.5 1-2.5 2.5V10c0 1-.6 2-2 2 1.4 0 2 1 2 2v3.5C6 19 6.5 20 8.5 20M15.5 4c2 0 2.5 1 2.5 2.5V10c0 1 .6 2 2 2-1.4 0-2 1-2 2v3.5c0 1.5-.5 2.5-2.5 2.5"/></svg>;
+export const ZoomIcon = ({ dir, size = 16 }: { dir: "in" | "out"; size?: number }) => <svg {...base} width={size} height={size}><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5M8 10.5h5"/>{dir === "in" && <path d="M10.5 8v5"/>}</svg>;
+export const FitIcon = ({ size = 16 }: { size?: number }) => <svg {...base} width={size} height={size}><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>;

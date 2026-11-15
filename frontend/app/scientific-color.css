@@ -1,0 +1,23 @@
+/* Color communicates scientific identity; the surrounding interface stays neutral. */
+:root { --signal-pk: #9bb9d6; --signal-binding: #91b7a8; --signal-interface: #c5ad86; }
+.workspace-stage [data-scenario=baseline] { --series-color: #a3aaaf; }
+.workspace-stage [data-scenario=half] { --series-color: var(--signal-pk); }
+.workspace-stage [data-scenario=affinity] { --series-color: var(--signal-binding); }
+.workspace-stage .chart-legend > button[data-scenario=baseline] > span { background: repeating-linear-gradient(to right,#a3aaaf 0 5px,transparent 5px 8px) !important; }
+.workspace-stage .chart-legend > button[data-scenario=affinity] > span { background: repeating-linear-gradient(to right,var(--signal-binding) 0 2px,transparent 2px 5px) !important; }
+.workspace-stage .binding-text h3,
+.workspace-stage .binding-text .binding-delta > strong { color: var(--series-color, var(--signal-pk)); }
+.workspace-stage .binding-text h3 > span,
+.workspace-stage .binding-text .binding-delta small { color: var(--text-secondary); }
+.workspace-stage .binding-graphic > svg {
+  --binding-antibody: #b1c6db;
+  --binding-antigen: #809f94;
+  --binding-antigen-edge: #9fb8ad;
+  --binding-tip: var(--signal-interface);
+}
+.workspace-stage .derived strong { color: var(--signal-pk); }
+.workspace-stage .model-grid > section:first-child { --model-accent: var(--signal-pk); }
+.workspace-stage .model-grid > section:nth-child(2) { --model-accent: var(--signal-binding); }
+.workspace-stage .model-grid .section-index { color: var(--model-accent); }
+.workspace-stage .model-grid .equation { color: var(--model-accent); background: transparent; border-left: 2px solid var(--model-accent); }
+.workspace-stage .model-grid dd { color: var(--model-accent); }

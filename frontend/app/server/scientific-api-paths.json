@@ -1,0 +1,86 @@
+{
+  "/api/agent/edits": [
+    "post"
+  ],
+  "/api/agent/investigations/{result_id}": [
+    "get"
+  ],
+  "/api/agent/jobs/edits": [
+    "post"
+  ],
+  "/api/agent/jobs/research": [
+    "post"
+  ],
+  "/api/agent/jobs/{job_id}": [
+    "get"
+  ],
+  "/api/agent/research": [
+    "post"
+  ],
+  "/api/agent/results/{result_id}": [
+    "get"
+  ],
+  "/api/agent/results/{result_id}/proposals": [
+    "get"
+  ],
+  "/api/agent/turns/{turn_id}": [
+    "get"
+  ],
+  "/api/contracts/experiments/validate": [
+    "post"
+  ],
+  "/api/demo": [
+    "get"
+  ],
+  "/api/health": [
+    "get"
+  ],
+  "/api/preparations": [
+    "post"
+  ],
+  "/api/preparations/{preparation_id}": [
+    "get"
+  ],
+  "/api/preparations/{preparation_id}/configure": [
+    "post"
+  ],
+  "/api/preparations/{preparation_id}/revise": [
+    "post"
+  ],
+  "/api/research/assess": [
+    "post"
+  ],
+  "/api/research/audits/{drug}": [
+    "get"
+  ],
+  "/api/research/evidence/trastuzumab": [
+    "get"
+  ],
+  "/api/research/jobs": [
+    "post"
+  ],
+  "/api/research/jobs/{job_id}": [
+    "get"
+  ],
+  "/api/research/jobs/{job_id}/events": [
+    "get"
+  ],
+  "/api/research/search": [
+    "get"
+  ],
+  "/api/simulations": [
+    "post"
+  ],
+  "/api/simulations/adjust": [
+    "post"
+  ],
+  "/api/structures": [
+    "get"
+  ],
+  "/api/structures/{pdb_id}/distance": [
+    "post"
+  ],
+  "/api/structures/{pdb_id}/interface": [
+    "get"
+  ]
+}

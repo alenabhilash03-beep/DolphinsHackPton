@@ -1,0 +1,132 @@
+/* Black glass surfaces with the entry screen's ivory, stone and burgundy accents. */
+.experience-root:not([data-scene=Home]){--text-primary:#f1ede7;--text-secondary:#cec8c0;--text-muted:#b9b2a9}
+.experience-root:not([data-scene=Home]) .glass-reading-shade{background:linear-gradient(120deg,#090909c9,#161310bd 65%,#110e0ee8)}
+.workspace-stage .instrument-app .main-shell{background:transparent}
+.workspace-stage .instrument-app .topbar{background:#161514b8;backdrop-filter:blur(18px);border-bottom-color:#efe9e11c}
+.workspace-stage .instrument-app .instrument-rail{background:#191715c7;backdrop-filter:blur(18px);border-right-color:#efe9e11c}
+.workspace-stage .instrument-app .backend-workspace{--ink:#f1ede7;--paper:transparent;--muted:#b9b2a9;--line:#eee7df24;color:#f1ede7;background:none;-webkit-font-smoothing:antialiased}
+.workspace-stage .instrument-app .backend-workspace :is(p,label,small,summary,li,dt,dd){color:#cec8c0}
+.workspace-stage .instrument-app .backend-workspace :is(h1,h2,h3,h4,strong){color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace :is(code,output){color:#ddd0c1}
+.workspace-stage .instrument-app .backend-workspace a{color:#e2b1b8}
+.workspace-stage .instrument-app .backend-workspace .science-heading{margin-bottom:16px}
+.workspace-stage .instrument-app .backend-workspace .science-heading h1{font-size:clamp(27px,2.5vw,36px);max-width:44ch}
+.workspace-stage .instrument-app .backend-workspace .eyebrow{color:#b9b2a9;text-transform:none;letter-spacing:.02em}
+.workspace-stage .instrument-app .backend-workspace .study-context{border:0;padding:0;margin-bottom:24px;color:#b9b2a9}
+.workspace-stage .instrument-app .backend-workspace .workspace-viewbar{background:#161514e8;border-color:#eee7df24;border-radius:12px 12px 0 0;padding-inline:12px}
+.workspace-stage .instrument-app .backend-workspace .workspace-viewbar>button{color:#b9b2a9}
+.workspace-stage .instrument-app .backend-workspace .workspace-viewbar>button[aria-selected=true]{color:#f5efe9;border-bottom-color:#d39ba3}
+.workspace-stage .instrument-app .backend-workspace .simulation-heading p:empty{display:none}
+.workspace-stage .instrument-app .backend-workspace .simulation-heading{margin-bottom:16px}
+.workspace-stage .instrument-app .backend-workspace :is(.chart-card,.binding-panel,.timeline-panel){background:linear-gradient(145deg,#2927248c,#131313c7);border:1px solid #eee7df22;border-radius:16px;box-shadow:inset 0 1px #fff8f408,0 12px 32px #00000014}
+.workspace-stage .instrument-app .backend-workspace .agent-desk{background:linear-gradient(140deg,#33302c65,#151414bd);border:1px solid #eee7df25;border-radius:20px;backdrop-filter:blur(14px);box-shadow:inset 0 1px #fff8f410,0 16px 48px #0002}
+.workspace-stage .instrument-app .backend-workspace :is(.agent-mode-tabs,.agent-activity,.agent-advanced,.agent-system-fields,.result-record,.science-records,.local-result-log){border-color:#eee7df24}
+.workspace-stage .instrument-app .backend-workspace .agent-desk-heading p,.workspace-stage .instrument-app .backend-workspace .agent-mode-tabs>button{color:#b9b2a9}
+.workspace-stage .instrument-app .backend-workspace .agent-mode-tabs>button[aria-selected=true]{color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace :is(input,select,textarea){background:#11111199;color:#f1ede7;border:1px solid #eee7df34;border-radius:9px}
+.workspace-stage .instrument-app .backend-workspace :is(input,textarea)::placeholder{color:#aaa39b;opacity:1}
+.workspace-stage .instrument-app .backend-workspace option{background:#1b1918;color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace :is(.quiet-button,.saved-demo-button,.structure-panel button){background:#eee7df0a;border-color:#eee7df35;color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace .primary-button{background:#794047;border-color:#d7a0a644;color:#fff5f2}
+.workspace-stage .instrument-app .backend-workspace .primary-button:hover:not(:disabled){background:#914e57}
+.workspace-stage .instrument-app .backend-workspace button:disabled{opacity:.58}
+.workspace-stage .instrument-app .backend-workspace .agent-suggestions>button{color:#cec8c0;border-color:#eee7df20}
+.workspace-stage .instrument-app .backend-workspace .agent-composer textarea{min-height:96px;background:#11111199}
+.workspace-stage .instrument-app .backend-workspace .agent-connection-note{background:#ffffff05;border-color:#c1b4a4}
+.workspace-stage .instrument-app .backend-workspace .science-scope{color:#b9b2a9;font-size:10px}
+.workspace-stage .instrument-app .backend-workspace :is(.paper-card,.finding-callout,.identity-card,.interpretation-panel,.answer-chips a,.controls-panel,.molecular-tour,.server-structure-tools){background:#15151499;border-color:#eee7df28;border-radius:12px;box-shadow:none}
+.workspace-stage .instrument-app .backend-workspace :is(.answer-panel,.agent-findings,.structure-panel,.experiment-panel){background:transparent}
+.workspace-stage .instrument-app .backend-workspace .residue-sidebar{background:transparent;border-color:#eee7df28}
+.workspace-stage .instrument-app .backend-workspace .molecular-canvas{background:#151617;border-color:#eee7df28;border-radius:16px}
+.workspace-stage .instrument-app .backend-workspace .structure-panel>.structure-context{margin:12px 0;font-size:11px;border:0;background:none}
+.workspace-stage .instrument-app .backend-workspace .structure-context>summary{cursor:pointer}
+.workspace-stage .instrument-app .backend-workspace .structure-context p{font-size:11px;line-height:1.8}
+.workspace-stage .instrument-app .backend-workspace :is(.answer-statement,.answer-finding p,.paper-card p,.contact-list small){color:#cec8c0}
+.workspace-stage .instrument-app .backend-workspace :is(.answer-basis,.answer-access,.outcome-unit,.outcome-threshold,.outcome-name,.paper-meta,.result-record p,.timeline-panel output,.chart-heading>span){color:#b9b2a9}
+.workspace-stage .instrument-app .backend-workspace .science-export>div{background:#191817f5;border-color:#eee7df35;backdrop-filter:blur(16px)}
+.workspace-stage .instrument-app .backend-workspace .science-export button{color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace .timeline-panel{backdrop-filter:none}
+.workspace-stage .instrument-app .backend-workspace .plot-progress-line,.workspace-stage .instrument-app .backend-workspace .plot-progress-shade,.workspace-stage .instrument-app .backend-workspace .plot-sample-marker,.workspace-stage .instrument-app .backend-workspace .plot-time-label{position:absolute;top:0;left:0;display:none;pointer-events:none;will-change:transform;transition:transform 34ms linear}
+.workspace-stage .instrument-app .backend-workspace .plot-progress-line{width:1px;border-left:1px dashed #d7a1aa;z-index:3}
+.workspace-stage .instrument-app .backend-workspace .plot-progress-shade{background:#181716f7;z-index:1;transition:transform 34ms linear,width 34ms linear}
+.workspace-stage .instrument-app .backend-workspace .plot-sample-marker{width:9px;height:9px;border:2px solid #181716;border-radius:50%;z-index:4;box-shadow:0 0 0 1px #fff2}
+.workspace-stage .instrument-app .backend-workspace .plot-time-label{padding:3px 7px;border:1px solid #eee7df24;border-radius:5px;background:#24211f;color:#eee7df;font:400 10px/1.5 var(--font);white-space:nowrap;z-index:5}
+@media(prefers-reduced-motion:reduce){.workspace-stage .instrument-app .backend-workspace :is(.plot-progress-line,.plot-progress-shade,.plot-sample-marker,.plot-time-label){transition:none}}
+@supports not (backdrop-filter:blur(1px)){.workspace-stage .instrument-app .backend-workspace .agent-desk{background:#1c1a18}}
+
+.workspace-stage .instrument-app .backend-workspace .modebar{background:#181716c9!important;border-radius:6px}
+.workspace-stage .instrument-app .backend-workspace .modebar-btn path{fill:#cfc8c0!important}
+.workspace-stage .instrument-app .backend-workspace .modebar-btn.active path{fill:#e2b1b8!important}
+
+/* The experimental environment uses its own dark glass shell, including direct routes. */
+.workspace-stage .instrument-app[data-experiment-surface=glass]{--ws-bg:#101010;--ws-panel:#191817a6;--ws-inset:#12121299;--ws-ink:#f1ede7;--ws-copy:#cec8c0;--ws-muted:#b9b2a9;--ws-line:#eee7df24;background:transparent;min-height:100dvh}
+.workspace-stage .instrument-app[data-experiment-surface=glass] .main-shell{background:radial-gradient(ellipse at 88% 18%,#ac9c8d14,transparent 46%),linear-gradient(135deg,#0d0d0dd9,#171514c7 64%,#0c0c0ce8);isolation:isolate}
+.workspace-stage .instrument-app[data-experiment-surface=glass] .instrument-rail{background:#151413b8}
+.workspace-stage .instrument-app[data-experiment-surface=glass] .science-main-content{width:100%;max-width:1840px;padding:40px clamp(24px,4vw,72px) 64px;box-sizing:border-box}
+.workspace-stage .instrument-app .backend-workspace .preview-revision{font:400 10px/1.5 var(--font);color:#b9b2a9;white-space:nowrap}
+.workspace-stage .instrument-app .backend-workspace .scientific-scene{gap:24px}
+.workspace-stage .instrument-app .backend-workspace .agent-desk{padding:24px;top:calc(var(--workspace-header-height,64px) + 24px)}
+.workspace-stage .instrument-app .backend-workspace .science-heading{align-items:flex-start;gap:24px}
+.workspace-stage .instrument-app .backend-workspace .science-heading h1{font-size:clamp(32px,3.2vw,48px);line-height:1.12;max-width:34ch}
+.workspace-stage .instrument-app .backend-workspace .science-heading-actions{padding-top:8px;flex-wrap:wrap;justify-content:flex-end}
+.workspace-stage .instrument-app .backend-workspace .study-context>span:last-child{margin-left:0;color:#b9b2a9}
+.workspace-stage .instrument-app .backend-workspace .workspace-viewbar{border:1px solid #eee7df20;border-radius:16px;padding:0 16px;gap:24px;background:#2422207d;box-shadow:inset 0 1px #fff8f407}
+.workspace-stage .instrument-app .backend-workspace .chart-card{border-radius:24px;padding:24px 16px 12px;background:linear-gradient(130deg,#38332e35,#161515cc);border-color:#eee7df20}
+.workspace-stage .instrument-app .backend-workspace .chart-heading h3{font-size:14px}
+.workspace-stage .instrument-app .backend-workspace .agent-composer label{font-size:12px}
+.workspace-stage .instrument-app .backend-workspace .hypothesis-system legend{font-size:11px;color:#cec8c0;margin-bottom:12px}
+.workspace-stage .instrument-app .backend-workspace .hypothesis-system-names{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.workspace-stage .instrument-app .backend-workspace .hypothesis-system-names label{display:block}
+.workspace-stage .instrument-app .backend-workspace .hypothesis-system-names input{display:block;width:100%;box-sizing:border-box;margin-top:8px}
+.workspace-stage .instrument-app .backend-workspace .field-optional{color:#b9b2a9;font-size:10px}
+.workspace-stage .instrument-app .backend-workspace .hypothesis-system .agent-system-fields{margin:20px 0 4px}
+.workspace-stage .instrument-app .backend-workspace .hypothesis-system .agent-system-fields>label{margin-top:16px}
+.workspace-stage .instrument-app .backend-workspace .hypothesis-system select{display:block;width:100%;margin-top:8px}
+.workspace-stage .instrument-app .backend-workspace .primary-button{border-radius:999px;padding:12px 18px;font-size:12px;min-height:44px}
+.workspace-stage .instrument-app .backend-workspace .quiet-button{border-radius:999px;min-height:40px}
+.workspace-stage .instrument-app .backend-workspace :is(button,summary,input,textarea,select):focus-visible{outline:2px solid #e2b1b8;outline-offset:4px}
+/* A hypothesis is the only focal point before a result exists. No placeholder data or plots. */
+.workspace-stage .instrument-app .backend-workspace .science-experiment[data-has-result=false]{max-width:1100px;margin:24px auto 0}
+.workspace-stage .instrument-app .backend-workspace .science-experiment[data-has-result=false] .science-heading{margin-bottom:40px}
+.workspace-stage .instrument-app .backend-workspace .science-experiment[data-has-result=false] .science-heading h1{font-size:clamp(44px,5vw,68px);margin-top:16px}
+.workspace-stage .instrument-app .backend-workspace .hypothesis-intro{font-size:15px;line-height:1.7;margin:12px 0 0;max-width:50ch}
+.workspace-stage .instrument-app .backend-workspace .science-experiment[data-has-result=false] .scientific-scene{grid-template-columns:minmax(0,1.6fr) minmax(240px,1fr);align-items:start;gap:32px}
+.workspace-stage .instrument-app .backend-workspace .hypothesis-desk{grid-column:1;grid-row:1;position:relative;max-height:none;overflow:visible;padding:32px;background:linear-gradient(125deg,#65584c24,#29262654 45%,#0f0f0f99);border-radius:28px;border-color:#eee7df28;box-shadow:inset 0 1px #fff9f01c,0 24px 80px #0003;top:0}
+.workspace-stage .instrument-app .backend-workspace .hypothesis-desk .agent-desk-heading{margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid #eee7df20}
+.workspace-stage .instrument-app .backend-workspace .hypothesis-desk .agent-composer textarea{font-size:16px;line-height:1.8;min-height:180px;padding:16px;border-radius:16px;resize:vertical;background:#0b0b0b4d}
+.workspace-stage .instrument-app .backend-workspace .hypothesis-desk .agent-composer>label{font-size:12px;margin-bottom:10px}
+.workspace-stage .instrument-app .backend-workspace .hypothesis-desk .agent-composer>.primary-button{width:auto;min-width:220px;margin-top:24px;gap:24px}
+.workspace-stage .instrument-app .backend-workspace .hypothesis-desk .agent-advanced{margin-top:24px}
+.workspace-stage .instrument-app .backend-workspace .science-experiment[data-has-result=false] .visual-stage{grid-column:2;grid-row:1;min-width:0}
+.workspace-stage .instrument-app .backend-workspace .research-waiting{padding:32px 8px;text-align:center}
+.workspace-stage .instrument-app .backend-workspace .research-waiting h2{font-family:var(--editorial);font-size:28px;margin:24px 0 8px}
+.workspace-stage .instrument-app .backend-workspace .research-waiting p{font-size:12px;max-width:28ch;margin:0 auto}
+.research-orbit{position:relative;width:160px;height:160px;margin:auto;border-radius:50%;background:radial-gradient(circle at 35% 24%,#efe9e14a,#ac9c8d12 35%,#0008 70%);box-shadow:inset -12px -20px 36px #0008,inset 1px 1px #efe9e13b,0 20px 60px #0003}
+.research-orbit i{position:absolute;inset:24px -12px;border:1px solid #d1c7bd33;border-radius:50%;transform:rotate(-35deg)}
+.research-orbit i:nth-child(2){transform:rotate(35deg);border-color:#bd8b9144}
+.research-orbit i:nth-child(3){inset:4px 48px;transform:rotate(25deg)}
+.research-orbit.is-running{animation:research-breathe 3s ease-in-out infinite}
+@keyframes research-breathe{50%{opacity:.6;transform:translateY(-4px)}}
+@media(min-width:1600px){.workspace-stage .instrument-app .backend-workspace .scientific-scene{grid-template-columns:minmax(0,1fr) 360px}}
+@media(max-width:1080px){.workspace-stage .instrument-app .backend-workspace .scientific-scene{grid-template-columns:1fr}.workspace-stage .instrument-app .backend-workspace .science-experiment[data-has-result=false] .scientific-scene{grid-template-columns:1fr}.workspace-stage .instrument-app .backend-workspace .science-experiment[data-has-result=false] .visual-stage{grid-column:1;grid-row:2}.workspace-stage .instrument-app .backend-workspace .agent-desk{position:relative;top:0;max-height:none}.workspace-stage .instrument-app .backend-workspace .science-experiment[data-has-result=false]{max-width:760px}}
+@media(max-width:760px){.workspace-stage .instrument-app[data-experiment-surface=glass] .science-main-content{padding:24px 16px 48px}.workspace-stage .instrument-app .backend-workspace .science-heading-actions{justify-content:flex-start;padding:0}.workspace-stage .instrument-app .backend-workspace .science-experiment[data-has-result=false]{margin-top:8px}.workspace-stage .instrument-app .backend-workspace .science-experiment[data-has-result=false] .science-heading{margin-bottom:24px}.workspace-stage .instrument-app .backend-workspace .hypothesis-desk{padding:24px 20px;border-radius:24px}.workspace-stage .instrument-app .backend-workspace .hypothesis-system-names{grid-template-columns:1fr}.workspace-stage .instrument-app .backend-workspace .hypothesis-desk .agent-composer>.primary-button{width:100%;min-width:0}}
+@media(prefers-reduced-motion:reduce){.research-orbit.is-running{animation:none}}
+.experience-root[data-motion=paused] .research-orbit.is-running{animation:none}
+/* Decorative material study echoes the entry screen; it never represents experiment data. */
+.workspace-stage .instrument-app .backend-workspace .hypothesis-glass-art{position:relative;grid-column:2;grid-row:1;min-width:0;height:360px;margin-top:48px;pointer-events:none;perspective:800px}
+.hypothesis-glass-art i{position:absolute;display:block;border-radius:50%;background:radial-gradient(ellipse at 30% 18%,#efe9e163,transparent 42%),radial-gradient(ellipse at 70% 90%,#ac9c8d2e,transparent 55%),linear-gradient(145deg,#d1c7bd10,#0008 72%);border:1px solid #d1c7bd22;box-shadow:inset -16px -24px 40px #0006,0 32px 60px #0003}
+.hypothesis-glass-art i:first-child{width:230px;height:230px;left:8%;top:0}
+.hypothesis-glass-art i:nth-child(2){width:130px;height:130px;left:40%;top:200px;background:radial-gradient(ellipse at 25% 18%,#bd8b914a,transparent 48%),linear-gradient(145deg,#eee7df10,#0008)}
+.hypothesis-glass-art i:nth-child(3){border-radius:40px;width:82%;height:270px;left:0;top:44px;background:linear-gradient(130deg,#efe9e105,#10101066);backdrop-filter:blur(12px);transform:rotate(-8deg);border-color:#eee7df26;box-shadow:inset 1px 1px #efe9e112,0 32px 60px #0003}
+@media(max-width:1080px){.workspace-stage .instrument-app .backend-workspace .hypothesis-glass-art{display:none}}
+/* Reset inherited light-workspace tokens and typography at the actual experiment root. */
+.workspace-stage .instrument-app .backend-workspace .science-experiment{--ink:#f1ede7;--muted:#b9b2a9;--line:#eee7df24;--accent:#d39ba3;font:400 13px/1.65 var(--font);color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace .science-experiment :is(label,summary){font-weight:450}
+/* Current scientific-controller panels use the same glass and typography. */
+.workspace-stage .instrument-app .backend-workspace :is(.proposal-panel,.history-panel){background:transparent;color:#f1ede7;border-color:#eee7df24;margin:24px 0;padding:20px 0}
+.workspace-stage .instrument-app .backend-workspace :is(.proposal-cards>li,.history-steps>li,.answer-measurement,.execution-measurement){background:#1b19187d;border:1px solid #eee7df24;border-radius:16px;padding:16px;color:#cec8c0}
+.workspace-stage .instrument-app .backend-workspace :is(.history-branch,.answer-origin){background:#72383d20;color:#e2b1b8;border-color:#bd8b9155}
+.workspace-stage .instrument-app .backend-workspace .science-follow-ups{border-color:#eee7df24}
+.workspace-stage .instrument-app .backend-workspace :is(.proposal-panel,.history-panel) :is(button,a){color:#efe9e1}
+.workspace-stage .instrument-app .backend-workspace :is(.proposal-panel,.history-panel){min-width:0;overflow-wrap:anywhere}
+.workspace-stage .instrument-app .backend-workspace .proposal-cards{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}

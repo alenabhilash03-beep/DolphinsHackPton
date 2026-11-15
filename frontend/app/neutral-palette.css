@@ -1,0 +1,18 @@
+/* A monochrome finish: black, charcoal, soft gray, and line-style distinctions. */
+:root { --accent-tone: #D9D9D9; --comparison-tone: #D1C7BD; }
+.workspace-stage [data-scenario=baseline] { --series-color: #D1C7BD; }
+.workspace-stage [data-scenario=half] { --series-color: #EFE9E1; }
+.workspace-stage [data-scenario=affinity] { --series-color: #D1C7BD; }
+.workspace-stage .chart-wrap .chart-grid-rule { stroke: #EFE9E117; }
+.workspace-stage .chart-wrap .chart-threshold-rule { stroke: #D9D9D94d; }
+.workspace-stage .chart-wrap .chart-time-rule { stroke: #D1C7BD88; }
+.workspace-stage .chart-wrap .chart-time-badge { fill: #443C36; }
+.workspace-stage .chart-wrap g[data-scenario] > path[stroke] { stroke-linecap: round; }
+.workspace-stage .chart-legend > button[data-scenario=baseline] > span { background: repeating-linear-gradient(to right,#D1C7BD 0 5px,transparent 5px 8px) !important; }
+.workspace-stage .chart-legend > button[data-scenario=affinity] > span { background: repeating-linear-gradient(to right,#D1C7BD 0 2px,transparent 2px 5px) !important; }
+.entry-scene-bg > img { filter: grayscale(1) brightness(.9); }
+.workspace-canopy-image { filter: grayscale(1); }
+.entry-page .entry-enter { background: #D9D9D9; border-color: #EFE9E1; color: #322D29; }
+.entry-page .entry-enter:hover,.entry-page .entry-enter:focus-visible { background: #EFE9E1; color: #322D29; border-color: #EFE9E1; box-shadow: 0 0 32px #D9D9D919; }
+.entry-page .enter-arrow { background: #322D29; color: #EFE9E1; }
+.entry-page .entry-enter:hover .enter-arrow { background: #3B3531; }

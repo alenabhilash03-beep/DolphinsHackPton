@@ -1,0 +1,10 @@
+node_modules/
+.next/
+work/
+out/
+dist/
+.local-preview/
+.env*
+.next-local-dev/
+# Also ignore a developer dependency-directory symlink.
+node_modules

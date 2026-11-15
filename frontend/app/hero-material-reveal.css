@@ -1,0 +1,71 @@
+/* A second lighting treatment of the existing sculpture, revealed through a soft mask. */
+.entry-sculpture-reveal {
+  display: none;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--reveal-opacity, 0);
+  isolation: isolate;
+  transition: none;
+}
+@supports (mask-image: radial-gradient(black, transparent)) or
+  (-webkit-mask-image: radial-gradient(black, transparent)) {
+  .entry-sculpture-reveal {
+    display: block;
+    -webkit-mask-image: radial-gradient(
+      circle var(--reveal-r, 0px) at var(--reveal-x, 60%) var(--reveal-y, 50%),
+      #000 0%,
+      #000000e6 20%,
+      #0000008f 50%,
+      #00000024 76%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      circle var(--reveal-r, 0px) at var(--reveal-x, 60%) var(--reveal-y, 50%),
+      #000 0%,
+      #000000e6 20%,
+      #0000008f 50%,
+      #00000024 76%,
+      transparent 100%
+    );
+  }
+}
+.entry-sculpture-reveal > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: grayscale(1) sepia(0.85) saturate(1.8) hue-rotate(305deg)
+    brightness(1.05) contrast(1.1);
+  animation: scene-settle 2s ease-out both;
+}
+.entry-sculpture-reveal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    125deg,
+    transparent 25%,
+    #72383d38 49%,
+    #efe9e118 54%,
+    transparent 68%
+  );
+  mix-blend-mode: soft-light;
+}
+.entry-scene-bg[data-interactive="false"] .entry-sculpture-reveal {
+  opacity: 0;
+  transition: none;
+}
+@media (max-width: 760px) {
+  .entry-sculpture-reveal > img {
+    object-position: 60% center;
+  }
+}
+@media (prefers-reduced-motion: reduce), (hover: none), (pointer: coarse) {
+  .entry-sculpture-reveal {
+    display: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}

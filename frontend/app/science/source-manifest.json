@@ -1,0 +1,192 @@
+{
+  "repository": "alenabhilash03-beep/DolphinsHackPton",
+  "revision": "14896c873f325832539ddde17b35bd425081a9e8",
+  "files": [
+    {
+      "path": "lib/example.generated.ts",
+      "source_sha256": "431cc9da6c7c800097873a0f1b96fdaeb3dd2735a5a66c11c1ee1c0254a9f600"
+    },
+    {
+      "path": "components/BindingCanvas.tsx",
+      "source_sha256": "a5575d1164052c8bc736155fa1c26f853bab12b2aada5547f3118bb9da93bc3c"
+    },
+    {
+      "path": "components/DrugSupportPanel.tsx",
+      "source_sha256": "a3a1c39b8ed1f804bb47efd9d3a7be11e20a51d750a328195b0dc75e83c5c990"
+    },
+    {
+      "path": "components/EvidencePanel.tsx",
+      "source_sha256": "19e56349be61a35bd10d6a9d0dd89eb419729ed4523d1988956d38cb24a060b7"
+    },
+    {
+      "path": "components/HypothesisWorkspace.tsx",
+      "source_sha256": "baac55ffa02dec931342d8c8deb7fcb877868f790cb00dbbc70ac5223c73d7aa"
+    },
+    {
+      "path": "components/InvestigationHistoryPanel.tsx",
+      "source_sha256": "adf7eb55c95e83b80f6ca22d21f6deac0a5a70baf830e41df9f8239b056119b7"
+    },
+    {
+      "path": "components/InvestigationPanel.tsx",
+      "source_sha256": "39023fd02dea3e5123013f33fbb09b5c4d7162a7cd2166f66a136274a677fb65"
+    },
+    {
+      "path": "components/NextExperimentProposals.tsx",
+      "source_sha256": "4d16f52e8f9c01795ccc5e865d83133e44f2732294dd4dc6e324d6ac85673d45"
+    },
+    {
+      "path": "components/PaperSummaries.tsx",
+      "source_sha256": "2441815f941c113b1a3dac16f2ae7c87fcdcafe5bfcddaaf64d1c6d3729f3542"
+    },
+    {
+      "path": "components/PlotPreview.tsx",
+      "source_sha256": "bac4f131fbb55694162d919b548e74fb544d28b25af823ea28d5c9e69c527618"
+    },
+    {
+      "path": "components/PreparationAnswers.tsx",
+      "source_sha256": "4f3c8462fd694c7868017badfa4ea10e7895cbf0ec5b4b4a0beab2a545b9f7fd"
+    },
+    {
+      "path": "components/PreviewControls.tsx",
+      "source_sha256": "47addfcc1bdd230ce3648bcb67ee7e5f1d44cb8f78471f8f7d032a7caffd16d9"
+    },
+    {
+      "path": "components/ResearchPaperReview.tsx",
+      "source_sha256": "929e73a6fdd84dcd1d5b0671467891dbf088f3d4fee1a94227dbbfb7f85ea439"
+    },
+    {
+      "path": "components/ResultOverview.tsx",
+      "source_sha256": "8d2bc9b1d4660df45eb3e66484cdc358584f4bde8812de8039bcb6eb462f88f1"
+    },
+    {
+      "path": "components/ScenarioComparison.tsx",
+      "source_sha256": "a8072b7cc796945c2c2dfb0a203e2a75db6590a3ac62d18244bbafec233b5145"
+    },
+    {
+      "path": "components/ScientificAnswer.tsx",
+      "source_sha256": "ba0a02443ad30599c168ec31ca923fe1d451e219c11533c72f4e571cd5b0ee60"
+    },
+    {
+      "path": "components/ScientificPlot.tsx",
+      "source_sha256": "8ffb2191834c8cbf01662ceab6e1ea2bcf9366aa924100ee4cb56a7bddfb401f"
+    },
+    {
+      "path": "components/StructureViewer.tsx",
+      "source_sha256": "aa68396947e5b9445bd6c330dfe99c0b9cd93148d589f95d7b01aef569ede362"
+    },
+    {
+      "path": "components/TimelineControls.tsx",
+      "source_sha256": "6914874cfb7d1f6bc840991b8f43e9edc011e6d8e64be02180894a9920e44c38"
+    },
+    {
+      "path": "components/VisualizationBoundary.tsx",
+      "source_sha256": "f0024883f39d65c8ed7532a06ffdeb6d408b1c20b8d8e0dc309ad012db8a5b86"
+    },
+    {
+      "path": "hooks/useExperimentWorkspace.ts",
+      "source_sha256": "a5190a08490a02d20f3631ad48b787c945af0d110f0f7b9bb75c1d42377c6806"
+    },
+    {
+      "path": "hooks/useSimulationTimeline.ts",
+      "source_sha256": "5ee70a84e754d6e5638931088b3fe8fe196aca199879bb30ace58563c0c89df9"
+    },
+    {
+      "path": "lib/agent-proxy.ts",
+      "source_sha256": "12d1b42a284da7ccb1d68d3629c6730093507057754ca004db2aca90893adee0"
+    },
+    {
+      "path": "lib/agent-workspace.ts",
+      "source_sha256": "4ac49475405318f5fbf77e981ba1ade343c81aab04c56598cf12bf6e0d374e64"
+    },
+    {
+      "path": "lib/binding-schematic.ts",
+      "source_sha256": "ed125eb031c93506e0ebb322d33d53855e56dc8e382cbe67ce94c1a5ee6cb1b5"
+    },
+    {
+      "path": "lib/comparison-summary.ts",
+      "source_sha256": "098adec1e2d35c07780752f27b78c890d91c5d975417a4d703498c5e26ea29a4"
+    },
+    {
+      "path": "lib/contracts.generated.ts",
+      "source_sha256": "ec3824313549f904eb4a6fb3d3926f743723e9aef22dd31dcb76c6ad2051af7b"
+    },
+    {
+      "path": "lib/contracts.ts",
+      "source_sha256": "bdfc02b123dca04d69af22e401724f6abd6f76aef7b26036c7d5b5f2fa194263"
+    },
+    {
+      "path": "lib/history-view.ts",
+      "source_sha256": "7995f802c391ba2e9d7067f2d51b0e7fdf660266222f1c30a6150e9cb1aab0cb"
+    },
+    {
+      "path": "lib/investigation.ts",
+      "source_sha256": "727a57a29707d64b7eb4173650ccf99cfa610f0fadf11a080441db5474e6f0b4"
+    },
+    {
+      "path": "lib/log-control.ts",
+      "source_sha256": "94c110e18a768b34b5528add9959651f1e8ab4973fe214ab819a00774330d5dd"
+    },
+    {
+      "path": "lib/plot-spec.ts",
+      "source_sha256": "4d7f22711857876544a661e027ac85165e3b47b73214e1f3a3ce4710e2fa0a45"
+    },
+    {
+      "path": "lib/proposal-view.ts",
+      "source_sha256": "0a905df56d3707743836ab23d38c0fc602864ac7dd29d30d418a4ebc43e6a9cc"
+    },
+    {
+      "path": "lib/simulation-client.ts",
+      "source_sha256": "03bb039e2d60e477d14d12ad837bf795ba37af7c09d2958aa91522d2ef32c417"
+    },
+    {
+      "path": "lib/structure-geometry.ts",
+      "source_sha256": "ffef1c3e2c4e09bcbe3e2c06fb63bc6e81a1ea374311261e4dcb2d9ab0a67449"
+    },
+    {
+      "path": "lib/synthesis-view.ts",
+      "source_sha256": "7cae00406458c471aebe005302895b97945803428b69ddbd62a1ed8d5f1f9ee6"
+    },
+    {
+      "path": "lib/timeline.ts",
+      "source_sha256": "bf8044c3b92327f7ebbb27a37fc8d65af037589527205699a46d5847cdb1fa3f"
+    },
+    {
+      "path": "lib/workspace-controller.ts",
+      "source_sha256": "9588abfcdf5e784270ed47c8f69a1d690bd44df11344c29a6510a9d081084019"
+    },
+    {
+      "path": "lib/workspace-state.ts",
+      "source_sha256": "c4ee0190fd6ab8a0114a75c81fbea2682043c40b282f6667720fda1d67dc67cf"
+    },
+    {
+      "path": "tests/workspace-controller.test.mjs",
+      "source_sha256": "bbfc17611a8b73d56832ec92b2d354bc07ab7c5efa4fb39c4b92dcefb4abbf3a"
+    },
+    {
+      "path": "tests/workspace-state.test.mjs",
+      "source_sha256": "48980cb7525c14cb849a9b8ea9fd399987bccebf0951d33899d4ac644568d25a"
+    },
+    {
+      "path": "tests/investigation.test.mjs",
+      "source_sha256": "d1a623c02f5ff8f9da503ba78348c4cad99bf1fedbaf71999ae13f5a3ba8e395"
+    },
+    {
+      "path": "tests/synthesis-view.test.mjs",
+      "source_sha256": "a074ee53243a95ca4bb0e12346beb8000c63de769938f129b54316ebdbca7ff0"
+    },
+    {
+      "path": "tests/proposal-view.test.mjs",
+      "source_sha256": "b21a8a6870fa55ed40cff4b058231d85bca9a8ceaeea7e3ea08e0943ab5ec0b4"
+    },
+    {
+      "path": "tests/history-view.test.mjs",
+      "source_sha256": "c76e5a0e625074fbd83c3a47a2927da58e9e7cb528ad76ef7edf4e6f56f0c979"
+    }
+  ],
+  "adaptations": [
+    "New experiments start blank and never fetch the reference or restore another draft/job. Only accepted results mount the numerical and molecular workspace. References are loaded only on explicit request.",
+    "Accepted displayed result is exposed for exact-result exports.",
+    "Local black-glass presentation preserves the home palette accents.",
+    "Playback uses a continuous presentation clock, memoized Plotly, cached geometry, and visual-only interpolation; solver arrays and reported metrics remain unchanged."
+  ]
+}

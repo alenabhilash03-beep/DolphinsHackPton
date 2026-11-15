@@ -1,0 +1,396 @@
+/* A quieter instrument: clear hierarchy, fewer outlines, and space for the result. */
+.workspace-stage .instrument-app {
+  --navigation-width: 88px;
+  --workspace-header-height: 80px;
+}
+.workspace-stage .instrument-app .instrument-rail {
+  width: var(--navigation-width);
+  padding: 20px 6px 16px;
+  background: #302b27;
+  border-right: 1px solid #d1c7bd24;
+  transition:
+    transform 0.22s cubic-bezier(0.2, 0.6, 0.3, 1),
+    opacity 0.18s ease,
+    visibility 0s;
+}
+.workspace-stage .instrument-app .main-shell {
+  margin-left: var(--navigation-width);
+  transition: margin-left 0.22s cubic-bezier(0.2, 0.6, 0.3, 1);
+}
+.workspace-stage .instrument-app[data-navigation="collapsed"] .instrument-rail {
+  transform: translateX(-100%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    transform 0.22s cubic-bezier(0.2, 0.6, 0.3, 1),
+    opacity 0.18s ease,
+    visibility 0s 0.22s;
+}
+.workspace-stage .instrument-app[data-navigation="collapsed"] .main-shell {
+  margin-left: 0;
+}
+.workspace-stage .instrument-app .navigation-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 1px solid #d1c7bd35;
+  border-radius: 14px;
+  color: #d1c7bd;
+  background: #d1c7bd05;
+  transition:
+    background 0.18s,
+    border-color 0.18s;
+}
+.workspace-stage .instrument-app .navigation-toggle:hover {
+  background: #d1c7bd12;
+  border-color: #ac9c8d;
+}
+.workspace-stage .instrument-app .navigation-toggle[aria-expanded="false"] {
+  border-color: #ac9c8d85;
+  color: #efe9e1;
+}
+.workspace-stage .rail-close {
+  display: none;
+}
+.workspace-stage .instrument-app .instrument-rail nav {
+  gap: 4px;
+}
+.workspace-stage .instrument-app .instrument-rail nav > button {
+  min-height: 64px;
+  padding: 10px 4px;
+  border-radius: 20px;
+  transition:
+    color 0.18s,
+    background 0.18s;
+}
+.workspace-stage .instrument-app .instrument-rail nav > button.selected {
+  background: #72383d30;
+  color: #efe9e1;
+  border-color: transparent;
+}
+.workspace-stage .instrument-app .instrument-rail nav > button.selected::after {
+  background: #c58e92;
+  height: 20px;
+  width: 2px;
+  left: -6px;
+  border-radius: 2px;
+}
+.workspace-stage .instrument-app .instrument-rail nav > button:hover {
+  background: #d1c7bd0d;
+}
+.workspace-stage .instrument-app .instrument-rail nav > button > svg {
+  transition: none;
+  filter: none;
+}
+.workspace-stage .instrument-app .instrument-rail nav > button:hover > svg {
+  transform: none;
+}
+.workspace-stage .instrument-app .rail-rule {
+  margin: 20px 0;
+}
+.workspace-stage .instrument-app .rail-brand {
+  border: 0;
+  border-radius: 18px;
+  background: #d1c7bd09;
+}
+.workspace-stage .instrument-app .rail-create {
+  width: 48px;
+  min-height: 56px;
+  border-radius: 18px;
+  margin-top: 24px;
+}
+.workspace-stage .instrument-app .topbar {
+  flex-wrap: wrap;
+  padding-inline: clamp(20px, 3vw, 40px);
+  background: #322d29;
+  gap: 16px;
+  border-bottom: 1px solid #d1c7bd24;
+}
+.workspace-stage .instrument-app .workspace-signature {
+  font-size: 19px;
+  font-weight: 450;
+}
+.workspace-stage .instrument-app .top-actions {
+  gap: 16px;
+}
+.workspace-stage .instrument-app .main-content {
+  max-width: 1480px;
+  padding: 32px clamp(20px, 3vw, 40px) 0;
+}
+.workspace-stage
+  .instrument-app
+  :is(.eyebrow, .section-index, .parameter-group-label, .collection-toolbar) {
+  text-transform: none;
+  letter-spacing: 0.015em;
+}
+.workspace-stage .instrument-app .page-heading h1 {
+  font-size: clamp(32px, 3.7vw, 52px);
+  letter-spacing: -0.045em;
+  line-height: 1.12;
+}
+.workspace-stage .instrument-app .page-heading .heading-actions {
+  gap: 8px;
+}
+.workspace-stage .instrument-app .btn {
+  border-radius: 22px;
+  font-weight: 450;
+}
+.workspace-stage .instrument-app .btn.primary {
+  background: #72383d;
+  border-color: #72383d;
+  color: #efe9e1;
+}
+.workspace-stage .instrument-app .btn.primary:hover:not(:disabled) {
+  background: #85464c;
+  border-color: #85464c;
+}
+.workspace-stage .instrument-app .btn.secondary {
+  border-color: #ac9c8d75;
+  background: transparent;
+}
+.workspace-stage .instrument-app .workbench-heading {
+  padding-bottom: 8px;
+}
+.workspace-stage .instrument-app .experiment-status {
+  color: #ac9c8d;
+  font-size: 11px;
+  gap: 12px 20px;
+  flex-wrap: wrap;
+}
+.workspace-stage .instrument-app .experiment-sequence {
+  border: 0;
+  gap: 8px 24px;
+  padding-block: 16px;
+}
+.workspace-stage .instrument-app .experiment-sequence > button {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #d1c7bd;
+  padding: 8px 0;
+  font-size: 11px;
+}
+.workspace-stage .instrument-app .hypothesis-block {
+  border: 0;
+  border-left: 2px solid #ac9c8d70;
+  background: transparent;
+  border-radius: 0;
+  padding: 16px 24px;
+  margin: 8px 0 32px;
+}
+.workspace-stage .instrument-app .hypothesis-number {
+  color: #ac9c8d;
+  font-size: 30px;
+}
+.workspace-stage .instrument-app .hypothesis-block p {
+  max-width: 72ch;
+  font-size: clamp(18px, 1.6vw, 23px);
+  line-height: 1.6;
+}
+.workspace-stage .instrument-app .experiment-tabs {
+  position: sticky;
+  top: var(--workspace-header-height);
+  z-index: 18;
+  padding: 8px 0 0;
+  background: #322d29;
+  border-bottom: 1px solid #d1c7bd35;
+  gap: 24px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  flex-wrap: nowrap;
+}
+.workspace-stage .instrument-app .experiment-tabs > button {
+  padding: 12px 0;
+  white-space: nowrap;
+  color: #ac9c8d;
+  border-bottom: 2px solid transparent;
+  font-weight: 400;
+}
+.workspace-stage .instrument-app .experiment-tabs > button.active {
+  color: #efe9e1;
+  border-bottom-color: #c58e92;
+}
+.workspace-stage .instrument-app .experiment-tabs > span {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 10px;
+  color: #ac9c8d;
+}
+.workspace-stage .instrument-app .instrument-toolbar {
+  padding: 20px 0;
+  border: 0;
+}
+.workspace-stage .instrument-app .plot-focus-toggle {
+  border: 1px solid #ac9c8d60;
+  border-radius: 22px;
+  padding: 10px 14px;
+  background: transparent;
+  color: #d1c7bd;
+}
+.workspace-stage .instrument-app .plot-focus-toggle:hover {
+  border-color: #ac9c8d;
+  background: #d1c7bd08;
+}
+.workspace-stage .instrument-app .chart-panel {
+  border-radius: 24px;
+  border: 1px solid #d1c7bd50;
+  box-shadow: 0 12px 36px #1d191514;
+  overflow: hidden;
+}
+.workspace-stage .instrument-app .chart-panel > .section-title {
+  padding: 20px 24px;
+  border-bottom: 1px solid #d1c7bd50;
+}
+.workspace-stage .instrument-app .chart-panel .chart-heading {
+  padding: 24px 28px 16px;
+}
+.workspace-stage .instrument-app .chart-panel .chart-heading h3 {
+  font-size: clamp(28px, 2.5vw, 36px);
+  letter-spacing: -0.035em;
+}
+.workspace-stage .instrument-app .chart-panel .chart-legend {
+  padding: 20px 28px;
+  gap: 16px 24px;
+}
+.workspace-stage .instrument-app .chart-panel .timeline {
+  border-top: 1px solid #d1c7bd66;
+  padding: 16px 24px;
+}
+.workspace-stage .instrument-app .parameter-panel {
+  border: 1px solid #d1c7bd30;
+  background: #39322e;
+  border-radius: 24px;
+}
+.workspace-stage .instrument-app .parameter-panel > .section-title {
+  background: transparent;
+  border-bottom: 1px solid #d1c7bd24;
+  padding: 20px;
+}
+.workspace-stage .instrument-app .parameter-panel .parameter-body {
+  padding: 20px;
+}
+.workspace-stage .instrument-app .parameter-panel .control > label {
+  font-size: 11px;
+  color: #d1c7bd;
+}
+.workspace-stage .instrument-app .parameter-panel .control > label > output {
+  color: #efe9e1;
+  font-variant-numeric: tabular-nums;
+}
+.workspace-stage
+  .instrument-app
+  .parameter-panel
+  :is(select, input[type="number"]) {
+  border-radius: 10px;
+  border-color: #ac9c8d50;
+}
+.workspace-stage .instrument-app .binding-strip {
+  border-radius: 24px;
+  border-color: #d1c7bd30;
+}
+.workspace-stage .instrument-app .comparison-table .scenario-card {
+  border-radius: 0;
+  border-inline: 0;
+  background: transparent;
+  transition: background 0.16s;
+}
+.workspace-stage .instrument-app .comparison-table .scenario-card.selected {
+  background: #72383d25;
+}
+.workspace-stage
+  .instrument-app
+  :is(.workspace-canopy, .note-editor, .account-form, .export-preview) {
+  border-radius: 24px;
+}
+.workspace-stage
+  .instrument-app
+  :is(section[id], .hypothesis-block, .parameter-panel) {
+  scroll-margin-top: calc(var(--workspace-header-height) + 88px);
+}
+@media (min-width: 1301px) {
+  .workspace-stage .instrument-app .parameter-panel {
+    top: calc(var(--workspace-header-height) + 80px);
+    max-height: calc(100dvh - var(--workspace-header-height) - 104px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+}
+@media (max-width: 760px) {
+  .workspace-stage .instrument-app .main-shell {
+    margin-left: 0;
+  }
+  .workspace-stage .instrument-app .instrument-rail {
+    width: 96px;
+    transform: translateX(-100%);
+    border-radius: 0 24px 24px 0;
+    box-shadow: 16px 0 56px #1d191530;
+  }
+  .workspace-stage
+    .instrument-app[data-navigation="expanded"]
+    .instrument-rail {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+  }
+  .workspace-stage .instrument-app .rail-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    width: 40px;
+    border: 1px solid #ac9c8d50;
+    border-radius: 14px;
+    color: #d1c7bd;
+    margin-bottom: 12px;
+  }
+  .workspace-stage .instrument-app .topbar {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+  .workspace-stage .instrument-app .top-actions {
+    gap: 6px;
+  }
+  .workspace-stage .instrument-app .navigation-toggle {
+    width: 40px;
+    height: 40px;
+  }
+  .workspace-stage .instrument-app .main-content {
+    padding: 24px 16px 0;
+  }
+  .workspace-stage .instrument-app .experiment-tabs {
+    gap: 20px;
+  }
+  .workspace-stage .instrument-app .experiment-tabs > span {
+    display: none;
+  }
+  .workspace-stage .instrument-app .hypothesis-block {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .workspace-stage .instrument-app .chart-panel .chart-heading {
+    padding: 20px 16px 12px;
+  }
+  .workspace-stage .instrument-app .chart-panel .chart-legend {
+    padding: 16px;
+  }
+  .workspace-stage .instrument-app .chart-panel > .section-title {
+    padding: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-stage
+    .instrument-app
+    :is(.instrument-rail, .main-shell, .navigation-toggle, .scenario-card) {
+    transition: none !important;
+  }
+}
+.experience-root[data-motion="paused"]
+  .workspace-stage
+  .instrument-app
+  :is(.instrument-rail, .main-shell) {
+  transition: none;
+}

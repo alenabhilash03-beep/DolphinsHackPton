@@ -1,0 +1,861 @@
+/* Original editorial interaction system: open sections, detached action circles, and calm motion. */
+.workspace-stage .instrument-app {
+  --flow-ease: cubic-bezier(0.22, 0.7, 0.2, 1);
+  --flow-line: #d1c7bd35;
+}
+.workspace-stage .instrument-app .main-content {
+  animation: workspace-page-in 0.42s var(--flow-ease) both;
+}
+.workspace-stage .instrument-app :is(.btn.primary, .btn.secondary) {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 48px;
+  max-width: 100%;
+  padding: 6px 6px 6px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+  overflow: hidden;
+  font: 450 12px/1.5 var(--font);
+  transition:
+    color 0.3s var(--flow-ease),
+    transform 0.2s var(--flow-ease);
+}
+.workspace-stage .instrument-app :is(.btn.primary, .btn.secondary)::before,
+.workspace-stage .instrument-app :is(.btn.primary, .btn.secondary)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+}
+.workspace-stage .instrument-app .btn.primary::before {
+  background: #72383d;
+}
+.workspace-stage .instrument-app .btn.primary::after {
+  background: #8a484f;
+  clip-path: circle(0% at calc(100% - 24px) 50%);
+  transition: clip-path 0.45s var(--flow-ease);
+}
+.workspace-stage .instrument-app .btn.primary {
+  color: #efe9e1;
+}
+.workspace-stage .instrument-app .btn.secondary {
+  color: #d1c7bd;
+  padding-left: 0;
+  overflow: visible;
+}
+.workspace-stage .instrument-app .btn.secondary::before {
+  background: transparent;
+}
+.workspace-stage .instrument-app .btn.secondary::after {
+  display: none;
+}
+.workspace-stage
+  .instrument-app
+  .btn.primary:is(:hover, :focus-visible):not(:disabled)::after {
+  clip-path: circle(150% at calc(100% - 24px) 50%);
+}
+.workspace-stage .instrument-app :is(.btn.primary, .btn.secondary) > svg {
+  box-sizing: content-box;
+  width: 16px;
+  height: 16px;
+  padding: 10px;
+  flex-shrink: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  transition:
+    background 0.35s var(--flow-ease),
+    border-color 0.35s var(--flow-ease),
+    transform 0.35s var(--flow-ease);
+}
+.workspace-stage .instrument-app .btn.primary > svg {
+  color: #72383d;
+  background: #efe9e1;
+}
+.workspace-stage .instrument-app .btn.secondary > svg {
+  border-color: #ac9c8d80;
+  color: #d1c7bd;
+  background: transparent;
+}
+.workspace-stage
+  .instrument-app
+  .btn.secondary:is(:hover, :focus-visible):not(:disabled)
+  > svg {
+  background: #d1c7bd;
+  color: #322d29;
+  border-color: #d1c7bd;
+}
+.workspace-stage
+  .instrument-app
+  :is(.btn, .text-link):is(:hover, :focus-visible):not(:disabled)
+  > .lucide-arrow-right {
+  transform: translateX(3px);
+}
+.workspace-stage
+  .instrument-app
+  :is(.btn, .text-link):is(:hover, :focus-visible):not(:disabled)
+  > .lucide-arrow-up-right {
+  transform: translate(2px, -2px);
+}
+.workspace-stage
+  .instrument-app
+  :is(.btn, .text-link):is(:hover, :focus-visible):not(:disabled)
+  > .lucide-arrow-left {
+  transform: translateX(-3px);
+}
+.workspace-stage
+  .instrument-app
+  .btn.primary:is(:hover, :focus-visible):not(:disabled)
+  > .lucide-download {
+  transform: translateY(2px);
+}
+.workspace-stage
+  .instrument-app
+  :is(.btn.primary, .btn.secondary):active:not(:disabled) {
+  transform: translateY(1px);
+}
+.workspace-stage .instrument-app .btn:not(:has(> svg)) {
+  padding: 12px 22px;
+}
+.workspace-stage .instrument-app .text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  color: #d1c7bd;
+  background: none;
+  border: 0;
+  text-decoration: none;
+}
+.workspace-stage .instrument-app .text-link > svg {
+  box-sizing: content-box;
+  width: 14px;
+  height: 14px;
+  padding: 7px;
+  border-radius: 50%;
+  border: 1px solid #ac9c8d65;
+  transition:
+    transform 0.3s var(--flow-ease),
+    background 0.3s var(--flow-ease);
+}
+.workspace-stage .instrument-app .text-link:is(:hover, :focus-visible) > svg {
+  background: #d1c7bd12;
+}
+.workspace-stage .instrument-app .navigation-toggle {
+  border-radius: 50%;
+  background: transparent;
+}
+.workspace-stage .instrument-app .instrument-rail {
+  background: #322d29;
+  border-right-color: #d1c7bd20;
+}
+.workspace-stage .instrument-app .instrument-rail nav > button {
+  border-radius: 0;
+}
+.workspace-stage .instrument-app .instrument-rail nav > button.selected {
+  background: transparent;
+}
+.workspace-stage .instrument-app .instrument-rail nav > button.selected > svg {
+  color: #d6a3a6;
+}
+.workspace-stage .instrument-app .instrument-rail nav > button:hover {
+  background: transparent;
+  color: #efe9e1;
+}
+.workspace-stage .instrument-app .instrument-rail nav > button.selected::after {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  left: 0;
+  top: 30px;
+}
+.workspace-stage .instrument-app .rail-brand {
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid #d1c7bd35;
+}
+.workspace-stage .instrument-app .rail-create {
+  border-radius: 50%;
+  width: 48px;
+  min-height: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid #ac9c8d80;
+  position: relative;
+  overflow: visible;
+  margin-bottom: 20px;
+}
+.workspace-stage .instrument-app .rail-create > span {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  font-size: 9px;
+}
+.workspace-stage .instrument-app .workbench-heading .page-heading {
+  padding-top: 12px;
+  align-items: center;
+}
+.workspace-stage .instrument-app .workbench-heading h1 {
+  max-width: 22ch;
+  font-size: clamp(36px, 4.1vw, 64px);
+}
+.workspace-stage .instrument-app .experiment-status {
+  border: 0;
+  padding: 12px 0 0;
+}
+.workspace-stage .instrument-app .experiment-sequence {
+  border-block: 1px solid var(--flow-line);
+  padding: 8px 0;
+  margin: 32px 0;
+  gap: 0 24px;
+}
+.workspace-stage .instrument-app .experiment-sequence > button {
+  position: relative;
+  justify-content: flex-start;
+  gap: 12px;
+}
+.workspace-stage .instrument-app .experiment-sequence > button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: #d1c7bd;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--flow-ease);
+}
+.workspace-stage .instrument-app .experiment-sequence > button:hover {
+  background: transparent;
+}
+.workspace-stage .instrument-app .experiment-sequence > button:hover::after {
+  transform: scaleX(1);
+}
+.workspace-stage .instrument-app .hypothesis-block {
+  border: 0;
+  padding: 12px 0 32px;
+  gap: 24px;
+  margin: 0;
+}
+.workspace-stage .instrument-app .hypothesis-number {
+  font: italic 40px/1 var(--editorial);
+  opacity: 0.65;
+}
+.workspace-stage .instrument-app .hypothesis-block p {
+  font: 400 clamp(21px, 2.1vw, 28px) / 1.6 var(--editorial);
+  letter-spacing: -0.015em;
+  max-width: 70ch;
+}
+.workspace-stage .instrument-app .experiment-tabs {
+  gap: 28px;
+  padding: 0;
+  overflow-y: hidden;
+}
+.workspace-stage .instrument-app .experiment-tabs > button {
+  border-bottom: 0;
+  padding: 18px 0;
+  font-size: 12px;
+}
+.workspace-stage .instrument-app .experiment-tabs > button.active {
+  border: 0;
+}
+.workspace-stage .instrument-app .experiment-tab-ink {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: var(--active-tab-width, 0px);
+  transform: translateX(var(--active-tab-x, 0px));
+  background: #c58e92;
+  pointer-events: none;
+  transition:
+    width 0.35s var(--flow-ease),
+    transform 0.35s var(--flow-ease);
+}
+.workspace-stage .instrument-app .workspace-tab-panel {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+  outline-offset: 6px;
+  animation: workspace-panel-in 0.32s var(--flow-ease) both;
+}
+.workspace-stage .instrument-app .workspace-tab-panel:focus-visible {
+  outline: 1px solid #ac9c8d;
+}
+.workspace-stage .instrument-app .calculation-label {
+  align-self: center;
+}
+.workspace-stage .instrument-app .experiment-kind-control {
+  border: 0;
+  padding: 28px 0 20px;
+  margin: 0;
+  gap: 16px 24px;
+}
+.workspace-stage .instrument-app .experiment-kind-control > select {
+  border: 0;
+  border-bottom: 1px solid #ac9c8d90;
+  border-radius: 0;
+  background: transparent;
+  padding: 12px 24px 12px 0;
+}
+.workspace-stage .instrument-app .experiment-actions {
+  padding: 0 0 24px;
+  border-bottom: 1px solid var(--flow-line);
+  gap: 16px 24px;
+}
+.workspace-stage .instrument-app .research-tool {
+  border: 0;
+  border-bottom: 1px solid var(--flow-line);
+  padding: 28px 0;
+  margin: 0 0 12px;
+}
+.workspace-stage .instrument-app .research-tool > summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  padding: 8px 0;
+  font: 400 25px/1.3 var(--editorial);
+}
+.workspace-stage .instrument-app .research-tool > summary::after {
+  content: "+";
+  margin-left: auto;
+  color: #ac9c8d;
+  font: 300 22px var(--font);
+  transition: transform 0.3s var(--flow-ease);
+}
+.workspace-stage .instrument-app .research-tool[open] > summary::after {
+  transform: rotate(45deg);
+}
+.workspace-stage .instrument-app .research-tool > summary > span {
+  margin: 0;
+  font: 12px/1.7 var(--font);
+}
+.workspace-stage .instrument-app .tool-grid {
+  gap: 16px 28px;
+}
+.workspace-stage
+  .instrument-app
+  :is(.research-tool, .source-row, .evidence-context)
+  :is(input:not([type="checkbox"]), select) {
+  border: 0;
+  border-bottom: 1px solid #ac9c8d75;
+  border-radius: 0;
+  background: #d1c7bd04;
+  padding: 12px 8px;
+}
+.workspace-stage
+  .instrument-app
+  :is(.research-tool, .source-row, .evidence-context)
+  :is(input, select):focus-visible {
+  border-bottom-color: #d6a3a6;
+  outline: 1px solid #ac9c8d;
+  outline-offset: 4px;
+}
+.workspace-stage .instrument-app .import-measurements {
+  border: 0;
+  padding: 16px 0;
+}
+.workspace-stage .instrument-app .version-diff {
+  background: transparent;
+  border-left: 1px solid var(--flow-line);
+  padding: 8px 24px;
+}
+.workspace-stage .instrument-app .instrument-toolbar {
+  padding: 24px 0;
+}
+.workspace-stage .instrument-app .plot-focus-toggle {
+  border: 0;
+  border-radius: 0;
+  padding: 8px 0;
+  gap: 12px;
+  background: none;
+}
+.workspace-stage .instrument-app .plot-focus-toggle > svg {
+  box-sizing: content-box;
+  padding: 9px;
+  border: 1px solid #ac9c8d70;
+  border-radius: 50%;
+  transition:
+    background 0.3s var(--flow-ease),
+    transform 0.3s var(--flow-ease);
+}
+.workspace-stage .instrument-app .plot-focus-toggle:hover > svg {
+  background: #d1c7bd12;
+  transform: rotate(8deg);
+}
+.workspace-stage .instrument-app .instrument-layout {
+  gap: 40px;
+}
+.workspace-stage .instrument-app .chart-panel {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  background: transparent;
+}
+.workspace-stage .instrument-app .chart-panel > .section-title {
+  padding: 0 0 16px;
+  background: transparent;
+  border: 0;
+}
+.workspace-stage .instrument-app .chart-panel > .section-title :is(h2, button) {
+  color: #d1c7bd;
+}
+.workspace-stage .instrument-app .chart-panel .chart-heading {
+  padding: 12px 0 24px;
+}
+.workspace-stage .instrument-app .chart-panel .chart-heading h3 {
+  color: #efe9e1;
+  font-size: clamp(30px, 2.8vw, 42px);
+}
+.workspace-stage .instrument-app .chart-panel .chart-heading p {
+  color: #ac9c8d;
+}
+.workspace-stage .instrument-app .chart-panel .chart-axis-label {
+  color: #d1c7bd;
+  margin: 0 0 12px;
+}
+.workspace-stage .instrument-app .chart-panel .chart-wrap {
+  border-radius: 4px 48px 4px 4px;
+  background: #efe9e1;
+  padding: 24px 20px 12px 8px;
+}
+.workspace-stage .instrument-app .chart-panel .chart-legend {
+  padding: 20px 0;
+  background: transparent;
+  border: 0;
+}
+.workspace-stage .instrument-app .chart-panel .chart-legend button {
+  color: #d1c7bd;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+.workspace-stage .instrument-app .chart-panel .timeline {
+  background: transparent;
+  border-top: 1px solid var(--flow-line);
+  padding: 16px 0;
+  color: #d1c7bd;
+}
+.workspace-stage
+  .instrument-app
+  .chart-panel
+  .timeline
+  :is(output, label, span, .time-label) {
+  color: #d1c7bd;
+}
+.workspace-stage .instrument-app .chart-panel .timeline input[type="range"] {
+  accent-color: #c58e92;
+}
+.workspace-stage .instrument-app .chart-panel .timeline .play-button {
+  border-radius: 50%;
+  background: #72383d;
+  color: #efe9e1;
+  border: 0;
+}
+.workspace-stage .instrument-app .chart-data-key {
+  padding: 0 0 20px;
+  color: #ac9c8d;
+}
+.workspace-stage .instrument-app .parameter-panel {
+  border: 0;
+  border-left: 1px solid var(--flow-line);
+  padding-left: 24px;
+  background: transparent;
+  border-radius: 0;
+}
+.workspace-stage .instrument-app .parameter-panel > .section-title {
+  padding: 0 0 24px;
+  border: 0;
+}
+.workspace-stage .instrument-app .parameter-panel > .section-title h2 {
+  font: 400 28px var(--editorial);
+}
+.workspace-stage .instrument-app .parameter-panel .parameter-body {
+  padding: 0;
+}
+.workspace-stage
+  .instrument-app
+  .parameter-panel
+  :is(select, input[type="number"]) {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #ac9c8d75;
+  border-radius: 0;
+}
+.workspace-stage .instrument-app .binding-strip {
+  border: 0;
+  border-top: 1px solid var(--flow-line);
+  border-radius: 0;
+  background: transparent;
+  padding-top: 24px;
+}
+.workspace-stage .instrument-app .binding-graphic {
+  background: transparent;
+}
+.workspace-stage .instrument-app .binding-text {
+  padding: 16px 0 16px 24px;
+}
+.workspace-stage .instrument-app .comparison-table .scenario-card {
+  border: 0;
+  border-bottom: 1px solid var(--flow-line);
+  padding-block: 20px;
+}
+.workspace-stage .instrument-app .comparison-table .scenario-card.selected {
+  background: transparent;
+  box-shadow: inset 2px 0 #c58e92;
+}
+.workspace-stage .instrument-app .workspace-canopy {
+  padding: 0 0 32px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  overflow: visible;
+}
+.workspace-stage .instrument-app .workspace-canopy-image {
+  opacity: 0.16;
+}
+.workspace-stage .instrument-app .overview-active {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+.workspace-stage .instrument-app .overview-plot {
+  background: transparent;
+  border: 0;
+  border-block: 1px solid var(--flow-line);
+  padding: 24px 0;
+  border-radius: 0;
+}
+.workspace-stage .instrument-app .desk-papers,
+.workspace-stage .instrument-app .desk-notes {
+  border: 0;
+  border-bottom: 1px solid var(--flow-line);
+  border-radius: 0;
+  background: transparent;
+  padding: 24px 0;
+}
+.workspace-stage
+  .instrument-app
+  :is(.experiment-row, .paper-row, .revision-row) {
+  border: 0;
+  border-bottom: 1px solid var(--flow-line);
+  background: transparent;
+  padding: 24px 0;
+  border-radius: 0;
+  transition: background 0.3s var(--flow-ease);
+}
+.workspace-stage .instrument-app :is(.experiment-row, .paper-row):hover {
+  background: #d1c7bd05;
+}
+.workspace-stage
+  .instrument-app
+  :is(.experiment-row, .paper-row)
+  .row-actions
+  > button,
+.workspace-stage .instrument-app .paper-actions > a {
+  width: 36px;
+  height: 36px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid #ac9c8d60;
+  border-radius: 50%;
+}
+.workspace-stage .instrument-app .paper-icon {
+  border: 0;
+  background: transparent;
+}
+.workspace-stage .instrument-app .large-search {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #ac9c8d85;
+  border-radius: 0;
+  padding: 16px 0;
+}
+.workspace-stage .instrument-app .search-intro {
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+}
+.workspace-stage .instrument-app .notes-index {
+  border: 0;
+  background: transparent;
+}
+.workspace-stage .instrument-app .notes-index > button {
+  border: 0;
+  border-bottom: 1px solid var(--flow-line);
+  background: transparent;
+  border-radius: 0;
+  padding: 20px 0;
+}
+.workspace-stage .instrument-app .notes-index > button.active {
+  background: transparent;
+  box-shadow: inset 2px 0 #c58e92;
+  padding-left: 16px;
+}
+.workspace-stage .instrument-app .note-editor {
+  border-radius: 4px 48px 4px 4px;
+  border: 0;
+}
+.workspace-stage .instrument-app .export-config {
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+.workspace-stage .instrument-app .export-format-group > button {
+  border: 0;
+  border-bottom: 1px solid var(--flow-line);
+  padding: 18px 0;
+  border-radius: 0;
+  background: transparent;
+  transition:
+    color 0.3s,
+    background 0.3s;
+}
+.workspace-stage .instrument-app .export-format-group > button.active {
+  border-color: #c58e92;
+  background: transparent;
+}
+.workspace-stage
+  .instrument-app
+  .export-format-group
+  > button:hover:not(:disabled) {
+  border-color: #d1c7bd;
+  background: #d1c7bd05;
+}
+.workspace-stage .instrument-app .export-format-group > button .format-icon {
+  border: 0;
+  background: transparent;
+}
+.workspace-stage .instrument-app .export-preview {
+  border-radius: 4px 48px 4px 4px;
+  border: 0;
+  padding: 32px;
+}
+.workspace-stage .instrument-app .export-preview .text-link {
+  color: #72383d;
+}
+.workspace-stage .instrument-app .export-preview .text-link > svg {
+  border-color: #ac9c8d;
+}
+.workspace-stage .instrument-app .export-history > div {
+  border: 0;
+  border-bottom: 1px solid var(--flow-line);
+  background: transparent;
+}
+.workspace-stage .instrument-app .account-form {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+}
+.workspace-stage .instrument-app .security-panel {
+  border: 0;
+  border-left: 1px solid var(--flow-line);
+  border-radius: 0;
+  background: transparent;
+  padding-left: 32px;
+}
+.environment-transition[data-kind="section"] {
+  background: transparent;
+  pointer-events: none;
+}
+.environment-transition[data-kind="section"] > div {
+  display: none;
+}
+.environment-transition[data-kind="section"]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #c58e92;
+  transform-origin: left;
+  animation: workspace-route-line 0.18s var(--flow-ease) both;
+}
+@keyframes workspace-panel-in {
+  from {
+    opacity: 0.2;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes workspace-page-in {
+  from {
+    opacity: 0.35;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes workspace-route-line {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@media (max-width: 1300px) {
+  .workspace-stage .instrument-app .parameter-panel {
+    border: 0;
+    border-top: 1px solid var(--flow-line);
+    padding: 28px 0 0;
+  }
+}
+@media (max-width: 760px) {
+  .workspace-stage .instrument-app .workbench-heading h1 {
+    font-size: clamp(32px, 8vw, 44px);
+  }
+  .workspace-stage .instrument-app .heading-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .workspace-stage .instrument-app .experiment-sequence {
+    gap: 0 16px;
+  }
+  .workspace-stage .instrument-app .hypothesis-block {
+    gap: 16px;
+    padding-bottom: 24px;
+  }
+  .workspace-stage .instrument-app .hypothesis-number {
+    font-size: 32px;
+  }
+  .workspace-stage .instrument-app .experiment-tabs {
+    gap: 24px;
+  }
+  .workspace-stage .instrument-app .instrument-layout {
+    gap: 32px;
+  }
+  .workspace-stage .instrument-app .chart-panel .chart-wrap {
+    border-radius: 4px 32px 4px 4px;
+    padding: 20px 8px 8px;
+  }
+  .workspace-stage .instrument-app .chart-panel .chart-heading {
+    padding: 8px 0 20px;
+  }
+  .workspace-stage .instrument-app .binding-text {
+    padding: 20px 0;
+  }
+  .workspace-stage .instrument-app .export-preview {
+    padding: 24px;
+    border-radius: 4px 32px 4px 4px;
+  }
+  .workspace-stage .instrument-app .security-panel {
+    padding: 24px 0 0;
+    border: 0;
+    border-top: 1px solid var(--flow-line);
+  }
+  .workspace-stage .instrument-app .research-tool > summary {
+    font-size: 22px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-stage .instrument-app *,
+  .environment-transition[data-kind="section"]::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.experience-root[data-motion="paused"] .workspace-stage .instrument-app *,
+.experience-root[data-motion="paused"]
+  .environment-transition[data-kind="section"]::after {
+  animation: none !important;
+  transition: none !important;
+}
+.workspace-stage
+  .instrument-app
+  :is(.btn.primary, .btn.secondary):is(:hover, :focus-visible):not(:disabled) {
+  background: transparent;
+  border-color: transparent;
+}
+.workspace-stage .instrument-app :is(.btn.primary, .btn.secondary) {
+  white-space: normal;
+}
+.workspace-stage
+  .instrument-app
+  :is(.heading-actions, .modal-actions, .tool-actions) {
+  flex-wrap: wrap;
+}
+.workspace-stage .instrument-app .chart-panel .chart-legend {
+  color: #d1c7bd;
+}
+.workspace-stage
+  .instrument-app
+  .chart-panel
+  .chart-legend
+  :is(button, label, span) {
+  color: #d1c7bd;
+}
+.workspace-stage .instrument-app .chart-panel .segmented {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  gap: 16px;
+}
+.workspace-stage .instrument-app .chart-panel .segmented > button {
+  color: #ac9c8d;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid transparent;
+  padding: 8px 0;
+}
+.workspace-stage .instrument-app .chart-panel .segmented > button.active {
+  color: #efe9e1;
+  background: transparent;
+  border-bottom-color: #c58e92;
+}
+
+.workspace-stage .instrument-app .chart-panel .chart-heading {
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px 24px;
+}
+.workspace-stage .instrument-app .chart-panel .segmented {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+.workspace-stage .instrument-app .model-grid > section {
+  border: 0;
+  border-top: 1px solid var(--flow-line);
+  border-radius: 0;
+  background: transparent;
+  padding: 28px 0;
+}
+.workspace-stage .instrument-app .model-grid .equation {
+  border: 0;
+  border-radius: 4px 32px 4px 4px;
+}
+.workspace-stage .instrument-app .model-limits {
+  border: 0;
+  border-top: 1px solid var(--flow-line);
+  background: transparent;
+  padding: 28px 0;
+}
+.workspace-stage .instrument-app .rail-close {
+  border-radius: 50%;
+}
+@media (max-width: 760px) {
+  .workspace-stage .instrument-app .chart-panel .segmented {
+    width: 100%;
+    gap: 24px;
+  }
+}

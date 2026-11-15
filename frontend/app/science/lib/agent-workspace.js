@@ -1,0 +1,43 @@
+/** A late status response must not overwrite a saved demo or a newer research turn. */ export class RequestEpoch {
+    epoch = 0;
+    next() {
+        return ++this.epoch;
+    }
+    current(ticket) {
+        return ticket === this.epoch;
+    }
+}
+export function linkedTurnResult(turn) {
+    if (turn.status !== "completed" || !turn.result || !turn.interpretation) return null;
+    if (turn.result.result_id !== turn.interpretation.result_id || turn.result.configuration.experiment_id !== turn.interpretation.experiment_id || turn.result.client_revision !== turn.interpretation.client_revision) throw new Error("Agent result linkage is invalid.");
+    return turn.result;
+}
+export function structureKind(drug, target) {
+    const name = drug.trim().toLowerCase(), site = target.trim().toLowerCase();
+    if ([
+        "trastuzumab",
+        "herceptin",
+        "trastuzumab (intact igg1)"
+    ].includes(name) && [
+        "her2",
+        "erbb2",
+        "her2/erbb2",
+        "human her2 extracellular effective sites"
+    ].includes(site)) return "trastuzumab";
+    if ([
+        "imatinib",
+        "chembl941"
+    ].includes(name) && [
+        "abl",
+        "abl1",
+        "abl kinase"
+    ].includes(site)) return "imatinib";
+    return "unavailable";
+}
+/** A route choice must not imply that the reviewed infusion preset covers bolus input. */ export function researchRouteNotice(drug, route) {
+    if (route !== "hypothetical_iv_bolus" || ![
+        "trastuzumab",
+        "herceptin"
+    ].includes(drug.trim().toLowerCase())) return null;
+    return "The reviewed trastuzumab comparison uses IV infusion. Hypothetical IV bolus follows custom research/preparation and does not automatically reuse the demo parameters or comparison. Choose IV infusion for the reviewed example, or prepare an explicit hypothetical baseline with compatible inputs.";
+}

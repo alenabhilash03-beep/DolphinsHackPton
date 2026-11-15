@@ -1,0 +1,109 @@
+/* A section directory: each tile opens the existing content behind it. */
+.workspace-stage .instrument-app .research-desk.desk-directory {
+  --desk-line: #d1c7bd23;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding: 8px 0 24px;
+}
+.workspace-stage .instrument-app .desk-directory .desk-page-intro { margin-bottom: 48px; }
+.workspace-stage .instrument-app .desk-directory .page-heading { margin: 0; }
+.workspace-stage .instrument-app .desk-directory .page-heading .eyebrow:empty { display: none; }
+.workspace-stage .instrument-app .desk-directory .page-heading h1 {
+  font-size: clamp(36px,4vw,48px);
+  line-height: 1.15;
+  margin: 0 0 16px;
+}
+.workspace-stage .instrument-app .desk-directory .page-heading p {
+  max-width: 66ch;
+  margin: 0;
+  color: #ac9c8d;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.workspace-stage .instrument-app .desk-directory .desk-directory-section { margin-bottom: 48px; }
+.workspace-stage .instrument-app .desk-directory .desk-directory-section > h2 {
+  margin: 0 0 24px;
+  font: 500 17px/1.5 var(--font);
+  letter-spacing: -.02em;
+  color: #efe9e1;
+}
+.workspace-stage .instrument-app .desk-directory .desk-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+.workspace-stage .instrument-app .desk-directory .desk-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid var(--desk-line);
+  border-radius: 9px;
+  background: #38312d;
+  color: #efe9e1;
+  text-align: left;
+  overflow: hidden;
+  filter: none;
+  transition: background .18s ease,border-color .18s ease;
+}
+.workspace-stage .instrument-app .desk-directory .desk-tile:is(:hover,:focus-visible) {
+  background: #423a34;
+  border-color: #ac9c8d65;
+  filter: none;
+}
+.workspace-stage .instrument-app .desk-directory .desk-tile:focus-visible {
+  outline: 2px solid #d1c7bd;
+  outline-offset: 4px;
+}
+.workspace-stage .instrument-app .desk-directory .desk-tile:active { background: #493d37; }
+.workspace-stage .instrument-app .desk-directory .desk-tile-symbol {
+  display: flex;
+  align-items: flex-start;
+  min-height: 112px;
+  padding: 24px;
+  color: #d1c7bd;
+  border-bottom: 1px solid var(--desk-line);
+}
+.workspace-stage .instrument-app .desk-directory .desk-tile-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 152px;
+  padding: 24px;
+}
+.workspace-stage .instrument-app .desk-directory .desk-tile-title {
+  display: block;
+  color: #efe9e1;
+  font: 500 15px/1.5 var(--font);
+  letter-spacing: -.015em;
+  overflow-wrap: anywhere;
+}
+.workspace-stage .instrument-app .desk-directory .desk-tile-description {
+  display: block;
+  color: #b6a99e;
+  font: 400 13px/1.7 var(--font);
+  overflow-wrap: anywhere;
+}
+@media(max-width:1100px) {
+  .workspace-stage .instrument-app .desk-directory .desk-tile-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media(max-width:760px) {
+  .workspace-stage .instrument-app .desk-directory .desk-page-intro { margin-bottom: 36px; }
+  .workspace-stage .instrument-app .desk-directory .desk-directory-section { margin-bottom: 36px; }
+  .workspace-stage .instrument-app .desk-directory .desk-tile-symbol { min-height: 88px; padding: 20px; }
+  .workspace-stage .instrument-app .desk-directory .desk-tile-copy { padding: 20px; min-height: 144px; }
+}
+@media(max-width:560px) {
+  .workspace-stage .instrument-app .desk-directory .desk-tile-grid { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .workspace-stage .instrument-app .desk-directory .desk-tile-symbol { min-height: 72px; }
+  .workspace-stage .instrument-app .desk-directory .desk-tile-copy { min-height: 0; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .workspace-stage .instrument-app .desk-directory .desk-tile { transition: none; }
+}
+.experience-root[data-motion="paused"] .workspace-stage .instrument-app .desk-directory .desk-tile { transition: none; }

@@ -1,0 +1,30 @@
+{
+  "name": "hypothesim",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/start-local-preview.mjs",
+    "build": "next build",
+    "test:entry": "node scripts/verify-entry.cjs",
+    "test:models": "node scripts/verify-experiments.mjs",
+    "test:research": "node scripts/verify-research.mjs && node scripts/verify-research-ui.cjs",
+    "test:glass": "node scripts/verify-glass.cjs",
+    "test:reveal": "node scripts/verify-reveal-motion.mjs && node scripts/verify-hero-reveal.cjs",
+    "dev:web": "next dev --hostname 127.0.0.1 --port 3011",
+    "test:science": "node --test app/science/tests/*.mjs",
+    "test:visual": "node scripts/verify-visual-experiment.cjs",
+    "test:hypothesis": "node scripts/verify-hypothesis-start.cjs"
+  },
+  "dependencies": {
+    "jspdf": "^4.2.1",
+    "lucide-react": "^0.468.0",
+    "next": "^15.5.7",
+    "plotly.js": "4.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-plotly.js": "4.1.0"
+  },
+  "devDependencies": {
+    "jsdom": "^31.0.1"
+  }
+}

@@ -1,0 +1,26 @@
+import './fonts.css';
+import './globals.css';
+import './start.css';
+import './workspace-theme.css';
+import './design-system.css';
+import './hero-stage.css';
+import './instrument.css';
+import './open-surface.css';
+import './neutral-palette.css';
+import './scientific-color.css';
+import './environments.css';
+import './luxe.css';
+import './responsive.css';
+import './experiments.css';
+import './research-tools.css';
+import './glass-background.css';
+import './hero-material-reveal.css';
+import './workspace-refinement.css';
+import './workspace-editorial-flow.css';
+import './research-desk.css';
+import './experiment-disclosure.css';
+import './scientific-workspace-base.css';
+import './scientific-experiment.css';
+import './experiment-glass.css';
+export const metadata = {icons:{icon:[{url:'/favicon.svg',type:'image/svg+xml'},{url:'/favicon.ico',sizes:'any'}]},title:'Hypothesim — Research workbench',description:'Turn scientific hypotheses into interactive computational experiments.'};
+export default function Layout({children}){return <html lang="en"><head><link rel="preload" href="/fonts/geist-400.ttf" as="font" type="font/ttf" crossOrigin="anonymous"/><link rel="preload" href="/fonts/newsreader-400.ttf" as="font" type="font/ttf" crossOrigin="anonymous"/></head><body>{children}</body></html>}

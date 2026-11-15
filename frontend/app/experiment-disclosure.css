@@ -1,0 +1,112 @@
+/* Progressive disclosure for the experiment screen; the scientific plot stays visible. */
+.workspace-stage .instrument-app .workbench-page .workbench-heading { padding-bottom: 16px; }
+.workspace-stage .instrument-app .workbench-page .page-heading { align-items: center; gap: 16px 24px; margin-bottom: 16px; }
+.workspace-stage .instrument-app .workbench-page .page-heading h1 { font-size: clamp(28px,3vw,40px); line-height: 1.15; max-width: 36ch; }
+.workspace-stage .instrument-app .workbench-page .heading-actions { gap: 8px; }
+.workspace-stage .instrument-app .workbench-page .experiment-status { gap: 8px 20px; font-size: 10px; }
+.workspace-stage .instrument-app .workbench-page .experiment-sequence { padding: 0 0 12px; gap: 8px 24px; border: 0; }
+.workspace-stage .instrument-app .workbench-page .experiment-sequence > button { padding: 8px 0; font-size: 10px; }
+.workspace-stage .instrument-app .workbench-page .experiment-sequence > button > span { font-size: 10px; }
+.workspace-stage .instrument-app .workbench-page .experiment-disclosure {
+  border: 0;
+  border-bottom: 1px solid #d1c7bd2b;
+  padding: 0;
+  margin: 0 0 12px;
+  min-width: 0;
+  background: transparent;
+  border-radius: 0;
+}
+.workspace-stage .instrument-app .workbench-page .experiment-disclosure > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px 20px;
+  padding: 16px 0;
+  color: #efe9e1;
+  cursor: pointer;
+  list-style: none;
+  min-width: 0;
+  border-radius: 4px;
+}
+.workspace-stage .instrument-app .workbench-page .experiment-disclosure > summary::-webkit-details-marker { display: none; }
+.workspace-stage .instrument-app .workbench-page .experiment-disclosure > summary::marker { content: ''; }
+.workspace-stage .instrument-app .workbench-page .experiment-disclosure > summary:hover { color: #d6a3a6; }
+.workspace-stage .instrument-app .workbench-page .experiment-disclosure > summary:focus-visible { outline: 2px solid #d1c7bd; outline-offset: 4px; }
+.workspace-stage .instrument-app .workbench-page .experiment-disclosure-title { font: 500 13px/1.6 var(--font); letter-spacing: -.01em; }
+.workspace-stage .instrument-app .workbench-page .experiment-disclosure-description { color: #ac9c8d; font: 400 11px/1.6 var(--font); overflow-wrap: anywhere; }
+.workspace-stage .instrument-app .workbench-page .experiment-disclosure > summary > svg { margin-left: auto; color: #ac9c8d; flex-shrink: 0; transition: transform .2s ease; }
+.workspace-stage .instrument-app .workbench-page .experiment-disclosure[open] > summary > svg { transform: rotate(180deg); }
+.workspace-stage .instrument-app .workbench-page .experiment-disclosure-body { min-width: 0; padding: 8px 0 24px; }
+.workspace-stage .instrument-app .workbench-page .experiment-disclosure:not([open]) > .experiment-disclosure-body { display: none; }
+.workspace-stage .instrument-app .workbench-page .experiment-disclosure[open] > .experiment-disclosure-body { animation: experiment-section-in .2s ease both; }
+.workspace-stage .instrument-app .workbench-page .hypothesis-block { padding: 8px 0; margin: 0; border: 0; }
+.workspace-stage .instrument-app .workbench-page .hypothesis-number { display: none; }
+.workspace-stage .instrument-app .workbench-page .hypothesis-block p { font-size: 22px; line-height: 1.6; max-width: 75ch; }
+.workspace-stage .instrument-app .workbench-page .experiment-tabs { margin-top: 12px; }
+.workspace-stage .instrument-app .workbench-page .experiment-tabs > button { padding-block: 14px; }
+.workspace-stage .instrument-app .workbench-page #experiment-setup-section { margin-top: 8px; }
+.workspace-stage .instrument-app .workbench-page #experiment-setup-section .experiment-kind-control { padding: 12px 0 16px; }
+.workspace-stage .instrument-app .workbench-page #experiment-setup-section .experiment-actions { padding: 0 0 16px; margin: 0; gap: 12px 20px; }
+.workspace-stage .instrument-app .workbench-page #experiment-setup-section .research-tool { padding: 12px 0 0; margin: 0; border: 0; }
+.workspace-stage .instrument-app .workbench-page #experiment-setup-section .research-tool > summary { font-size: 18px; }
+.workspace-stage .instrument-app .workbench-page .instrument-toolbar { padding: 12px 0 20px; }
+.workspace-stage .instrument-app .workbench-page .instrument-layout { grid-template-columns: 248px minmax(0,1fr); gap: 32px; }
+.workspace-stage .instrument-app .workbench-page .instrument-layout.focus-plot { grid-template-columns: minmax(0,1fr); }
+.workspace-stage .instrument-app .workbench-page .parameter-panel {
+  border: 0;
+  border-right: 1px solid #d1c7bd2b;
+  border-radius: 0;
+  background: transparent;
+  padding: 0 24px 0 0;
+}
+.workspace-stage .instrument-app .workbench-page .parameter-panel > .section-title { padding: 0 0 12px; border: 0; }
+.workspace-stage .instrument-app .workbench-page .parameter-panel > .section-title h2 { font: 500 15px/1.5 var(--font); margin: 0; }
+.workspace-stage .instrument-app .workbench-page .parameter-panel .parameter-body { display: block; padding: 0; }
+.workspace-stage .instrument-app .workbench-page .parameter-panel .parameter-footer { border: 0; padding: 12px 0 0; font-size: 10px; color: #ac9c8d; }
+.workspace-stage .instrument-app .workbench-page .parameter-condition-group { margin-bottom: 0; }
+.workspace-stage .instrument-app .workbench-page .parameter-condition-group > summary { padding: 12px 0; gap: 8px; }
+.workspace-stage .instrument-app .workbench-page .parameter-condition-group .experiment-disclosure-title { font-size: 11px; color: #c7b9ad; font-weight: 400; }
+.workspace-stage .instrument-app .workbench-page .parameter-condition-group .experiment-disclosure-body { padding: 8px 0 12px; }
+.workspace-stage .instrument-app .workbench-page .parameter-condition-group .control { margin-bottom: 20px; }
+.workspace-stage .instrument-app .workbench-page .parameter-condition-group .control:last-child { margin-bottom: 0; }
+.workspace-stage .instrument-app .workbench-page .parameter-panel[hidden] { display: none; }
+.workspace-stage .instrument-app .workbench-page .chart-panel { border-radius: 12px; box-shadow: none; }
+.workspace-stage .instrument-app .workbench-page .chart-panel > .section-title { display: none; }
+.workspace-stage .instrument-app .workbench-page .chart-panel .chart-heading { padding: 20px 24px 12px; }
+.workspace-stage .instrument-app .workbench-page .chart-panel .chart-heading h3 { font-size: 28px; }
+.workspace-stage .instrument-app .workbench-page .results-column > .experiment-disclosure { margin-top: 20px; }
+.workspace-stage .instrument-app .workbench-page .binding-strip { margin: 0; border: 0; padding: 0; background: transparent; }
+.workspace-stage .instrument-app .workbench-page .simulation-scope { font-size: 10px; line-height: 1.6; color: #ac9c8d; margin: 16px 0 0; }
+.workspace-stage .instrument-app .workbench-page #scenario-outcomes-section { margin-top: 24px; }
+.workspace-stage .instrument-app .workbench-page .comparison-table { margin: 0; }
+.workspace-stage .instrument-app .workbench-page .comparison-table .section-heading { margin-bottom: 16px; }
+.workspace-stage .instrument-app .workbench-page .comparison-table .section-heading h2 { font-size: 20px; }
+.workspace-stage .instrument-app .workbench-page .experiment-interpretation { border: 0; margin: 0; padding: 0; }
+.workspace-stage .instrument-app .workbench-page .experiment-interpretation h2 { font-size: 22px; }
+.workspace-stage .instrument-app .workbench-page .experiment-supporting-tools :is(.research-tool,.parameter-sources) { margin: 0; padding: 12px 0; border-inline: 0; border-radius: 0; }
+.workspace-stage .instrument-app .workbench-page .experiment-supporting-tools .research-tool > summary { font-size: 18px; }
+.workspace-stage .instrument-app .workbench-page .workbench-note-link { padding-block: 20px; margin-top: 12px; }
+.workspace-stage .instrument-app .workbench-page :is([id].experiment-disclosure,#experiment-question,#condition-inspector,#simulation-plot,#experiment-interpretation) { scroll-margin-top: calc(var(--workspace-header-height) + 72px); }
+@keyframes experiment-section-in { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+@media(max-width:1180px) {
+  .workspace-stage .instrument-app .workbench-page .instrument-layout { grid-template-columns: minmax(0,1fr); }
+  .workspace-stage .instrument-app .workbench-page .parameter-panel { border: 0; padding: 0; }
+  .workspace-stage .instrument-app .workbench-page .parameter-condition-group .experiment-disclosure-body { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
+  .workspace-stage .instrument-app .workbench-page .parameter-condition-group .control { margin: 0; }
+  .workspace-stage .instrument-app .workbench-page .parameter-condition-group .pd-disclosure { grid-column: 1/-1; }
+}
+@media(max-width:760px) {
+  .workspace-stage .instrument-app .workbench-page .experiment-disclosure > summary { flex-wrap: wrap; gap: 4px 12px; padding-block: 14px; }
+  .workspace-stage .instrument-app .workbench-page .experiment-disclosure-description { order: 3; flex-basis: 100%; font-size: 10px; }
+  .workspace-stage .instrument-app .workbench-page .parameter-condition-group .experiment-disclosure-body { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px 16px; }
+  .workspace-stage .instrument-app .workbench-page .chart-panel .chart-heading { padding-inline: 16px; }
+  .workspace-stage .instrument-app .workbench-page .experiment-sequence { gap: 8px 16px; }
+}
+@media(max-width:420px) {
+  .workspace-stage .instrument-app .workbench-page .parameter-condition-group .experiment-disclosure-body { grid-template-columns: minmax(0,1fr); }
+}
+@media(prefers-reduced-motion:reduce) {
+  .workspace-stage .instrument-app .workbench-page .experiment-disclosure[open] > .experiment-disclosure-body { animation: none; }
+  .workspace-stage .instrument-app .workbench-page .experiment-disclosure > summary > svg { transition: none; }
+}
+.experience-root[data-motion="paused"] .workspace-stage .instrument-app .workbench-page .experiment-disclosure[open] > .experiment-disclosure-body { animation: none; }
+.experience-root[data-motion="paused"] .workspace-stage .instrument-app .workbench-page .experiment-disclosure > summary > svg { transition: none; }

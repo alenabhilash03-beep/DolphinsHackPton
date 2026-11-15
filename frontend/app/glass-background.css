@@ -1,0 +1,29 @@
+/* A restrained material background. No blur filters, timers, or idle animation. */
+.experience-root { position: relative; isolation: isolate; background: #322D29; }
+.glass-background { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; user-select: none; background: #322D29; --glass-x: 0px; --glass-y: 0px; --glass-angle: 0deg; --glass-light-x: 0px; --glass-light-y: 0px; }
+.scene-content { position: relative; z-index: 1; }
+.glass-field { display: block; width: 100%; height: 100%; opacity: .35; transform: translate3d(var(--glass-x),var(--glass-y),0) rotate(var(--glass-angle)) scale(1.04); transform-origin: 65% 45%; transition: transform 1.2s cubic-bezier(.2,.6,.3,1); }
+.glass-pane { transform-box: fill-box; transform-origin: center; transition: transform 1.5s cubic-bezier(.2,.6,.3,1); }
+.glass-pane-stone { transform: translate3d(calc(var(--glass-x) * -.4),calc(var(--glass-y) * -.4),0); }
+.glass-pane-taupe { transform: translate3d(calc(var(--glass-x) * .4),calc(var(--glass-y) * .3),0); }
+.glass-reflection { transform: translate3d(var(--glass-light-x),var(--glass-light-y),0); transition: transform 1.6s cubic-bezier(.2,.6,.3,1); }
+.glass-reading-shade { position: absolute; inset: 0; background: linear-gradient(90deg,#322D2966,transparent 68%),linear-gradient(0deg,#322D2940,transparent 55%),#322D2933; }
+.experience-root[data-scene=Home] .glass-field { opacity: .7; }
+.workspace-stage .instrument-app,.workspace-stage .instrument-app .main-shell { background: transparent; }
+/* Keep the entry composition; its image becomes a faint layer above the glass. */
+.entry-page { background: transparent; }
+.entry-page::before { background: none; }
+.entry-page > .entry-scene-bg { background: transparent; }
+.entry-scene-bg > img { opacity: .18; }
+.entry-scene-bg::after { background: linear-gradient(90deg,#322D2966,transparent 70%),linear-gradient(0deg,#322D2980,transparent 60%); }
+/* Opaque plotting, editing, and document surfaces retain their original contrast. */
+.experience-root[data-motion=paused] .glass-field,.glass-background[data-interactive=false] .glass-field { transform: scale(1.04); }
+.experience-root[data-motion=paused] .glass-pane,.experience-root[data-motion=paused] .glass-reflection,.glass-background[data-interactive=false] .glass-pane,.glass-background[data-interactive=false] .glass-reflection { transform: none; }
+@media(max-width:760px) { .glass-field { opacity: .3; } .experience-root[data-scene=Home] .glass-field { opacity: .6; } .glass-reading-shade { background: #322D2926; } }
+@media(prefers-reduced-motion:reduce), (hover:none), (pointer:coarse) {
+ .glass-field { transform: scale(1.04) !important; transition: none !important; }
+ .glass-pane,.glass-reflection { transform: none !important; transition: none !important; }
+}
+
+.glass-background[data-interactive=false] .glass-field,.glass-background[data-interactive=false] .glass-pane,.glass-background[data-interactive=false] .glass-reflection { transition: none; }
+.entry-page .home-destination-meta,.entry-page .home-choice-index { color: var(--luxe-stone); }

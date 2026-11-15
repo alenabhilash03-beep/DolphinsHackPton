@@ -1,0 +1,165 @@
+/* Local scientific stage: visual results first, iterative research beside them. */
+.workspace-stage .instrument-app .science-main-content{max-width:1760px;padding-top:28px}
+.workspace-stage .instrument-app .science-main-content[hidden],.workspace-stage .instrument-app .main-content[hidden]{display:none!important}
+.workspace-stage .instrument-app .backend-workspace{--ink:#efe9e1;--paper:#322d29;--muted:#b8ab9f;--line:#d1c7bd2b;--green:#d1c7bd;color-scheme:dark;background:transparent;color:#efe9e1;font:400 13px/1.65 var(--font)}
+.workspace-stage .instrument-app .backend-workspace [hidden]{display:none!important}
+.workspace-stage .instrument-app .backend-workspace .science-experiment{margin:0;padding:0;background:none;min-height:0;max-width:none;color:#efe9e1}
+.workspace-stage .instrument-app .backend-workspace .science-heading{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:20px}
+.workspace-stage .instrument-app .backend-workspace .science-heading h1{font:400 clamp(28px,2.8vw,38px)/1.15 var(--editorial);letter-spacing:-.035em;max-width:40ch;margin:8px 0;color:#efe9e1}
+.workspace-stage .instrument-app .backend-workspace .science-heading .eyebrow{font:400 10px/1.6 var(--font);color:#ac9c8d;text-transform:none;letter-spacing:.02em;margin:0}
+.science-heading-actions{display:flex;gap:10px;align-items:center;flex-shrink:0}
+.workspace-stage .instrument-app .backend-workspace :is(h2,h3,h4){color:#efe9e1;font-family:var(--font);letter-spacing:-.015em}
+.workspace-stage .instrument-app .backend-workspace h2{font-size:19px;font-weight:450}
+.workspace-stage .instrument-app .backend-workspace h3{font-size:14px;font-weight:500}
+.workspace-stage .instrument-app .backend-workspace :is(p,label,small,summary){color:#c4b7ac}
+.workspace-stage .instrument-app .backend-workspace a{color:#d6a3a6}
+.workspace-stage .instrument-app .backend-workspace :is(input,select,textarea){max-width:100%;border:1px solid #ac9c8d55;border-radius:7px;background:#39322e;color:#efe9e1;font:400 12px/1.6 var(--font);padding:10px 12px}
+.workspace-stage .instrument-app .backend-workspace select{min-width:0}
+.workspace-stage .instrument-app .backend-workspace :is(input[type=range],input[type=checkbox]){accent-color:#bd8b91;cursor:pointer}
+.workspace-stage .instrument-app .backend-workspace fieldset{border:0;padding:0;margin:0;min-width:0}
+.workspace-stage .instrument-app .backend-workspace button{font-family:var(--font)}
+.workspace-stage .instrument-app .backend-workspace :is(.quiet-button,.saved-demo-button,.primary-button){padding:9px 13px;border:1px solid #ac9c8d50;border-radius:7px;background:#d1c7bd08;color:#efe9e1;font:450 11px/1.6 var(--font);transition:background .18s,border-color .18s}
+.workspace-stage .instrument-app .backend-workspace .primary-button{background:#72383d;border-color:#a66b7060}
+.workspace-stage .instrument-app .backend-workspace .primary-button:hover:not(:disabled){background:#88484e}
+.workspace-stage .instrument-app .backend-workspace .quiet-button:hover:not(:disabled){background:#d1c7bd13}
+.workspace-stage .instrument-app .backend-workspace button:disabled{opacity:.4;cursor:not-allowed}
+.workspace-stage .instrument-app .backend-workspace [role=alert]{padding:12px 16px;border:1px solid #b6808660;border-radius:8px;background:#72383d22;color:#e3b6b9;font-size:12px;overflow-wrap:anywhere}
+.study-context{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-block:1px solid #d1c7bd25;padding:12px 0;margin-bottom:28px;color:#ac9c8d;font-size:10px}
+.study-context>span:last-child{margin-left:auto;color:#8f8277}
+.study-state-dot{width:5px;height:5px;background:#bb9c86;border-radius:50%;flex-shrink:0}
+.scientific-scene{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;align-items:start}
+.visual-stage{min-width:0}
+.workspace-stage .instrument-app .backend-workspace .visual-experiment-panel{margin:0;padding:0;border:0;border-radius:0;max-width:none;background:transparent}
+.workspace-stage .instrument-app .backend-workspace .workspace-viewbar{position:sticky;top:var(--workspace-header-height);z-index:16;display:flex;gap:24px;background:#322d29f7;border-bottom:1px solid var(--line);margin:0 0 24px;padding:0;overflow-x:auto;backdrop-filter:blur(12px)}
+.workspace-stage .instrument-app .backend-workspace .workspace-viewbar>button{min-width:0;flex:0 0 auto;padding:12px 0;border:0;border-radius:0;border-bottom:2px solid transparent;background:none;color:#ac9c8d;font:400 12px/1.6 var(--font);white-space:nowrap}
+.workspace-stage .instrument-app .backend-workspace .workspace-viewbar>button[aria-selected=true]{color:#efe9e1;border-bottom-color:#bd8b91;background:none}
+.workspace-stage .instrument-app .backend-workspace .simulation-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+.workspace-stage .instrument-app .backend-workspace .simulation-heading h2{font:400 24px/1.3 var(--editorial);margin:0 0 5px}
+.workspace-stage .instrument-app .backend-workspace .simulation-heading p{font-size:11px;color:#ac9c8d;margin:0}
+.workspace-stage .instrument-app .backend-workspace .simulation-heading>.quiet-button{flex-shrink:0}
+.workspace-stage .instrument-app .backend-workspace .timeline-panel{position:relative;display:flex;align-items:center;gap:16px;border:1px solid var(--line);border-radius:10px;background:#39322e;padding:12px 16px;margin:0 0 16px;box-shadow:none}
+.workspace-stage .instrument-app .backend-workspace .timeline-panel>button{height:40px;width:40px;flex-shrink:0;padding:0;border:0;border-radius:50%;background:#72383d;color:#efe9e1;font-size:0}
+.workspace-stage .instrument-app .backend-workspace .timeline-panel>button::before{content:'▶';font-size:13px}
+.workspace-stage .instrument-app .backend-workspace .timeline-panel>button[aria-label='Pause simulation']::before{content:'Ⅱ';font-size:18px}
+.workspace-stage .instrument-app .backend-workspace .timeline-panel>input{flex:1;min-width:40px;margin:0;padding:0;border:0}
+.workspace-stage .instrument-app .backend-workspace .timeline-panel>output{font:400 11px var(--font);font-variant-numeric:tabular-nums;color:#d1c7bd;white-space:nowrap}
+.workspace-stage .instrument-app .backend-workspace .timeline-panel .reveal-toggle{display:flex;align-items:center;gap:5px;font:400 10px var(--font);margin-left:0;white-space:nowrap;width:auto}
+.workspace-stage .instrument-app .backend-workspace .chart-card{border:1px solid var(--line);border-radius:10px;background:#302b27;padding:18px 16px 8px;min-width:0;overflow:hidden}
+.workspace-stage .instrument-app .backend-workspace .chart-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:0 8px;margin-bottom:8px}
+.workspace-stage .instrument-app .backend-workspace .chart-heading h3{font:500 13px/1.5 var(--font);margin:0}
+.workspace-stage .instrument-app .backend-workspace .chart-heading>span{font-size:9px;color:#ac9c8d}
+.workspace-stage .instrument-app .backend-workspace .secondary-visuals{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;align-items:stretch}
+.workspace-stage .instrument-app .backend-workspace .binding-panel{margin:0;border:1px solid var(--line);border-radius:10px;padding:18px 16px;background:#302b27;overflow:hidden;min-width:0}
+.workspace-stage .instrument-app .backend-workspace .binding-panel h2{font:500 13px/1.5 var(--font);margin:0 0 8px}
+.workspace-stage .instrument-app .backend-workspace .binding-panel>.eyebrow{display:none}
+.workspace-stage .instrument-app .backend-workspace .binding-panel>p{font-size:10px;margin:8px 0}
+.workspace-stage .instrument-app .backend-workspace .binding-panel label{display:block;font-size:10px;margin:0 0 12px}
+.workspace-stage .instrument-app .backend-workspace .binding-panel select{max-width:100%;padding:5px 8px;margin-left:5px;font-size:10px}
+.workspace-stage .instrument-app .backend-workspace .binding-panel canvas{display:block;width:100%;height:auto;border-radius:6px}
+.workspace-stage .instrument-app .backend-workspace .science-scope{font-size:10px;line-height:1.7;color:#ac9c8d;margin:16px 0}
+.workspace-stage .instrument-app .backend-workspace .controls-panel{position:static;max-height:none;overflow:visible;display:block;background:transparent;border:1px solid var(--line);border-radius:10px;margin:20px 0;padding:20px}
+.workspace-stage .instrument-app .backend-workspace .controls-panel fieldset>section{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 24px}
+.workspace-stage .instrument-app .backend-workspace .controls-panel :is(h3,p){grid-column:1/-1}
+.workspace-stage .instrument-app .backend-workspace .controls-panel input[type=range]{padding:0;width:100%}
+.workspace-stage .instrument-app .backend-workspace .controls-panel label output{color:#d1c7bd;font:400 12px/1.6 var(--font)}
+.workspace-stage .instrument-app .backend-workspace .controls-panel .parameter-hint{color:#ac9c8d;font-size:10px}
+.agent-desk{position:sticky;top:calc(var(--workspace-header-height) + 24px);border:1px solid #d1c7bd32;border-radius:12px;background:#352f2b;padding:24px;min-width:0;max-height:calc(100dvh - var(--workspace-header-height) - 48px);overflow:auto;scrollbar-width:thin}
+.agent-desk-heading{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.agent-mark{display:grid;place-items:center;width:32px;height:32px;flex-shrink:0;border:1px solid #ac9c8d55;border-radius:8px;color:#d6a3a6;font:400 24px var(--editorial)}
+.workspace-stage .instrument-app .backend-workspace .agent-desk-heading h2{font:500 15px/1.4 var(--font);margin:0 0 4px}
+.workspace-stage .instrument-app .backend-workspace .agent-desk-heading p{font:400 9px/1.6 var(--font);color:#ac9c8d;margin:0}
+.agent-presence{height:5px;width:5px;flex-shrink:0;border-radius:50%;background:#ac9c8d;margin-left:auto}
+.agent-presence.working{background:#c49a9e;animation:agent-working 1.5s ease-in-out infinite}
+.agent-mode-tabs{display:flex;gap:16px;border-bottom:1px solid #d1c7bd25;margin-bottom:20px}
+.workspace-stage .instrument-app .backend-workspace .agent-mode-tabs>button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;color:#ac9c8d;padding:10px 0;font-size:11px}
+.workspace-stage .instrument-app .backend-workspace .agent-mode-tabs>button[aria-selected=true]{border-bottom-color:#bd8b91;color:#efe9e1}
+.agent-connection-note{padding:12px 14px;border-left:2px solid #ac9c8d70;background:#d1c7bd07;margin-bottom:20px}
+.workspace-stage .instrument-app .backend-workspace .agent-connection-note p{font-size:10px;margin:0 0 8px;line-height:1.8}
+.agent-connection-note a{font-size:10px}
+.agent-composer{display:flex;flex-direction:column;gap:12px}
+.workspace-stage .instrument-app .backend-workspace .agent-composer>label{font-size:11px;font-weight:450;display:block}
+.workspace-stage .instrument-app .backend-workspace .agent-composer textarea{width:100%;resize:vertical;min-height:110px;padding:12px 14px;line-height:1.8;background:#302b27;border-radius:9px}
+.workspace-stage .instrument-app .backend-workspace .agent-composer>.primary-button{display:flex;align-items:center;justify-content:space-between;margin:4px 0 0;padding:11px 14px;width:100%;font-size:11px}
+.agent-alternative{display:flex!important;flex-direction:column;gap:6px}
+.workspace-stage .instrument-app .backend-workspace .agent-alternative select{width:100%;font-size:10px;padding:8px 10px}
+.workspace-stage .instrument-app .backend-workspace .agent-composer>small{color:#ac9c8d;font-size:9px}
+.agent-suggestions{margin:24px 0}
+.agent-suggestions>span{font-size:9px;color:#ac9c8d}
+.workspace-stage .instrument-app .backend-workspace .agent-suggestions>button{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 0;border:0;border-bottom:1px solid #d1c7bd1b;background:none;width:100%;text-align:left;color:#bfb1a5;font-size:10px;line-height:1.7}
+.agent-suggestions>button>span{color:#bd8b91;font-size:14px}
+.agent-system-fields{font-size:11px;border-block:1px solid #d1c7bd25;padding:12px 0}
+.agent-system-fields>summary{cursor:pointer}
+.agent-system-fields fieldset{display:flex;flex-direction:column;gap:12px;margin-top:16px!important}
+.agent-system-fields label{display:flex;flex-direction:column;gap:6px;font-size:10px}
+.agent-checkbox{flex-direction:row!important;align-items:start}
+.agent-checkbox input{flex-shrink:0;margin-top:3px}
+.agent-example-choices{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.agent-activity,.agent-advanced,.agent-request-history,.science-records,.local-result-log{border-top:1px solid #d1c7bd2b;margin-top:24px;padding-top:14px;font-size:11px}
+.agent-activity>summary,.agent-advanced>summary,.agent-request-history>summary,.science-records>summary,.local-result-log>summary{cursor:pointer;color:#d1c7bd}
+.agent-activity>summary>span,.agent-request-history>summary>span,.local-result-log>summary>span{font-size:9px;color:#ac9c8d;margin-left:12px}
+.workspace-stage .instrument-app .backend-workspace .agent-desk .investigation-panel{border:0;background:transparent;margin:16px 0;padding:0;color:#d1c7bd;border-radius:0}
+.workspace-stage .instrument-app .backend-workspace .agent-desk .investigation-panel h2{font-size:14px}
+.workspace-stage .instrument-app .backend-workspace .agent-desk .investigation-panel :is(.investigation-layout,.investigation-columns,.investigation-stage-grid){display:block}
+.workspace-stage .instrument-app .backend-workspace .agent-desk :is(code,.execution-id){overflow-wrap:anywhere;font-size:9px}
+.agent-continuation{margin-top:24px;border-top:1px solid #d1c7bd25;padding-top:16px}
+.agent-continuation .form-grid{grid-template-columns:1fr!important}
+.agent-request-history ol{padding-left:16px;margin-bottom:0}
+.agent-request-history li{padding:10px 0;border-bottom:1px solid #d1c7bd16}
+.agent-request-history li>span{font-size:9px;color:#bd8b91}
+.agent-request-history li>p{font-size:10px;line-height:1.7;margin:4px 0}
+.workspace-stage .instrument-app .backend-workspace .manual-model-link{margin-top:28px;font-size:10px;color:#ac9c8d;text-align:left;padding:0;border:0;background:none}
+.workspace-stage .instrument-app .backend-workspace .agent-advanced .drug-support-panel{margin:16px 0;padding:0;border:0;background:transparent}
+.workspace-stage .instrument-app .backend-workspace .agent-advanced .identity-cards{grid-template-columns:1fr}
+.workspace-stage .instrument-app .backend-workspace .agent-advanced .support-fields{grid-template-columns:1fr}
+.workspace-stage .instrument-app .backend-workspace .agent-advanced h2{font-size:15px}
+.workspace-stage .instrument-app .backend-workspace .agent-advanced input{width:100%}
+.workspace-stage .instrument-app .backend-workspace .answer-panel{margin:28px 0;padding:24px 0;border:0;border-top:1px solid var(--line);border-radius:0;background:none}
+.workspace-stage .instrument-app .backend-workspace .answer-heading h2{font:400 26px/1.4 var(--editorial)}
+.workspace-stage .instrument-app .backend-workspace .answer-statement{font-size:15px;line-height:1.9}
+.workspace-stage .instrument-app .backend-workspace .answer-chips{gap:8px}
+.workspace-stage .instrument-app .backend-workspace .answer-chips a{background:#39322e;border-color:var(--line)}
+.workspace-stage .instrument-app .backend-workspace .answer-chips strong{font:500 13px/1.6 var(--font);color:#d1c7bd}
+.workspace-stage .instrument-app .backend-workspace .structure-panel{max-width:none;border:0;padding:0;margin:0;background:transparent}
+.workspace-stage .instrument-app .backend-workspace .structure-panel>.eyebrow{display:none}
+.workspace-stage .instrument-app .backend-workspace .structure-panel>h2{font:400 26px/1.3 var(--editorial);margin:0 0 8px}
+.workspace-stage .instrument-app .backend-workspace .structure-panel>p{font-size:11px;max-width:80ch;line-height:1.8}
+.workspace-stage .instrument-app .backend-workspace .molecular-tour{border:1px solid var(--line);background:#39322e;padding:14px 16px;border-radius:9px;margin:20px 0}
+.workspace-stage .instrument-app .backend-workspace .molecular-tour .form-actions{display:flex;gap:8px;flex-wrap:wrap}
+.workspace-stage .instrument-app .backend-workspace .molecular-tour :is(p,label){font-size:10px}
+.workspace-stage .instrument-app .backend-workspace .structure-panel button{border:1px solid #ac9c8d50;border-radius:6px;padding:7px 10px;font-size:10px;background:#d1c7bd08;color:#efe9e1}
+.workspace-stage .instrument-app .backend-workspace .structure-tools{display:flex;gap:16px;flex-wrap:wrap;margin:16px 0}
+.workspace-stage .instrument-app .backend-workspace .structure-tools>label{font-size:10px}
+.workspace-stage .instrument-app .backend-workspace .structure-panel .form-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:12px 0}
+.workspace-stage .instrument-app .backend-workspace .structure-panel .form-actions label{font-size:10px}
+.workspace-stage .instrument-app .backend-workspace .structure-inspection-layout{display:grid;grid-template-columns:minmax(0,1fr) 236px;gap:20px;margin-top:20px}
+.workspace-stage .instrument-app .backend-workspace .molecular-canvas{height:540px;border:1px solid var(--line);border-radius:10px;background:#efe9e1;overflow:hidden}
+.workspace-stage .instrument-app .backend-workspace .residue-sidebar{border:0;border-left:1px solid var(--line);border-radius:0;padding:0 0 0 20px;background:transparent;max-height:540px;overflow:auto}
+.workspace-stage .instrument-app .backend-workspace .residue-sidebar :is(p,small,label,button){font-size:10px;line-height:1.8}
+.workspace-stage .instrument-app .backend-workspace .residue-sidebar h3{font-size:13px;margin:0 0 12px}
+.workspace-stage .instrument-app .backend-workspace .residue-sidebar input{width:100%}
+.workspace-stage .instrument-app .backend-workspace .residue-sidebar select{width:100%}
+.workspace-stage .instrument-app .backend-workspace .measurement-readout{background:#d1c7bd0a;border-color:var(--line);color:#efe9e1;padding:12px}
+.server-structure-tools{margin:24px 0;padding:16px 0;border-top:1px solid #d1c7bd2b}
+.server-structure-tools>summary{cursor:pointer;font-size:12px}
+.server-structure-tools>summary>span{font-size:10px;color:#ac9c8d;margin-left:12px}
+.server-structure-tools>p{font-size:11px}
+.server-contact-list{display:flex;flex-direction:column;margin:16px 0}
+.workspace-stage .instrument-app .backend-workspace .server-contact-list>button{display:flex;justify-content:space-between;gap:16px;align-items:center;border:0;border-bottom:1px solid var(--line);border-radius:0;background:none;padding:10px 0;text-align:left}
+.server-contact-list strong{font-size:11px;color:#d6a3a6;white-space:nowrap}
+.coordinate-measure-form{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-top:20px}
+.coordinate-measure-form label{display:flex;flex-direction:column;gap:6px;font-size:10px}
+.coordinate-measure-form input{max-width:120px!important}
+.coordinate-measure-form select{width:80px}
+.workspace-stage .instrument-app .backend-workspace .science-export{position:relative}
+.science-export>summary{display:flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid #ac9c8d50;border-radius:7px;cursor:pointer;font-size:11px}
+.science-export>div{position:absolute;right:0;top:44px;z-index:30;min-width:140px;background:#39322e;padding:6px;border:1px solid #ac9c8d50;border-radius:7px;display:flex;flex-direction:column;box-shadow:0 8px 30px #0003}
+.science-export button{text-align:left;padding:8px 12px;border:0;background:none;color:#efe9e1;font-size:11px}
+.local-result-log{padding:16px 0}
+.local-result-log li{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;font-size:11px;margin-bottom:10px}
+.local-result-log code{font-size:9px;overflow-wrap:anywhere;color:#ac9c8d}
+@keyframes agent-working{0%,100%{opacity:.5}50%{opacity:1}}
+@media(max-width:1450px){.scientific-scene{grid-template-columns:minmax(0,1fr) 312px;gap:24px}.agent-desk{padding:20px}.workspace-stage .instrument-app .backend-workspace .secondary-visuals{grid-template-columns:1fr}.workspace-stage .instrument-app .backend-workspace .structure-inspection-layout{grid-template-columns:1fr}.workspace-stage .instrument-app .backend-workspace .residue-sidebar{border:0;border-top:1px solid var(--line);padding:20px 0;max-height:none}.workspace-stage .instrument-app .backend-workspace .timeline-panel{flex-wrap:wrap}.workspace-stage .instrument-app .backend-workspace .timeline-panel .reveal-toggle{margin-left:auto}.workspace-stage .instrument-app .backend-workspace .controls-panel fieldset>section{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1080px){.scientific-scene{grid-template-columns:1fr}.agent-desk{position:static;max-height:none;grid-row:2}.workspace-stage .instrument-app .backend-workspace .secondary-visuals{grid-template-columns:1fr 1fr}.workspace-stage .instrument-app .backend-workspace .science-heading{align-items:start}.study-context>span:last-child{display:none}}
+@media(max-width:760px){.workspace-stage .instrument-app .science-main-content{padding:24px 16px 0}.workspace-stage .instrument-app .backend-workspace .science-heading{flex-wrap:wrap}.science-heading-actions{width:100%}.workspace-stage .instrument-app .backend-workspace .secondary-visuals{grid-template-columns:1fr}.workspace-stage .instrument-app .backend-workspace .workspace-viewbar{gap:20px}.workspace-stage .instrument-app .backend-workspace .workspace-viewbar>button{font-size:11px}.workspace-stage .instrument-app .backend-workspace .timeline-panel>output{font-size:10px}.workspace-stage .instrument-app .backend-workspace .controls-panel fieldset>section{grid-template-columns:1fr}.workspace-stage .instrument-app .backend-workspace .molecular-canvas{height:400px}.workspace-stage .instrument-app .backend-workspace .chart-heading>span{display:none}.workspace-stage .instrument-app .backend-workspace .simulation-heading{flex-wrap:wrap}.agent-desk{padding:20px}}
+@media(prefers-reduced-motion:reduce){.agent-presence.working{animation:none}.workspace-stage .instrument-app .backend-workspace :is(button,.science-export){transition:none}}
+.experience-root[data-motion=paused] .agent-presence.working{animation:none}

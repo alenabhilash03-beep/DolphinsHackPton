@@ -89,3 +89,9 @@ def test_api_serves_text_pdf_and_chat_signed_out_with_a_shared_cap(tmp_path):
     assert client.post('/api/papers/PMC123456/chat', json=question, headers={'Authorization': 'Bearer ' + token}).status_code == 200
     ends_with_assistant = {'messages': [{'role': 'user', 'content': 'q'}, {'role': 'assistant', 'content': 'a'}]}
     assert client.post('/api/papers/PMC123456/chat', json=ends_with_assistant, headers={'Authorization': 'Bearer ' + token}).status_code == 422
+
+
+def test_pasted_provider_keys_are_cleaned_so_the_auth_header_is_valid():
+    for raw in ['nvapi-Ab_1-x\n', ' "nvapi-Ab_1-x" ', 'Bearer nvapi-Ab_1-x', "'nvapi-Ab_1-x'\r\n"]:
+        assert Settings(_env_file=None, nvidia_api_key=raw).nvidia_api_key.get_secret_value() == 'nvapi-Ab_1-x'
+    assert Settings(_env_file=None).nvidia_api_key is None

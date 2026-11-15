@@ -1,7 +1,9 @@
 from pathlib import Path
 from typing import Literal
 
-from pydantic import SecretStr
+import re
+
+from pydantic import SecretStr, field_validator
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -10,6 +12,23 @@ ROOT = Path(__file__).resolve().parents[3]
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=ROOT / ".env", extra="ignore")
+
+    @field_validator("nvidia_api_key", "langsmith_api_key", mode="before")
+    @classmethod
+    def clean_secret(cls, value):
+        """Keys pasted into a host's settings often carry a newline, spaces or quotes, which makes the HTTP client
+        refuse the Authorization header (InvalidHeader). Keep only the key token itself."""
+        if value is None or isinstance(value, SecretStr):
+            value = value.get_secret_value() if isinstance(value, SecretStr) else value
+        if not isinstance(value, str):
+            return value
+        text = value.strip().strip("'\"").strip()
+        if text.lower().startswith("bearer "):
+            text = text[7:].strip()
+        token = re.search(r"nvapi-[A-Za-z0-9_\-]+", text)
+        if token:
+            return token.group(0)
+        return text.split()[0] if text.split() else None
 
     hypothesim_env: str = "development"
     hypothesim_cors_origins: list[str] = [

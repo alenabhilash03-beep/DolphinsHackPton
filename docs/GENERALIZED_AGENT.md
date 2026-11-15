@@ -57,7 +57,7 @@ The edit agent calls `read_current_experiment`, `apply_requested_edit`, `simulat
 
 Other wording/units, ambiguous scenarios, baseline scenario edits, mixed loading/maintenance relative-dose edits, contradictory instructions or additional clauses produce clarification without an applied result. This is bounded experimental editing, not a claim of universal natural-language understanding. Supported parameter edits use existing control validators, preserve unspecified parameters and linked relationships, and require no literature search or routine confirmation dialog. Direct sliders still bypass the LLM entirely.
 
-Every successful edit has a new experiment/result and `parent_result_id`; prior turns/results remain immutable. Only one child can consume a result as the current edit head; stale/concurrent commits return 409. Rejected clarification turns do not consume the head. Repeat edits use the latest successful result, not the original base. The default SQLite store holds turn history, result payloads and child links alongside preparation receipts. A missing saved demo does not prevent independent research.
+Every successful edit has a new experiment/result and `parent_result_id`; prior turns/results remain immutable. By default only one agent experiment can be run from a result; stale/concurrent commits return 409. Since 8D.2 a request with `branch: true` explicitly starts another line from an earlier result without changing anything stored (see [INVESTIGATION_HISTORY.md](INVESTIGATION_HISTORY.md)). Rejected clarification turns do not consume the head. Repeat edits use the latest successful result, not the original base. The default SQLite store holds turn history, result payloads and child links alongside preparation receipts. A missing saved demo does not prevent independent research.
 
 ## Interpretation and visual handoff
 
@@ -68,6 +68,12 @@ The interpretation tool returns solver-linked endpoint occupancy, occupancy AUC 
 ### Grounded synthesis — 8B.1
 
 After `interpret_current_result`, and before a research turn may conclude without a numerical result once source text has been inspected, the agent must call `synthesize_grounded_answer` (no arguments). The server withholds the final-decision schema until that attempt exists. The tool makes one separate, reasoning-disabled structured Nemotron call over this turn's inspected passages and accepted result, validates it and stores `AgentTurn.synthesis`. The deterministic `Interpretation` is unchanged. See [GROUNDED_SYNTHESIS.md](GROUNDED_SYNTHESIS.md).
+
+### Later Phase 8 additions
+
+- **Structure (8C.2):** research turns call `inspect_verified_structure` before the grounded answer and may call `measure_structure_residue` up to twice. See [STRUCTURE_ANALYSIS.md](STRUCTURE_ANALYSIS.md).
+- **Follow-up proposals (8D.1):** an edit request may carry `proposal_id`; the server re-derives that proposal from the stored base and applies exactly it. See [EXPERIMENT_PROPOSALS.md](EXPERIMENT_PROPOSALS.md).
+- **History and context (8D.2):** edit turns receive the original research question and at most six short earlier steps, and their answer addresses that question. See [INVESTIGATION_HISTORY.md](INVESTIGATION_HISTORY.md).
 
 ## Verification
 

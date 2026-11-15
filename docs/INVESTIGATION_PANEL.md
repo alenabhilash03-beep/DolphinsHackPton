@@ -4,7 +4,7 @@ The compact workspace now renders the 8A.1 execution ledger outside the collapse
 
 ## What is visible
 
-- **Observed stages:** identity/inputs, papers, extraction, parameters, numerical simulation and interpretation. Stage labels report observed tool outcomes, not percentages or predictions that an entire stage is finished. Parameter-only edits leave paper research marked **Not run**.
+- **Observed stages:** identity/inputs, papers, extraction, parameters, numerical simulation, structure (since 8C.2) and findings, which now includes writing the grounded answer (8B.1). Stage labels report observed tool outcomes, not percentages or predictions that an entire stage is finished. Parameter-only edits leave paper research marked **Not run**.
 - **Actual configuration:** changed canonical values, the reference value and delta, baseline/previous-result comparison, provenance and review status. Full values and complete dose schedules expand on demand. Pending configurations use their actual scenario IDs rather than borrowing labels from an unrelated displayed experiment.
 - **Numerical result:** solver-returned endpoint occupancy, occupancy AUC, threshold status and aligned sample count. These remain conditional model outputs. A solver can return before the whole agent turn finishes; such values are explicitly marked **agent result not accepted** and never replace the displayed graphs.
 - **Tool log:** separate attempts and outcomes, server-reported durations, source-access types, candidate/missing-input counts and fixed error categories. A rejected attempt remains visible after a later successful retry.
@@ -26,7 +26,7 @@ Legacy runs without structured records remain readable; tool success is not infe
 4. Expand **Tool-by-tool execution** and **All parameter values, provenance & dose schedules**. Reload to inspect the restored completed record.
 5. Start new research through **Edit hypothesis** to inspect source/extraction stages. Missing data should yield questions and leave the earlier curves intact.
 
-If a saved edit base already has a newer child, use the current result or make an explicit direct parameter change to create a fresh result; the existing linear edit-head guard is retained. Investigation-history branching is planned in 8D.
+If a saved edit base already has a newer child, use the current result or make an explicit direct parameter change to create a fresh result; the existing one-experiment-per-result guard is retained. Since 8D.2 the investigation history can reopen an earlier result and continue from it as an explicit branch; see [INVESTIGATION_HISTORY.md](INVESTIGATION_HISTORY.md).
 
 ## Acceptance checks
 

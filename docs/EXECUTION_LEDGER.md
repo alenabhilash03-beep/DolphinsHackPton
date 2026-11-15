@@ -27,6 +27,8 @@ New ledger payloads exclude raw tool arguments, prompts, paper passages, source 
 
 `synthesize_grounded_answer` (8B.1) is recorded in the `interpretation` stage. Its summary carries the inspected-source count and, when a result exists, the same solver receipt; an unavailable synthesis is a `failed` tool record and a rejected one is `rejected`, while the run itself can still succeed. No synthesis prose or source quotes enter the ledger; they are in `AgentTurn.synthesis`.
 
+`inspect_verified_structure` and `measure_structure_residue` (8C.2) are recorded in a separate `structure` stage. Their summaries carry `structure`: whether a verified structure exists, its PDB ID and coordinate hash, the interface pair count and the measurement IDs returned. Coordinates and distances stay in `AgentTurn.structure`. "No verified structure" is a completed event with `available: false`, not a failure.
+
 ## Verification and consumer handoff
 
 `apps/api/tests/test_execution_ledger.py` exercises the real LangChain graph with a scripted offline provider and the actual SciPy solver. It covers research/configure/run and missing inputs; baseline/previous-result deltas and linked KD/koff; source metadata; rejection/recovery; provider/solver/commit failures; stale bases; active polling; durable queue and turn/API reads; interrupted-owner recovery; bounded projections; legacy records; and receipt integrity.

@@ -68,4 +68,4 @@ Backend tests cover: content and stability of proposals for the reviewed result;
 
 ## Not included
 
-Investigation history, reopening earlier results and branching are 8D.2. Proposals do not yet use paper evidence or structural measurements, and none adds or removes scenarios.
+Proposals follow the solver only: they do not use paper evidence or structural measurements, and none adds or removes scenarios. A freshly researched drug with only a baseline scenario that never reaches the threshold gets no proposals, because the baseline is protected. History, reopening and branching are described in [INVESTIGATION_HISTORY.md](INVESTIGATION_HISTORY.md).

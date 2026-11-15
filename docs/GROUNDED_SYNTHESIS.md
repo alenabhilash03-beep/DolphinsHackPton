@@ -67,6 +67,12 @@ Validation does not prove that a qualitative statement is entailed by its quote.
 
 Facts the server has already established are sent to the model as `server_rules_for_this_answer` (for example that compared scenarios are all still above threshold at the horizon, with their labels), so the first attempt usually passes. Numbers stated in the supplied model assumptions and limitations may be restated in limitations, missing evidence and next experiments, never in paper findings.
 
+## Additions from later subphases
+
+- **Structural context (8C.2).** When the agent inspected a verified structure, the model may add up to three geometry-only `structural_context` statements citing measurement IDs, and the server writes `structure_note`. Rules are in [STRUCTURE_ANALYSIS.md](STRUCTURE_ANALYSIS.md#agent-use-and-viewer-handoff--8c2).
+- **Follow-up turns (8D.2).** When an edit or proposal has a research question in its ancestry, `request_kind` is `follow_up`: the answer addresses the original question with the new result, so its verdict is not forced to `undetermined`. Earlier steps are supplied as background only; their numbers may not be restated. See [INVESTIGATION_HISTORY.md](INVESTIGATION_HISTORY.md).
+- **Threshold outcomes (8D.2).** The current result's threshold status per scenario is sent as a stated fact, including the ordering when exactly one compared scenario is still above the threshold at the end of the window. An answer or implication saying that both or all scenarios stay above the threshold is refused when the solver says otherwise.
+
 ## Presentation — 8B.2
 
 `ScientificAnswer` renders `turn.synthesis` directly under the investigation panel (`#answer`). Logic is in `apps/web/lib/synthesis-view.ts`; nothing is computed or reworded in the browser.

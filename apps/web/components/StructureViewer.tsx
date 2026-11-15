@@ -19,7 +19,7 @@ export function StructureViewer({kind="trastuzumab",focusRequest=null}:{kind?:St
   const [scriptReady,setScriptReady]=useState(false),[loaded,setLoaded]=useState(false),[error,setError]=useState<string|null>(null),[attempt,setAttempt]=useState(0);
   const [model,setModel]=useState<CoordinateModel|null>(null),[verified,setVerified]=useState(false);
   const [visible,setVisible]=useState<string[]>(profile.chains.map(c=>c.id)),[surface,setSurface]=useState(false),[contacts,setContacts]=useState(true);
-  const [selected,setSelected]=useState<ResidueRef|null>(null),[pair,setPair]=useState<Contact|null>(null),[notice,setNotice]=useState("Click a protein residue or the imatinib ligand to inspect deposited geometry.");
+  const [selected,setSelected]=useState<ResidueRef|null>(null),[pair,setPair]=useState<Contact|null>(null),[notice,setNotice]=useState(imatinib?"Click a protein residue or the imatinib ligand to inspect deposited geometry.":"Click a residue on the antibody or HER2 to inspect deposited geometry.");
   const [inspectChain,setInspectChain]=useState(imatinib?"A":"C"),[residueNumber,setResidueNumber]=useState(imatinib?"315":"557");
   const [step,setStep]=useState(-1),[playing,setPlaying]=useState(false),[systemReduced,setSystemReduced]=useState(false),[reduceMotion,setReduceMotion]=useState(false);
   const reduced=systemReduced||reduceMotion;
@@ -105,7 +105,7 @@ export function StructureViewer({kind="trastuzumab",focusRequest=null}:{kind?:St
       const sel={chain:chain.id,hetflag:false};v.setStyle(sel,{cartoon:{color:chain.color,opacity:pair ? 0.28 : 1}});
       if(surface)void v.addSurface(library.current.SurfaceType.MS,{opacity:.28,color:chain.color},sel);
     }
-    if(contacts){const refs=interfacePairs.flatMap(p=>[p.a,p.b]).filter(ref=>visible.includes(ref.chain));if(refs.length)v.addStyle(selection(refs),{stick:{radius:.15,colorscheme:"element",opacity:pair ? 0.25 : 1}});}
+    if(contacts){const refs=interfacePairs.flatMap(p=>[p.a,p.b]).filter(ref=>visible.includes(ref.chain));if(refs.length)v.addStyle(selection(refs),{stick:{radius:.15,colorscheme:"Jmol",opacity:pair ? 0.25 : 1}});}
     if(imatinib)for(const chain of visible)v.setStyle({resn:"STI",chain},{stick:{radius:.23,color:"#d6a64a"}});
     if(selected && visible.includes(selected.chain))v.addStyle(selection([selected]),{stick:{radius:.25,color:"#e36536",opacity:1}});
     if(pair && visible.includes(pair.a.chain)&&visible.includes(pair.b.chain)){

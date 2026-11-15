@@ -1,5 +1,6 @@
 /** Presentation logic for the grounded scientific answer. Pure: no fetching, no invented text or numbers. */
 import type { AgentTurn, ScientificSynthesis, SimulationResult, SolverQuantity } from "./contracts";
+import { unitLabel } from "./investigation.ts";
 
 type Turn = Pick<AgentTurn, "synthesis" | "result" | "research_papers">;
 export type AnswerState = "none" | "invalid" | "current" | "stale" | "evidence_only";
@@ -90,8 +91,8 @@ export function findingLinks(turn: Turn, finding: NonNullable<ScientificSynthesi
         : "Not a simulation input for the displayed curves.",
       // A candidate already used as a simulation input is listed once, as its parameter record.
       candidates: (paper?.extraction.parameters ?? []).filter(item => !records.some(record => record.parameter === item.parameter)).map(item => ({ parameter: item.parameter,
-        text: `${item.parameter} = ${item.original_value} ${item.original_unit}`, plots: parameterPlots(item.parameter) })),
-      records: records.map(item => ({ evidenceId: item.evidence_id, text: `${item.parameter} = ${item.original_value} ${item.original_unit} · ${item.review_status}`,
+        text: `${item.parameter} = ${item.original_value} ${unitLabel(item.original_unit)}`.trimEnd(), plots: parameterPlots(item.parameter) })),
+      records: records.map(item => ({ evidenceId: item.evidence_id, text: `${item.parameter} = ${item.original_value}${unitLabel(item.original_unit) ? ` ${unitLabel(item.original_unit)}` : ""} · ${item.review_status}`,
         plots: parameterPlots(item.parameter) })) };
   });
 }

@@ -30,7 +30,7 @@ export function comparisonSummary(result: SimulationResult): { claims: string[];
   }
   claims.push("These are predictions of a conditional exposure and binding model. Target occupancy alone does not establish efficacy or safety.");
   const followUps = [
-    `Measure free drug exposure at relevant ${config.target} target sites to test the prescribed target-exposure assumption.`,
+    `Measure free drug exposure at the modeled target (${config.target}) to test the prescribed target-exposure assumption.`,
     "Measure matched drug–target binding kinetics in the intended assay before transferring apparent rates to a biological setting.",
     "Measure PK and binding together for engineered variants to test the assumption that half-life and affinity can change independently.",
   ];

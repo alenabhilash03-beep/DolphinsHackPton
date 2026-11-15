@@ -1,0 +1,42 @@
+# Render Blueprint for the Hypothesim scientific API (5C.2). See docs/DEPLOYMENT.md.
+# Secrets are entered in the Render dashboard when the Blueprint is created (sync: false); none live here.
+services:
+  - type: web
+    name: hypothesim-api
+    runtime: python
+    plan: starter            # persistent disk and no idle sleep; the free tier has neither
+    region: oregon
+    buildCommand: pip install uv==0.11.32 && uv sync --locked --no-dev
+    startCommand: .venv/bin/uvicorn app.main:app --app-dir apps/api --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    disk:
+      name: hypothesim-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: HYPOTHESIM_ENV
+        value: production
+      - key: AUTH_MODE
+        value: supabase
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: NVIDIA_API_KEY
+        sync: false
+      - key: HYPOTHESIM_LLM_MODEL
+        value: nvidia/nemotron-3.5-super-vl-120b-a12b
+      - key: WORKSPACES_DIR
+        value: /var/data/workspaces
+      - key: PREPARATION_DB_PATH
+        value: /var/data/preparations.sqlite3
+      - key: RESEARCH_DB_PATH
+        value: /var/data/research-jobs.db
+      - key: RESEARCH_TIMEOUT_S
+        value: "180"
+      - key: AGENT_MAX_CONCURRENT
+        value: "4"
+      - key: HYPOTHESIM_CORS_ORIGINS
+        sync: false

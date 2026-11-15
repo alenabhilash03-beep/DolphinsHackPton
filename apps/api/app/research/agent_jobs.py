@@ -29,11 +29,12 @@ class AgentJob(Contract):
     updated_at: str
 
 class AgentQueue:
-    def __init__(self, service):
+    def __init__(self, service, slots=None):
         self.service=service
         self.store=service.preparation.store
         self.pool=ThreadPoolExecutor(max_workers=2,thread_name_prefix='generalized-agent')
-        self.slots=BoundedSemaphore(2)
+        # Hosted mode passes one semaphore shared by every user's queue, bounding total agent runs.
+        self.slots=slots or BoundedSemaphore(2)
         self.lock=Lock()
         with self.store.connect() as db:
             db.execute('CREATE TABLE IF NOT EXISTS agent_jobs (id TEXT PRIMARY KEY, payload TEXT NOT NULL)')

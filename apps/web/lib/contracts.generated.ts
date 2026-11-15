@@ -166,6 +166,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Who Am I */
+        get: operations["who_am_i_api_auth_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/contracts/experiments/validate": {
         parameters: {
             query?: never;
@@ -437,6 +454,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/shares": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Community Feed */
+        get: operations["community_feed_api_shares_get"];
+        put?: never;
+        /**
+         * Share Experiment
+         * @description Publish an immutable snapshot of your investigation, with a log summary and a grounded AI summary.
+         */
+        post: operations["share_experiment_api_shares_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/shares/{share_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Shared Experiment */
+        get: operations["shared_experiment_api_shares__share_id__get"];
+        put?: never;
+        post?: never;
+        /** Unshare Experiment */
+        delete: operations["unshare_experiment_api_shares__share_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/simulations": {
         parameters: {
             query?: never;
@@ -541,6 +597,22 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AISummary */
+        AISummary: {
+            /** Headline */
+            headline?: string | null;
+            /** Headline Step Ids */
+            headline_step_ids?: string[];
+            /** Notes */
+            notes?: string[];
+            /** Points */
+            points?: components["schemas"]["SummaryPoint"][];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "grounded" | "unavailable" | "rejected";
+        };
         /** AgentEditRequest */
         AgentEditRequest: {
             /** Base Configuration Sha256 */
@@ -2801,6 +2873,153 @@ export interface components {
             /** Structure Note */
             structure_note?: string | null;
         };
+        /** ShareList */
+        ShareList: {
+            /** Items */
+            items: components["schemas"]["ShareListItem"][];
+        };
+        /** ShareListItem */
+        ShareListItem: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Drug */
+            drug: string;
+            /** Headline */
+            headline?: string | null;
+            /**
+             * Is Owner
+             * @default false
+             */
+            is_owner: boolean;
+            owner: components["schemas"]["ShareOwner"];
+            /** Question */
+            question: string;
+            /** Share Id */
+            share_id: string;
+            /** Step Count */
+            step_count: number;
+            /** Target */
+            target: string;
+            /** Title */
+            title: string;
+            /** Verdict */
+            verdict?: string | null;
+        };
+        /** ShareOwner */
+        ShareOwner: {
+            /** Avatar Url */
+            avatar_url?: string | null;
+            /** Name */
+            name: string;
+        };
+        /** ShareRequest */
+        ShareRequest: {
+            /** Note */
+            note?: string | null;
+            /** Question */
+            question?: string | null;
+            /** Result Id */
+            result_id: string;
+            /** Title */
+            title?: string | null;
+        };
+        /** SharedAnswer */
+        SharedAnswer: {
+            /** Statement */
+            statement: string;
+            /** Step Id */
+            step_id: string;
+            /**
+             * Verdict
+             * @enum {string}
+             */
+            verdict: "supported" | "not_supported" | "mixed" | "undetermined";
+        };
+        /** SharedExperiment */
+        SharedExperiment: {
+            ai_summary: components["schemas"]["AISummary"];
+            answer?: components["schemas"]["SharedAnswer"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Disclaimer
+             * @default Conditional model predictions from a reduced exposure and binding model. Target occupancy does not establish efficacy, safety or an appropriate treatment regimen.
+             */
+            disclaimer: string;
+            /** Drug */
+            drug: string;
+            /**
+             * Is Owner
+             * @default false
+             */
+            is_owner: boolean;
+            /** Log Summary */
+            log_summary: string[];
+            /** Note */
+            note?: string | null;
+            owner: components["schemas"]["ShareOwner"];
+            /** Question */
+            question: string;
+            result: components["schemas"]["SimulationResult"];
+            /** Share Id */
+            share_id: string;
+            /** Shared Step Id */
+            shared_step_id: string;
+            /** Steps */
+            steps: components["schemas"]["SharedStep"][];
+            /** Target */
+            target: string;
+            /** Title */
+            title: string;
+        };
+        /** SharedStep */
+        SharedStep: {
+            /** Changes */
+            changes?: string[];
+            /** Created At */
+            created_at?: string | null;
+            /** Duration H */
+            duration_h: number;
+            /** Finding */
+            finding?: string | null;
+            /**
+             * Is Shared Result
+             * @default false
+             */
+            is_shared_result: boolean;
+            /** Occupancy Threshold */
+            occupancy_threshold: number;
+            /**
+             * Origin
+             * @enum {string}
+             */
+            origin: "research" | "agent_edit" | "proposal" | "direct_control" | "direct_simulation" | "saved_demo";
+            /** Outcomes */
+            outcomes: components["schemas"]["ScenarioOutcome"][];
+            /**
+             * Paper Count
+             * @default 0
+             */
+            paper_count: number;
+            /** Papers */
+            papers?: string[];
+            /** Parent Step Id */
+            parent_step_id?: string | null;
+            /** Step Id */
+            step_id: string;
+            /** Structure Pdb Id */
+            structure_pdb_id?: string | null;
+            /** Title */
+            title: string;
+            /** Verdict */
+            verdict?: ("supported" | "not_supported" | "mixed" | "undetermined") | null;
+        };
         /** SimulationDiagnostics */
         SimulationDiagnostics: {
             /** Absolute Tolerance */
@@ -3151,6 +3370,13 @@ export interface components {
             /** Url */
             url: string;
         };
+        /** SummaryPoint */
+        SummaryPoint: {
+            /** Step Ids */
+            step_ids: string[];
+            /** Text */
+            text: string;
+        };
         /** SupportAssessment */
         SupportAssessment: {
             /** Missing Parameters */
@@ -3242,7 +3468,9 @@ export interface operations {
     generalized_edit_api_agent_edits_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -3275,7 +3503,9 @@ export interface operations {
     investigation_history_api_agent_investigations__result_id__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 result_id: string;
             };
@@ -3306,7 +3536,9 @@ export interface operations {
     queue_agent_edit_api_agent_jobs_edits_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -3339,7 +3571,9 @@ export interface operations {
     queue_agent_research_api_agent_jobs_research_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -3372,7 +3606,9 @@ export interface operations {
     read_agent_job_api_agent_jobs__job_id__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 job_id: string;
             };
@@ -3403,7 +3639,9 @@ export interface operations {
     generalized_research_api_agent_research_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -3436,7 +3674,9 @@ export interface operations {
     stored_result_api_agent_results__result_id__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 result_id: string;
             };
@@ -3467,7 +3707,9 @@ export interface operations {
     result_proposals_api_agent_results__result_id__proposals_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 result_id: string;
             };
@@ -3498,7 +3740,9 @@ export interface operations {
     generalized_turn_api_agent_turns__turn_id__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 turn_id: string;
             };
@@ -3526,10 +3770,45 @@ export interface operations {
             };
         };
     };
+    who_am_i_api_auth_me_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     validate_experiment_api_contracts_experiments_validate_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -3602,7 +3881,9 @@ export interface operations {
     create_preparation_api_preparations_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -3637,7 +3918,9 @@ export interface operations {
             query?: {
                 revision?: number | null;
             };
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 preparation_id: string;
             };
@@ -3668,7 +3951,9 @@ export interface operations {
     configure_preparation_api_preparations__preparation_id__configure_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 preparation_id: string;
             };
@@ -3703,7 +3988,9 @@ export interface operations {
     revise_preparation_api_preparations__preparation_id__revise_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 preparation_id: string;
             };
@@ -3822,7 +4109,9 @@ export interface operations {
     submit_research_api_research_jobs_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -3948,10 +4237,142 @@ export interface operations {
             };
         };
     };
+    community_feed_api_shares_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShareList"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    share_experiment_api_shares_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShareRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedExperiment"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    shared_experiment_api_shares__share_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                share_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharedExperiment"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    unshare_experiment_api_shares__share_id__delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                share_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     simulate_api_simulations_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -3984,7 +4405,9 @@ export interface operations {
     adjust_and_simulate_api_simulations_adjust_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };

@@ -15,6 +15,8 @@ import { answerState, type MeasurementCard } from "../lib/synthesis-view";
 import { NextExperimentProposals } from "./NextExperimentProposals";
 import { proposalRequest, proposalResultForTurn } from "../lib/proposal-view";
 import { InvestigationHistoryPanel } from "./InvestigationHistoryPanel";
+import { AccountMenu, SignInPrompt } from "./AccountMenu";
+import { ShareExperiment } from "./ShareExperiment";
 import { branchRequired, historyFor, historyRows, restorationAfterJob } from "../lib/history-view";
 const PRIMARY="Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const STORAGE="hypothesim-agent-job-v1";
@@ -238,7 +240,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
     window.history.replaceState(null,"","#structure");window.dispatchEvent(new HashChangeEvent("hashchange"));
   },[]);
   return <div className="hypothesim-workspace editorial-workspace">
-    <header className="workspace-header"><a className="workspace-brand" href="/">hypothesim<span>.</span></a><nav aria-label="Workspace sections"><a href="#research">Question</a>{answer!=="none" && turn?.synthesis && <a href="#answer">Answer</a>}{historyRows(currentHistory,shownId).length>1 && <a href="#history">History</a>}<a href="#experiment">Results</a><a href="#paper-evidence">Evidence</a><a href="#structure">Molecule</a></nav></header>
+    <header className="workspace-header"><a className="workspace-brand" href="/">hypothesim<span>.</span></a><nav aria-label="Workspace sections"><a href="#research">Question</a>{answer!=="none" && turn?.synthesis && <a href="#answer">Answer</a>}{historyRows(currentHistory,shownId).length>1 && <a href="#history">History</a>}<a href="#experiment">Results</a><a href="#paper-evidence">Evidence</a><a href="#structure">Molecule</a><a href="/community">Community</a></nav><AccountMenu/></header>
     <div className="workspace-intro"><div><p className="eyebrow">Evidence-grounded drug simulation</p><h1>Turn a drug hypothesis into a cited, simulated experiment</h1><p>An AI agent reads papers and extracts cited parameters → a deterministic model predicts drug exposure and target occupancy → the experimental structure shows where the drug binds. Every value is labeled as sourced, assumed or computed.</p></div><span className="workspace-badge">{busy?"Agent researching":saved?"Saved reviewed demo":"Interactive model"}</span></div>
     <details className="workspace-assessment"><summary>Drug and model assessment <span>Identity, route, and supported endpoints</span></summary><DrugSupportPanel /></details>
     <section id="research" className="research-panel" aria-label="Hypothesis research"><details className="question-disclosure" open={researchOpen} onToggle={e=>setResearchOpen(e.currentTarget.open)}><summary><span><span className="eyebrow">Research question · {drug || "Drug unspecified"}{target?` / ${target}`:""}</span><strong>{text || "Enter your scientific hypothesis"}</strong></span><span className="disclosure-action">{researchOpen?"Close editor":"Edit hypothesis"}</span></summary>
@@ -249,6 +251,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
         {researchRouteNotice(drug,route) && <p className="scope-note" role="note">{researchRouteNotice(drug,route)}</p>}
         <label><input type="checkbox" checked={baseline} onChange={e=>setBaseline(e.target.checked)}/> Prepare a baseline experiment first, using compatible evidence and assumptions I explicitly supply.</label>
         <p className="scope-note">Other interventions may need clarification or a subsequent experiment edit. Unsupported models never receive fabricated curves.</p>
+        <SignInPrompt action="run the research agent"/>
         <div className="form-actions"><button className="primary-button" disabled={busy}>{busy?"Research in progress…":"Research hypothesis →"}</button><button type="button" className="quiet-button" onClick={()=>{setDrug("imatinib");setTarget("ABL1");setRoute("hypothetical_iv_bolus");setBaseline(false);setText("How would hypothetical bloodstream imatinib input affect ABL1 occupancy? Research evidence and identify missing PK, binding and target-site exposure data.");}}>Try imatinib research</button>
         <button type="button" className="quiet-button" onClick={()=>{setText(PRIMARY);setDrug("trastuzumab");setTarget("HER2");setRoute("iv_infusion");setBaseline(false);}}>Use trastuzumab example</button></div>
       </fieldset></form>
@@ -261,6 +264,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
     <ScientificAnswer turn={turn} shown={shown} viewer={structure} onFocusMeasurement={focusMeasurement}/>
     <NextExperimentProposals shown={proposalResultForTurn(turn,shown)} busy={!!busy || controlBusy} onRun={runProposal}/>
     <InvestigationHistoryPanel history={currentHistory} shownId={shownId} busy={!!busy || controlBusy} branch={branch} onReopen={id=>void reopen(id)}/>
+    <ShareExperiment resultId={shownId} defaultTitle={history?.question ?? text} busy={!!busy || controlBusy}/>
     <ResearchPaperReview papers={turn?.research_papers ?? []}/>
     {(record || turn?.questions?.length || staleExplanation) ? <section className="research-panel" aria-label="Research continuation">
       {turn?.questions?.length ? <section aria-label="Agent questions"><h3>What is needed next</h3><ul>{turn.questions.map(q=><li key={q}>{q}</li>)}</ul></section>:null}

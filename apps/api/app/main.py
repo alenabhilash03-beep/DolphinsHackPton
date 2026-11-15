@@ -1,7 +1,7 @@
 import asyncio
 from contextlib import asynccontextmanager
 
-from fastapi import Body, FastAPI, Header, HTTPException, Query
+from fastapi import Body, Depends, FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import StreamingResponse
@@ -27,6 +27,10 @@ from app.schemas.contracts import ALL_CONTRACTS, ControlAdjustment, ContractVali
 from app.simulation.controls import adjust_experiment
 from app.simulation.service import run_simulation
 from app.schemas.structure_analysis import InterfaceContacts, ResidueDistance, ResidueSelector, StructureMetadata
+from app.auth import AuthError, AuthUnavailable, Authenticator, User, supabase_lookup
+from app.workspaces import Workspace, WorkspaceRegistry
+from app.research.sharing import ShareStore, build_share, configured_summarizer
+from app.schemas.sharing import SharedExperiment, ShareList, ShareRequest
 from app.structures.service import StructureService, resolve as resolve_structure
 from app.schemas.experiment_proposals import ProposalSet
 from app.research.proposals import propose
@@ -61,20 +65,52 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
         yield
         await asyncio.to_thread(jobs.close)
         agent_queue.close()
+        registry.close()
 
     api = FastAPI(title="Hypothesim API", version="0.1.0", description="Evidence-aware research jobs and deterministic scientific simulation.", lifespan=lifespan)
     api.state.research_jobs = jobs
     api.state.preparations = preparations
     api.add_middleware(CORSMiddleware, allow_origins=config.hypothesim_cors_origins,
-                       allow_credentials=False, allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
+                       allow_credentials=False, allow_methods=["GET", "POST", "DELETE"], allow_headers=["Content-Type", "Authorization"])
 
     generalized = GeneralizedAgentService(preparations, config)
     api.state.generalized_agent = generalized
     agent_queue = AgentQueue(generalized)
 
-    def agent_call(request, edit=False):
+    # --- Accounts and per-user workspaces (5C.2) ---
+    authenticator = Authenticator(config.auth_mode, supabase_lookup(config.supabase_url, config.supabase_anon_key)
+        if config.auth_mode == 'supabase' and config.supabase_url and config.supabase_anon_key else None)
+    workspaces_dir = config.workspaces_dir or ROOT / 'work/workspaces'
+    def user_workspace(directory):
+        prep = PreparationService(store=PreparationStore(directory / 'preparations.sqlite3'), assessment=assessment)
+        agent = GeneralizedAgentService(prep, config)
+        return Workspace(preparations=prep, agent=agent, queue=AgentQueue(agent, slots=registry.slots))
+    registry = WorkspaceRegistry(lambda: Workspace(preparations=preparations, agent=api.state.generalized_agent, queue=agent_queue),
+        workspaces_dir, user_workspace, config.agent_max_concurrent)
+    shares = ShareStore(workspaces_dir / 'community.sqlite3')
+    api.state.authenticator = authenticator
+    api.state.workspaces = registry
+    api.state.shares = shares
+    api.state.share_summarizer = None  # tests inject a scripted summarizer; production builds one per request
+
+    def viewer(authorization: str | None = Header(default=None)) -> User | None:
+        try: return api.state.authenticator.user(authorization)
+        except AuthError as exc: raise HTTPException(status_code=401, detail="Sign-in expired or invalid; sign in again.") from exc
+        except AuthUnavailable as exc: raise HTTPException(status_code=503, detail="Sign-in service unavailable; retry shortly.") from exc
+
+    def signed_in(user: User | None = Depends(viewer)) -> User:
+        if user is None: raise HTTPException(status_code=401, detail="Sign in to use the research agent and your experiments.")
+        return user
+
+    def workspace(user: User | None = Depends(viewer)) -> Workspace:
+        return registry.for_user(user)
+
+    def own_workspace(user: User = Depends(signed_in)) -> Workspace:
+        return registry.for_user(user)
+
+    def agent_call(agent, request, edit=False):
         try:
-            return api.state.generalized_agent.run(request, edit=edit)
+            return agent.run(request, edit=edit)
         except StalePreparation as exc:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
         except KeyError as exc:
@@ -85,32 +121,32 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
             raise HTTPException(status_code=503, detail="Generalized agent unavailable; no successful result is claimed. Read the preparation before retrying.") from exc
 
     @api.post("/api/agent/jobs/research", response_model=AgentJob, status_code=202, tags=["Generalized agent"])
-    def queue_agent_research(request: AgentResearchRequest):
-        try: return agent_queue.submit(request)
+    def queue_agent_research(request: AgentResearchRequest, ws: Workspace = Depends(own_workspace)):
+        try: return ws.queue.submit(request)
         except RuntimeError as exc: raise HTTPException(status_code=429, detail="Local research slots are busy; retry shortly.") from exc
 
     @api.post("/api/agent/jobs/edits", response_model=AgentJob, status_code=202, tags=["Generalized agent"])
-    def queue_agent_edit(request: AgentEditRequest):
-        try: return agent_queue.submit(request, edit=True)
+    def queue_agent_edit(request: AgentEditRequest, ws: Workspace = Depends(own_workspace)):
+        try: return ws.queue.submit(request, edit=True)
         except RuntimeError as exc: raise HTTPException(status_code=429, detail="Local research slots are busy; retry shortly.") from exc
 
     @api.get("/api/agent/jobs/{job_id}", response_model=AgentJob, tags=["Generalized agent"])
-    def read_agent_job(job_id: str):
-        try: return agent_queue.read(job_id)
+    def read_agent_job(job_id: str, ws: Workspace = Depends(own_workspace)):
+        try: return ws.queue.read(job_id)
         except KeyError as exc: raise HTTPException(status_code=404, detail="Unknown agent job") from exc
 
     @api.post("/api/agent/research", response_model=AgentTurn, tags=["Generalized agent"])
-    def generalized_research(request: AgentResearchRequest):
-        return agent_call(request)
+    def generalized_research(request: AgentResearchRequest, ws: Workspace = Depends(own_workspace)):
+        return agent_call(ws.agent, request)
 
     @api.post("/api/agent/edits", response_model=AgentTurn, tags=["Generalized agent"])
-    def generalized_edit(request: AgentEditRequest):
-        return agent_call(request, edit=True)
+    def generalized_edit(request: AgentEditRequest, ws: Workspace = Depends(own_workspace)):
+        return agent_call(ws.agent, request, edit=True)
 
     @api.get("/api/agent/results/{result_id}/proposals", response_model=ProposalSet, tags=["Generalized agent"])
-    def result_proposals(result_id: str) -> ProposalSet:
+    def result_proposals(result_id: str, ws: Workspace = Depends(own_workspace)) -> ProposalSet:
         """Follow-up experiments derived from the solver facts of one stored result. No LLM call."""
-        try: result, child = api.state.generalized_agent.turns.result(result_id)
+        try: result, child = ws.agent.turns.result(result_id)
         except KeyError as exc: raise HTTPException(status_code=404, detail="Unknown result") from exc
         if child:
             return ProposalSet(base_result_id=result_id, status="superseded", proposals=propose(result),
@@ -118,23 +154,23 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
         return ProposalSet(base_result_id=result_id, status="available", proposals=propose(result))
 
     @api.get("/api/agent/results/{result_id}", response_model=StoredResult, tags=["Generalized agent"])
-    def stored_result(result_id: str) -> StoredResult:
+    def stored_result(result_id: str, ws: Workspace = Depends(own_workspace)) -> StoredResult:
         """Reopen a stored result exactly as it was computed. No recalculation and no LLM call."""
-        turns = api.state.generalized_agent.turns
+        turns = ws.agent.turns
         try: result, _ = turns.result(result_id); meta = turns.meta(result_id)
         except KeyError as exc: raise HTTPException(status_code=404, detail="Unknown result") from exc
         return StoredResult(result=result, turn_id=meta["turn_id"], origin=meta["origin"] or "direct_simulation",
             parent_result_id=meta["parent"], child_count=meta["child_count"])
 
     @api.get("/api/agent/investigations/{result_id}", response_model=InvestigationHistory, tags=["Generalized agent"])
-    def investigation_history(result_id: str) -> InvestigationHistory:
+    def investigation_history(result_id: str, ws: Workspace = Depends(own_workspace)) -> InvestigationHistory:
         """The tree of results this one belongs to, with bounded summaries and no time series."""
-        try: return api.state.generalized_agent.turns.history(result_id)
+        try: return ws.agent.turns.history(result_id)
         except KeyError as exc: raise HTTPException(status_code=404, detail="Unknown result") from exc
 
     @api.get("/api/agent/turns/{turn_id}", response_model=AgentTurn, tags=["Generalized agent"])
-    def generalized_turn(turn_id: str):
-        try: return api.state.generalized_agent.turns.read(turn_id)
+    def generalized_turn(turn_id: str, ws: Workspace = Depends(own_workspace)):
+        try: return ws.agent.turns.read(turn_id)
         except KeyError as exc: raise HTTPException(status_code=404, detail="Unknown agent turn") from exc
 
     structures = StructureService()
@@ -159,6 +195,39 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
         """Minimum heavy-atom distance for one residue against a named or its nearest binding-partner residues."""
         return structures.distance(pdb_id, residue, counterpart, limit)
 
+    @api.post("/api/shares", response_model=SharedExperiment, status_code=201, tags=["Community"])
+    def share_experiment(request: ShareRequest, user: User = Depends(signed_in)) -> SharedExperiment:
+        """Publish an immutable snapshot of your investigation, with a log summary and a grounded AI summary."""
+        ws = registry.for_user(user)
+        summarizer = api.state.share_summarizer
+        if summarizer is None:
+            try: summarizer = configured_summarizer(config)
+            except Exception: summarizer = None
+        try: share = build_share(request, user, ws.agent, summarizer)
+        except (KeyError, StopIteration) as exc: raise HTTPException(status_code=404, detail="That result is not in your investigations.") from exc
+        shares.save(share, user.id)
+        return share.model_copy(update={'is_owner': True})
+
+    @api.get("/api/shares", response_model=ShareList, tags=["Community"])
+    def community_feed(user: User = Depends(signed_in)) -> ShareList:
+        return shares.list(user.id)
+
+    @api.get("/api/shares/{share_id}", response_model=SharedExperiment, tags=["Community"])
+    def shared_experiment(share_id: str, user: User = Depends(signed_in)) -> SharedExperiment:
+        try: return shares.read(share_id, user.id)
+        except KeyError as exc: raise HTTPException(status_code=404, detail="Shared experiment not found") from exc
+
+    @api.delete("/api/shares/{share_id}", status_code=204, tags=["Community"])
+    def unshare_experiment(share_id: str, user: User = Depends(signed_in)):
+        try: shares.delete(share_id, user.id)
+        except KeyError as exc: raise HTTPException(status_code=404, detail="Shared experiment not found") from exc
+        except PermissionError as exc: raise HTTPException(status_code=403, detail=str(exc)) from exc
+
+    @api.get("/api/auth/me", tags=["Community"])
+    def who_am_i(user: User | None = Depends(viewer)) -> dict:
+        return {'signed_in': user is not None, 'auth_mode': config.auth_mode,
+                'name': user.name if user else None, 'avatar_url': user.avatar_url if user else None}
+
     @api.get("/api/health", response_model=HealthResponse)
     def health() -> HealthResponse:
         return HealthResponse(
@@ -175,38 +244,38 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
             raise HTTPException(status_code=503, detail="Saved demo unavailable; regenerate it with scripts/prepare_demo.py") from exc
 
     @api.post("/api/contracts/experiments/validate", response_model=ContractValidation)
-    def validate_experiment(experiment: ExperimentConfig) -> ContractValidation:
+    def validate_experiment(experiment: ExperimentConfig, ws: Workspace = Depends(workspace)) -> ContractValidation:
         """Validate configuration structure and provenance, without running a simulation."""
         if experiment.mode == "research_derived":
             try:
-                preparations.store.require_configuration(experiment)
+                ws.preparations.store.require_configuration(experiment)
             except ValueError as exc:
                 raise HTTPException(status_code=422, detail=str(exc)) from exc
         return ContractValidation(experiment_id=experiment.experiment_id, support_status=experiment.support.status,
                                   scenario_count=len(experiment.scenarios))
 
     @api.post("/api/simulations", response_model=SimulationResult)
-    def simulate(request: SimulationRequest) -> SimulationResult:
+    def simulate(request: SimulationRequest, ws: Workspace = Depends(workspace)) -> SimulationResult:
         """Run the reviewed one-compartment model without an LLM call."""
         try:
-            result = run_simulation(request, preparation_store=preparations.store)
-            generalized.turns.seed(result)
+            result = run_simulation(request, preparation_store=ws.preparations.store)
+            ws.agent.turns.seed(result)
             return result
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     @api.post("/api/simulations/adjust", response_model=SimulationResult)
-    def adjust_and_simulate(adjustment: ControlAdjustment) -> SimulationResult:
+    def adjust_and_simulate(adjustment: ControlAdjustment, ws: Workspace = Depends(workspace)) -> SimulationResult:
         """Apply one linked control edit and return the new deterministic result."""
         try:
-            experiment = adjust_experiment(adjustment, preparation_store=preparations.store)
+            experiment = adjust_experiment(adjustment, preparation_store=ws.preparations.store)
             result = run_simulation(SimulationRequest(
                 experiment=experiment,
                 client_revision=adjustment.client_revision,
                 output_points=adjustment.output_points,
-            ), preparation_store=preparations.store)
+            ), preparation_store=ws.preparations.store)
             # History: this result follows the stored result whose configuration was edited.
-            generalized.turns.seed(result, origin='direct_control', parent_configuration_sha256=_canonical_hash(adjustment.experiment.model_dump(mode="json")),
+            ws.agent.turns.seed(result, origin='direct_control', parent_configuration_sha256=_canonical_hash(adjustment.experiment.model_dump(mode="json")),
                 label=control_label(adjustment))
             return result
         except ValueError as exc:
@@ -223,23 +292,23 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     @api.post("/api/preparations", response_model=PreparationRecord, tags=["Experiment preparation"], status_code=201)
-    def create_preparation(request: CreatePreparation):
+    def create_preparation(request: CreatePreparation, ws: Workspace = Depends(own_workspace)):
         """Resolve identity and report required structured inputs. No LLM, research search or solver call."""
-        return preparation_call(preparations.create, request)
+        return preparation_call(ws.preparations.create, request)
 
     @api.get("/api/preparations/{preparation_id}", response_model=PreparationRecord, tags=["Experiment preparation"])
-    def read_preparation(preparation_id: str, revision: int | None = Query(default=None, ge=0)):
-        return preparation_call(preparations.store.read, preparation_id, revision)
+    def read_preparation(preparation_id: str, revision: int | None = Query(default=None, ge=0), ws: Workspace = Depends(own_workspace)):
+        return preparation_call(ws.preparations.store.read, preparation_id, revision)
 
     @api.post("/api/preparations/{preparation_id}/revise", response_model=PreparationRecord, tags=["Experiment preparation"])
-    def revise_preparation(preparation_id: str, update: PreparationUpdate):
+    def revise_preparation(preparation_id: str, update: PreparationUpdate, ws: Workspace = Depends(own_workspace)):
         """Apply cited evidence or explicit researcher inputs, revalidate and persist consecutive revisions."""
-        return preparation_call(preparations.revise, preparation_id, update)
+        return preparation_call(ws.preparations.revise, preparation_id, update)
 
     @api.post("/api/preparations/{preparation_id}/configure", response_model=ConfiguredPreparation, tags=["Experiment preparation"])
-    def configure_preparation(preparation_id: str, version: PreparationVersion):
+    def configure_preparation(preparation_id: str, version: PreparationVersion, ws: Workspace = Depends(own_workspace)):
         """Configure one conditional structured baseline and store its receipt. Does not run the solver or parse a hypothesis."""
-        return preparation_call(preparations.configure, preparation_id, version)
+        return preparation_call(ws.preparations.configure, preparation_id, version)
 
     @api.get("/api/research/audits/{drug}", response_model=ReferenceAudit, tags=["Drug evidence audits"])
     def reference_audit(drug: str):
@@ -265,7 +334,7 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
             raise HTTPException(status_code=503, detail=str(exc)) from exc
 
     @api.post("/api/research/jobs", response_model=ResearchJob, status_code=202)
-    def submit_research(request: HypothesisRequest) -> ResearchJob:
+    def submit_research(request: HypothesisRequest, _user: User = Depends(signed_in)) -> ResearchJob:
         """Queue one guarded hypothesis; parameter controls never use this endpoint."""
         try:
             return jobs.submit(request)

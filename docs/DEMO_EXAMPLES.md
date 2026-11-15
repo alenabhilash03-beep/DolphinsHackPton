@@ -10,7 +10,7 @@ These are the questions for the judged demo, chosen from repeated **live** runs 
 >
 > Drug `trastuzumab` · Target `HER2` · Route `IV infusion` (the prefilled example)
 
-**Live reliability:** 3 of 3 runs completed end to end after the 5C.1 extraction fix (83–96 s). Before the fix: 1 of 3 recorded runs fully completed, and 1 of the 4 total runs stopped at "needs inputs" (see [the review](subphase-reviews/5C.1.md)).
+**Live reliability:** 8 of 10 runs completed end to end since the 5C.1 extraction fix (83–131 s). The two others failed for different reasons. One stream was interrupted, now retried automatically (5C.1b). In the other, every extraction was rejected and the run now ends as *needs inputs*. **Always have Load saved demo ready.** (See the [5C.1](subphase-reviews/5C.1.md) and [5C.1b](subphase-reviews/5C.1b.md) reviews.)
 
 What the judges see the agent do, in order (all recorded tool outcomes):
 
@@ -24,7 +24,7 @@ What the judges see the agent do, in order (all recorded tool outcomes):
 
 > **Set the occupancy threshold to 95%** (click **Run this experiment** on the "Raise the occupancy threshold to 95%" card)
 
-**Live reliability:** 2 of 2 runs completed (21–26 s). The agent reads the stored experiment, applies the change, reruns the solver and writes a new cited answer that addresses the original question:
+**Live reliability:** 3 of 3 runs completed (21–26 s). The agent reads the stored experiment, applies the change, reruns the solver and writes a new cited answer that addresses the original question:
 
 - Baseline and **tenfold affinity fall below 95%** within the window.
 - **Threefold half-life stays above 95%** for the whole 180 days.
@@ -47,12 +47,12 @@ Avoid: *"The curves come from the numbers the AI just extracted."* For this ques
 
 ## Candidates not ready for the live demo
 
-| Candidate | Live result | Cause | Status |
-| --- | --- | --- | --- |
-| Trastuzumab baseline built from the agent's own extracted values ("After a single IV infusion, how long does trastuzumab keep HER2 occupancy above 90%?", baseline authorized) | 0 of 3 (NVIDIA 502) | On the general (non-preset) path the agent never starts a preparation and repeats searches (half rejected for invalid arguments); the growing request then fails at NVIDIA's gateway. | Agent-behavior defect; proposed fix below |
-| Imatinib → ABL1, hypothetical IV bolus | 1 of 2 honest *needs inputs* with 1IEP structure and a cited answer (105 s); 1 crash | Same invalid-argument search pattern; one run exceeded the 52-step graph limit and raised instead of ending with *needs inputs*. | Same defect; also needs a graceful step-limit stop |
+| Candidate | Live result after 5C.1b | Why it is not a main demo |
+| --- | --- | --- |
+| Trastuzumab baseline built from the agent's own extracted values | 2 of 2 honest *needs inputs*, with cited affinity and half-life candidates | Takes about 3 minutes and asks the researcher for the missing inputs rather than drawing curves |
+| Imatinib → ABL1, hypothetical IV bolus | 2 of 2 honest *needs inputs*, with the 1IEP small-molecule structure and cited KD candidates | Same: a good illustration of honest limits, but slow and with no simulation |
 
-These matter for the stated product story. The general path is where the agent's extracted values become the simulation inputs and where missing values turn into questions for the researcher. A bounded reliability fix for that path is recommended before 5C.3 (see the review).
+Before 5C.1b these failed every live run with provider errors; they now end honestly. If time allows in the demo, the imatinib question is a strong 30-second aside: *"for a drug we can't model safely, the agent says exactly what's missing instead of inventing numbers."* Start it before the talk, or show a recorded run.
 
 ## Re-running
 

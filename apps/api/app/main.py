@@ -279,8 +279,11 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
             except RuntimeError as exc: raise HTTPException(status_code=503, detail="The NVIDIA key is not configured on this server.") from exc
         try: answer = responder(article, request.messages)
         except Exception as exc:
-            log.warning("paper chat failed for %s: %s", article.key, type(exc).__name__)
-            raise HTTPException(status_code=503, detail="Nemotron could not answer just now. Please ask again.") from exc
+            log.exception("paper chat failed for %s", article.key)
+            # Error class and provider status only (never provider text, which can echo request details).
+            status = getattr(getattr(exc, 'response', None), 'status_code', None) or getattr(exc, 'status_code', None)
+            code = type(exc).__name__ + (f" {status}" if status else "")
+            raise HTTPException(status_code=503, detail=f"Nemotron could not answer just now ({code}). Please ask again.") from exc
         return PaperChatAnswer(answer=answer, content_kind=article.content_kind, context_truncated=article_context(article)[1])
 
     @api.get("/api/auth/me", tags=["Community"])

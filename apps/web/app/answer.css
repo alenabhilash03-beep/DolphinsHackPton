@@ -62,3 +62,15 @@
 .editorial-workspace .measurement-cards button:hover { background:var(--accent); color:#fff; }
 .editorial-workspace .answer-not-measured { font-size:11px; color:var(--muted); padding-left:18px; }
 .editorial-workspace .execution-tools .measurement-cards { grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); }
+
+/* Runnable follow-up experiments: the exact change is visible before the button. */
+.editorial-workspace .proposal-panel { max-width:1600px; margin:0 auto 12px; border:1px solid var(--line); border-radius:18px; padding:20px 24px; background:#fff; scroll-margin-top:88px; }
+.editorial-workspace .proposal-panel h2 { margin:0; font-size:15px; }
+.editorial-workspace .proposal-cards { list-style:none; padding:0; margin:14px 0 0; display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:12px; }
+.editorial-workspace .proposal-cards>li { margin:0; padding:14px 16px; border:1px solid var(--line); border-radius:12px; background:#f8fafc; display:flex; flex-direction:column; gap:6px; }
+.editorial-workspace .proposal-cards h3 { margin:0; font-size:14px; }
+.editorial-workspace .proposal-cards p { margin:0; font-size:12px; color:var(--ink); }
+.editorial-workspace .proposal-changes { margin:2px 0; padding:8px 10px 8px 26px; background:#fff; border:1px solid var(--line); border-radius:8px; font-size:12px; font-variant-numeric:tabular-nums; }
+.editorial-workspace .proposal-cards .proposal-scope,.editorial-workspace .proposal-cards small { font-size:10px; color:var(--muted); }
+.editorial-workspace .proposal-cards button { align-self:flex-start; margin-top:4px; }
+.editorial-workspace .answer-origin { font-size:11px; color:var(--muted); margin:10px 0 0; padding:6px 10px; border-left:2px solid var(--accent); background:#f0f6fa; }

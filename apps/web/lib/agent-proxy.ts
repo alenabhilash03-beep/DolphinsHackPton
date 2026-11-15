@@ -2,7 +2,7 @@
 export async function agentProxy(request: Request, parts: string[]): Promise<Response> {
   const suffix = parts.join("/");
   const allowed = request.method === "POST" ? /^(jobs\/(research|edits))$/.test(suffix)
-    : /^(jobs\/[a-f0-9]{32}|turns\/turn-[a-f0-9]{32})$/.test(suffix);
+    : /^(jobs\/[a-f0-9]{32}|turns\/turn-[a-f0-9]{32}|results\/[A-Za-z0-9-]{1,120}\/proposals)$/.test(suffix);
   if (!allowed) return Response.json({ detail: "Unknown agent route" }, { status: 404 });
   return scienceProxy(request, `/api/agent/${suffix}`);
 }

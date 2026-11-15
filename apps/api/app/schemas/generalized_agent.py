@@ -9,6 +9,7 @@ from app.schemas.experiment_preparation import PreparationSource
 from app.schemas.evidence_extraction import ParameterExtractionResult
 from app.schemas.synthesis import ScientificSynthesis, require_current, require_measured
 from app.schemas.structure_analysis import StructureInspection
+from app.schemas.experiment_proposals import ExperimentProposal, ProposalID
 
 class ResearchPaperReview(Contract):
     """Actual inspected snapshot and extraction, independent of simulation input selection."""
@@ -38,6 +39,8 @@ class AgentEditRequest(Contract):
     client_revision: Annotated[int, Field(gt=0)]
     selected_scenario_id: str | None = None
     text: Text
+    # Set by "Run this experiment": the server re-derives this proposal from the stored base and applies exactly it.
+    proposal_id: ProposalID | None = None
 
 class AgentDecision(Contract):
     status: Literal['completed', 'needs_inputs', 'unsupported']
@@ -51,6 +54,8 @@ class AgentTurn(Contract):
     interpretation: Interpretation | None = None
     synthesis: ScientificSynthesis | None = None
     structure: StructureInspection | None = None
+    # The server-derived proposal this turn's result came from, when it was started with "Run this experiment".
+    applied_proposal: ExperimentProposal | None = None
     research_papers: list[ResearchPaperReview] = Field(default_factory=list)
     questions: list[str] = Field(default_factory=list)
     applied_changes: list[str] = Field(default_factory=list)

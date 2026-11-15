@@ -28,6 +28,8 @@ from app.simulation.controls import adjust_experiment
 from app.simulation.service import run_simulation
 from app.schemas.structure_analysis import InterfaceContacts, ResidueDistance, ResidueSelector, StructureMetadata
 from app.structures.service import StructureService, resolve as resolve_structure
+from app.schemas.experiment_proposals import ProposalSet
+from app.research.proposals import propose
 
 
 def create_app(settings: Settings | None = None, literature_client: EuropePMCClient | None = None,
@@ -87,6 +89,15 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
     @api.post("/api/agent/edits", response_model=AgentTurn, tags=["Generalized agent"])
     def generalized_edit(request: AgentEditRequest):
         return agent_call(request, edit=True)
+
+    @api.get("/api/agent/results/{result_id}/proposals", response_model=ProposalSet, tags=["Generalized agent"])
+    def result_proposals(result_id: str) -> ProposalSet:
+        """Follow-up experiments derived from the solver facts of one stored result. No LLM call."""
+        try: result, child = api.state.generalized_agent.turns.result(result_id)
+        except KeyError as exc: raise HTTPException(status_code=404, detail="Unknown result") from exc
+        if child:
+            return ProposalSet(base_result_id=result_id, status="superseded", note="A newer experiment was already run from this result. Open that result to continue.")
+        return ProposalSet(base_result_id=result_id, status="available", proposals=propose(result))
 
     @api.get("/api/agent/turns/{turn_id}", response_model=AgentTurn, tags=["Generalized agent"])
     def generalized_turn(turn_id: str):

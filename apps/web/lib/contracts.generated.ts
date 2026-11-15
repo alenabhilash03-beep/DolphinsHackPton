@@ -89,6 +89,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/agent/results/{result_id}/proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Result Proposals
+         * @description Follow-up experiments derived from the solver facts of one stored result. No LLM call.
+         */
+        get: operations["result_proposals_api_agent_results__result_id__proposals_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/agent/turns/{turn_id}": {
         parameters: {
             query?: never;
@@ -491,6 +511,8 @@ export interface components {
             base_result_id: string;
             /** Client Revision */
             client_revision: number;
+            /** Proposal Id */
+            proposal_id?: string | null;
             /** Selected Scenario Id */
             selected_scenario_id?: string | null;
             /** Text */
@@ -552,6 +574,7 @@ export interface components {
         AgentTurn: {
             /** Applied Changes */
             applied_changes?: string[];
+            applied_proposal?: components["schemas"]["ExperimentProposal"] | null;
             /** Execution Events */
             execution_events?: components["schemas"]["ExecutionEvent"][];
             /** Execution Run Id */
@@ -1324,6 +1347,41 @@ export interface components {
             /** @default null */
             experiment: components["schemas"]["ExperimentConfig"] | null;
             support: components["schemas"]["SupportAssessment"];
+        };
+        /** ExperimentProposal */
+        ExperimentProposal: {
+            /** Base Client Revision */
+            base_client_revision: number;
+            /** Base Configuration Sha256 */
+            base_configuration_sha256: string;
+            /** Base Experiment Id */
+            base_experiment_id: string;
+            /** Base Result Id */
+            base_result_id: string;
+            /** Changes */
+            changes: components["schemas"]["ProposedChange"][];
+            /** Edit Text */
+            edit_text: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "extend_window" | "stricter_threshold" | "double_dose" | "halve_dose";
+            /** Observation */
+            observation: string;
+            /** Proposal Id */
+            proposal_id: string;
+            /** Question Tested */
+            question_tested: string;
+            /** Rationale */
+            rationale: string;
+            /**
+             * Scope Note
+             * @default Changed values are hypothetical design inputs. Unlisted parameters and the baseline scenario are unchanged.
+             */
+            scope_note: string;
+            /** Title */
+            title: string;
         };
         /** ExperimentSnapshot */
         ExperimentSnapshot: {
@@ -2128,6 +2186,44 @@ export interface components {
             base_evidence_sha256: string;
             /** Base Revision */
             base_revision: number;
+        };
+        /** ProposalSet */
+        ProposalSet: {
+            /** Base Result Id */
+            base_result_id: string;
+            /** Note */
+            note?: string | null;
+            /** Proposals */
+            proposals?: components["schemas"]["ExperimentProposal"][];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "available" | "superseded";
+        };
+        /** ProposedChange */
+        ProposedChange: {
+            /**
+             * Field
+             * @enum {string}
+             */
+            field: "dose_mg" | "dosing_interval_h" | "pk.volume_L" | "pk.clearance_L_h" | "pk.elimination_half_life_h" | "binding.association_nM_inv_h_inv" | "binding.dissociation_h_inv" | "binding.affinity_nM" | "exposure_factor" | "duration_h" | "occupancy_threshold";
+            /** From Display */
+            from_display: string;
+            /** From Value */
+            from_value: number | null;
+            /** Parameter */
+            parameter: string;
+            /** Scenario Id */
+            scenario_id?: string | null;
+            /** Scenario Label */
+            scenario_label?: string | null;
+            /** To Display */
+            to_display: string;
+            /** To Value */
+            to_value: number;
+            /** Unit */
+            unit: string;
         };
         /** ReferenceAudit */
         ReferenceAudit: {
@@ -3135,6 +3231,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AgentTurn"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    result_proposals_api_agent_results__result_id__proposals_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                result_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalSet"];
                 };
             };
             /** @description Validation Error */

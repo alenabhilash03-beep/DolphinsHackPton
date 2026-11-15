@@ -22,6 +22,18 @@
             "title": "Client Revision",
             "type": "integer"
           },
+          "proposal_id": {
+            "anyOf": [
+              {
+                "pattern": "^prop-[a-f0-9]{16}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposal Id"
+          },
           "selected_scenario_id": {
             "anyOf": [
               {
@@ -245,6 +257,16 @@
             },
             "title": "Applied Changes",
             "type": "array"
+          },
+          "applied_proposal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExperimentProposal"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "execution_events": {
             "items": {
@@ -2482,6 +2504,110 @@
           "support"
         ],
         "title": "ExperimentPreparation",
+        "type": "object"
+      },
+      "ExperimentProposal": {
+        "additionalProperties": false,
+        "properties": {
+          "base_client_revision": {
+            "minimum": 0.0,
+            "title": "Base Client Revision",
+            "type": "integer"
+          },
+          "base_configuration_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Base Configuration Sha256",
+            "type": "string"
+          },
+          "base_experiment_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Base Experiment Id",
+            "type": "string"
+          },
+          "base_result_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Base Result Id",
+            "type": "string"
+          },
+          "changes": {
+            "items": {
+              "$ref": "#/components/schemas/ProposedChange"
+            },
+            "maxItems": 3,
+            "minItems": 1,
+            "title": "Changes",
+            "type": "array"
+          },
+          "edit_text": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Edit Text",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "extend_window",
+              "stricter_threshold",
+              "double_dose",
+              "halve_dose"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "observation": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Observation",
+            "type": "string"
+          },
+          "proposal_id": {
+            "pattern": "^prop-[a-f0-9]{16}$",
+            "title": "Proposal Id",
+            "type": "string"
+          },
+          "question_tested": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Question Tested",
+            "type": "string"
+          },
+          "rationale": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          },
+          "scope_note": {
+            "default": "Changed values are hypothetical design inputs. Unlisted parameters and the baseline scenario are unchanged.",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Scope Note",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "proposal_id",
+          "kind",
+          "title",
+          "observation",
+          "rationale",
+          "question_tested",
+          "base_result_id",
+          "base_experiment_id",
+          "base_configuration_sha256",
+          "base_client_revision",
+          "changes",
+          "edit_text"
+        ],
+        "title": "ExperimentProposal",
         "type": "object"
       },
       "ExperimentSnapshot": {
@@ -4776,6 +4902,145 @@
           "base_evidence_sha256"
         ],
         "title": "PreparationVersion",
+        "type": "object"
+      },
+      "ProposalSet": {
+        "additionalProperties": false,
+        "properties": {
+          "base_result_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Base Result Id",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "proposals": {
+            "items": {
+              "$ref": "#/components/schemas/ExperimentProposal"
+            },
+            "maxItems": 6,
+            "title": "Proposals",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "available",
+              "superseded"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "base_result_id",
+          "status"
+        ],
+        "title": "ProposalSet",
+        "type": "object"
+      },
+      "ProposedChange": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "enum": [
+              "dose_mg",
+              "dosing_interval_h",
+              "pk.volume_L",
+              "pk.clearance_L_h",
+              "pk.elimination_half_life_h",
+              "binding.association_nM_inv_h_inv",
+              "binding.dissociation_h_inv",
+              "binding.affinity_nM",
+              "exposure_factor",
+              "duration_h",
+              "occupancy_threshold"
+            ],
+            "title": "Field",
+            "type": "string"
+          },
+          "from_display": {
+            "maxLength": 80,
+            "title": "From Display",
+            "type": "string"
+          },
+          "from_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Value"
+          },
+          "parameter": {
+            "maxLength": 80,
+            "title": "Parameter",
+            "type": "string"
+          },
+          "scenario_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Id"
+          },
+          "scenario_label": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Label"
+          },
+          "to_display": {
+            "maxLength": 80,
+            "title": "To Display",
+            "type": "string"
+          },
+          "to_value": {
+            "title": "To Value",
+            "type": "number"
+          },
+          "unit": {
+            "maxLength": 20,
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "parameter",
+          "unit",
+          "from_value",
+          "to_value",
+          "from_display",
+          "to_display"
+        ],
+        "title": "ProposedChange",
         "type": "object"
       },
       "ReferenceAudit": {
@@ -7654,6 +7919,49 @@
           }
         },
         "summary": "Generalized Research",
+        "tags": [
+          "Generalized agent"
+        ]
+      }
+    },
+    "/api/agent/results/{result_id}/proposals": {
+      "get": {
+        "description": "Follow-up experiments derived from the solver facts of one stored result. No LLM call.",
+        "operationId": "result_proposals_api_agent_results__result_id__proposals_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "result_id",
+            "required": true,
+            "schema": {
+              "title": "Result Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalSet"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Result Proposals",
         "tags": [
           "Generalized agent"
         ]

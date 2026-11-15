@@ -1,0 +1,63 @@
+{
+  "verification_kind": "8D.1 typed follow-up proposals",
+  "date": "2026-11-15",
+  "automated": {
+    "backend_tests_passed": 408,
+    "backend_tests_new": 21,
+    "backend_tests_failed": 1,
+    "backend_failure": "pre-existing machine-dependent saved-demo float mismatch (test_saved_demo_matches_current_solver_and_public_asset)",
+    "frontend_tests_passed": 60,
+    "frontend_tests_new": 4,
+    "typecheck": "passed",
+    "contracts_check": "passed",
+    "production_build": "passed"
+  },
+  "reviewed_result_proposals": [
+    {
+      "title": "Extend the observation window to 360 days",
+      "change": "Observation window · whole comparison: 4320 h (180 days) → 8640 h (360 days)",
+      "question": "When does each scenario fall below the threshold, and which stays above it longer?"
+    },
+    {
+      "title": "Raise the occupancy threshold to 95%",
+      "change": "Occupancy threshold · whole comparison: 0.9 (90%) → 0.95 (95%)",
+      "question": "Do the scenarios still all stay above 95% occupancy, or do they separate?"
+    },
+    {
+      "title": "Halve the dose in Threefold longer half-life",
+      "change": "Dose per infusion · Threefold longer half-life: 528 mg → 264 mg",
+      "question": "Does this scenario still stay above the threshold at half the dose?"
+    }
+  ],
+  "synthetic_browser_check": {
+    "description": "scripts/serve_investigation_ui_checks.py: actual agent graph and solver, scripted provider. Saved demo → run \"Raise the occupancy threshold to 95%\" → slider edit. Chromium, 1440 px and 390 px.",
+    "three_proposals_for_saved_demo": true,
+    "run_completed_with_attribution_line": true,
+    "new_result_has_own_proposals_bound_to_displayed_result": true,
+    "threshold_proposal_no_longer_offered_after_running_it": true,
+    "slider_edit_rederives_proposals_for_new_result": true,
+    "mobile_horizontal_overflow": false,
+    "page_errors": []
+  },
+  "live_browser_check": {
+    "description": "Real backend with live pinned Nemotron agent and synthesizer; same steps.",
+    "ran": "Raise the occupancy threshold to 95%",
+    "investigation": "Investigation complete",
+    "attribution": "Follow-up experiment run from a proposal: Raise the occupancy threshold to 95%. Occupancy threshold: 0.9 (90%) → 0.95 (95%). Run from result sim-262bc1bc1e17aefb3d6995d5.",
+    "answer": "The requested edit set the occupancy threshold to 95 percent. At that threshold, the baseline scenario crosses within the window, the threefold longer half-life scenario remains above at the horizon, and the tenfold stronger affinity scenario crosses within the window.",
+    "follow_up_proposals": [
+      "Extend the observation window to 360 days",
+      "Halve the dose in Threefold longer half-life"
+    ],
+    "follow_up_base_is_displayed_result": true,
+    "after_slider_base_is_displayed_result": true,
+    "answer_marked_stale_after_slider": true,
+    "mobile_horizontal_overflow": false,
+    "page_errors": []
+  },
+  "not_verified": [
+    "Proposals on a research-derived (non-preset) result in a browser; covered by backend rules only for the reviewed preset and its edits.",
+    "The double-dose proposal in a browser; covered by backend tests.",
+    "LangSmith tracing of the proposal run."
+  ]
+}

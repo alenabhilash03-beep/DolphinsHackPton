@@ -60,3 +60,7 @@ export type EvidenceFinding = components["schemas"]["EvidenceFinding"];
 // Agent structure inspection (8C): coordinate measurements of verified deposited structures.
 export type StructureInspection = components["schemas"]["StructureInspection"];
 export type StructureMeasurement = components["schemas"]["StructureMeasurement"];
+
+// Typed follow-up experiments (8D): derived by the server from solver facts of one stored result.
+export type ExperimentProposal = components["schemas"]["ExperimentProposal"];
+export type ProposalSet = components["schemas"]["ProposalSet"];

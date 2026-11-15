@@ -415,6 +415,9 @@ class GeneralizedAgentService:
             try:
                 ledger['config'], applied = apply_edit(base, request, prep.store)
                 changes.extend(applied)
+                if request.proposal_id:
+                    from app.research.proposals import find
+                    ledger['proposal'] = find(base, request.proposal_id)
                 return configuration_receipt(ledger['config'])
             except ValueError as exc:
                 questions.append(str(exc))
@@ -562,5 +565,5 @@ class GeneralizedAgentService:
                 else 'see_parameter_lineage') if result else 'not_selected'
         return AgentTurn(turn_id='turn-'+uuid4().hex, status=decision.status, original_text=text,
             research_papers=list(paper_reviews.values()),
-            preparation=record,result=result,interpretation=ledger['interpretation'],synthesis=ledger['synthesis'],structure=ledger['structure'],questions=list(dict.fromkeys(questions)),
+            preparation=record,result=result,interpretation=ledger['interpretation'],synthesis=ledger['synthesis'],structure=ledger['structure'],applied_proposal=ledger.get('proposal') if result else None,questions=list(dict.fromkeys(questions)),
             applied_changes=changes,parent_result_id=base.result_id if edit else None,tool_calls=calls,trace_id=trace_id,trace_status=trace_status)

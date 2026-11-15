@@ -52,6 +52,7 @@ The edit agent calls `read_current_experiment`, `apply_requested_edit`, `simulat
 - “Use a 21-day dosing interval in that alternative” (selected scenario required).
 - “Compare twofold and fivefold affinity improvement at fixed association rate” (creates alternatives from the protected baseline; numeric `2fold`/`5fold` also accepted).
 - “Run this comparison for 120 days” (hours also supported).
+- “Halve the dose in [scenario]” and “Set the occupancy threshold to 95%” (added in 8D.1; a fraction such as 0.95 is also accepted).
 - “Set dose to 100 mg in [scenario ID]”, “Set half-life to 21 days in [scenario ID]”, and “Set affinity to 2 nM in the affinity alternative”.
 
 Other wording/units, ambiguous scenarios, baseline scenario edits, mixed loading/maintenance relative-dose edits, contradictory instructions or additional clauses produce clarification without an applied result. This is bounded experimental editing, not a claim of universal natural-language understanding. Supported parameter edits use existing control validators, preserve unspecified parameters and linked relationships, and require no literature search or routine confirmation dialog. Direct sliders still bypass the LLM entirely.

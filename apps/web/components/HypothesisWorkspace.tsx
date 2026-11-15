@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
-import type { AgentJob, AgentTurn, AgentResearchRequest, AgentEditRequest, DemoSnapshot, ExperimentConfig, PreparationRecord, PreparationUpdate, SimulationResult, Interpretation } from "../lib/contracts";
+import type { AgentJob, AgentTurn, AgentResearchRequest, AgentEditRequest, DemoSnapshot, ExperimentProposal, ExperimentConfig, PreparationRecord, PreparationUpdate, SimulationResult, Interpretation } from "../lib/contracts";
 import { RequestEpoch, linkedTurnResult, structureKind, researchRouteNotice } from "../lib/agent-workspace";
 import { PlotPreview } from "./PlotPreview";
 import { StructureViewer, type ViewerFocus } from "./StructureViewer";
@@ -12,6 +12,8 @@ import { ResearchPaperReview } from "./ResearchPaperReview";
 import { investigationView } from "../lib/investigation";
 import { ScientificAnswer } from "./ScientificAnswer";
 import { answerState, type MeasurementCard } from "../lib/synthesis-view";
+import { NextExperimentProposals } from "./NextExperimentProposals";
+import { proposalRequest } from "../lib/proposal-view";
 const PRIMARY="Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const STORAGE="hypothesim-agent-job-v1";
 const SCIENCE_REQUEST="hypothesim-scientific-request-v1";
@@ -176,6 +178,12 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
     void submitJob("edits",{base_result_id:shown.result_id,base_experiment_id:shown.configuration.experiment_id,base_configuration_sha256:shown.configuration_hash,
       client_revision:shown.client_revision+1,selected_scenario_id:selected,text:edit});
   }
+  // "Run this experiment": the proposal must belong to the displayed result; only its ID is sent to the server.
+  function runProposal(proposal:ExperimentProposal) {
+    if(controlBusy)return;
+    try{const body=proposalRequest(proposal,shown);setEdit(proposal.edit_text);void submitJob("edits",body);}
+    catch(e){setMessage(e instanceof Error?e.message:"This proposal cannot be run against the displayed curves.");}
+  }
   const currentInterpretation=explanation?.result_id===shown?.result_id ? explanation : null;
   // The answer panel reports staleness itself; this note remains for results that have no written answer.
   const answer=answerState(turn,shown), staleExplanation=!!explanation && !currentInterpretation && answer==="none";
@@ -208,6 +216,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
     </section>
     <InvestigationPanel job={job} submitting={submitting} saved={saved} displayedResult={shown} config={visible} message={message} viewer={structure} onFocusMeasurement={focusMeasurement}/>
     <ScientificAnswer turn={turn} shown={shown} viewer={structure} onFocusMeasurement={focusMeasurement}/>
+    <NextExperimentProposals shown={shown} busy={!!busy || controlBusy} onRun={runProposal}/>
     <ResearchPaperReview papers={turn?.research_papers ?? []}/>
     {(record || turn?.questions?.length || staleExplanation) ? <section className="research-panel" aria-label="Research continuation">
       {turn?.questions?.length ? <section aria-label="Agent questions"><h3>What is needed next</h3><ul>{turn.questions.map(q=><li key={q}>{q}</li>)}</ul></section>:null}

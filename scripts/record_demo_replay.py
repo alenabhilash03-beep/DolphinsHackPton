@@ -28,8 +28,10 @@ def main():
     args = parser.parse_args()
     job = json.loads(Path(args.job).read_text())
     turn = job['turn']
-    if job['status'] != 'completed' or not turn or turn['status'] != 'completed' or not turn.get('result'):
-        raise SystemExit('Only a completed job with a simulation result can become a demo replay')
+    # A replay is either a completed simulation or an honest "needs inputs" research turn (no curves, cited evidence).
+    honest_stop = turn and turn['status'] == 'needs_inputs' and job['mode'] == 'research' and not turn.get('result')
+    if job['status'] != 'completed' or not turn or not (honest_stop or (turn['status'] == 'completed' and turn.get('result'))):
+        raise SystemExit('Only a completed simulation, or a research turn that honestly stopped at needs-inputs, can become a demo replay')
     if (turn.get('synthesis') or {}).get('status') != 'grounded':
         raise SystemExit('The recorded run must include a grounded written answer')
     events = job['execution_events']
@@ -56,7 +58,8 @@ def main():
     path = ROOT / 'data/demo/replay' / f'{args.name}.json'
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(out, separators=(',', ':')) + '\n')
-    print(f'{path.relative_to(ROOT)}: {kind}, {len(steps)} tool steps, {duration:.0f} s, result {turn["result"]["result_id"]}')
+    print(f'{path.relative_to(ROOT)}: {kind}, {len(steps)} tool steps, {duration:.0f} s, '
+          + (f'result {turn["result"]["result_id"]}' if turn.get('result') else f'status {turn["status"]} (no simulation)'))
 
 
 if __name__ == '__main__':

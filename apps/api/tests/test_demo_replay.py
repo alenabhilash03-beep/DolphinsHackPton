@@ -122,3 +122,21 @@ def test_replay_runs_through_the_job_queue_like_a_live_run(tmp_path):
     assert job.status == 'completed' and job.turn.result and job.turn.synthesis.status == 'grounded'
     assert any('Replaying recorded agent run' in message for message in job.events)
     assert json.loads(job.model_dump_json())['execution_events'][-1]['state'] == 'succeeded'
+
+
+def test_imatinib_question_replays_an_honest_needs_inputs_run(tmp_path):
+    q3 = next(r for r in load() if r.name == 'q3-imatinib-abl1')
+    agent = service(tmp_path)
+    request = AgentResearchRequest(request={'drug_name': 'imatinib', 'target': 'ABL1', 'route': 'hypothetical_iv_bolus',
+        'original_hypothesis': q3.match['original_hypothesis']})
+    events = []
+    turn = agent.run(request, on_execution=events.append)
+    assert turn.status == 'needs_inputs' and turn.result is None and turn.trace_status == 'recorded_replay'
+    assert turn.synthesis.status == 'grounded' and turn.questions
+    assert turn.structure.status == 'available' and turn.structure.metadata.provenance.pdb_id == '1IEP'
+    assert any(p.extraction.parameters for p in turn.research_papers)   # cited affinity candidates, no invented curves
+    assert [e.tool_name for e in events if e.kind == 'tool' and e.state != 'started'] == [s['tool'] for s in q3.steps]
+    assert agent.turns.read(turn.turn_id).status == 'needs_inputs'
+    # The route is part of the question: the same text with another route runs live.
+    other = request.model_copy(update={'request': request.request.model_copy(update={'route': 'oral'})})
+    assert DemoReplay().match(other, edit=False) is None

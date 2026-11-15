@@ -993,7 +993,7 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                                         className: "agent-suggestions demo-example",
                                         children: [
                                             /*#__PURE__*/ _jsx("span", {
-                                                children: "Example"
+                                                children: "Examples"
                                             }),
                                             /*#__PURE__*/ _jsxs("button", {
                                                 type: "button",
@@ -1006,6 +1006,23 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                                                 },
                                                 children: [
                                                     "Use the trastuzumab example",
+                                                    /*#__PURE__*/ _jsx("span", {
+                                                        "aria-hidden": "true",
+                                                        children: "↗"
+                                                    })
+                                                ]
+                                            }),
+                                            /*#__PURE__*/ _jsxs("button", {
+                                                type: "button",
+                                                disabled: !!busy,
+                                                onClick: ()=>{
+                                                    setText("Could a single intravenous dose of imatinib keep ABL1 kinase occupied, and what evidence would we need to simulate it?");
+                                                    setDrug("imatinib");
+                                                    setTarget("ABL1");
+                                                    setRoute("hypothetical_iv_bolus");
+                                                },
+                                                children: [
+                                                    "Use the imatinib example",
                                                     /*#__PURE__*/ _jsx("span", {
                                                         "aria-hidden": "true",
                                                         children: "↗"

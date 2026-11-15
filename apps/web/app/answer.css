@@ -47,3 +47,18 @@
 .editorial-workspace .answer-disagreements small { color:var(--muted); font-size:10px; }
 .editorial-workspace .answer-detail li { font-size:12px; margin-bottom:5px; }
 @media(max-width:700px) { .editorial-workspace .answer-heading { flex-direction:column; } .editorial-workspace .answer-badges { align-items:flex-start; } .editorial-workspace .answer-basis { text-align:left; } .editorial-workspace .answer-statement { font-size:16px; } }
+
+/* Structural context: coordinate measurements with a handoff to the molecular viewer. */
+.editorial-workspace .answer-structure { border-top:1px solid var(--line); margin-top:16px; padding-top:14px; }
+.editorial-workspace .answer-structure-note { font-size:12px; color:var(--muted); margin:8px 0; max-width:1050px; }
+.editorial-workspace .answer-observation>p { font-size:13px; margin:10px 0 6px; }
+.editorial-workspace .measurement-cards { list-style:none; padding:0; margin:8px 0; display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:8px; }
+.editorial-workspace .measurement-cards>li { margin:0; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:#f5f8fc; display:flex; flex-direction:column; gap:3px; min-width:0; }
+.editorial-workspace .measurement-id { font-size:10px; color:var(--muted); }
+.editorial-workspace .measurement-cards strong { font-size:13px; }
+.editorial-workspace .measurement-distance { font-size:15px; font-weight:650; font-variant-numeric:tabular-nums; }
+.editorial-workspace .measurement-distance small,.editorial-workspace .measurement-cards>li>small { display:block; font-size:10px; font-weight:400; color:var(--muted); }
+.editorial-workspace .measurement-cards button { align-self:flex-start; margin-top:4px; font-size:11px; padding:4px 10px; border:1px solid var(--accent); border-radius:20px; background:#fff; color:var(--accent); cursor:pointer; }
+.editorial-workspace .measurement-cards button:hover { background:var(--accent); color:#fff; }
+.editorial-workspace .answer-not-measured { font-size:11px; color:var(--muted); padding-left:18px; }
+.editorial-workspace .execution-tools .measurement-cards { grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); }

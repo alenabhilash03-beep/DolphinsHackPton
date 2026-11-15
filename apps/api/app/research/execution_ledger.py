@@ -4,7 +4,7 @@ from time import monotonic
 from uuid import uuid4
 from requests.exceptions import Timeout as ProviderTimeout
 from app.schemas.execution import (ExecutionEvent, ExecutionSummary, ExperimentSnapshot,
-    ParameterSnapshot, ScheduleSnapshot, SolverReceipt, MetricSnapshot, SourceReference)
+    ParameterSnapshot, ScheduleSnapshot, SolverReceipt, MetricSnapshot, SourceReference, StructureEventSummary)
 from app.simulation.service import _canonical_hash
 
 STAGES = {
@@ -12,6 +12,7 @@ STAGES = {
     'extract_cited_parameters':'extraction', 'configure_prepared_experiment':'configuration',
     'prepare_reviewed_comparison':'configuration', 'simulate_current_comparison':'simulation',
     'interpret_current_result':'interpretation', 'synthesize_grounded_answer':'interpretation',
+    'inspect_verified_structure':'structure', 'measure_structure_residue':'structure',
     'read_current_experiment':'editing',
     'apply_requested_edit':'editing',
 }
@@ -172,6 +173,14 @@ class ExecutionLedger:
                 summary.experiment=snapshot(config,base.configuration if base else None)
                 self.snapshots.add(key)
         if name=='synthesize_grounded_answer': summary.source_count=output.get('source_count')
+        if name in {'inspect_verified_structure','measure_structure_residue'} and scientific.get('structure'):
+            # Identifiers only; coordinates and distances stay in the turn's structure record.
+            inspection=scientific['structure']
+            provenance=inspection.metadata.provenance if inspection.metadata else None
+            summary.structure=StructureEventSummary(available=inspection.status=='available',
+                pdb_id=provenance.pdb_id if provenance else None,coordinate_sha256=provenance.coordinate_sha256 if provenance else None,
+                interface_residue_pair_count=inspection.interface_residue_pair_count,
+                measurement_ids=output.get('measurement_ids',[])[:12])
         if name in {'simulate_current_comparison','interpret_current_result','synthesize_grounded_answer'} and scientific['result']:
             result=scientific['result']
             config=scientific['config']

@@ -49,7 +49,7 @@ A proposal is rejected, with field-specific feedback for one corrected retry, wh
 - a "how long" question is answered `supported` or `not_supported` from solver fields alone while two or more scenarios are still above threshold at the horizon. Their time above threshold is cut off by the observation window and cannot rank them;
 - a statement is a serialized list or object rather than prose, or contains an identifier with an underscore (a scenario ID or field name) instead of plain words.
 
-Surplus list items and references are dropped and over-long quotes shortened to a verbatim prefix before validation; a single-string or one-field-object `limitations` shape is unwrapped. Nothing is added or reworded, and every retained item is validated.
+References placed beside the answer are moved into it, a run-on limitations string is split at sentence ends, and surplus list items and references are dropped and over-long quotes shortened to a verbatim prefix before validation; a single-string or one-field-object `limitations` shape is unwrapped. Nothing is added or reworded, and every retained item is validated.
 
 `require_current(synthesis, result)` rejects a synthesis for any other result and checks each quantity against its solver field exactly. `AgentTurn` runs it on construction, so a stored turn cannot pair a synthesis with a different result. A direct slider edit produces a new `result_id`, which makes the earlier synthesis stale by this check; 8B.2 uses it to mark the displayed answer.
 
@@ -61,7 +61,7 @@ Validation does not prove that a qualitative statement is entailed by its quote.
 
 - After `interpret_current_result`, it is the only tool offered until it has been attempted, in research and edit turns.
 - When research has inspected source text and no result exists, the final decision is withheld until it has been attempted; other research tools remain available.
-- It runs at most three model attempts (two corrective retries) and never retries beyond that. It is skipped, with an honest `unavailable` record, when under 30 seconds of the research budget remain, so that a slow synthesis cannot cost an accepted result.
+- It runs at most three model attempts. After one corrective retry, if the answer itself is valid, list items that still fail a check are dropped whole and the rest is accepted; a note states how many were omitted. If the answer, its result reference or a finding it rests on is invalid, nothing is kept. It is skipped, with an honest `unavailable` record, when under 30 seconds of the research budget remain, so that a slow synthesis cannot cost an accepted result.
 - An `unavailable` or `rejected` synthesis leaves the turn status and numerical result unchanged. The tool record is `failed` or `rejected`; the run can still succeed.
 - A turn with no retrieved source and no result has no synthesis (`AgentTurn.synthesis` is null).
 

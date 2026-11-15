@@ -2,7 +2,7 @@
 
 The backend can now measure deposited coordinates of the two verified cached complexes: trastuzumab Fab–HER2 (**1N8Z**) and imatinib–mouse c-Abl kinase domain (**1IEP**). The measurements match the molecular viewer. This is structural inspection of experimental geometry. It is not a molecular simulation and it does not use dose, affinity or the PK model.
 
-The tools exist and are tested, but the research agent does not call them yet and the workspace shows nothing new. Both come in 8C.2.
+Since 8C.2 the research agent uses this service during research and the workspace links its measurements to the viewer; see [Agent use and viewer handoff](#agent-use-and-viewer-handoff--8c2).
 
 ## What it reports
 
@@ -55,6 +55,20 @@ Reference values: 1N8Z has 32 interface residue pairs, closest GLY B:103 O / LYS
 
 That script runs the live pinned Nemotron model with only these three tools. It passes when the model finds 1N8Z, lists contacts and measures the closest pair, and stops after an unavailable result for an unknown pair. Outcomes are recorded in `data/research/verification/8C.1-structure-tools.json`.
 
+## Agent use and viewer handoff — 8C.2
+
+**Agent tools in research turns** (not in parameter edits, which do not change coordinates):
+
+- `inspect_verified_structure` takes no arguments. It resolves the turn's own drug and target, and records either an unavailable outcome or the structure metadata and its five closest interface contacts as measurements `M1`–`M5`. It must run before `synthesize_grounded_answer`; the server offers only this tool at that point.
+- `measure_structure_residue` takes a residue and an optional counterpart. Without a counterpart it returns the three nearest binding-partner residues. At most two calls per turn; a pair already measured keeps its ID; refusals are kept in `not_measured` with the service's reason. At most twelve measurements per turn.
+- No structure is a normal outcome, recorded as a completed tool event with `available: false`.
+
+`AgentTurn.structure` (`StructureInspection`) holds the outcome. Ledger events for both tools are in the new `structure` stage and carry only the PDB ID, coordinate hash, interface pair count and measurement IDs.
+
+**In the answer.** The synthesizer receives the measurements as display strings (`GLY B:103`, `2.417 Å`). It may add up to three `structural_context` statements (`claim_kind: structural_observation`), each citing measurement IDs. A statement is omitted when it cites a measurement that was not made, states a residue number or distance other than those of its cited measurements, or mentions hydrogen bonds, salt bridges, energy, affinity, kinetics, potency, efficacy, mutation, stabilization, docking or occupancy. The verdict can never rest on structure. `structure_note` is written by the server: it says that coordinates cannot determine occupancy, half-life, affinity or rates, or that no verified structure exists and that research and simulation are unaffected. `AgentTurn` rejects an answer whose cited measurements differ from the turn's own.
+
+**In the workspace.** The answer panel has a Structural context section with the note, the statements and one card per measurement (residues, atoms, distance to three decimals, PDB ID). The investigation log lists the same cards under the structure tool event. **Show in structure** opens the molecular view and selects that residue pair. The viewer finds the pair in its own parsed coordinates and shows its own computed distance, so agreement between card and viewer is visible. Requests carry a fresh token, so asking for the same card again works after manual changes. Manual inspection and the guided tour are unchanged. A card for a structure other than the one displayed has no button.
+
 ## Not included
 
-Agent use during research, attaching measurements to the scientific answer, and linking them to viewer focus are 8C.2. There is no docking, dynamics, energy estimate, mutation effect or inference of KD, kon or koff from coordinates.
+There is no docking, dynamics, energy estimate, mutation effect or inference of KD, kon or koff from coordinates.

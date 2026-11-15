@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import type { AgentJob, ExperimentConfig, ExperimentSnapshot, ParameterSnapshot, SimulationResult } from "../lib/contracts";
 import { changedParameters, investigationView, parameterLabel, scientificNumber, stageSummary, stateLabel, toolLabel } from "../lib/investigation";
+import { measurementCards, type MeasurementCard, type VIEWER_PDB } from "../lib/synthesis-view";
+import { MeasurementCards } from "./ScientificAnswer";
 
 function ParameterTable({rows,config,experimentId}:{rows:ParameterSnapshot[];config:ExperimentConfig;experimentId:string}) {
   return <div className="investigation-table-scroll"><table><caption>Actual configured values · canonical units</caption><thead><tr><th>Parameter / scenario</th><th>Configured</th><th>Reference → change</th><th>Provenance</th></tr></thead><tbody>{rows.map((p,index)=><tr key={`${p.scenario_id}:${p.parameter}:${index}`}>
@@ -19,10 +21,13 @@ function ConfigurationDetails({snapshot,config}:{snapshot:ExperimentSnapshot;con
     <details><summary>All parameter values, provenance & dose schedules</summary><ParameterTable rows={snapshot.parameters} config={config} experimentId={snapshot.experiment_id}/>{snapshot.schedules.map(s=><section className="execution-schedule" key={s.scenario_id}><h4>{(config.experiment_id===snapshot.experiment_id?config.scenarios.find(item=>item.scenario_id===s.scenario_id)?.label:null) ?? s.scenario_id}</h4><p>{s.intervention==="baseline"?"Protected baseline":"Alternative"} · {s.administration.length} administration event(s){s.changed===false?" · schedule unchanged":s.changed?" · schedule changed":""}</p><ol>{s.administration.map((event,index)=><li key={index}>{event.kind==="infusion"?"Infusion":"Hypothetical bolus"} · {scientificNumber(event.amount_mg)} mg at {scientificNumber(event.start_h)} h{"duration_h" in event?` over ${scientificNumber(event.duration_h)} h`:""}</li>)}</ol><ParameterTable rows={s.parameter_evidence ?? []} config={config} experimentId={snapshot.experiment_id}/></section>)}</details>
   </section>;
 }
-export function InvestigationPanel({job,submitting,saved,displayedResult,config,message}:{
+export function InvestigationPanel({job,submitting,saved,displayedResult,config,message,viewer="unavailable",onFocusMeasurement}:{
+  viewer?:keyof typeof VIEWER_PDB;onFocusMeasurement?:(card:MeasurementCard)=>void;
   job:AgentJob|null;submitting:boolean;saved:boolean;displayedResult:SimulationResult|null;config:ExperimentConfig;message:string|null;
 }) {
   const view=useMemo(()=>investigationView(job),[job]);
+  // Measurement values come from the completed turn; ledger events carry only their identifiers.
+  const cards=useMemo(()=>measurementCards(job?.turn ?? null),[job?.turn]);
   const busy=submitting||job?.status==="queued"||job?.status==="running";
   const [open,setOpen]=useState(false),[clock,setClock]=useState(0);
   const runKey=job?.execution_run_id ?? job?.job_id ?? (submitting?"submitting":null);
@@ -46,6 +51,10 @@ export function InvestigationPanel({job,submitting,saved,displayedResult,config,
           </section>}
           <details className="execution-tools"><summary>Tool-by-tool execution · {view.attempts.length} invocation(s)</summary><ol>{view.attempts.map(attempt=><li key={attempt.start.tool_call_id} data-state={attempt.outcome?.state ?? "started"}><div><strong>{toolLabel(attempt.start)}</strong><span>{stateLabel(attempt.outcome?.state ?? "started")}{attempt.outcome?.elapsed_ms!=null?` · ${(attempt.outcome.elapsed_ms/1000).toFixed(2)} s`:""}</span></div>
             {attempt.outcome?.summary&&<p>{attempt.outcome.summary.source_count!=null&&`${attempt.outcome.summary.source_count} source handle(s)/record(s). `}{attempt.outcome.summary.candidate_count!=null&&`${attempt.outcome.summary.candidate_count} cited candidate value(s). `}{attempt.outcome.summary.missing_input_count!=null&&`${attempt.outcome.summary.missing_input_count} outstanding input(s). `}{attempt.outcome.summary.preparation_state&&`Preparation: ${attempt.outcome.summary.preparation_state.replaceAll("_"," ")}. `}{attempt.outcome.summary.outcome==="no_values"&&"Extraction finished without numerical candidates. "}{attempt.outcome.summary.error_code&&`Outcome: ${attempt.outcome.summary.error_code}. `}</p>}
+            {attempt.outcome?.summary?.structure&&(attempt.outcome.summary.structure.available?<>
+              <p>PDB {attempt.outcome.summary.structure.pdb_id}{attempt.outcome.summary.structure.interface_residue_pair_count!=null?` · ${attempt.outcome.summary.structure.interface_residue_pair_count} interface residue pairs within 4 Å`:""} · {(attempt.outcome.summary.structure.measurement_ids ?? []).length} measurement(s) returned. Geometry only.</p>
+              <MeasurementCards cards={cards.filter(card=>(attempt.outcome!.summary!.structure!.measurement_ids ?? []).includes(card.id))} viewer={viewer} onFocus={onFocusMeasurement}/></>
+              :<p>No verified experimental structure exists for this drug and target. Research and simulation are unaffected.</p>)}
             {!!attempt.outcome?.summary?.sources?.length&&<ul className="execution-sources">{attempt.outcome.summary.sources!.map((source,i)=><li key={i}>{source.source_id ?? source.source_handle ?? "Source"}{source.content_kind?` · ${source.content_kind.replaceAll("_"," ")}`:""}{source.retrieval_status?` · ${source.retrieval_status}`:""}</li>)}</ul>}
           </li>)}</ol></details>
         </>}

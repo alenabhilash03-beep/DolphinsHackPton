@@ -12,6 +12,7 @@ from pydantic import Field, model_validator
 
 from app.schemas.contracts import Contract, Identifier, SimulationResult
 from app.schemas.experiment_preparation import Digest
+from app.schemas.structure_analysis import StructureInspection, StructureMeasurement
 
 Statement = Annotated[str, Field(min_length=1, max_length=700)]
 FindingID = Annotated[str, Field(pattern=r'^F[0-9]{1,2}$')]
@@ -68,6 +69,11 @@ class ImplicationProposal(Contract):
     metric_refs: Annotated[list[MetricReference], Field(min_length=1, max_length=9)]
 
 
+class StructuralContextProposal(Contract):
+    statement: Statement
+    measurement_ids: Annotated[list[Annotated[str, Field(pattern=r'^M[0-9]{1,2}$')]], Field(min_length=1, max_length=6)]
+
+
 class NextExperimentProposal(Contract):
     kind: ExperimentKind
     proposal: Statement
@@ -85,6 +91,7 @@ class SynthesisProposal(Contract):
     simulation_implications: Annotated[list[ImplicationProposal], Field(max_length=6)] = Field(default_factory=list)
     limitations: Annotated[list[Statement], Field(max_length=6)] = Field(default_factory=list)
     next_experiments: Annotated[list[NextExperimentProposal], Field(max_length=5)] = Field(default_factory=list)
+    structural_context: Annotated[list[StructuralContextProposal], Field(max_length=3)] = Field(default_factory=list)
 
 
 # --- Server-assembled public record -----------------------------------------------------------
@@ -129,6 +136,13 @@ class SimulationImplication(Contract):
     claim_kind: Literal['conditional_simulation_prediction'] = 'conditional_simulation_prediction'
     statement: Statement
     quantities: Annotated[list[SolverQuantity], Field(min_length=1, max_length=9)]
+
+
+class StructuralObservation(Contract):
+    """Geometric context from deposited coordinates. It never decides a verdict."""
+    claim_kind: Literal['structural_observation'] = 'structural_observation'
+    statement: Statement
+    measurements: Annotated[list[StructureMeasurement], Field(min_length=1, max_length=6)]
 
 
 class NextExperiment(Contract):
@@ -204,6 +218,9 @@ class ScientificSynthesis(Contract):
     limitations: Annotated[list[Statement], Field(max_length=40)] = Field(default_factory=list)
     next_experiments: Annotated[list[NextExperiment], Field(max_length=5)] = Field(default_factory=list)
     source_access: Annotated[list[SourceAccess], Field(max_length=6)] = Field(default_factory=list)
+    structural_context: Annotated[list[StructuralObservation], Field(max_length=3)] = Field(default_factory=list)
+    # Server-written: whether a verified structure exists and what coordinates cannot decide.
+    structure_note: Statement | None = None
     notes: Annotated[list[Statement], Field(max_length=12)] = Field(default_factory=list)
 
     def quantities(self) -> list[SolverQuantity]:
@@ -237,7 +254,7 @@ class ScientificSynthesis(Contract):
         if self.status == 'grounded':
             if self.answer is None or self.basis == 'none':
                 raise ValueError('A grounded synthesis requires an answer and a basis')
-        elif (self.answer or self.evidence_findings or self.simulation_implications or self.next_experiments
+        elif (self.answer or self.evidence_findings or self.simulation_implications or self.next_experiments or self.structural_context
                 or any(item.origin == 'synthesis' for item in [*self.disagreements, *self.missing_evidence])):
             raise ValueError('An unavailable or rejected synthesis cannot carry model-authored content')
         return self
@@ -272,6 +289,15 @@ def require_current(synthesis: ScientificSynthesis, result: SimulationResult | N
             matches = quantity.value is not None and isclose(quantity.value, actual, rel_tol=0, abs_tol=0)
         if not matches:
             raise ValueError('Synthesis quantity does not equal its solver field')
+
+
+def require_measured(synthesis: ScientificSynthesis, structure: StructureInspection | None) -> None:
+    """Every coordinate value cited by the answer must be a measurement the agent obtained in the same turn."""
+    measured = {item.measurement_id: item for item in structure.measurements} if structure else {}
+    for observation in synthesis.structural_context:
+        for item in observation.measurements:
+            if measured.get(item.measurement_id) != item:
+                raise ValueError('Synthesis cites a structural measurement that was not made in this turn')
 
 
 SYNTHESIS_CONTRACTS = [ScientificSynthesis, SynthesisProposal]

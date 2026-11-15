@@ -103,3 +103,40 @@ export function accessSummary(synthesis: ScientificSynthesis): string | null {
   const abstracts = sources.filter(item => item.content_kind === "abstract").length;
   return `${sources.length} source${sources.length === 1 ? "" : "s"} inspected` + (abstracts ? ` · ${abstracts} abstract-only` : " · full-text passages");
 }
+
+// --- Structural context (8C.2): agent-measured coordinates, linked to the molecular viewer ---
+
+export type StructureFocus = { pdbId: string; drug: { chain: string; resi: number; icode: string }; target: { chain: string; resi: number; icode: string } };
+export type MeasurementCard = { id: string; pdbId: string; drug: string; target: string; atoms: string; distance: string; withinCutoff: boolean;
+  origin: string; focus: StructureFocus };
+type StructureTurn = Pick<AgentTurn, "structure" | "synthesis">;
+
+const residueText = (r: { residue_name: string; chain: string; residue_number: number; insertion_code?: string }) =>
+  `${r.residue_name} ${r.chain}:${r.residue_number}${r.insertion_code ?? ""}`;
+
+/** One card per measurement the agent obtained; values are the server's, shown to three decimals as in the viewer. */
+export function measurementCards(turn: StructureTurn | null): MeasurementCard[] {
+  const structure = turn?.structure, pdbId = structure?.metadata?.provenance?.pdb_id;
+  if (!structure || structure.status !== "available" || !pdbId) return [];
+  return (structure.measurements ?? []).map(item => {
+    const c = item.contact, side = (r: typeof c.drug_residue) => ({ chain: r.chain, resi: r.residue_number, icode: r.insertion_code ?? "" });
+    return { id: item.measurement_id, pdbId, drug: residueText(c.drug_residue), target: residueText(c.target_residue),
+      atoms: `${c.drug_atom.name} ↔ ${c.target_atom.name}`, distance: `${c.distance_angstrom.toFixed(3)} Å`, withinCutoff: c.within_cutoff,
+      origin: item.kind === "interface_contact" ? "Closest interface contact" : "Agent-requested residue distance",
+      focus: { pdbId, drug: side(c.drug_residue), target: side(c.target_residue) } };
+  });
+}
+
+/** Cards cited by a structural statement must be measurements of this turn; otherwise the statement is not shown. */
+export function structuralObservations(turn: StructureTurn | null): { statement: string; cards: MeasurementCard[] }[] {
+  const cards = new Map(measurementCards(turn).map(card => [card.id, card]));
+  const made = new Map((turn?.structure?.measurements ?? []).map(item => [item.measurement_id, item]));
+  return (turn?.synthesis?.structural_context ?? []).flatMap(item => {
+    const linked = item.measurements.every(m => JSON.stringify(made.get(m.measurement_id)) === JSON.stringify(m));
+    return linked ? [{ statement: item.statement, cards: item.measurements.map(m => cards.get(m.measurement_id)!) }] : [];
+  });
+}
+
+/** The viewer can show a measurement only for the structure it currently displays. */
+export const VIEWER_PDB = { trastuzumab: "1N8Z", imatinib: "1IEP", unavailable: null } as const;
+export function canFocus(card: MeasurementCard, viewer: keyof typeof VIEWER_PDB): boolean { return VIEWER_PDB[viewer] === card.pdbId; }

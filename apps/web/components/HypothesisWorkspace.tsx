@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import type { AgentJob, AgentTurn, AgentResearchRequest, AgentEditRequest, DemoSnapshot, ExperimentConfig, PreparationRecord, PreparationUpdate, SimulationResult, Interpretation } from "../lib/contracts";
 import { RequestEpoch, linkedTurnResult, structureKind, researchRouteNotice } from "../lib/agent-workspace";
 import { PlotPreview } from "./PlotPreview";
-import { StructureViewer } from "./StructureViewer";
+import { StructureViewer, type ViewerFocus } from "./StructureViewer";
 import { VisualizationBoundary } from "./VisualizationBoundary";
 import { DrugSupportPanel } from "./DrugSupportPanel";
 import { PreparationAnswers } from "./PreparationAnswers";
@@ -11,7 +11,7 @@ import { InvestigationPanel } from "./InvestigationPanel";
 import { ResearchPaperReview } from "./ResearchPaperReview";
 import { investigationView } from "../lib/investigation";
 import { ScientificAnswer } from "./ScientificAnswer";
-import { answerState } from "../lib/synthesis-view";
+import { answerState, type MeasurementCard } from "../lib/synthesis-view";
 const PRIMARY="Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const STORAGE="hypothesim-agent-job-v1";
 const SCIENCE_REQUEST="hypothesim-scientific-request-v1";
@@ -28,6 +28,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
   const [explanation,setExplanation]=useState<Interpretation|null>(null);
   const [message,setMessage]=useState<string|null>(null),[submitting,setSubmitting]=useState(false),[saved,setSaved]=useState(false);
   const [resumeId,setResumeId]=useState("");
+  const [structureFocus,setStructureFocus]=useState<ViewerFocus|null>(null);
   const [edit,setEdit]=useState("Run this comparison for 120 days");
   const epoch=useRef(new RequestEpoch()), activeTicket=useRef(0), activeJob=useRef<string|null>(null);
   const [structureIdentity,setStructureIdentity]=useState({drug:fallbackExperiment.drug,target:fallbackExperiment.target});
@@ -179,6 +180,11 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
   // The answer panel reports staleness itself; this note remains for results that have no written answer.
   const answer=answerState(turn,shown), staleExplanation=!!explanation && !currentInterpretation && answer==="none";
   const structure=structureKind(structureIdentity.drug,structureIdentity.target);
+  // Open the molecular view on the measured residue pair. A fresh nonce makes repeated requests for the same pair work.
+  const focusMeasurement=useCallback((card:MeasurementCard)=>{
+    setStructureFocus({...card.focus,label:card.id,nonce:Date.now()+Math.random()});
+    window.history.replaceState(null,"","#structure");window.dispatchEvent(new HashChangeEvent("hashchange"));
+  },[]);
   return <div className="hypothesim-workspace editorial-workspace">
     <aside className="workspace-rail" aria-label="Research navigation"><a href="/" className="rail-monogram" aria-label="Hypothesim home">h.</a><span className="rail-caption">Workspace</span><nav><a href="#research"><span>01</span>Question</a><a href="#experiment"><span>02</span>Simulation</a><a href="#structure"><span>03</span>Structure</a></nav><a href="/" className="rail-home">Workspace home ↗</a></aside>
     <header className="workspace-header"><a className="workspace-brand" href="/">hypothesim<span>.</span></a><nav aria-label="Workspace sections"><a href="#research">Research</a><a href="#answer">Answer</a><a href="#experiment">Results</a><a href="#paper-evidence">Evidence</a><a href="#structure">Molecule</a></nav><span className="workspace-badge">Research workspace</span></header>
@@ -200,8 +206,8 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
       <details><summary>Resume a saved preparation</summary><label>Preparation ID<input value={resumeId} onChange={e=>setResumeId(e.target.value)} placeholder="prep-…"/></label><button type="button" disabled={!!busy} onClick={()=>void loadPreparation()}>Load preparation</button></details>
       {message && !job && <p role="alert">{message}</p>}
     </section>
-    <InvestigationPanel job={job} submitting={submitting} saved={saved} displayedResult={shown} config={visible} message={message}/>
-    <ScientificAnswer turn={turn} shown={shown}/>
+    <InvestigationPanel job={job} submitting={submitting} saved={saved} displayedResult={shown} config={visible} message={message} viewer={structure} onFocusMeasurement={focusMeasurement}/>
+    <ScientificAnswer turn={turn} shown={shown} viewer={structure} onFocusMeasurement={focusMeasurement}/>
     <ResearchPaperReview papers={turn?.research_papers ?? []}/>
     {(record || turn?.questions?.length || staleExplanation) ? <section className="research-panel" aria-label="Research continuation">
       {turn?.questions?.length ? <section aria-label="Agent questions"><h3>What is needed next</h3><ul>{turn.questions.map(q=><li key={q}>{q}</li>)}</ul></section>:null}
@@ -215,7 +221,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
     </details>
     <div className="saved-demo-banner" role="status"><span className="status-dot"/><strong>Displayed experiment</strong> {visible.drug} → {visible.target}{busy && <span> · Research pending; showing the last successful curves.</span>}</div>
     <PlotPreview key={prepared?.result_id ?? "fallback"} initialExperiment={prepared?.configuration ?? fallbackExperiment} initialResult={prepared} onResultChange={onResult} editingLocked={!!busy} interpretation={currentInterpretation} answerShown={answer==="current" && turn?.synthesis?.status==="grounded"}
-      structure={structure!=="unavailable" ? <VisualizationBoundary key={structure} label="Experimental structure"><StructureViewer kind={structure}/></VisualizationBoundary> : <section id="structure" className="structure-panel"><h2>Experimental structure unavailable</h2><p>No verified cached drug–target complex is available for {structureIdentity.drug} → {structureIdentity.target || "unspecified target"}. Compatible numerical models can still run without a structure.</p></section>}/>
+      structure={structure!=="unavailable" ? <VisualizationBoundary key={structure} label="Experimental structure"><StructureViewer kind={structure} focusRequest={structureFocus}/></VisualizationBoundary> : <section id="structure" className="structure-panel"><h2>Experimental structure unavailable</h2><p>No verified cached drug–target complex is available for {structureIdentity.drug} → {structureIdentity.target || "unspecified target"}. Compatible numerical models can still run without a structure.</p></section>}/>
     <footer className="workspace-footer">Hypothesim · Conditional scientific exploration · Predictions are model outputs.</footer>
   </div>;
 }

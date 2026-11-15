@@ -91,3 +91,62 @@ test('labels state the verdict basis, and access limits stay visible',()=>{
   assert.equal(verdictLabel({...unavailable.synthesis,status:'rejected'}),'Written answer not accepted');
   assert.deepEqual(keyQuantities(unavailable),[]);
 });
+
+// --- Structural context (8C.2) ---
+import { canFocus, measurementCards, structuralObservations } from '../lib/synthesis-view.ts';
+import { investigationView, INVESTIGATION_STAGES, toolLabel } from '../lib/investigation.ts';
+import { readFileSync } from 'node:fs';
+import { STRUCTURES, parseCoordinates, residueContacts, role } from '../lib/structure-geometry.ts';
+
+function measurement(id,drug,target,distance,kind='interface_contact'){
+  const residue=([chain,number,name],r)=>({chain,residue_number:number,insertion_code:'',residue_name:name,role:r,resolved_heavy_atoms:4});
+  return {measurement_id:id,kind,contact:{drug_residue:residue(drug,'drug'),drug_atom:{serial:1,name:'O',element:'O'},
+    target_residue:residue(target,'target'),target_atom:{serial:2,name:'NZ',element:'N'},distance_angstrom:distance,within_cutoff:distance<=4}};
+}
+function structureTurn(){
+  const m1=measurement('M1',['B',103,'GLY'],['C',593,'LYS'],2.4169871741488387),m2=measurement('M2',['B',50,'ARG'],['C',560,'ASP'],4.2,'residue_distance');
+  return {structure:{status:'available',metadata:{provenance:{pdb_id:'1N8Z'}},measurements:[m1,m2],not_measured:[]},
+    synthesis:{structural_context:[{statement:'GLY B:103 lies 2.417 Å from LYS C:593.',measurements:[structuredClone(m1)]}]}};
+}
+test('measurement cards show server values to three decimals and carry an exact viewer focus target',()=>{
+  const cards=measurementCards(structureTurn());
+  assert.deepEqual(cards.map(c=>[c.id,c.drug,c.target,c.atoms,c.distance,c.withinCutoff,c.origin]),[
+    ['M1','GLY B:103','LYS C:593','O ↔ NZ','2.417 Å',true,'Closest interface contact'],
+    ['M2','ARG B:50','ASP C:560','O ↔ NZ','4.200 Å',false,'Agent-requested residue distance']]);
+  assert.deepEqual(cards[0].focus,{pdbId:'1N8Z',drug:{chain:'B',resi:103,icode:''},target:{chain:'C',resi:593,icode:''}});
+  assert.equal(canFocus(cards[0],'trastuzumab'),true);
+  assert.equal(canFocus(cards[0],'imatinib'),false);assert.equal(canFocus(cards[0],'unavailable'),false);
+  assert.deepEqual(measurementCards(null),[]);
+  assert.deepEqual(measurementCards({structure:{status:'unavailable',reason:'unknown_structure',measurements:[]}}),[]);
+});
+test('a structural statement is shown only with measurements made in the same turn',()=>{
+  const t=structureTurn();
+  assert.deepEqual(structuralObservations(t).map(o=>[o.statement,o.cards.map(c=>c.id)]),[['GLY B:103 lies 2.417 Å from LYS C:593.',['M1']]]);
+  const altered=structureTurn();altered.synthesis.structural_context[0].measurements[0].contact.distance_angstrom=1;
+  assert.deepEqual(structuralObservations(altered),[]);
+  const foreign=structureTurn();foreign.synthesis.structural_context[0].measurements[0].measurement_id='M7';
+  assert.deepEqual(structuralObservations(foreign),[]);
+  assert.deepEqual(structuralObservations({structure:null,synthesis:{structural_context:[]}}),[]);
+});
+test('a card focus target selects the same atom pair and distance in the viewer geometry',()=>{
+  // The viewer recomputes the pair from deposited coordinates; it must agree with the agent's card.
+  const model=parseCoordinates(readFileSync(new URL(`../public/structures/${STRUCTURES.trastuzumab.id}.pdb`,import.meta.url)).toString());
+  const focus=measurementCards(structureTurn())[0].focus;
+  const at=ref=>a=>a.chain===ref.chain&&a.resi===ref.resi&&a.icode===ref.icode;
+  const start=model.atoms.find(a=>at(focus.drug)(a)&&role(a,'trastuzumab')==='drug');
+  const contact=residueContacts(model.atoms,start,'trastuzumab').find(c=>at(focus.target)(c.b));
+  assert.equal(`${contact.a.atom} ↔ ${contact.b.atom}`,'O ↔ NZ');
+  assert.equal(`${contact.distance.toFixed(3)} Å`,'2.417 Å');
+});
+test('structure tools appear as their own observed stage with readable names',()=>{
+  assert(INVESTIGATION_STAGES.some(s=>s.id==='structure'));
+  assert.equal(toolLabel({tool_name:'inspect_verified_structure'}),'Inspect the verified experimental structure');
+  assert.equal(toolLabel({tool_name:'measure_structure_residue'}),'Measure a residue distance');
+  const rid='run-'+'a'.repeat(32),e=(i,kind,state,tool=null,stage='run',summary=null,id=null)=>({event_id:`evt-${i}`,run_id:rid,sequence:i,kind,state,tool_name:tool,stage,summary,tool_call_id:id,timestamp:'2026-11-15T12:00:00Z',elapsed_ms:state==='started'?null:5});
+  const events=[e(1,'run','started'),e(2,'tool','started','inspect_verified_structure','structure',null,'exec-s'),
+    e(3,'tool','succeeded','inspect_verified_structure','structure',{outcome:'completed',structure:{available:true,pdb_id:'1N8Z',measurement_ids:['M1']}},'exec-s'),
+    e(4,'run','needs_inputs',null,'run',{outcome:'needs_inputs'})];
+  const view=investigationView({job_id:'j',execution_run_id:rid,status:'completed',mode:'research',execution_events:events,turn:{status:'needs_inputs',result:null,execution_run_id:rid,execution_events:events}});
+  const stage=view.stages.find(s=>s.id==='structure');
+  assert.equal(stage.state,'succeeded');assert.equal(stage.attempts[0].outcome.summary.structure.pdb_id,'1N8Z');
+});

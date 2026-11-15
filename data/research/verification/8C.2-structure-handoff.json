@@ -1,0 +1,111 @@
+{
+  "verification_kind": "8C.2 agent structure inspection and viewer handoff",
+  "date": "2026-11-15",
+  "environment_note": "Cloud verification environment: Europe PMC is blocked, so live runs here use the SYNTHETIC software-test abstract as literature. Structure assets, solver, agent and synthesizer are real.",
+  "automated": {
+    "backend_tests_passed": 387,
+    "backend_tests_new": 9,
+    "backend_tests_failed": 1,
+    "backend_failure": "pre-existing machine-dependent saved-demo float mismatch (test_saved_demo_matches_current_solver_and_public_asset)",
+    "frontend_tests_passed": 56,
+    "frontend_tests_new": 4,
+    "typecheck": "passed",
+    "contracts_check": "passed",
+    "production_build": "passed"
+  },
+  "live_agent_run": {
+    "description": "Live pinned Nemotron agent, extractor and synthesizer on the reviewed trastuzumab question with remote LangSmith trace; literature is the synthetic fixture.",
+    "elapsed_s": 87.1,
+    "status": "completed",
+    "trace_status": "remote_verified",
+    "trace_id": "01a1dce3-ad68-7722-8797-e459c9d2aee8",
+    "tool_calls": [
+      "start_experiment_preparation",
+      "search_hypothesis_evidence",
+      "search_hypothesis_evidence",
+      "retrieve_evidence_source",
+      "retrieve_evidence_source",
+      "extract_cited_parameters",
+      "extract_cited_parameters",
+      "extract_cited_parameters",
+      "prepare_reviewed_comparison",
+      "simulate_current_comparison",
+      "interpret_current_result",
+      "inspect_verified_structure",
+      "synthesize_grounded_answer"
+    ],
+    "structure": {
+      "status": "available",
+      "pdb_id": "1N8Z",
+      "measurement_ids": [
+        "M1",
+        "M2",
+        "M3",
+        "M4",
+        "M5"
+      ],
+      "not_measured": []
+    },
+    "synthesis_status": "grounded",
+    "synthesis_notes": [
+      "3 proposed statements failed grounding validation and were omitted; everything shown passed every check."
+    ],
+    "verdict": "mixed",
+    "answer": "Tripling half-life gives higher endpoint occupancy than tenfold stronger affinity, but both remain above the 90% threshold at the 180-day horizon, so the simulation cannot show which maintains occupancy above threshold longer because duration is censored.",
+    "structure_note": "Coordinates of 1N8Z show where the binding partners touch in one experimental structure. They cannot determine occupancy over time, half-life, affinity or kinetic rates, so they give context and do not decide this question.",
+    "structural_context": [
+      {
+        "statement": "Deposited coordinates show drug heavy chain ARG 50 within 2.601 angstroms of target ASP 560, and drug light chain THR 94 within 2.823 angstroms of target ASP 560.",
+        "measurements": [
+          "M2",
+          "M3"
+        ]
+      },
+      {
+        "statement": "Drug light chain HIS 91 lies within 2.888 angstroms of target PRO 571, and drug light chain TYR 92 lies within 2.957 angstroms of target LYS 569.",
+        "measurements": [
+          "M4",
+          "M5"
+        ]
+      },
+      {
+        "statement": "Drug heavy chain GLY 103 lies within 2.417 angstroms of target LYS 593.",
+        "measurements": [
+          "M1"
+        ]
+      }
+    ]
+  },
+  "live_synthesizer_yield": "After the salvage and shape changes: 4 of 4 grounded with a scripted agent driver and live synthesizer; before them 1 of 3.",
+  "browser_checks": {
+    "description": "scripts/serve_investigation_ui_checks.py --complete-research: actual agent graph, solver, structure service and server validation; scripted provider, synthetic evidence and a scripted answer citing M1. Chromium, 1440 px and 390 px.",
+    "answer_heading": "Agent-measured coordinates · PDB 1N8Z · geometry only",
+    "structural_statement": "GLY B:103 lies 2.417 Å from LYS C:593 at the antibody–receptor interface.",
+    "structure_stage": "Structure · 1 completed",
+    "card_M1_opens_viewer": {
+      "hash": "#structure",
+      "viewer_readout": "GLY B:103 O ↔ LYS C:593 NZ: 2.417 Å",
+      "viewer_notice": "Agent measurement M1: GLY B:103 ↔ LYS C:593. The distance shown is recomputed here from the same deposited coordinates."
+    },
+    "card_M2": "ARG B:50 NH2 ↔ ASP C:560 OD2: 2.601 Å",
+    "manual_selection_after_agent_focus": "ARG B:50 NH1 ↔ GLU C:558 OE1: 3.133 Å",
+    "card_M1_again": "GLY B:103 O ↔ LYS C:593 NZ: 2.417 Å",
+    "same_card_after_manual_change_on_structure_view": "GLY B:103 O ↔ LYS C:593 NZ: 2.417 Å",
+    "investigation_log_cards": 5,
+    "focus_from_investigation_log": "GLY B:103 O ↔ LYS C:593 NZ: 2.417 Å",
+    "no_verified_structure": {
+      "heading": "No verified structure for this drug and target",
+      "note": "No verified experimental structure is available for Compound X and Target Y, so structural inspection could not inform this answer. Research and simulation are unaffected.",
+      "cards": 0,
+      "title": "Investigation complete",
+      "solverChips": 1
+    },
+    "mobile_horizontal_overflow": false,
+    "page_errors": []
+  },
+  "not_verified": [
+    "Live paper research feeding the structure step (Europe PMC blocked here).",
+    "measure_structure_residue chosen by the live model (it did not call it in the recorded run; covered by scripted-agent tests).",
+    "The imatinib (1IEP) handoff in a browser; covered by geometry and service tests."
+  ]
+}

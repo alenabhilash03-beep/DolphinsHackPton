@@ -572,6 +572,7 @@ export interface components {
              * @enum {string}
              */
             status: "completed" | "needs_inputs" | "unsupported" | "unavailable";
+            structure?: components["schemas"]["StructureInspection"] | null;
             synthesis?: components["schemas"]["ScientificSynthesis"] | null;
             /** Tool Calls */
             tool_calls?: string[];
@@ -1230,7 +1231,7 @@ export interface components {
              * Stage
              * @enum {string}
              */
-            stage: "run" | "preparation" | "literature" | "extraction" | "configuration" | "simulation" | "interpretation" | "editing";
+            stage: "run" | "preparation" | "literature" | "extraction" | "configuration" | "simulation" | "structure" | "interpretation" | "editing";
             /**
              * State
              * @enum {string}
@@ -1245,7 +1246,7 @@ export interface components {
             /** Tool Call Id */
             tool_call_id?: string | null;
             /** Tool Name */
-            tool_name?: ("search_hypothesis_evidence" | "retrieve_evidence_source" | "extract_cited_parameters" | "start_experiment_preparation" | "read_experiment_preparation" | "update_experiment_preparation" | "configure_prepared_experiment" | "prepare_reviewed_comparison" | "simulate_current_comparison" | "interpret_current_result" | "synthesize_grounded_answer" | "read_current_experiment" | "apply_requested_edit") | null;
+            tool_name?: ("search_hypothesis_evidence" | "retrieve_evidence_source" | "extract_cited_parameters" | "start_experiment_preparation" | "read_experiment_preparation" | "update_experiment_preparation" | "configure_prepared_experiment" | "prepare_reviewed_comparison" | "simulate_current_comparison" | "interpret_current_result" | "synthesize_grounded_answer" | "inspect_verified_structure" | "measure_structure_residue" | "read_current_experiment" | "apply_requested_edit") | null;
         };
         /** ExecutionSummary */
         ExecutionSummary: {
@@ -1275,6 +1276,7 @@ export interface components {
              * @default false
              */
             sources_truncated: boolean;
+            structure?: components["schemas"]["StructureEventSummary"] | null;
         };
         /** ExperimentConfig */
         ExperimentConfig: {
@@ -2558,6 +2560,10 @@ export interface components {
              * @enum {string}
              */
             status: "grounded" | "unavailable" | "rejected";
+            /** Structural Context */
+            structural_context?: components["schemas"]["StructuralObservation"][];
+            /** Structure Note */
+            structure_note?: string | null;
         };
         /** SimulationDiagnostics */
         SimulationDiagnostics: {
@@ -2736,6 +2742,22 @@ export interface components {
              */
             status: "retrieved" | "unavailable" | "rejected";
         };
+        /**
+         * StructuralObservation
+         * @description Geometric context from deposited coordinates. It never decides a verdict.
+         */
+        StructuralObservation: {
+            /**
+             * Claim Kind
+             * @default structural_observation
+             * @constant
+             */
+            claim_kind: "structural_observation";
+            /** Measurements */
+            measurements: components["schemas"]["StructureMeasurement"][];
+            /** Statement */
+            statement: string;
+        };
         /** StructureEntity */
         StructureEntity: {
             /** Chains */
@@ -2760,6 +2782,58 @@ export interface components {
              * @enum {string}
              */
             role: "drug" | "target";
+        };
+        /**
+         * StructureEventSummary
+         * @description Which verified structure an agent tool inspected and which measurements it returned.
+         */
+        StructureEventSummary: {
+            /** Available */
+            available: boolean;
+            /** Coordinate Sha256 */
+            coordinate_sha256?: string | null;
+            /** Interface Residue Pair Count */
+            interface_residue_pair_count?: number | null;
+            /** Measurement Ids */
+            measurement_ids?: string[];
+            /** Pdb Id */
+            pdb_id?: string | null;
+        };
+        /**
+         * StructureInspection
+         * @description What the agent's structure tools returned in one research turn.
+         */
+        StructureInspection: {
+            /** Detail */
+            detail?: string | null;
+            /** Interface Residue Pair Count */
+            interface_residue_pair_count?: number | null;
+            /** Measurements */
+            measurements?: components["schemas"]["StructureMeasurement"][];
+            metadata?: components["schemas"]["StructureMetadata"] | null;
+            /** Not Measured */
+            not_measured?: string[];
+            /** Reason */
+            reason?: ("unknown_structure" | "asset_unavailable" | "asset_integrity_failed" | "asset_unparseable" | "residue_reported_unresolved" | "residue_absent_cause_unknown" | "not_a_binding_partner" | "same_binding_partner" | "different_crystal_copy") | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "available" | "unavailable";
+        };
+        /**
+         * StructureMeasurement
+         * @description One coordinate measurement the agent obtained in a turn; the ID is how an answer cites it.
+         */
+        StructureMeasurement: {
+            contact: components["schemas"]["ContactMeasurement"];
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "interface_contact" | "residue_distance";
+            /** Measurement Id */
+            measurement_id: string;
         };
         /** StructureMetadata */
         StructureMetadata: {

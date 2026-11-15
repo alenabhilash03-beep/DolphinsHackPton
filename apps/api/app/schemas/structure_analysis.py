@@ -1,7 +1,7 @@
 """Coordinate measurements on verified deposited structures. Geometry only: no energies, affinities or rates."""
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Self
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from app.schemas.contracts import Contract
 from app.schemas.experiment_preparation import Digest
@@ -102,4 +102,34 @@ class ResidueDistance(Contract):
     measurements: Annotated[list[ContactMeasurement], Field(max_length=20)] = Field(default_factory=list)
 
 
-STRUCTURE_CONTRACTS = [StructureMetadata, InterfaceContacts, ResidueDistance]
+class StructureMeasurement(Contract):
+    """One coordinate measurement the agent obtained in a turn; the ID is how an answer cites it."""
+    measurement_id: Annotated[str, Field(pattern=r'^M[0-9]{1,2}$')]
+    kind: Literal['interface_contact', 'residue_distance']
+    contact: ContactMeasurement
+
+
+class StructureInspection(Contract):
+    """What the agent's structure tools returned in one research turn."""
+    status: Literal['available', 'unavailable']
+    reason: UnavailableReason | None = None
+    detail: str | None = None
+    metadata: StructureMetadata | None = None
+    interface_residue_pair_count: Annotated[int, Field(ge=0)] | None = None
+    measurements: Annotated[list[StructureMeasurement], Field(max_length=12)] = Field(default_factory=list)
+    not_measured: Annotated[list[Annotated[str, Field(max_length=400)]], Field(max_length=6)] = Field(default_factory=list)
+
+    @model_validator(mode='after')
+    def consistent(self) -> Self:
+        available = self.status == 'available'
+        if available != (self.metadata is not None and self.metadata.status == 'available'):
+            raise ValueError('An available inspection requires verified structure metadata')
+        if not available and (self.measurements or self.reason is None):
+            raise ValueError('An unavailable inspection has a reason and no measurements')
+        ids = [item.measurement_id for item in self.measurements]
+        if len(set(ids)) != len(ids):
+            raise ValueError('Measurement identifiers must be unique')
+        return self
+
+
+STRUCTURE_CONTRACTS = [StructureMetadata, InterfaceContacts, ResidueDistance, StructureInspection]

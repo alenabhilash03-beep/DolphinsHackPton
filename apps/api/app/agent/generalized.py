@@ -22,6 +22,8 @@ from app.schemas.contracts import HypothesisRequest, SimulationRequest, Simulati
 from app.schemas.generalized_agent import AgentDecision, AgentTurn, ResearchPaperReview
 from app.schemas.execution import ExecutionSummary
 from app.research.synthesis import Grounding, configured_synthesizer, synthesize
+from app.schemas.structure_analysis import ResidueSelector, StructureInspection, StructureMeasurement
+from app.structures.service import StructureService, resolve as resolve_structure
 from app.research.execution_ledger import ExecutionLedger, error_code
 from app.simulation.service import _canonical_hash
 
@@ -67,7 +69,13 @@ synthesize_grounded_answer writes the cited scientific answer server-side from t
 and accepted result; you never write that answer or its numbers yourself. When research ends WITHOUT a
 numerical result but source text was retrieved and extraction attempted, call synthesize_grounded_answer once
 before the final decision so the scientist still receives a cited evidence answer. Its status may be grounded,
-unavailable or rejected: never retry it, and it never changes the numerical result or the decision status.'''
+unavailable or rejected: never retry it, and it never changes the numerical result or the decision status.
+In research (not edits), call inspect_verified_structure (no arguments) once before synthesize_grounded_answer.
+It reports whether a verified experimental structure exists for this drug and target and, if so, the closest
+drug-target residue contacts from deposited coordinates. You may then call measure_structure_residue at most
+twice for a specific residue that the hypothesis or an inspected paper names, using author chain and residue
+number. These are geometric distances only: never state or infer affinity, kinetics, energy or mutation
+effects from them, and never invent a residue. No structure is a normal outcome, not an error.'''
 
 
 def interpretation(result):
@@ -120,6 +128,7 @@ class GeneralizedAgentService:
         self.model = model
         self.extractor = extractor
         self.synthesizer = synthesizer
+        self.structures = StructureService()
         self.turns = AgentTurnStore(self.preparation.store)
         from app.research.demo import load_demo
         try: self.turns.seed(load_demo().result)
@@ -166,7 +175,9 @@ class GeneralizedAgentService:
         prep = PreparationService(store=parent.store, assessment=parent.assessment,
             documents=SourceDocumentService(literature=parent.documents.literature, fetch=parent.documents.fetch, cache_dir=parent.documents.cache_dir))
         evidence = ParameterResearchService(documents=prep.documents, extractor=self.extractor)
-        ledger = {'record':None, 'config':None, 'result':None, 'interpretation':None, 'synthesis':None}
+        ledger = {'record':None, 'config':None, 'result':None, 'interpretation':None, 'synthesis':None, 'structure':None}
+        structures = self.structures
+        measure_calls = []
         calls, questions, changes = [], [], []
         search_available = []
         paper_reviews = {}
@@ -320,10 +331,13 @@ class GeneralizedAgentService:
             if result is not None and ledger['interpretation'] is None: raise ValueError('Interpret the numerical result first')
             if result is None and not evidence.documents.documents:
                 raise ValueError('Nothing to synthesize: retrieve source text or produce a numerical result first')
+            if not edit and ledger['structure'] is None:
+                raise ValueError('Call inspect_verified_structure first, then synthesize_grounded_answer')
             grounding = Grounding(text=text, mode='edit' if edit else 'research',
                 drug=base.configuration.drug if edit else request.request.drug_name,
                 target=base.configuration.target if edit else request.request.target,
                 documents=evidence.documents.documents.values(), reviews=paper_reviews, result=result, record=ledger['record'],
+                structure=ledger['structure'],
                 lineage=None if result is None or not paper_reviews else 'reviewed_reference_separate'
                     if result.configuration.mode == 'reviewed_preset' else 'see_parameter_lineage')
             # Reserve time for the final decision call: a slow synthesis must never cost an accepted result.
@@ -336,6 +350,56 @@ class GeneralizedAgentService:
                 'source_count':len(synthesis.source_access), 'evidence_finding_count':len(synthesis.evidence_findings),
                 'simulation_implication_count':len(synthesis.simulation_implications), 'notes':synthesis.notes[:3],
                 'next_action':'Return the final decision now. Do not retry synthesis.'}
+
+        def measurement_rows(items):
+            return [{'measurement_id':item.measurement_id, **Grounding.contact_label(item.contact)} for item in items]
+
+        @tool
+        def inspect_verified_structure() -> dict:
+            """Check whether a verified experimental structure exists for this turn's drug and target and, if so, return its deposition metadata and the closest drug-target residue contacts measured from deposited coordinates (heavy atoms within 4 Å). Takes no arguments. Geometry only; no structure is a normal outcome."""
+            guard('inspect_verified_structure')
+            if edit: raise ValueError('Structure inspection belongs to research turns; parameter edits do not change deposited coordinates')
+            if ledger['structure'] is not None: raise ValueError('The structure was already inspected in this turn')
+            pdb_id = resolve_structure(request.request.drug_name, request.request.target or '')
+            metadata = structures.metadata(pdb_id) if pdb_id else None
+            if metadata is None or metadata.status != 'available':
+                ledger['structure'] = StructureInspection(status='unavailable', reason=metadata.reason if metadata else 'unknown_structure',
+                    detail=metadata.detail if metadata else 'No verified cached drug–target structure exists for this pair.')
+                return {'status':'no_verified_structure','detail':ledger['structure'].detail,'measurement_ids':[],
+                    'next_action':'Structural measurements are unavailable for this pair. Continue with synthesize_grounded_answer.'}
+            contacts = structures.interface(pdb_id, 5)
+            ledger['structure'] = StructureInspection(status='available', metadata=metadata,
+                interface_residue_pair_count=contacts.residue_pair_count,
+                measurements=[StructureMeasurement(measurement_id=f'M{index}', kind='interface_contact', contact=contact)
+                    for index, contact in enumerate(contacts.contacts, 1)])
+            inspection = ledger['structure']
+            return {'status':'available','pdb_id':pdb_id,'title':metadata.title,'scope':metadata.provenance.scope,
+                'interface_residue_pairs_within_4_angstrom':contacts.residue_pair_count,
+                'closest_contacts':measurement_rows(inspection.measurements),
+                'measurement_ids':[item.measurement_id for item in inspection.measurements],
+                'limitation':metadata.provenance.limitation}
+
+        @tool
+        def measure_structure_residue(residue: ResidueSelector, counterpart: ResidueSelector | None = None) -> dict:
+            """Measure the minimum heavy-atom distance from one residue of the inspected structure to a named residue of the opposite binding partner, or, without a counterpart, to its three nearest binding-partner residues. Use author chain and residue number exactly as reported. Unresolved, absent, same-partner or cross-copy selections are returned as not measured with the reason."""
+            guard('measure_structure_residue')
+            inspection = ledger['structure']
+            if inspection is None or inspection.status != 'available': raise ValueError('No verified structure has been inspected in this turn')
+            if len(measure_calls) >= 2: raise ValueError('The structure measurement budget for this turn is used; continue with synthesize_grounded_answer')
+            measure_calls.append(True)
+            outcome = structures.distance(inspection.metadata.provenance.pdb_id, residue, counterpart, 3)
+            if outcome.status != 'measured':
+                inspection.not_measured = [*inspection.not_measured, outcome.detail][:6]
+                return {'status':'not_measured','reason':outcome.reason,'detail':outcome.detail,'measurement_ids':[]}
+            ids = []
+            for contact in outcome.measurements:
+                existing = next((item for item in inspection.measurements if item.contact == contact), None)
+                if existing is None and len(inspection.measurements) < 12:
+                    existing = StructureMeasurement(measurement_id=f'M{len(inspection.measurements)+1}', kind='residue_distance', contact=contact)
+                    inspection.measurements = [*inspection.measurements, existing]
+                if existing: ids.append(existing.measurement_id)
+            return {'status':'measured','measurements':measurement_rows([item for item in inspection.measurements if item.measurement_id in ids]),
+                'measurement_ids':ids}
 
         @tool
         def read_current_experiment() -> dict:
@@ -358,7 +422,8 @@ class GeneralizedAgentService:
 
         tools = [read_current_experiment, apply_requested_edit, simulate_current_comparison, interpret_current_result, synthesize_grounded_answer] if edit else [
             *[bind(t) for t in build_evidence_tools(evidence)], *[bind(t) for t in build_preparation_tools(prep) if t.name != "simulate_prepared_experiment"],
-            prepare_reviewed_comparison, simulate_current_comparison, interpret_current_result, synthesize_grounded_answer]
+            prepare_reviewed_comparison, simulate_current_comparison, interpret_current_result,
+            inspect_verified_structure, measure_structure_residue, synthesize_grounded_answer]
         if reviewed_available:
             tools = [t for t in tools if t.name not in {'update_experiment_preparation','configure_prepared_experiment'}]
         from threading import RLock
@@ -398,13 +463,19 @@ class GeneralizedAgentService:
         def retry_model_timeout(model_request, handler):
             nonlocal retries_left
             due = synthesis_due()
+            inspect_due = due and not edit and ledger['structure'] is None
+            # After inspection the agent may measure a specific residue (bounded) or write the answer.
+            closing = ({'inspect_verified_structure'} if inspect_due else {'synthesize_grounded_answer'} | (
+                {'measure_structure_residue'} if not edit and ledger['structure'] and ledger['structure'].status == 'available'
+                    and len(measure_calls) < 2 else set()))
             if due:
                 # Server-observed workflow state, so the missing final-decision option is never a puzzle.
                 from langchain_core.messages import SystemMessage
                 model_request = model_request.override(system_message=SystemMessage(content=SYSTEM_PROMPT +
                     '\nSERVER STATE: no grounded answer exists yet for this turn. The final decision is unavailable until '
-                    'synthesize_grounded_answer has been called once (no arguments)'
-                    + ('; call it now.' if ledger['interpretation'] else '; call it as soon as your research is finished.')))
+                    + ('inspect_verified_structure and then ' if inspect_due else '')
+                    + 'synthesize_grounded_answer has been called once (no arguments)'
+                    + ('; do that now.' if ledger['interpretation'] else '; do that as soon as your research is finished.')))
             if reviewed_available:
                 # Keep the agent on the audited comparison after actual research; generic draft
                 # reconstruction is a different workflow and can consume the whole time budget.
@@ -415,7 +486,7 @@ class GeneralizedAgentService:
                         and extraction_attempts.get(key,0)>=2 for key,p in paper_reviews.items()))
                     or ('prepare_reviewed_comparison' in calls and ledger['config'] is None)
                     or (ledger['record'] and ledger['record'].preparation.state in {'unsupported','identity_clarification','source_unavailable'})))
-                available = ({'synthesize_grounded_answer'} if due and (ledger['interpretation'] or blocked) else
+                available = (closing if due and (ledger['interpretation'] or blocked) else
                     {'interpret_current_result'} if ledger['result'] else {'simulate_current_comparison'}
                     if ledger['config'] else {'start_experiment_preparation'} if ledger['record'] is None else
                     {'prepare_reviewed_comparison'} if research_ready() else
@@ -433,7 +504,7 @@ class GeneralizedAgentService:
                 # After interpretation only the grounded answer remains; without a result the agent may
                 # keep researching, but cannot conclude before the cited evidence answer is attempted.
                 if ledger['interpretation']:
-                    model_request = model_request.override(tools=[t for t in model_request.tools if t.name == 'synthesize_grounded_answer'])
+                    model_request = model_request.override(tools=[t for t in model_request.tools if t.name in closing])
                 model_request = model_request.override(response_format=None,tool_choice='any')
             try:
                 return handler(model_request)
@@ -491,5 +562,5 @@ class GeneralizedAgentService:
                 else 'see_parameter_lineage') if result else 'not_selected'
         return AgentTurn(turn_id='turn-'+uuid4().hex, status=decision.status, original_text=text,
             research_papers=list(paper_reviews.values()),
-            preparation=record,result=result,interpretation=ledger['interpretation'],synthesis=ledger['synthesis'],questions=list(dict.fromkeys(questions)),
+            preparation=record,result=result,interpretation=ledger['interpretation'],synthesis=ledger['synthesis'],structure=ledger['structure'],questions=list(dict.fromkeys(questions)),
             applied_changes=changes,parent_result_id=base.result_id if edit else None,tool_calls=calls,trace_id=trace_id,trace_status=trace_status)

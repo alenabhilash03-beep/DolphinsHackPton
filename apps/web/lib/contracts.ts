@@ -56,3 +56,7 @@ export type SolverReceipt = components["schemas"]["SolverReceipt"];
 export type ScientificSynthesis = components["schemas"]["ScientificSynthesis"];
 export type SolverQuantity = components["schemas"]["SolverQuantity"];
 export type EvidenceFinding = components["schemas"]["EvidenceFinding"];
+
+// Agent structure inspection (8C): coordinate measurements of verified deposited structures.
+export type StructureInspection = components["schemas"]["StructureInspection"];
+export type StructureMeasurement = components["schemas"]["StructureMeasurement"];

@@ -7,6 +7,7 @@ export const INVESTIGATION_STAGES = [
   { id:"extraction", label:"Extraction", stages:["extraction"] },
   { id:"configuration", label:"Parameters", stages:["configuration","editing"] },
   { id:"simulation", label:"Simulation", stages:["simulation"] },
+  { id:"structure", label:"Structure", stages:["structure"] },
   { id:"interpretation", label:"Findings", stages:["interpretation"] },
 ] as const;
 export type ToolAttempt = { start:ExecutionEvent; outcome:ExecutionEvent|null };
@@ -18,6 +19,7 @@ const TOOL_NAMES:Record<string,string> = {
   read_current_experiment:"Read the current experiment", apply_requested_edit:"Configure the requested change",
   simulate_current_comparison:"Run the numerical simulator", interpret_current_result:"Interpret the numerical result",
   synthesize_grounded_answer:"Write the grounded scientific answer",
+  inspect_verified_structure:"Inspect the verified experimental structure", measure_structure_residue:"Measure a residue distance",
 };
 export const toolLabel=(event:ExecutionEvent)=>TOOL_NAMES[event.tool_name ?? ""] ?? "Scientific tool";
 export const stateLabel=(state:string)=>({started:"Running",succeeded:"Completed",rejected:"Rejected",needs_inputs:"Needs input",unsupported:"Unsupported",failed:"Failed",interrupted:"Interrupted"}[state] ?? state);

@@ -7,7 +7,8 @@ from app.schemas.experiment_preparation import PreparationRequest, Text, Digest
 from app.schemas.preparation_workflow import PreparationUpdate, PreparationRecord
 from app.schemas.experiment_preparation import PreparationSource
 from app.schemas.evidence_extraction import ParameterExtractionResult
-from app.schemas.synthesis import ScientificSynthesis, require_current
+from app.schemas.synthesis import ScientificSynthesis, require_current, require_measured
+from app.schemas.structure_analysis import StructureInspection
 
 class ResearchPaperReview(Contract):
     """Actual inspected snapshot and extraction, independent of simulation input selection."""
@@ -49,6 +50,7 @@ class AgentTurn(Contract):
     result: SimulationResult | None = None
     interpretation: Interpretation | None = None
     synthesis: ScientificSynthesis | None = None
+    structure: StructureInspection | None = None
     research_papers: list[ResearchPaperReview] = Field(default_factory=list)
     questions: list[str] = Field(default_factory=list)
     applied_changes: list[str] = Field(default_factory=list)
@@ -63,6 +65,7 @@ class AgentTurn(Contract):
     def synthesis_matches_this_turn(self):
         if self.synthesis is not None:
             require_current(self.synthesis, self.result)
+            require_measured(self.synthesis, self.structure)
             inspected = {paper.document_id for paper in self.research_papers}
             if any(item.extraction_status != 'not_attempted' and item.document_id not in inspected
                     for item in self.synthesis.source_access):

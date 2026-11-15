@@ -11,7 +11,8 @@ function selection(refs:ResidueRef[]):AtomSelectionSpec {
 }
 
 /** Camera/annotations only; deposited coordinates have no simulation dependency. */
-export function StructureViewer({kind="trastuzumab"}:{kind?:StructureKind}) {
+export type ViewerFocus={pdbId:string;label:string;nonce:number;drug:{chain:string;resi:number;icode:string};target:{chain:string;resi:number;icode:string}};
+export function StructureViewer({kind="trastuzumab",focusRequest=null}:{kind?:StructureKind;focusRequest?:ViewerFocus|null}) {
   const profile=STRUCTURES[kind],imatinib=kind==="imatinib";
   const host=useRef<HTMLDivElement>(null),viewer=useRef<GLViewer|null>(null),library=useRef<Library|null>(null);
   const motion=useRef<number|null>(null);
@@ -116,6 +117,17 @@ export function StructureViewer({kind="trastuzumab"}:{kind?:StructureKind}) {
     }
     v.render();
   },[loaded,visible,surface,contacts,selected,pair,interfacePairs,profile,imatinib]);
+  // An agent measurement asks the viewer to show the same residue pair. The viewer recomputes the distance itself.
+  useEffect(()=>{
+    if(!focusRequest||!loaded||!model)return;
+    if(focusRequest.pdbId!==profile.id){setNotice(`Measurement ${focusRequest.label} belongs to PDB ${focusRequest.pdbId}, not the structure shown here.`);return;}
+    const at=(ref:{chain:string;resi:number;icode:string})=>(a:{chain:string;resi:number;icode:string})=>a.chain===ref.chain&&a.resi===ref.resi&&a.icode===ref.icode;
+    const start=model.atoms.find(a=>at(focusRequest.drug)(a)&&role(a,kind)==="drug");
+    const contact=start?residueContacts(model.atoms,start,kind).find(c=>at(focusRequest.target)(c.b)):undefined;
+    if(!contact){stop();setSelected(null);setPair(null);setNotice(`Measurement ${focusRequest.label} could not be located in these coordinates. Nothing is highlighted.`);return;}
+    setStep(-1);setContacts(true);choosePair(contact);
+    setNotice(`Agent measurement ${focusRequest.label}: ${contact.a.resn} ${contact.a.chain}:${residueLabel(contact.a)} ↔ ${contact.b.resn} ${contact.b.chain}:${residueLabel(contact.b)}. The distance shown is recomputed here from the same deposited coordinates.`);
+  },[focusRequest?.nonce,loaded,model]);
   function inspect(){
     try{
       const ref=parseResidueLabel(residueNumber),found=model?.atoms.find(a=>a.protein&&a.chain===inspectChain&&a.resi===ref.resi&&a.icode===ref.icode);

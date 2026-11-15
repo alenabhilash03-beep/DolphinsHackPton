@@ -16,17 +16,20 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'apps/api'),str(ROOT/'apps/api/tests')]
 from pydantic import PrivateAttr
 from langchain_core.messages import AIMessage,HumanMessage
-from test_generalized_agent import DrivingModel,research_service,SETTINGS
+from test_generalized_agent import DrivingModel,ReviewedResearchModel,research_service,SETTINGS
 from app.main import create_app
 import app.simulation.service as simulation
 
 class AcceptanceModel(DrivingModel):
     _injected: bool=PrivateAttr(default=False)
+    attempt_skip: bool=False
     def _generate(self,messages,**kwargs):
         context=json.loads(next(m.content for m in messages if isinstance(m,HumanMessage)))
         request=context['request']
         self.mode='edit' if context['mode']=='edit' else 'research'
         if self.mode=='research':self.request=request['request']
+        # The reviewed trastuzumab question follows the research-first reviewed flow, including structure inspection.
+        if self.mode=='research' and context.get('reviewed_comparison_available'):return ReviewedResearchModel._generate(self,messages,**kwargs)
         if self.mode=='edit' and not self._injected:
             self._injected=True
             return self._message('simulate_current_comparison',{})
@@ -50,8 +53,8 @@ def main():
         agent=api.state.generalized_agent
         agent.extractor=source.extractor
         # Scripted, clearly synthetic grounded answer (8B); it still passes through real server validation.
-        from test_grounded_synthesis import scripted_synthesizer
-        agent.synthesizer=scripted_synthesizer([])
+        from test_structure_handoff import with_structure
+        agent.synthesizer=with_structure([])  # cites agent measurement M1 when a verified structure was inspected
         agent._model=lambda:AcceptanceModel()
         original=simulation.run_simulation
         def held(*args,**kwargs):

@@ -88,6 +88,14 @@ def run(g, *responses, remaining=lambda: 60.0):
     return synthesize(g, synthesizer, remaining), seen
 
 
+def withheld(synthesis, *fragments):
+    """An invalid statement never appears: the proposal was rejected, or that item was omitted and the omission noted."""
+    text = synthesis.model_dump_json()
+    assert all(fragment not in text for fragment in fragments), fragments
+    assert synthesis.status == 'rejected' or any('omitted' in note for note in synthesis.notes)
+    return True
+
+
 def assert_no_model_content(synthesis):
     assert synthesis.answer is None and not synthesis.evidence_findings
     assert not synthesis.simulation_implications and not synthesis.next_experiments
@@ -152,9 +160,8 @@ def test_unsupported_numeric_claims_are_rejected(change):
     g = grounding()
     bad = proposal(g, **change)
     synthesis, seen = run(g, bad, bad)
-    assert synthesis.status == 'rejected'
     assert any('unsupported numbers' in error for error in seen[1]['previous_validation_errors'])
-    assert_no_model_content(synthesis)
+    assert withheld(synthesis, '0.5 nM', '95% for 200 days', '37 degrees', '0.1 nM')
 
 
 def test_numbers_must_come_from_the_statements_own_references():
@@ -170,7 +177,7 @@ def test_numbers_must_come_from_the_statements_own_references():
         'metric_refs': [{'scenario_id': first.scenario_id, 'metric': 'endpoint_occupancy'}]}])
     right = proposal(g, simulation_implications=[{'statement': f'Occupancy exposure is {number} occupancy-hours.',
         'metric_refs': [{'scenario_id': second.scenario_id, 'metric': 'occupancy_auc_h'}]}])
-    assert run(g, wrong, wrong)[0].status == 'rejected'
+    assert withheld(run(g, wrong, wrong)[0], 'Occupancy exposure is')
     accepted, _ = run(g, right)
     assert accepted.status == 'grounded'
     quantity = accepted.simulation_implications[0].quantities[0]
@@ -202,7 +209,7 @@ def test_spelled_out_numbers_and_simulation_facts_cannot_hide_under_a_citation()
     spelled = proposal(g, simulation_implications=[{'statement': 'Occupancy ends at ninety-seven point five percent.',
         'metric_refs': [{'scenario_id': endpoint.scenario_id, 'metric': 'endpoint_occupancy'}]}])
     rejected, seen = run(g, spelled, spelled)
-    assert rejected.status == 'rejected' and 'unsupported numbers 97.5' in seen[1]['previous_validation_errors'][0]
+    assert withheld(rejected, 'ninety-seven') and 'unsupported numbers 97.5' in seen[1]['previous_validation_errors'][0]
     # A configured design value is a simulation fact and cannot be stated as a paper finding.
     window = plain(g.result.configuration.duration_h)
     design_as_paper = proposal(g, evidence_findings=[finding(statement=f'The assay reports reversible binding over {window} h.')])
@@ -220,13 +227,13 @@ def test_spelled_out_numbers_and_simulation_facts_cannot_hide_under_a_citation()
     # A serialized list squeezed into one string is not a statement (observed from the live model).
     garbled = proposal(g, limitations='["First limit."], ["Second limit."]]')
     rejected, seen = run(g, garbled, garbled)
-    assert rejected.status == 'rejected' and 'plain prose' in seen[1]['previous_validation_errors'][0]
+    assert withheld(rejected, 'First limit') and 'plain prose' in seen[1]['previous_validation_errors'][0]
     # Internal identifiers make an answer unreadable (observed live: occupancy_auc_h, half-life_x3).
     for text in ('The half-life_x3 scenario ends higher.', 'occupancy_auc_h is higher for one scenario.',
                  'No source reports binding.dissociation_h_inv.'):
         jargon = proposal(g, limitations=[text])
         rejected, seen = run(g, jargon, jargon)
-        assert rejected.status == 'rejected' and 'plain words' in seen[1]['previous_validation_errors'][0]
+        assert withheld(rejected, text) and 'plain words' in seen[1]['previous_validation_errors'][0]
     assert run(g, proposal(g, limitations=['The half-life scenario and HER-2 binding are well described.']))[0].status == 'grounded'
     # A number stated in the supplied model assumptions may be restated as a limit, but not as a paper finding.
     stated = next(n for n in g.condition_numbers if n not in g.design_numbers and n not in g.text_numbers)
@@ -247,7 +254,7 @@ def test_stale_or_foreign_result_references_are_rejected():
     assert run(g, proposal(g, result_id='null'))[0].result_id == g.result.result_id
     unknown = proposal(g, simulation_implications=[{'statement': 'A scenario differs.',
         'metric_refs': [{'scenario_id': 'not_a_scenario', 'metric': 'endpoint_occupancy'}]}])
-    assert run(g, unknown, unknown)[0].status == 'rejected'
+    assert withheld(run(g, unknown, unknown)[0], 'A scenario differs.')
 
     accepted, _ = run(g, proposal(g))
     base = g.result
@@ -304,7 +311,7 @@ def test_contradictory_evidence_is_reported_and_references_are_checked():
     for refs in (['F1', 'F9'], ['F1', 'F1']):
         dangling = proposal(g, evidence_findings=findings, disagreements=[{'finding_ids': refs, 'statement': 'They disagree.'}])
         rejected, _ = run(g, dangling, dangling)
-        assert rejected.status == 'rejected'
+        assert withheld(rejected, 'They disagree.')
         # The measured extraction conflict is still reported without any model text.
         assert [item.origin for item in rejected.disagreements] == ['extraction_conflict']
     duplicate = proposal(g, evidence_findings=[finding(), finding()])
@@ -327,7 +334,7 @@ def test_no_result_research_gives_a_cited_answer_without_predictions():
     predicted = proposal(g, simulation_implications=[{'statement': 'Occupancy would persist.',
         'metric_refs': [{'scenario_id': 'baseline', 'metric': 'endpoint_occupancy'}]}])
     rejected, again = run(g, predicted, predicted)
-    assert rejected.status == 'rejected' and 'no numerical result exists' in again[1]['previous_validation_errors'][0]
+    assert withheld(rejected, 'Occupancy would persist.') and 'no numerical result exists' in again[1]['previous_validation_errors'][0]
     unreferenced = proposal(g, answer={'verdict': 'supported', 'statement': 'The hypothesis holds.'})
     assert run(g, unreferenced, unreferenced)[0].status == 'rejected'
     assert run(g, proposal(g, result_id='null'))[0].status == 'grounded'
@@ -370,6 +377,16 @@ def test_oversized_proposals_are_trimmed_without_weakening_grounding():
     quotes = [c.quote for c in synthesis.evidence_findings[0].citations]
     assert len(quotes) == 3 and all(len(q) <= 600 and q in long_passage and long_passage.startswith(q) for q in quotes)
     assert sum(item.startswith('Synthetic limitation') for item in synthesis.limitations) == 6
+    # References placed beside the answer (even as JSON text) are moved into it and validated as usual.
+    misplaced = proposal(g, evidence_findings=[{**finding(), 'citations': [citation]}])
+    refs = misplaced['answer'].pop('metric_refs'); misplaced['answer'].pop('finding_ids')
+    misplaced.update(metric_refs=json.dumps(refs), finding_ids=['F1'],
+        limitations='Only one synthetic passage was inspected. The passage is a software fixture.')
+    moved, seen = run(g, misplaced)
+    assert moved.status == 'grounded' and len(seen) == 1 and moved.answer.finding_ids == ['F1'] and len(moved.answer.quantities) == len(refs)
+    assert {'Only one synthetic passage was inspected.', 'The passage is a software fixture.'} <= set(moved.limitations)
+    dangling = proposal(g, evidence_findings=[{**finding(), 'citations': [citation]}]); dangling['answer'].pop('finding_ids'); dangling['finding_ids'] = ['F9']
+    assert run(g, dangling, dangling)[0].status == 'rejected'
     # Trimming never rescues an ungrounded claim: an over-long quote that is not verbatim is still rejected.
     forged = proposal(g, evidence_findings=[{**finding(), 'citations': [{**citation, 'quote': 'Invented text. ' * 60}]}])
     assert run(g, forged, forged)[0].status == 'rejected'
@@ -407,6 +424,39 @@ def test_censored_durations_cannot_decide_a_how_long_question():
     other = grounding(text='Does tripling the half-life raise endpoint occupancy more than improving affinity tenfold?', documents=[])
     accepted, seen = run(other, answered('supported'))
     assert accepted.status == 'grounded' and seen[0]['server_rules_for_this_answer'] == []
+
+
+def test_after_one_corrective_retry_invalid_items_are_omitted_and_the_valid_answer_is_kept():
+    g = grounding()
+    good = proposal(g)
+    mixed = proposal(g, limitations=['Only one synthetic passage was inspected.', 'The assay was run at 37 degrees.'],
+        evidence_findings=[finding(), finding('F2', quote='Compound X irreversibly inactivated Target Y', statement='A second passage reports inactivation.')],
+        next_experiments=[*good['next_experiments'], {'kind': 'measurement', 'proposal': 'x' * 701, 'rationale': 'Too long.', 'addresses': 'missing_evidence'}])
+    kept, seen = run(g, mixed, mixed)
+    # Two attempts only: the retry was given, then the validated remainder is used instead of a third call.
+    assert kept.status == 'grounded' and len(seen) == 2
+    assert kept.notes == ['3 proposed statements failed grounding validation and were omitted; everything shown passed every check.']
+    assert [f.finding_id for f in kept.evidence_findings] == ['F1'] and len(kept.next_experiments) == 1
+    assert 'Only one synthetic passage was inspected.' in kept.limitations
+    assert withheld(kept, '37 degrees', 'inactivat', 'xxxx')
+    assert kept.answer.statement == good['answer']['statement'] and kept.simulation_implications
+    require_current(kept, g.result)
+    # A clean corrected retry is preferred over a salvaged first attempt and carries no omission note.
+    clean, seen = run(g, mixed, good)
+    assert clean.status == 'grounded' and clean.notes == [] and len(seen) == 2
+    # Nothing is salvaged when the answer itself, its result reference, or a finding it rests on is invalid.
+    bad_answer = proposal(g, answer={'verdict': 'supported', 'finding_ids': ['F1'], 'statement': 'Occupancy stays above 95% for 200 days.'})
+    lost_basis = proposal(g, evidence_findings=[finding(quote='Compound X irreversibly inactivated Target Y')])
+    for fatal in (bad_answer, lost_basis, proposal(g, result_id='sim-0000000000000000')):
+        rejected, seen = run(g, fatal, fatal)
+        assert rejected.status == 'rejected' and len(seen) == 3
+        assert_no_model_content(rejected)
+    # A disagreement loses its basis when one of its findings is omitted, so it goes too.
+    quarrel = proposal(g, answer={**good['answer'], 'finding_ids': []},
+        evidence_findings=[finding(), finding('F2', quote='Compound X irreversibly inactivated Target Y', statement='A second passage reports inactivation.')],
+        disagreements=[{'finding_ids': ['F1', 'F2'], 'statement': 'The passages disagree about reversibility.'}])
+    pruned, _ = run(g, quarrel, quarrel)
+    assert pruned.status == 'grounded' and not pruned.disagreements and withheld(pruned, 'disagree about reversibility')
 
 
 def test_validation_feedback_allows_one_corrected_retry():
@@ -497,8 +547,8 @@ def test_agent_cannot_conclude_before_attempting_synthesis(tmp_path):
     agent.synthesizer = scripted_synthesizer(seen)
     turn = agent.run(AgentResearchRequest(request=PRIMARY_REQUEST))
     assert turn.status == 'completed' and turn.synthesis.status == 'grounded'
-    assert {'synthesize_grounded_answer'} in bindings
-    assert bindings.index({'interpret_current_result'}) < bindings.index({'synthesize_grounded_answer'})
+    closing = {'synthesize_grounded_answer', 'measure_structure_residue'}
+    assert bindings.index({'interpret_current_result'}) < bindings.index({'inspect_verified_structure'}) < bindings.index(closing)
     assert all('AgentDecision' not in b for b in bindings[:-1]) and 'AgentDecision' in bindings[-1]
     assert seen[0]['simulation_input_lineage'] == 'reviewed_reference_separate'
     assert any('separately audited reference inputs' in item for item in turn.synthesis.limitations)

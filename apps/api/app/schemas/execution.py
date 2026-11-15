@@ -67,6 +67,14 @@ class SourceReference(Contract):
     content_kind: Literal['full_text','abstract','database_record','product_label'] | None = None
     retrieval_status: Literal['live','cached','unavailable'] | None = None
 
+class StructureEventSummary(Contract):
+    """Which verified structure an agent tool inspected and which measurements it returned."""
+    available: bool
+    pdb_id: Annotated[str, Field(max_length=4)] | None = None
+    coordinate_sha256: Digest | None = None
+    interface_residue_pair_count: Annotated[int, Field(ge=0)] | None = None
+    measurement_ids: Annotated[list[Annotated[str, Field(max_length=4)]], Field(max_length=12)] = Field(default_factory=list)
+
 class ExecutionSummary(Contract):
     outcome: Literal['completed','rejected','needs_inputs','unsupported','unavailable','no_values','failed','interrupted']
     preparation_id: ShortID | None = None
@@ -78,6 +86,7 @@ class ExecutionSummary(Contract):
     sources_truncated: bool = False
     experiment: ExperimentSnapshot | None = None
     result: SolverReceipt | None = None
+    structure: StructureEventSummary | None = None
     error_code: Literal['validation','stale','unavailable','interrupted','timeout'] | None = None
 
 class ExecutionEvent(Contract):
@@ -90,8 +99,9 @@ class ExecutionEvent(Contract):
     tool_name: Literal['search_hypothesis_evidence','retrieve_evidence_source','extract_cited_parameters',
         'start_experiment_preparation','read_experiment_preparation','update_experiment_preparation',
         'configure_prepared_experiment','prepare_reviewed_comparison','simulate_current_comparison',
-        'interpret_current_result','synthesize_grounded_answer','read_current_experiment','apply_requested_edit'] | None = None
-    stage: Literal['run','preparation','literature','extraction','configuration','simulation','interpretation','editing']
+        'interpret_current_result','synthesize_grounded_answer','inspect_verified_structure','measure_structure_residue',
+        'read_current_experiment','apply_requested_edit'] | None = None
+    stage: Literal['run','preparation','literature','extraction','configuration','simulation','structure','interpretation','editing']
     state: Literal['started','succeeded','rejected','needs_inputs','unsupported','failed','interrupted']
     timestamp: datetime
     elapsed_ms: Annotated[float, Field(ge=0)] | None = None

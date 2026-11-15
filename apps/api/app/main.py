@@ -26,6 +26,8 @@ from app.schemas.drug_support import DrugAssessmentRequest, DrugAssessmentRespon
 from app.schemas.contracts import ALL_CONTRACTS, ControlAdjustment, ContractValidation, ExperimentConfig, HealthResponse, HypothesisRequest, SimulationRequest, SimulationResult
 from app.simulation.controls import adjust_experiment
 from app.simulation.service import run_simulation
+from app.schemas.structure_analysis import InterfaceContacts, ResidueDistance, ResidueSelector, StructureMetadata
+from app.structures.service import StructureService, resolve as resolve_structure
 
 
 def create_app(settings: Settings | None = None, literature_client: EuropePMCClient | None = None,
@@ -90,6 +92,28 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
     def generalized_turn(turn_id: str):
         try: return api.state.generalized_agent.turns.read(turn_id)
         except KeyError as exc: raise HTTPException(status_code=404, detail="Unknown agent turn") from exc
+
+    structures = StructureService()
+
+    @api.get("/api/structures", response_model=StructureMetadata, tags=["Structure analysis"])
+    def find_structure(drug: str = Query(max_length=200), target: str = Query(max_length=200)) -> StructureMetadata:
+        """Verified cached structure for a drug/target pair, or an explicit unavailable outcome. No LLM call."""
+        pdb_id = resolve_structure(drug, target)
+        if pdb_id is None:
+            return StructureMetadata(status="unavailable", reason="unknown_structure",
+                detail="No verified cached drug–target structure exists for this pair.")
+        return structures.metadata(pdb_id)
+
+    @api.get("/api/structures/{pdb_id}/interface", response_model=InterfaceContacts, tags=["Structure analysis"])
+    def structure_interface(pdb_id: str, limit: int = Query(default=20, ge=1, le=100)) -> InterfaceContacts:
+        """Closest drug–target residue pairs within 4 Å in deposited coordinates. Geometry only."""
+        return structures.interface(pdb_id, limit)
+
+    @api.post("/api/structures/{pdb_id}/distance", response_model=ResidueDistance, tags=["Structure analysis"])
+    def structure_distance(pdb_id: str, residue: ResidueSelector = Body(embed=True), counterpart: ResidueSelector | None = Body(default=None, embed=True),
+                           limit: int = Body(default=5, ge=1, le=20, embed=True)) -> ResidueDistance:
+        """Minimum heavy-atom distance for one residue against a named or its nearest binding-partner residues."""
+        return structures.distance(pdb_id, residue, counterpart, limit)
 
     @api.get("/api/health", response_model=HealthResponse)
     def health() -> HealthResponse:

@@ -1,0 +1,78 @@
+{
+  "verification_kind": "8C.1 structure-analysis tools",
+  "date": "2026-11-15",
+  "origin": "coordinate geometry of deposited structures; not binding-energy, affinity or kinetic validation",
+  "assets_sha256": {
+    "1N8Z": "ed934d36503335c6764b08880f9e50933d99eb13b9bf145339cfcaee150eb21e",
+    "1IEP": "577386b4b8bc58a570facba0c8a843386842caef5ed7b60106c685d0f68d4218"
+  },
+  "automated": {
+    "backend_tests_passed": 378,
+    "backend_tests_new": 12,
+    "backend_tests_failed": 1,
+    "backend_failure": "pre-existing machine-dependent saved-demo float mismatch (test_saved_demo_matches_current_solver_and_public_asset)",
+    "frontend_tests_passed": 52,
+    "frontend_tests_new": 1,
+    "typecheck": "passed",
+    "contracts_check": "passed",
+    "production_build": "passed"
+  },
+  "parity": {
+    "method": "data/structures/geometry-parity.json is generated from apps/web/lib/structure-geometry.ts; the frontend test regenerates and compares it exactly, the backend test compares identities exactly and distances within 1e-9 \u00c5.",
+    "structures": {
+      "1N8Z": {
+        "interface_residue_pairs_at_4_angstrom": 32,
+        "closest_pair": "B:103:GLY O / C:593:LYS NZ",
+        "distance_angstrom": 2.4169871741488387,
+        "heavy_atoms": 7890,
+        "reported_unresolved_residues": 26
+      },
+      "1IEP": {
+        "interface_residue_pairs_at_4_angstrom": 45,
+        "closest_pair": "A:201:STI N51 / A:360:ILE O",
+        "distance_angstrom": 2.668499578414803,
+        "heavy_atoms": 4710,
+        "reported_unresolved_residues": 38
+      }
+    }
+  },
+  "live_tool_calling": {
+    "description": "scripts/check_structure_tools.py: live pinned Nemotron chooses tools and arguments; reported identifiers and distances are read from tool results.",
+    "result": {
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "cases": {
+        "trastuzumab_her2": {
+          "tool_calls": [
+            "find_verified_structure",
+            "list_interface_contacts",
+            "measure_residue_distance"
+          ],
+          "statuses": [
+            "available",
+            "available",
+            "measured"
+          ],
+          "pdb_id": "1N8Z",
+          "coordinate_sha256": "ed934d36503335c6764b08880f9e50933d99eb13b9bf145339cfcaee150eb21e",
+          "closest_pair": "GLY B:103 O / LYS C:593 NZ",
+          "distance_angstrom": 2.4169871741488387,
+          "passed": true
+        },
+        "unknown_pair": {
+          "tool_calls": [
+            "find_verified_structure"
+          ],
+          "statuses": [
+            "unavailable"
+          ],
+          "passed": true
+        }
+      },
+      "status": "passed"
+    }
+  },
+  "not_verified": [
+    "Use of these tools inside the research agent and any workspace display (8C.2).",
+    "LangSmith tracing of the standalone tool check."
+  ]
+}

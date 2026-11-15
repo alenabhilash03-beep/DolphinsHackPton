@@ -69,3 +69,8 @@ test('distance inspection never mutates coordinate arrays',()=>{
   assert.equal(JSON.stringify(model.atoms),before);
   assert.equal(separation(atom(),atom({x:3,y:4})),5);
 });
+test('committed parity fixture equals this viewer geometry; the backend is tested against the same file',async()=>{
+  const { parityFixture }=await import('../../../scripts/export_structure_parity.mjs');
+  const saved=JSON.parse(readFileSync(new URL('../../../data/structures/geometry-parity.json',import.meta.url)));
+  assert.deepEqual(JSON.parse(JSON.stringify(parityFixture())),saved);
+});

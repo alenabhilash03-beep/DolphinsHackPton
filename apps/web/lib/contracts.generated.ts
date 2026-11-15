@@ -417,6 +417,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/structures": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Find Structure
+         * @description Verified cached structure for a drug/target pair, or an explicit unavailable outcome. No LLM call.
+         */
+        get: operations["find_structure_api_structures_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/structures/{pdb_id}/distance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Structure Distance
+         * @description Minimum heavy-atom distance for one residue against a named or its nearest binding-partner residues.
+         */
+        post: operations["structure_distance_api_structures__pdb_id__distance_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/structures/{pdb_id}/interface": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Structure Interface
+         * @description Closest drug–target residue pairs within 4 Å in deposited coordinates. Geometry only.
+         */
+        get: operations["structure_interface_api_structures__pdb_id__interface_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -532,6 +592,15 @@ export interface components {
             /** Description */
             description: string;
         };
+        /** AtomIdentity */
+        AtomIdentity: {
+            /** Element */
+            element: string;
+            /** Name */
+            name: string;
+            /** Serial */
+            serial: number;
+        };
         /** AuditFact */
         AuditFact: {
             /** Context */
@@ -641,6 +710,16 @@ export interface components {
             /** Dissociation H Inv */
             dissociation_h_inv: number;
         };
+        /** Body_structure_distance_api_structures__pdb_id__distance_post */
+        Body_structure_distance_api_structures__pdb_id__distance_post: {
+            counterpart?: components["schemas"]["ResidueSelector"] | null;
+            /**
+             * Limit
+             * @default 5
+             */
+            limit: number;
+            residue: components["schemas"]["ResidueSelector"];
+        };
         /** BolusEvent */
         BolusEvent: {
             /** Amount Mg */
@@ -732,6 +811,17 @@ export interface components {
             preparation_id: string;
             /** Preparation Revision */
             preparation_revision: number;
+        };
+        /** ContactMeasurement */
+        ContactMeasurement: {
+            /** Distance Angstrom */
+            distance_angstrom: number;
+            drug_atom: components["schemas"]["AtomIdentity"];
+            drug_residue: components["schemas"]["ResidueIdentity"];
+            target_atom: components["schemas"]["AtomIdentity"];
+            target_residue: components["schemas"]["ResidueIdentity"];
+            /** Within Cutoff */
+            within_cutoff: boolean;
         };
         /** ContractValidation */
         ContractValidation: {
@@ -1346,6 +1436,30 @@ export interface components {
             kind: "infusion";
             /** Start H */
             start_h: number;
+        };
+        /** InterfaceContacts */
+        InterfaceContacts: {
+            /** Contacts */
+            contacts?: components["schemas"]["ContactMeasurement"][];
+            /** Cutoff Angstrom */
+            cutoff_angstrom?: number | null;
+            /** Detail */
+            detail?: string | null;
+            provenance?: components["schemas"]["StructureProvenance"] | null;
+            /** Reason */
+            reason?: ("unknown_structure" | "asset_unavailable" | "asset_integrity_failed" | "asset_unparseable" | "residue_reported_unresolved" | "residue_absent_cause_unknown" | "not_a_binding_partner" | "same_binding_partner" | "different_crystal_copy") | null;
+            /** Residue Pair Count */
+            residue_pair_count?: number | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "available" | "unavailable";
+            /**
+             * Truncated
+             * @default false
+             */
+            truncated: boolean;
         };
         /** Interpretation */
         Interpretation: {
@@ -2247,6 +2361,64 @@ export interface components {
              */
             state: "identity_clarification" | "researching" | "needs_inputs" | "unsupported" | "source_unavailable" | "failed_validation" | "ready_for_configuration";
         };
+        /**
+         * ResidueDistance
+         * @description One selected residue against a named counterpart, or its nearest binding-partner residues.
+         */
+        ResidueDistance: {
+            counterpart?: components["schemas"]["ResidueSelector"] | null;
+            /** Cutoff Angstrom */
+            cutoff_angstrom?: number | null;
+            /** Detail */
+            detail?: string | null;
+            /** Measurements */
+            measurements?: components["schemas"]["ContactMeasurement"][];
+            provenance?: components["schemas"]["StructureProvenance"] | null;
+            /** Reason */
+            reason?: ("unknown_structure" | "asset_unavailable" | "asset_integrity_failed" | "asset_unparseable" | "residue_reported_unresolved" | "residue_absent_cause_unknown" | "not_a_binding_partner" | "same_binding_partner" | "different_crystal_copy") | null;
+            selected?: components["schemas"]["ResidueSelector"] | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "measured" | "unavailable";
+        };
+        /** ResidueIdentity */
+        ResidueIdentity: {
+            /** Chain */
+            chain: string;
+            /**
+             * Insertion Code
+             * @default
+             */
+            insertion_code: string;
+            /** Residue Name */
+            residue_name: string;
+            /** Residue Number */
+            residue_number: number;
+            /** Resolved Heavy Atoms */
+            resolved_heavy_atoms: number;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "drug" | "target";
+        };
+        /**
+         * ResidueSelector
+         * @description Author identifiers exactly as deposited; never renumbered.
+         */
+        ResidueSelector: {
+            /** Chain */
+            chain: string;
+            /**
+             * Insertion Code
+             * @default
+             */
+            insertion_code: string;
+            /** Residue Number */
+            residue_number: number;
+        };
         /** ScenarioConfig */
         ScenarioConfig: {
             /** Administration */
@@ -2563,6 +2735,80 @@ export interface components {
              * @enum {string}
              */
             status: "retrieved" | "unavailable" | "rejected";
+        };
+        /** StructureEntity */
+        StructureEntity: {
+            /** Chains */
+            chains: string[];
+            /** Fragment */
+            fragment?: string | null;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "protein" | "ligand";
+            /** Ligand Code */
+            ligand_code?: string | null;
+            /** Molecule */
+            molecule: string;
+            /** Organism Scientific */
+            organism_scientific?: string | null;
+            /** Resolved Heavy Atoms */
+            resolved_heavy_atoms: number;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "drug" | "target";
+        };
+        /** StructureMetadata */
+        StructureMetadata: {
+            /** Alternate Conformers */
+            alternate_conformers?: "none_present" | null;
+            /** Deposition Date */
+            deposition_date?: string | null;
+            /** Detail */
+            detail?: string | null;
+            /** Entities */
+            entities?: components["schemas"]["StructureEntity"][];
+            /** Excluded From Contacts */
+            excluded_from_contacts?: string[];
+            /** Experimental Method */
+            experimental_method?: string | null;
+            provenance?: components["schemas"]["StructureProvenance"] | null;
+            /** Reason */
+            reason?: ("unknown_structure" | "asset_unavailable" | "asset_integrity_failed" | "asset_unparseable" | "residue_reported_unresolved" | "residue_absent_cause_unknown" | "not_a_binding_partner" | "same_binding_partner" | "different_crystal_copy") | null;
+            /** Reported Unresolved Residues */
+            reported_unresolved_residues?: number | null;
+            /** Resolution Angstrom */
+            resolution_angstrom?: number | null;
+            /** Same Crystal Copy Only */
+            same_crystal_copy_only?: boolean | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "available" | "unavailable";
+            /** Title */
+            title?: string | null;
+        };
+        /** StructureProvenance */
+        StructureProvenance: {
+            /** Coordinate Sha256 */
+            coordinate_sha256: string;
+            /** Cutoff Rule */
+            cutoff_rule: string;
+            /**
+             * Limitation
+             * @default Heavy-atom distances in deposited coordinates. They do not establish hydrogen bonds, binding energy, affinity, kinetic rates, mutation effects or clinical outcomes.
+             */
+            limitation: string;
+            /** Pdb Id */
+            pdb_id: string;
+            /** Scope */
+            scope: string;
+            /** Source Url */
+            source_url: string;
         };
         /** StructureReference */
         StructureReference: {
@@ -3334,6 +3580,106 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SimulationResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    find_structure_api_structures_get: {
+        parameters: {
+            query: {
+                drug: string;
+                target: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StructureMetadata"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    structure_distance_api_structures__pdb_id__distance_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pdb_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Body_structure_distance_api_structures__pdb_id__distance_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResidueDistance"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    structure_interface_api_structures__pdb_id__interface_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                pdb_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InterfaceContacts"];
                 };
             };
             /** @description Validation Error */

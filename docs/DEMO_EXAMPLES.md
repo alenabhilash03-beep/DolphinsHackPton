@@ -36,21 +36,21 @@ What the judges see the agent do, in order (all recorded tool outcomes):
 4. **Inspect the real structure** 1N8Z (Fab–HER2 crystal structure) and measure interface contacts, e.g. GLY B:103 ↔ LYS C:593 at 2.417 Å.
 5. **Write the cited answer:** endpoint occupancy 62.90% / 99.82% / 94.44% at 180 days. Verdict *mixed / not determined*: both alternatives stay above the 90% threshold for the whole window, so the model cannot yet say which lasts longer.
 
-### Question 2 — the follow-up that settles it
+### Question 2 — the MVP follow-up: "Run this comparison for 120 days"
 
-> **Set the occupancy threshold to 95%** (click **Run this experiment** on the "Raise the occupancy threshold to 95%" card)
+> **Run this comparison for 120 days** (click the suggestion under **Change the experiment**, then **Update and simulate**)
 
-**Live reliability:** 3 of 3 runs completed (21–26 s). The agent reads the stored experiment, applies the change, reruns the solver and writes a new cited answer that addresses the original question:
+This is the follow-up the MVP demo uses (owner decision, 2026-11-15). It is replayed in demo mode (about 15 s). The agent reads the stored experiment, changes the comparison window from 180 to 120 days (`duration_h = 2880`), reruns the solver and writes a new cited answer:
 
-- Baseline and **tenfold affinity fall below 95%** within the window.
-- **Threefold half-life stays above 95%** for the whole 180 days.
+- Endpoint occupancy at 120 days: baseline **96.88%**, threefold half-life **99.93%**, tenfold affinity **99.68%**.
+- All three stay above the 90% threshold for the whole window, so the answer is *Follow-up experiment result* (not determined): the time above threshold is censored. The answer notes that endpoint occupancy and occupancy AUC are higher for the half-life change.
 
-This is the punchline: under a stricter threshold, extending half-life sustains HER2 occupancy longer than a tenfold affinity gain, in this conditional model. The answer badge reads *Follow-up experiment result*; the investigation history now shows two steps, and reload restores both.
+What it shows judges: the agent iterating on its own experiment from plain words, with the history keeping both steps. It does not settle the question. If you want the follow-up that does, the **"Raise the occupancy threshold to 95%"** proposal card (live, about 25–35 s; 3 of 3 live runs earlier) shows baseline and tenfold affinity falling below 95% while threefold half-life stays above. It is not replayed, so it depends on the live AI service.
 
 ### Why this pair
 
-- It shows the full loop twice: research → cited extraction → simulation → 3D structure → cited answer, then an iteration that changes the conclusion.
-- It is the only path with repeated live success. Total live time is about 2 minutes.
+- It shows the full loop twice: research → cited extraction → simulation → 3D structure → cited answer, then the agent changing its own experiment from plain words.
+- It is the only path with repeated live success. In demo mode both steps replay recorded live runs, about 40 s in total.
 - If the network or model fails during the demo, **Load saved demo** opens the same reviewed result, clearly labeled as saved (browser-checked with the API down).
 
 ## What to say, and what not to say

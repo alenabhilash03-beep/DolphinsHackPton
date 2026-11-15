@@ -121,8 +121,10 @@ Useful context for 5C.3: `apps/web/components/InvestigationPanel.tsx` and `apps/
 
 ## 6. Demo (details in `docs/DEMO_EXAMPLES.md`)
 
-1. **"Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?"** Prefilled; about 1.5 min live; 8 of 10 live runs completed end to end. Answer: *mixed*, because both alternatives stay above 90%.
-2. **Follow-up "Raise the occupancy threshold to 95%"** (one click on its card); about 25 s; 3 of 3. Punchline: tripled half-life stays above 95% while tenfold affinity drops below.
+**MVP demo cases (owner decision, 2026-11-15).** These two are what judges see; both replay recorded live agent runs in demo mode.
+
+1. **"Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?"** Experiments → **Use the trastuzumab example** → **Research and simulate**; about 25 s. Endpoint occupancy 62.90% / 99.82% / 94.44% at 180 days. Answer: *mixed*, because both alternatives stay above 90%.
+2. **Follow-up "Run this comparison for 120 days"** (the suggestion under **Change the experiment** → **Update and simulate**); about 15 s. 96.88% / 99.93% / 99.68% at 120 days; all stay above 90%, so the answer is a *Follow-up experiment result* that leans to half-life but does not settle it. The "Raise the occupancy threshold to 95%" proposal card does settle it, but runs live.
 3. Fallback: **Load saved demo** (works even if the AI or literature service is down).
 
 Honest talking points: the agent independently extracted clearance 0.127 L/day and volume 2.62 L, matching the audited inputs. For this question the curves use audited reference values; on other drugs the agent's own cited values feed the model, or it asks for what is missing. The general path takes about 3 minutes and usually ends at *needs inputs*.

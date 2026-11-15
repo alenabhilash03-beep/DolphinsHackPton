@@ -693,3 +693,26 @@ def test_model_claiming_unsupported_for_a_supported_request_reports_recorded_sta
     agent.model=ClaimsUnsupported(request=req)
     turn=agent.run(AgentResearchRequest(request=req))
     assert turn.status=='needs_inputs' and turn.result is None and turn.structure is not None
+
+
+def test_wrap_up_still_runs_the_reviewed_comparison_when_research_finishes_late(tmp_path):
+    # Live finding (2026-11-15): slow model turns finished research inside the wrap-up window, which then offered
+    # only the closing tools, so the primary question ended as "needs inputs" without its audited comparison.
+    offered=[]
+    class Recording(ReviewedResearchModel):
+        _names:list=PrivateAttr(default_factory=list)
+        def bind_tools(self,tools,**kwargs):
+            self._names=[getattr(t,'name',None) or t.get('name') for t in tools]; return self
+        def _generate(self,messages,**kwargs):
+            offered.append(sorted(n for n in self._names if n))
+            return super()._generate(messages,**kwargs)
+    import app.agent.generalized as generalized
+    agent,_=research_service(tmp_path)
+    agent.model=Recording()
+    original=generalized.WRAP_UP_CALLS
+    generalized.WRAP_UP_CALLS=4   # reached as soon as the first paper is extracted
+    try: turn=agent.run(AgentResearchRequest(request=PRIMARY_REQUEST))
+    finally: generalized.WRAP_UP_CALLS=original
+    assert offered[4]==['prepare_reviewed_comparison'] and offered[5]==['simulate_current_comparison']
+    assert turn.status=='completed' and turn.result.configuration==load_demo().experiment
+    assert turn.structure is not None and turn.synthesis is not None

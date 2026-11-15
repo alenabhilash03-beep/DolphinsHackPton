@@ -635,6 +635,14 @@ class GeneralizedAgentService:
                     # A retrieved source must be checked for cited values before the run may conclude.
                     model_request = model_request.override(tools=[t for t in model_request.tools if t.name == 'extract_cited_parameters'],
                         response_format=None, tool_choice='any')
+                elif reviewed_available and research_ready() and ledger['config'] is None and 'prepare_reviewed_comparison' not in calls:
+                    # Research finished late (slow model turns): the audited comparison is still the right next step,
+                    # so do not force a "needs inputs" answer that skips it. Its own research gate still applies.
+                    model_request = model_request.override(tools=[t for t in model_request.tools if t.name == 'prepare_reviewed_comparison'],
+                        response_format=None, tool_choice='any')
+                elif reviewed_available and ledger['config'] is not None:
+                    model_request = model_request.override(tools=[t for t in model_request.tools if t.name == 'simulate_current_comparison'],
+                        response_format=None, tool_choice='any')
                 elif due:
                     model_request = model_request.override(tools=[t for t in model_request.tools if t.name in closing],
                         response_format=None, tool_choice='any')

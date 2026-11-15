@@ -131,13 +131,7 @@ Honest talking points: the agent independently extracted clearance 0.127 L/day a
 
 **Demo mode (default on):** the trastuzumab question and the "Run this comparison for 120 days" follow-up replay recorded live agent runs (`data/demo/replay/`), so the judged path always works in about 25 s and 15 s. See `docs/DEMO_EXAMPLES.md`. Every other request runs the live agent.
 
-### In progress (2026-11-15): 95% follow-up replay and a third MVP question
-
-If this section is still here, the work below may be unfinished. To finish and validate it:
-
-1. **Record the 95% follow-up.** Start the app (`python3 frontend/start_preview.py`), run the trastuzumab question (or **Load reference**), then click **Run this experiment** on the **"Raise the occupancy threshold to 95%"** card. Save the completed job JSON from `GET /api/agent/jobs/<job_id>` and run `uv run python scripts/record_demo_replay.py --job <file> --name q2b-threshold-95 --edit-text "<the card's edit_text>"`. The replay matcher must also accept that card's `proposal_id` (the card sends one); see `apps/api/app/agent/demo_replay.py`.
-2. **Validate it:** expected endpoint behaviour from earlier live runs: baseline and tenfold affinity fall below 95% within the 180-day window; threefold half-life stays above 95%. Run `uv run pytest apps/api/tests/test_demo_replay.py` and click the card in the browser (should finish in about 15 s).
-3. **Third MVP question** (a new hypothesis, not a follow-up): chosen and recorded in `docs/DEMO_EXAMPLES.md` once a live run completes; same recording steps as step 1 with `--name q3-...`.
+**Also replayed (2026-11-15):** the **"Raise the occupancy threshold to 95%"** follow-up card (about 15 s; verdict *Supported*: half-life stays above 95%, affinity and baseline fall below), and a third MVP question, a new hypothesis on another drug: **New → Use the imatinib example → Research and simulate** (about 25 s; cited ABL1 affinities, 1IEP structure, an honest *needs inputs* stop). Recorded from live runs (95%: 2 of 2 live runs completed; imatinib: the better of 2 live runs, the other was slow and lost its written answer). Validate with `uv run pytest apps/api/tests/test_demo_replay.py` and the browser steps in `docs/DEMO_EXAMPLES.md`.
 
 ## 7. Known issues and gotchas
 

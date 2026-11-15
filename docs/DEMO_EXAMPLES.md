@@ -10,6 +10,10 @@ For the judged demo, the two questions below are answered by **replaying a recor
 | --- | --- | --- |
 | 1 | Experiments → **Use the trastuzumab example** → **Research and simulate** | about 25 s, endpoint occupancy 62.90% / 99.82% / 94.44%, answer *Mixed* |
 | 2 | Click the **Run this comparison for 120 days** suggestion → **Update and simulate** | about 15 s, the comparison rerun over 120 days, answer *Follow-up experiment result* |
+| 2b | Or: open **Follow-up experiments** → **Run this experiment** on **"Raise the occupancy threshold to 95%"** (or type "Set the occupancy threshold to 95%") | about 15 s, verdict **Supported**: threefold half-life stays above 95% for 180 days, tenfold affinity and baseline fall below |
+| 3 | New question: **New** → **Use the imatinib example** → **Research and simulate** | about 25 s, cited ABL1 affinities 1.1 nM and 21 nM, 1IEP kinase structure measured, answer *Not determined*: the agent stops at **needs inputs** and lists the missing PK data instead of inventing curves |
+
+Question 3 is: *"Could a single intravenous dose of imatinib keep ABL1 kinase occupied, and what evidence would we need to simulate it?"* (drug `imatinib`, target `ABL1`, route **Hypothetical IV bolus**; the button sets all four). It shows generality and honesty: a small-molecule kinase inhibitor, a different structure, and a refusal to simulate without compatible PK evidence. Its **Apply answers & continue** form runs live (the replayed preparation is not stored), so do not use it in the demo.
 
 Matching is exact (typographic apostrophes, case, spacing and a trailing "?" or "." are tolerated). The follow-up replays from the Q1 result or from **Load reference** (same result ID), and can be run more than once (later runs become branches). Any other question or edit runs the live agent. Replayed turns are labelled `recorded_replay` under **Run identifiers & trace**, with the recorded run ID. Turn it off with `DEMO_REPLAY=false`; pace with `DEMO_REPLAY_RESEARCH_S` and `DEMO_REPLAY_EDIT_S`. To re-record, run each question live through the app, save the completed job JSON, then:
 

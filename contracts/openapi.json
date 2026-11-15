@@ -5341,8 +5341,15 @@
             "type": "array"
           },
           "follow_up_candidate": {
-            "title": "Follow Up Candidate",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Follow Up Candidate"
           },
           "follow_up_scope": {
             "title": "Follow Up Scope",
@@ -5407,7 +5414,25 @@
             "type": "string"
           },
           "structure": {
-            "$ref": "#/components/schemas/AuditedStructure"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AuditedStructure"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "structure_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Structure Note"
           },
           "target": {
             "title": "Target",
@@ -5433,8 +5458,6 @@
           "facts",
           "blockers",
           "missing_inputs",
-          "structure",
-          "follow_up_candidate",
           "follow_up_sources",
           "follow_up_scope"
         ],

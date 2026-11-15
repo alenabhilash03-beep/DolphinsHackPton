@@ -1,0 +1,60 @@
+{
+  "subphase": "8E.1",
+  "verified_at": "2026-11-15T03:27:34.657415+00:00",
+  "outcome": "evidence_block",
+  "drug": "cetuximab",
+  "target": "EGFR",
+  "sources": 5,
+  "candidate_facts": 27,
+  "runnable": false,
+  "scientific_profile_enabled": false,
+  "structure_asset_added": false,
+  "checks": {
+    "backend_tests_passed": 421,
+    "frontend_tests_passed": 64,
+    "typecheck": "passed",
+    "contracts": "passed",
+    "production_build": "passed",
+    "real_local_http": "passed",
+    "read_only_audit_200": true,
+    "erbitux_alias_200": true,
+    "unknown_audit_404": true,
+    "audit_as_simulation_422": true,
+    "existing_imatinib_asset_verified": true,
+    "workspace_http_200": true
+  },
+  "source_access": [
+    {
+      "source_id": "FDA2021",
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2021/125084s279lbl.pdf",
+      "content_sha256": "e1d2aa18cf10857dd80ece720df2c69e770feb2a25279eba15a3f0aed1349a44",
+      "access_note": "Downloaded official PDF bytes and inspected web-rendered sections 12.3 and 11. Version-specific, not claimed latest labeling."
+    },
+    {
+      "source_id": "EMA",
+      "url": "https://www.ema.europa.eu/en/documents/product-information/erbitux-epar-product-information_en.pdf",
+      "content_sha256": null,
+      "access_note": "Inspected official web-rendered PDF section 5.2, page 25. Local byte retrieval failed; no byte checksum or immutable-version claim."
+    },
+    {
+      "source_id": "FAB2013",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3808661/",
+      "content_sha256": null,
+      "access_note": "Inspected accessible PMC article, Meditope Occupancy Does Not Interfere with Antigen Binding. Local XML retrieval failed; web text has no raw-byte checksum."
+    },
+    {
+      "source_id": "KIN2022",
+      "url": "https://www.nature.com/articles/s41467-022-32159-6",
+      "content_sha256": null,
+      "access_note": "Inspected indexed primary-article results for Fig. 4d/e and WT-EGFR-ECD-Fc. Direct publisher/PMC and local XML access unavailable; complete SPR methods/supplement not verified. Candidates only."
+    },
+    {
+      "source_id": "PDB",
+      "url": "https://www.rcsb.org/structure/1YY9",
+      "content_sha256": null,
+      "access_note": "Inspected RCSB metadata: human EGFR extracellular domain with chimeric cetuximab Fab, X-ray 2.60 angstrom. Metadata lead only; no pinned coordinate asset added."
+    }
+  ],
+  "scope": "Technical source audit and numerical assay checks, not clinical validation or a new live agent demonstration. 2022 kon conversion is conditional on an unverified dimensional interpretation.",
+  "next_subphase": "8E.2"
+}

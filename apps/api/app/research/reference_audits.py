@@ -71,13 +71,16 @@ class ReferenceAudit(Contract):
     facts: list[AuditFact]
     blockers: Annotated[list[str],Field(min_length=1)]
     missing_inputs: Annotated[list[str],Field(min_length=1)]
-    structure: AuditedStructure
-    follow_up_candidate: str
+    structure: AuditedStructure | None = None
+    structure_note: str | None = None
+    follow_up_candidate: str | None = None
     follow_up_sources: list[HttpUrl]
     follow_up_scope: str
 
     @model_validator(mode='after')
     def references(self):
+        if self.structure is None and not (self.structure_note or '').strip():
+            raise ValueError('An audit without a verified structure must explain its structure scope')
         source_ids={source.source_id for source in self.sources}
         facts={fact.fact_id:fact for fact in self.facts}
         if len(source_ids)!=len(self.sources) or len(facts)!=len(self.facts):
@@ -103,7 +106,7 @@ def load_reference_audit(drug: str, directory: Path | None = None, *, verify_ass
         audit=ReferenceAudit.model_validate_json(path.read_text())
         if drug.strip().casefold() not in {name.casefold() for name in [audit.drug,audit.audit_id,*audit.aliases]}:
             continue
-        if verify_asset:
+        if verify_asset and audit.structure is not None:
             asset=audit.structure.asset_path
             if asset!=f'/structures/{audit.structure.pdb_id}.pdb':
                 raise ValueError('Audit structure asset must use its verified PDB identifier')

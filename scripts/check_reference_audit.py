@@ -15,8 +15,12 @@ def main():
     print(f"Audit: {audit.audit_id} v{audit.version}")
     print(f"Status: {audit.status}; runnable={audit.runnable}")
     print(f"Sources: {len(audit.sources)}; candidate facts: {len(audit.facts)}")
-    print(f"Verified experimental coordinates: {audit.structure.pdb_id}, {audit.structure.target_species}")
-    print(f"SHA-256: {audit.structure.sha256}")
+    if audit.structure:
+        print(f"Verified experimental coordinates: {audit.structure.pdb_id}, {audit.structure.target_species}")
+        print(f"SHA-256: {audit.structure.sha256}")
+    else:
+        print("No verified coordinate asset attached to this audit.")
+        print(audit.structure_note or "Structure availability does not authorize numerical inputs.")
     print("No simulation or evidence promotion performed.")
 
 

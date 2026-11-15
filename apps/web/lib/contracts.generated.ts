@@ -2366,7 +2366,7 @@ export interface components {
             /** Facts */
             facts: components["schemas"]["AuditFact"][];
             /** Follow Up Candidate */
-            follow_up_candidate: string;
+            follow_up_candidate?: string | null;
             /** Follow Up Scope */
             follow_up_scope: string;
             /** Follow Up Sources */
@@ -2403,7 +2403,9 @@ export interface components {
              * @constant
              */
             status: "evidence_block";
-            structure: components["schemas"]["AuditedStructure"];
+            structure?: components["schemas"]["AuditedStructure"] | null;
+            /** Structure Note */
+            structure_note?: string | null;
             /** Target */
             target: string;
             /** Version */

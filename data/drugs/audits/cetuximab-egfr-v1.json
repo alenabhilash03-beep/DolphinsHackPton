@@ -1,0 +1,497 @@
+{
+  "audit_id": "cetuximab-egfr-v1",
+  "version": "1.0.0",
+  "reviewed_on": "2026-11-15",
+  "reviewer": "Codex technical source audit; not independent expert or clinical validation",
+  "drug": "cetuximab",
+  "aliases": [
+    "Erbitux"
+  ],
+  "target": "EGFR",
+  "identifiers": {
+    "target_uniprot": "P00533"
+  },
+  "status": "evidence_block",
+  "runnable": false,
+  "scientific_profile_enabled": false,
+  "explicit_hypothetical_preparation_available": true,
+  "sources": [
+    {
+      "source_id": "FDA2021",
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2021/125084s279lbl.pdf",
+      "label": "US Erbitux prescribing information, September 2021 (historical version)",
+      "identifiers": {
+        "fda_reference": "4863697"
+      },
+      "reviewed_on": "2026-11-15",
+      "content_sha256": "e1d2aa18cf10857dd80ece720df2c69e770feb2a25279eba15a3f0aed1349a44",
+      "access_note": "Downloaded official PDF bytes and inspected web-rendered sections 12.3 and 11. Version-specific, not claimed latest labeling."
+    },
+    {
+      "source_id": "EMA",
+      "url": "https://www.ema.europa.eu/en/documents/product-information/erbitux-epar-product-information_en.pdf",
+      "label": "EMA Erbitux product information",
+      "identifiers": {},
+      "reviewed_on": "2026-11-15",
+      "content_sha256": null,
+      "access_note": "Inspected official web-rendered PDF section 5.2, page 25. Local byte retrieval failed; no byte checksum or immutable-version claim."
+    },
+    {
+      "source_id": "FAB2013",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3808661/",
+      "label": "Donaldson et al. 2013 meditope/Fab study",
+      "identifiers": {
+        "pmcid": "PMC3808661",
+        "pmid": "24101516",
+        "doi": "10.1073/pnas.1307309110"
+      },
+      "reviewed_on": "2026-11-15",
+      "content_sha256": null,
+      "access_note": "Inspected accessible PMC article, Meditope Occupancy Does Not Interfere with Antigen Binding. Local XML retrieval failed; web text has no raw-byte checksum."
+    },
+    {
+      "source_id": "KIN2022",
+      "url": "https://www.nature.com/articles/s41467-022-32159-6",
+      "label": "Zhuang et al. 2022 cetuximab variants study",
+      "identifiers": {
+        "pmcid": "PMC9338999",
+        "doi": "10.1038/s41467-022-32159-6"
+      },
+      "reviewed_on": "2026-11-15",
+      "content_sha256": null,
+      "access_note": "Inspected indexed primary-article results for Fig. 4d/e and WT-EGFR-ECD-Fc. Direct publisher/PMC and local XML access unavailable; complete SPR methods/supplement not verified. Candidates only."
+    },
+    {
+      "source_id": "PDB",
+      "url": "https://www.rcsb.org/structure/1YY9",
+      "label": "RCSB 1YY9 deposited complex metadata",
+      "identifiers": {
+        "pdb": "1YY9",
+        "target_uniprot": "P00533",
+        "citation_pmid": "15837620"
+      },
+      "reviewed_on": "2026-11-15",
+      "content_sha256": null,
+      "access_note": "Inspected RCSB metadata: human EGFR extracellular domain with chimeric cetuximab Fab, X-ray 2.60 angstrom. Metadata lead only; no pinned coordinate asset added."
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "us_cl_lowdose",
+      "parameter": "pk.clearance_per_BSA",
+      "value": 0.08,
+      "unit": "L/hour/m^2",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "FDA2021",
+      "locator": "12.3 Pharmacokinetics",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Intact IV cetuximab; population summary. Dose-dependent clearance; BSA-normalized quantities are not absolute L or L/hour. Range endpoints are not selected scalar defaults.",
+      "decision": "context_only"
+    },
+    {
+      "fact_id": "us_cl_plateau",
+      "parameter": "pk.clearance_per_BSA",
+      "value": 0.02,
+      "unit": "L/hour/m^2",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "FDA2021",
+      "locator": "12.3 Pharmacokinetics",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Intact IV cetuximab; population summary. Dose-dependent clearance; BSA-normalized quantities are not absolute L or L/hour. Range endpoints are not selected scalar defaults.",
+      "decision": "context_only"
+    },
+    {
+      "fact_id": "us_dose_low",
+      "parameter": "design.normalized_dose",
+      "value": 20.0,
+      "unit": "mg/m^2",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "FDA2021",
+      "locator": "12.3 Pharmacokinetics",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Intact IV cetuximab; population summary. Dose-dependent clearance; BSA-normalized quantities are not absolute L or L/hour. Range endpoints are not selected scalar defaults.",
+      "decision": "context_only"
+    },
+    {
+      "fact_id": "us_dose_plateau",
+      "parameter": "design.normalized_dose",
+      "value": 200.0,
+      "unit": "mg/m^2",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "FDA2021",
+      "locator": "12.3 Pharmacokinetics",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Intact IV cetuximab; population summary. Dose-dependent clearance; BSA-normalized quantities are not absolute L or L/hour. Range endpoints are not selected scalar defaults.",
+      "decision": "context_only"
+    },
+    {
+      "fact_id": "us_v_low",
+      "parameter": "pk.volume_range_lower",
+      "value": 2.0,
+      "unit": "L/m^2",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "FDA2021",
+      "locator": "12.3 Pharmacokinetics",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Intact IV cetuximab; population summary. Dose-dependent clearance; BSA-normalized quantities are not absolute L or L/hour. Range endpoints are not selected scalar defaults.",
+      "decision": "context_only"
+    },
+    {
+      "fact_id": "us_v_high",
+      "parameter": "pk.volume_range_upper",
+      "value": 3.0,
+      "unit": "L/m^2",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "FDA2021",
+      "locator": "12.3 Pharmacokinetics",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Intact IV cetuximab; population summary. Dose-dependent clearance; BSA-normalized quantities are not absolute L or L/hour. Range endpoints are not selected scalar defaults.",
+      "decision": "context_only"
+    },
+    {
+      "fact_id": "us_half_mean",
+      "parameter": "pk.reported_half_life",
+      "value": 112.0,
+      "unit": "hour",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "FDA2021",
+      "locator": "12.3 Pharmacokinetics",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Intact IV cetuximab; population summary. Dose-dependent clearance; BSA-normalized quantities are not absolute L or L/hour. Range endpoints are not selected scalar defaults.",
+      "decision": "context_only"
+    },
+    {
+      "fact_id": "us_half_low",
+      "parameter": "pk.half_life_range_lower",
+      "value": 63.0,
+      "unit": "hour",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "FDA2021",
+      "locator": "12.3 Pharmacokinetics",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Intact IV cetuximab; population summary. Dose-dependent clearance; BSA-normalized quantities are not absolute L or L/hour. Range endpoints are not selected scalar defaults.",
+      "decision": "context_only"
+    },
+    {
+      "fact_id": "us_half_high",
+      "parameter": "pk.half_life_range_upper",
+      "value": 230.0,
+      "unit": "hour",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "FDA2021",
+      "locator": "12.3 Pharmacokinetics",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Intact IV cetuximab; population summary. Dose-dependent clearance; BSA-normalized quantities are not absolute L or L/hour. Range endpoints are not selected scalar defaults.",
+      "decision": "context_only"
+    },
+    {
+      "fact_id": "eu_cl",
+      "parameter": "pk.clearance_per_BSA",
+      "value": 0.022,
+      "unit": "L/hour/m^2",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "EMA",
+      "locator": "5.2 Pharmacokinetic properties, page 25",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Intact IV cetuximab; initial 400 mg/m^2 context. Aggregate regulatory summaries, not a matched individual one-compartment fit.",
+      "decision": "context_only"
+    },
+    {
+      "fact_id": "eu_v",
+      "parameter": "pk.volume_per_BSA",
+      "value": 2.9,
+      "unit": "L/m^2",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "EMA",
+      "locator": "5.2 Pharmacokinetic properties, page 25",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Intact IV cetuximab; initial 400 mg/m^2 context. Aggregate regulatory summaries, not a matched individual one-compartment fit.",
+      "decision": "context_only"
+    },
+    {
+      "fact_id": "eu_half_low",
+      "parameter": "pk.half_life_range_lower",
+      "value": 70.0,
+      "unit": "hour",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "EMA",
+      "locator": "5.2 Pharmacokinetic properties, page 25",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Intact IV cetuximab; initial 400 mg/m^2 context. Aggregate regulatory summaries, not a matched individual one-compartment fit.",
+      "decision": "context_only"
+    },
+    {
+      "fact_id": "eu_half_high",
+      "parameter": "pk.half_life_range_upper",
+      "value": 100.0,
+      "unit": "hour",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "EMA",
+      "locator": "5.2 Pharmacokinetic properties, page 25",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Intact IV cetuximab; initial 400 mg/m^2 context. Aggregate regulatory summaries, not a matched individual one-compartment fit.",
+      "decision": "context_only"
+    },
+    {
+      "fact_id": "eu_ratio_half",
+      "parameter": "pk.calculated_ratio_half_life",
+      "value": 91.36940107381096,
+      "unit": "hour",
+      "provenance": "calculated",
+      "review_status": "candidate",
+      "source_id": null,
+      "locator": "Audit calculation",
+      "parent_ids": [
+        "eu_cl",
+        "eu_v"
+      ],
+      "formula": "ln(2) * eu_v / eu_cl",
+      "context": "BSA cancels algebraically in V/CL; ratio of aggregate means is not an observed individual half-life. No cross-label averaging.",
+      "decision": "context_only"
+    },
+    {
+      "fact_id": "fab_kon",
+      "parameter": "binding.association",
+      "value": 2600000.0,
+      "unit": "M^-1 s^-1",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "FAB2013",
+      "locator": "Results: Meditope Occupancy Does Not Interfere with Antigen Binding; Fig. 2C",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Cetuximab Fab against tethered EGFR domain III, without meditope. Not intact IgG on a living cell.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "fab_koff",
+      "parameter": "binding.dissociation",
+      "value": 0.002,
+      "unit": "s^-1",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "FAB2013",
+      "locator": "Results: Meditope Occupancy Does Not Interfere with Antigen Binding; Fig. 2C",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Cetuximab Fab against tethered EGFR domain III, without meditope. Not intact IgG on a living cell.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "fab_kd",
+      "parameter": "binding.reported_KD",
+      "value": 0.76,
+      "unit": "nM",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "FAB2013",
+      "locator": "Results: Meditope Occupancy Does Not Interfere with Antigen Binding; Fig. 2C",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Cetuximab Fab against tethered EGFR domain III, without meditope. Not intact IgG on a living cell.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "fc_kon",
+      "parameter": "binding.association",
+      "value": 168000.0,
+      "unit": "Ms^-1 (indexed typography)",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "KIN2022",
+      "locator": "Results: Cetuximab variants restored high-affinity binding; Fig. 4d/e",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Parent cetuximab with WT-EGFR-ECD-Fc in SPR; reported mean pair. Mutants are separate constructs; full assay-fit/avidity context not verified. Indexed text loses or omits the inverse-molar exponent; conventional M^-1 s^-1 interpretation is not verified from the typeset methods.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "fc_koff",
+      "parameter": "binding.dissociation",
+      "value": 7.29e-05,
+      "unit": "s^-1",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "KIN2022",
+      "locator": "Results: Cetuximab variants restored high-affinity binding; Fig. 4d/e",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Parent cetuximab with WT-EGFR-ECD-Fc in SPR; reported mean pair. Mutants are separate constructs; full assay-fit/avidity context not verified.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "fc_kd_mean",
+      "parameter": "binding.reported_KD_mean",
+      "value": 0.4,
+      "unit": "nM",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "KIN2022",
+      "locator": "Results: Cetuximab variants restored high-affinity binding; Fig. 4d/e",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Parent cetuximab with WT-EGFR-ECD-Fc in SPR; reported mean pair. Mutants are separate constructs; full assay-fit/avidity context not verified.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "fc_kd_sd",
+      "parameter": "binding.reported_KD_SD",
+      "value": 0.28,
+      "unit": "nM",
+      "provenance": "reported",
+      "review_status": "candidate",
+      "source_id": "KIN2022",
+      "locator": "Results: Cetuximab variants restored high-affinity binding; Fig. 4d/e",
+      "parent_ids": [],
+      "formula": null,
+      "context": "Parent cetuximab with WT-EGFR-ECD-Fc in SPR; reported mean pair. Mutants are separate constructs; full assay-fit/avidity context not verified.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "fab_kon_h",
+      "parameter": "binding.association_nM_inv_h_inv",
+      "value": 9.36,
+      "unit": "nM^-1 hour^-1",
+      "provenance": "calculated",
+      "review_status": "candidate",
+      "source_id": null,
+      "locator": "Audit unit conversion / same-assay rate ratio",
+      "parent_ids": [
+        "fab_kon"
+      ],
+      "formula": "reported kon * 3.6e-6",
+      "context": "Within one assay only. Ratio of mean rates is not substituted for reported mean KD; no PK or cell-occupancy validation.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "fab_koff_h",
+      "parameter": "binding.dissociation_h_inv",
+      "value": 7.2,
+      "unit": "hour^-1",
+      "provenance": "calculated",
+      "review_status": "candidate",
+      "source_id": null,
+      "locator": "Audit unit conversion / same-assay rate ratio",
+      "parent_ids": [
+        "fab_koff"
+      ],
+      "formula": "reported koff * 3600",
+      "context": "Within one assay only. Ratio of mean rates is not substituted for reported mean KD; no PK or cell-occupancy validation.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "fab_kd_ratio",
+      "parameter": "binding.calculated_KD",
+      "value": 0.7692307692307693,
+      "unit": "nM",
+      "provenance": "calculated",
+      "review_status": "candidate",
+      "source_id": null,
+      "locator": "Audit unit conversion / same-assay rate ratio",
+      "parent_ids": [
+        "fab_kon",
+        "fab_koff"
+      ],
+      "formula": "reported koff / reported kon * 1e9",
+      "context": "Within one assay only. Ratio of mean rates is not substituted for reported mean KD; no PK or cell-occupancy validation.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "fc_kon_h",
+      "parameter": "binding.association_nM_inv_h_inv",
+      "value": 0.6048,
+      "unit": "nM^-1 hour^-1",
+      "provenance": "calculated",
+      "review_status": "candidate",
+      "source_id": null,
+      "locator": "Audit unit conversion / same-assay rate ratio",
+      "parent_ids": [
+        "fc_kon"
+      ],
+      "formula": "CONDITIONAL on unverified M^-1 s^-1 interpretation of fc_kon: reported kon * 3.6e-6",
+      "context": "Within one assay only. Ratio of mean rates is not substituted for reported mean KD; no PK or cell-occupancy validation. Numerical reference only under the explicitly stated conventional kon-unit interpretation; not a verified source-unit conversion.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "fc_koff_h",
+      "parameter": "binding.dissociation_h_inv",
+      "value": 0.26244,
+      "unit": "hour^-1",
+      "provenance": "calculated",
+      "review_status": "candidate",
+      "source_id": null,
+      "locator": "Audit unit conversion / same-assay rate ratio",
+      "parent_ids": [
+        "fc_koff"
+      ],
+      "formula": "reported koff * 3600",
+      "context": "Within one assay only. Ratio of mean rates is not substituted for reported mean KD; no PK or cell-occupancy validation.",
+      "decision": "assay_only"
+    },
+    {
+      "fact_id": "fc_kd_ratio",
+      "parameter": "binding.calculated_KD",
+      "value": 0.43392857142857144,
+      "unit": "nM",
+      "provenance": "calculated",
+      "review_status": "candidate",
+      "source_id": null,
+      "locator": "Audit unit conversion / same-assay rate ratio",
+      "parent_ids": [
+        "fc_kon",
+        "fc_koff"
+      ],
+      "formula": "CONDITIONAL on unverified M^-1 s^-1 interpretation of fc_kon: reported koff / reported kon * 1e9",
+      "context": "Within one assay only. Ratio of mean rates is not substituted for reported mean KD; no PK or cell-occupancy validation. Numerical reference only under the explicitly stated conventional kon-unit interpretation; not a verified source-unit conversion.",
+      "decision": "assay_only"
+    }
+  ],
+  "blockers": [
+    "No automatic clinical PK-to-EGFR occupancy default is justified by the inspected evidence package. This is not a claim that all conditional cetuximab simulations are impossible.",
+    "Label clearance varies with dose. A fixed-CL approximation requires an explicit dose-domain justification; the general dose slider cannot be claimed to reproduce nonlinear PK.",
+    "Regulatory PK quantities use body surface area. No patient BSA, absolute dose/volume/clearance or justified fixed exposure factor is silently supplied.",
+    "Fab/domain-III kinetics and parent antibody/ECD-Fc SPR rates are different assay contexts. No averaging or cross-assay kon/koff pairing; incomplete 2022 methods access prevents an audited effective 1:1 transfer decision.",
+    "The inspected sources do not supply matched free target-site exposure, receptor turnover/internalization and competition context for a clinical cell-surface occupancy interpretation.",
+    "The accessible 2022 index renders the kon unit as Ms^-1; inverse-molar dimensional interpretation remains unverified, so its derived values are explicitly conditional math checks, not selected measurements."
+  ],
+  "missing_inputs": [
+    "Declared experimental scope and molecular form: Fab assay, intact IgG effective assay, or target-site hypothesis.",
+    "Explicit BSA and dose schedule, or absolute hypothetical design values; declared constant-clearance dose domain or a separately implemented nonlinear model.",
+    "Chosen matched binding-rate pair with reviewed construct, assay and avidity applicability.",
+    "Prescribed target-site exposure and fixed-site/no-turnover/no-competition assumptions with rationale, or additional measured data."
+  ],
+  "structure": null,
+  "structure_note": "1YY9 is a relevant Fab-human EGFR extracellular-domain metadata lead, not a newly verified viewer/analysis asset. Its NAG glycans must not be represented as the therapeutic drug.",
+  "follow_up_candidate": null,
+  "follow_up_sources": [
+    "https://www.nature.com/articles/s41467-022-32159-6",
+    "https://www.ema.europa.eu/en/documents/product-information/erbitux-epar-product-information_en.pdf"
+  ],
+  "follow_up_scope": "Do not open another unbounded drug audit in 8E.1. A future enablement review could inspect the full SPR methods/supplement and establish an explicit assay/PK exposure scope. No replacement drug or new profile is approved here."
+}

@@ -1,5 +1,5 @@
 """Run the self-contained Hypothesim review on this computer. No hosting or Git writes."""
-import os,sys,shutil,subprocess,socket,time,urllib.request,webbrowser,signal,venv
+import hashlib,os,sys,shutil,subprocess,socket,time,urllib.request,webbrowser,signal,venv
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent
 FRONTEND=ROOT;BACKEND=ROOT.parent
@@ -36,7 +36,10 @@ def main():
         run([str(python),'-m','pip','install','uv>=0.9,<1'])
         uv=str(bootstrap/('Scripts/uv.exe' if os.name=='nt' else 'bin/uv'))
     run([uv,'sync','--locked','--project',str(BACKEND)])
-    if not (FRONTEND/'node_modules/next/package.json').exists():run([npm,'ci'],FRONTEND)
+    # Reinstall whenever package-lock.json changes, not only when node_modules is missing.
+    lock=hashlib.sha256((FRONTEND/'package-lock.json').read_bytes()).hexdigest();stamp=FRONTEND/'node_modules/.hypothesim-lock'
+    if not (FRONTEND/'node_modules/next/package.json').exists() or not stamp.exists() or stamp.read_text().strip()!=lock:
+        run([npm,'ci'],FRONTEND);stamp.write_text(lock)
     web_port=available(3011);api_port=available(8011)
     env=os.environ.copy();env.update({'PORT':str(web_port),'SCIENTIFIC_API_PORT':str(api_port),'SCIENTIFIC_ENGINE_DIR':str(BACKEND),'SCIENTIFIC_PYTHON':str(BACKEND/'.venv'/('Scripts/python.exe' if os.name=='nt' else 'bin/python')),'PREVIEW_HOST':'127.0.0.1'})
     command=[node,'scripts/start-local-preview.mjs','--port',str(web_port)]

@@ -814,4 +814,4 @@ Complete. Streaming model calls (a non-streaming 30 s gateway limit caused 502s)
 
 ### 5C.2 outcome
 
-Implemented and verified locally: Google sign-in via Supabase, per-user workspaces, **Share your experiment** (immutable lineage snapshot, log summary, validated AI summary), community feed and read-only shared pages; Render/Vercel configuration and [deployment guide](DEPLOYMENT.md). The live URL awaits the owner's Render, Google OAuth and Supabase steps ([review](subphase-reviews/5C.2.md)).
+Implemented and verified locally: Google sign-in via Supabase, per-user workspaces, **Share your experiment** (immutable lineage snapshot, log summary, validated AI summary), community feed and read-only shared pages; single-container Docker image with a Railway configuration and a laptop-tunnel fallback ([deployment guide](DEPLOYMENT.md)). The live URL awaits the owner's Railway and Google sign-in steps ([review](subphase-reviews/5C.2.md)).

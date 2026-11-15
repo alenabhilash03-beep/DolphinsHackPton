@@ -1,52 +1,63 @@
-# Hosted deployment — 5C.2
+# Going live — the simplest pipeline
 
-Hypothesim runs as three pieces:
+Hypothesim ships as **one Docker image** (`Dockerfile`). The web app listens on the public port and the scientific API runs inside the same container. Any host that runs a Dockerfile can serve it. Sign-in uses **Supabase Auth with Google**; experiments and the community feed live in the container's data folder (`/data`).
 
-| Piece | Service | What it holds |
-| --- | --- | --- |
-| Web app (`apps/web`, Next.js) | **Vercel** | Pages, Google sign-in in the browser, same-origin `/api/*` routes that forward to the API |
-| Scientific API (`apps/api`, FastAPI) | **Render** (Starter + 1 GB disk) | Agent, solver, structures; each user's experiments and the community feed in SQLite on the disk |
-| Accounts | **Supabase Auth** (Google provider) | Sign-in only. The API checks each request's token with Supabase; no experiment data is stored there |
+You need **three environment variables**:
 
-The NVIDIA key lives only on Render. The browser receives the Supabase **public** anon key and its own session token, nothing else.
+| Variable | Where it comes from |
+| --- | --- |
+| `NVIDIA_API_KEY` | build.nvidia.com (the key you already use) |
+| `SUPABASE_URL` | Supabase project → **Connect** button (top bar) → Project URL, `https://<ref>.supabase.co` |
+| `SUPABASE_PUBLISHABLE_KEY` | Same **Connect** dialog: the publishable key (`sb_publishable_…`). If none exists, create one under **Project Settings → API Keys** |
 
-**Cost.** Supabase (free) and Vercel Hobby (free) cost nothing. Render Starter with a 1 GB disk is about $7.25/month. Render's free tier has no persistent disk, so it would erase every account's experiments and the community feed on each restart. It also sleeps after about 15 idle minutes.
+Accounts switch on automatically when `SUPABASE_URL` is set. Leave the Supabase variables out and the app runs as the single-user local demo.
 
-## 1. Google sign-in (Google Cloud + Supabase), about 10 minutes
+## Option A (recommended): Railway, about 15 minutes, no Vercel needed
 
-1. Create a Supabase project. Under **Project Settings → API**, copy the **Project URL** and the **anon public** key.
-2. In Google Cloud Console, open **APIs & Services → OAuth consent screen**. Choose *External* and fill in the app name and your email. You can stay in testing mode and add judges as test users, or publish (basic scopes need no verification).
-3. Open **Credentials → Create credentials → OAuth client ID → Web application**. Under **Authorized redirect URIs**, add `https://<project-ref>.supabase.co/auth/v1/callback`. Copy the client ID and secret.
-4. In Supabase, open **Authentication → Sign In / Providers → Google**. Enable it and paste the client ID and secret.
-5. In Supabase **Authentication → URL Configuration**, set **Site URL** to your Vercel URL (step 3). Add it, plus `http://localhost:3000/**` for local testing, to **Redirect URLs**.
+Railway builds the Dockerfile straight from GitHub and keeps `/data` on a volume. New accounts get a one-time $5 trial credit for 30 days, enough for the hackathon; after that the Hobby plan is $5/month. Check the current terms on [railway.com/pricing](https://railway.com/pricing).
 
-## 2. API on Render
+1. Sign in at railway.com with GitHub. Choose **New Project → Deploy from GitHub repo → DolphinsHackPton**. Under the service's **Settings → Source**, pick the branch to deploy. Railway finds `railway.toml` and the `Dockerfile` itself.
+2. **Variables** tab: add `NVIDIA_API_KEY`, `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`. Railway supplies `PORT`.
+3. Right-click the service, choose **Attach Volume**, and set the mount path to `/data`. Without it, experiments and shares reset on every redeploy.
+4. **Settings → Networking → Generate Domain**. This is your live URL (`https://<name>.up.railway.app`).
+5. Finish Google sign-in (next section) with that URL.
 
-1. Create a Render account and connect GitHub with access to `DolphinsHackPton`.
-2. Choose **New → Blueprint**, pick the repository and the branch to deploy, and Render reads `render.yaml`.
-3. Enter the secret values when prompted:
-   - `SUPABASE_URL` and `SUPABASE_ANON_KEY` from step 1.
-   - `NVIDIA_API_KEY`.
-   - `HYPOTHESIM_CORS_ORIGINS` as `["https://<your-app>.vercel.app"]`.
-4. Deploy. Check `https://hypothesim-api.onrender.com/api/health` (your service name may differ): it must report `"ai_credentials_configured": true`.
+Health check: `https://<your-url>/api/backend-health` should show `"status":"ok"` and `"ai_credentials_configured": true`.
 
-## 3. Web app on Vercel
+## Google sign-in (Supabase + Google Cloud), about 10 minutes
 
-1. Choose **Add New → Project** and import `DolphinsHackPton`. Set **Root Directory** to `apps/web` (framework: Next.js). Keep the default install and build commands; the repository is an npm workspace.
-2. Add these environment variables:
-   - `API_BASE_URL` = the Render URL from step 2, with no trailing slash.
-   - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from step 1.
-3. Deploy, then put the final Vercel URL in Supabase **Site URL / Redirect URLs** and Render's `HYPOTHESIM_CORS_ORIGINS` if they differ.
+1. In Supabase, open **Authentication → Sign In / Providers → Google** and copy the **Callback URL** shown there (`https://<ref>.supabase.co/auth/v1/callback`).
+2. In Google Cloud Console, open **Google Auth Platform**. Set up branding/consent (External; your email). Then go to **Clients → Create client → Web application** and paste the callback URL under **Authorized redirect URIs**. Copy the client ID and client secret.
+3. Back in Supabase **Google**, paste the client ID and secret, enable the provider, and save.
+4. Under Supabase **Authentication → URL Configuration**, set **Site URL** to your live URL. Add `<your live URL>/**` to **Redirect URLs**. For local testing also add `http://localhost:3000/**`, and for Option B add `https://*.trycloudflare.com/**`.
+5. While the Google app is in testing, add judges' Google accounts as **test users**, or publish the app (basic sign-in scopes need no review).
 
-## 4. Acceptance on the live URL
+## Option B (zero cost): your laptop plus a free Cloudflare tunnel
 
-- Signed out: the saved demo and slider simulations work. **Research hypothesis**, sharing and the community feed ask you to sign in with Google.
-- Account A runs the demo question, then clicks **Share your experiment**. The shared page shows the step log, the log summary and an AI summary in which each statement cites steps.
-- Account B (a different Google account) sees it in **Community**, opens it read-only and cannot remove it. B's own investigations are separate: the same question gives B an independent history.
-- `AUTH_MODE=off` (the default) keeps the local single-user demo working with no accounts, as before.
+This is the most reliable setup for a live presentation, because it runs on the machine you rehearse on. The link only works while the laptop is on.
 
-## Behavior notes
+```bash
+docker build -t hypothesim .
+```
 
-- Sharing publishes an immutable snapshot of the path from the original question to the shared result. Later work does not change it, and the owner can remove it.
-- Shares are visible to every signed-in user (feed and direct link). Email addresses are never stored or shown; only the Google display name and avatar are.
-- AI summaries are validated before publication. Each statement must cite existing steps, numbers must appear in the cited steps, and clinical, safety or dosing claims are rejected. When validation or the model fails, the page shows the deterministic log summary and says why.
+```bash
+docker run -p 3000:3000 -v hypothesim-data:/data -e NVIDIA_API_KEY=... -e SUPABASE_URL=... -e SUPABASE_PUBLISHABLE_KEY=... hypothesim
+```
+
+```bash
+cloudflared tunnel --url http://localhost:3000
+```
+
+`cloudflared` prints a public `https://<random>.trycloudflare.com` address; no Cloudflare account is needed. Without Docker, put the same three variables plus `AUTH_MODE=supabase` in `.env` and run `uv run python scripts/start_local.py --build`, then tunnel port 3002.
+
+## Acceptance on the live URL
+
+- Signed out: the saved demo, sliders and follow-up proposal cards work. Running research or a follow-up, sharing and the community feed show **Sign in with Google**.
+- Account A runs the demo question, then uses **Share your experiment**. The shared page shows the step log, the log summary and an AI summary in which each statement cites steps.
+- Account B (another Google account) sees it under **Community**, opens it read-only and cannot remove it. B's own history is separate.
+
+## What is stored where
+
+- Google display name and avatar come from Supabase; email addresses are never stored by Hypothesim.
+- Each user's experiments and all shares live in SQLite files under `/data` on the host's volume.
+- The NVIDIA key never reaches the browser. The browser receives only the Supabase project URL and publishable key, which are public by design.

@@ -55,6 +55,9 @@ def test_agent_and_preparations_require_sign_in_but_simulation_and_demo_do_not(h
         assert response.status_code == 401, path
     assert client.get('/api/shares', headers={'Authorization': 'Bearer not-a-real-token-0000000'}).status_code == 401
     assert client.get('/api/auth/me', headers=ALICE).json()['name'] == 'Alice Ng'
+    # Follow-up proposals are deterministic and visible signed out; running one still needs an account.
+    anonymous = simulate(client).json()
+    assert client.get(f"/api/agent/results/{anonymous['result_id']}/proposals").status_code == 200
 
 
 def test_each_user_has_separate_results_and_history(hosted):

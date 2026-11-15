@@ -1,0 +1,9 @@
+# Railway: deploy the root Dockerfile; the web health route also checks the API behind it.
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/api/backend-health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"

@@ -1,7 +1,7 @@
 "use client";
 /**
- * Google sign-in through Supabase Auth (5C.2). Without NEXT_PUBLIC_SUPABASE_URL the app runs in local
- * single-user mode and nothing here is active. When configured, the user's access token is attached to
+ * Google sign-in through Supabase Auth (5C.2). The project URL and publishable key are read at runtime from
+ * /api/auth/config; without them the app runs in local single-user mode and nothing here is active. When configured, the user's access token is attached to
  * same-origin /api/ requests, which the Next routes forward to FastAPI; no other credential reaches the browser.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
@@ -9,10 +9,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 export interface AccountUser { name: string; avatarUrl: string | null }
 interface AuthState { enabled: boolean; ready: boolean; user: AccountUser | null; signIn: () => void; signOut: () => void }
-
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-export const authEnabled = Boolean(SUPABASE_URL && SUPABASE_KEY);
 
 const AuthContext = createContext<AuthState>({ enabled: false, ready: true, user: null, signIn: () => {}, signOut: () => {} });
 let token: string | null = null;
@@ -46,14 +42,18 @@ function account(session: { access_token: string; user: { user_metadata?: Record
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [client, setClient] = useState<SupabaseClient | null>(null);
   const [user, setUser] = useState<AccountUser | null>(null);
-  const [ready, setReady] = useState(!authEnabled);
+  const [enabled, setEnabled] = useState(false);
+  const [ready, setReady] = useState(false);
   useEffect(() => {
-    if (!authEnabled) return;
     let unsubscribe = () => {};
     let cancelled = false;
-    void import("@supabase/supabase-js").then(({ createClient }) => {
+    void fetch("/api/auth/config", { cache: "no-store" }).then(r => r.json()).catch(() => ({})).then(async (config: { url?: string | null; key?: string | null }) => {
       if (cancelled) return;
-      const supabase = createClient(SUPABASE_URL!, SUPABASE_KEY!, { auth: { persistSession: true, detectSessionInUrl: true, flowType: "pkce" } });
+      if (!config.url || !config.key) { setReady(true); return; }  // local single-user mode
+      const { createClient } = await import("@supabase/supabase-js");
+      if (cancelled) return;
+      setEnabled(true);
+      const supabase = createClient(config.url, config.key, { auth: { persistSession: true, detectSessionInUrl: true, flowType: "pkce" } });
       installFetchAuth();
       setClient(supabase);
       supabase.auth.getSession().then(({ data }) => { token = data.session?.access_token ?? null; setUser(account(data.session)); setReady(true); });
@@ -70,8 +70,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!client) return;
     void client.auth.signOut().then(() => { token = null; setUser(null); });
   }, [client]);
-  const value = useMemo(() => ({ enabled: authEnabled, ready, user, signIn, signOut }), [ready, user, signIn, signOut]);
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  const value = useMemo(() => ({ enabled, ready, user, signIn, signOut }), [enabled, ready, user, signIn, signOut]);
+  // Render once sign-in state is known, so the workspace's first API calls already carry the user's token.
+  return <AuthContext.Provider value={value}>{ready ? children : <div aria-busy="true" style={{ minHeight: "100vh" }} />}</AuthContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthContext);

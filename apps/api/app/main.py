@@ -78,8 +78,9 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
     agent_queue = AgentQueue(generalized)
 
     # --- Accounts and per-user workspaces (5C.2) ---
-    authenticator = Authenticator(config.auth_mode, supabase_lookup(config.supabase_url, config.supabase_anon_key)
-        if config.auth_mode == 'supabase' and config.supabase_url and config.supabase_anon_key else None)
+    supabase_key = config.supabase_publishable_key or config.supabase_anon_key
+    authenticator = Authenticator(config.auth_mode, supabase_lookup(config.supabase_url, supabase_key)
+        if config.auth_mode == 'supabase' and config.supabase_url and supabase_key else None)
     workspaces_dir = config.workspaces_dir or ROOT / 'work/workspaces'
     def user_workspace(directory):
         prep = PreparationService(store=PreparationStore(directory / 'preparations.sqlite3'), assessment=assessment)
@@ -144,7 +145,7 @@ def create_app(settings: Settings | None = None, literature_client: EuropePMCCli
         return agent_call(ws.agent, request, edit=True)
 
     @api.get("/api/agent/results/{result_id}/proposals", response_model=ProposalSet, tags=["Generalized agent"])
-    def result_proposals(result_id: str, ws: Workspace = Depends(own_workspace)) -> ProposalSet:
+    def result_proposals(result_id: str, ws: Workspace = Depends(workspace)) -> ProposalSet:  # deterministic; running one needs sign-in
         """Follow-up experiments derived from the solver facts of one stored result. No LLM call."""
         try: result, child = ws.agent.turns.result(result_id)
         except KeyError as exc: raise HTTPException(status_code=404, detail="Unknown result") from exc

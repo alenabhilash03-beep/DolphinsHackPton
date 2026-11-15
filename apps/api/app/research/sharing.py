@@ -61,9 +61,9 @@ class LangChainSummarizer:
 
 
 def configured_summarizer(settings) -> LangChainSummarizer:
-    from app.llm import StreamingChatNVIDIA as ChatNVIDIA
     if not settings.nvidia_api_key or not settings.nvidia_api_key.get_secret_value():
         raise RuntimeError('NVIDIA credentials are not configured')
+    from app.llm import StreamingChatNVIDIA as ChatNVIDIA  # imported only when a key exists
     model = ChatNVIDIA(model=settings.hypothesim_llm_model, api_key=settings.nvidia_api_key.get_secret_value(),
         temperature=0, max_completion_tokens=2048, timeout=40, usage_telemetry_enabled=False,
         model_kwargs={'chat_template_kwargs': {'enable_thinking': False}})

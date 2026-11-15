@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     # for agent, preparation and sharing endpoints and gives each user separate stores.
     auth_mode: Literal["off", "supabase"] = "off"
     supabase_url: str | None = None
-    supabase_anon_key: str | None = None
+    supabase_publishable_key: str | None = None   # current Supabase name (sb_publishable_...)
+    supabase_anon_key: str | None = None          # legacy name, still accepted
     workspaces_dir: Path | None = None
     agent_max_concurrent: int = Field(default=4, ge=1, le=16)

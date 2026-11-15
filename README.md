@@ -2,6 +2,8 @@
 
 An evidence-aware scientific hypothesis exploration platform.
 
+**Live:** https://hypothesimweb-production.up.railway.app · **Picking this up? Read [HANDOFF.md](HANDOFF.md) first.**
+
 ## Full development plan
 
 **[Read the complete 36-hour implementation plan](docs/IMPLEMENTATION_PLAN.md).** It contains every phase and subphase, dependencies, interfaces, tests, cutoffs, risks, parallel work, and the demo strategy. The scientific specification and source audit are in [docs/model.md](docs/model.md) and [docs/evidence-policy.md](docs/evidence-policy.md). Completed-chunk reviews are in [docs/subphase-reviews](docs/subphase-reviews).

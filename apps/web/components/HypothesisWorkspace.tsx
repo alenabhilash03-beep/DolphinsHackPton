@@ -17,6 +17,7 @@ import { proposalRequest, proposalResultForTurn } from "../lib/proposal-view";
 import { InvestigationHistoryPanel } from "./InvestigationHistoryPanel";
 import { AccountMenu, SignInPrompt } from "./AccountMenu";
 import { ShareExperiment } from "./ShareExperiment";
+import { AgentWorkflow } from "./AgentWorkflow";
 import { branchRequired, historyFor, historyRows, restorationAfterJob } from "../lib/history-view";
 const PRIMARY="Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const STORAGE="hypothesim-agent-job-v1";
@@ -37,6 +38,8 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
   const [resumeId,setResumeId]=useState("");
   const [structureFocus,setStructureFocus]=useState<ViewerFocus|null>(null);
   const [history,setHistory]=useState<InvestigationHistory|null>(null);
+  // Live agent-workflow screen (5C.3): opens when a run starts; replays a finished run on request.
+  const [workflow,setWorkflow]=useState<null|"live"|"replay">(null);
   const reopenTicket=useRef(0), restoreResult=useRef<string|null>(null);
   const [edit,setEdit]=useState("Run this comparison for 120 days");
   const epoch=useRef(new RequestEpoch()), activeTicket=useRef(0), activeJob=useRef<string|null>(null);
@@ -162,7 +165,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
   async function submitJob(mode:"research"|"edits",body:AgentResearchRequest|AgentEditRequest) {
     if(busy) return;
     const ticket=epoch.current.next(); activeTicket.current=ticket;activeJob.current=null;setJobId(null);
-    setSubmitting(true);setMessage(null);setJob(null);setSaved(false);
+    setSubmitting(true);setMessage(null);setJob(null);setSaved(false);setWorkflow("live");
     try {
       const response=await fetch(`/api/agent/jobs/${mode}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body),cache:"no-store"});
       const data=await response.json();
@@ -171,7 +174,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
       const next=data as AgentJob;activeJob.current=next.job_id;setJob(next);setJobId(next.job_id);
       requestAnimationFrame(()=>document.getElementById("investigation")?.scrollIntoView({block:"start",behavior:"auto"}));
       try{localStorage.setItem(STORAGE,next.job_id);}catch{}
-    } catch(e) {if(epoch.current.current(ticket))setMessage(e instanceof Error ? e.message : "Research unavailable; previous curves remain visible.");}
+    } catch(e) {if(epoch.current.current(ticket)){setWorkflow(null);setMessage(e instanceof Error ? e.message : "Research unavailable; previous curves remain visible.");}}
     finally{if(epoch.current.current(ticket))setSubmitting(false);}
   }
   function research(event:FormEvent) {
@@ -260,7 +263,10 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
       <details><summary>Resume a saved preparation</summary><label>Preparation ID<input value={resumeId} onChange={e=>setResumeId(e.target.value)} placeholder="prep-…"/></label><button type="button" disabled={!!busy} onClick={()=>void loadPreparation()}>Load preparation</button></details>
       {message && !job && <p role="alert">{message}</p>}
     </section>
-    <InvestigationPanel job={job} submitting={submitting} saved={saved} displayedResult={shown} config={visible} message={message} viewer={structure} onFocusMeasurement={focusMeasurement}/>
+    <InvestigationPanel job={job} submitting={submitting} saved={saved} displayedResult={shown} config={visible} message={message} viewer={structure} onFocusMeasurement={focusMeasurement}
+      onWatchWorkflow={job?.execution_events?.length || busy ? ()=>setWorkflow(busy?"live":"replay") : undefined}/>
+    {workflow && <AgentWorkflow job={job} submitting={submitting} replay={workflow==="replay"} question={job?.research_request?.request.original_hypothesis ?? job?.edit_text ?? text}
+      onClose={()=>setWorkflow(null)} onViewResults={()=>{setWorkflow(null);requestAnimationFrame(()=>document.getElementById(document.getElementById("answer")?"answer":"investigation")?.scrollIntoView({block:"start"}));}}/>}
     <ScientificAnswer turn={turn} shown={shown} viewer={structure} onFocusMeasurement={focusMeasurement}/>
     <NextExperimentProposals shown={proposalResultForTurn(turn,shown)} busy={!!busy || controlBusy} onRun={runProposal}/>
     <InvestigationHistoryPanel history={currentHistory} shownId={shownId} busy={!!busy || controlBusy} branch={branch} onReopen={id=>void reopen(id)}/>

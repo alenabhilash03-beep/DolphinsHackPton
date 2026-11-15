@@ -927,6 +927,18 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /**
+         * CandidatePreview
+         * @description One extracted value as reported by its source; a candidate, not an approved model input.
+         */
+        CandidatePreview: {
+            /** Parameter */
+            parameter: string;
+            /** Unit */
+            unit: string;
+            /** Value */
+            value: number;
+        };
         /** ConfiguredPreparation */
         ConfiguredPreparation: {
             /**
@@ -1392,6 +1404,8 @@ export interface components {
         ExecutionSummary: {
             /** Candidate Count */
             candidate_count?: number | null;
+            /** Candidates */
+            candidates?: components["schemas"]["CandidatePreview"][];
             /** Error Code */
             error_code?: ("validation" | "stale" | "unavailable" | "interrupted" | "timeout") | null;
             experiment?: components["schemas"]["ExperimentSnapshot"] | null;
@@ -3179,6 +3193,8 @@ export interface components {
             source_handle?: string | null;
             /** Source Id */
             source_id?: string | null;
+            /** Title */
+            title?: string | null;
         };
         /** SourceRetrievalResult */
         SourceRetrievalResult: {

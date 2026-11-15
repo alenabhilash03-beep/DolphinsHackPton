@@ -6,6 +6,7 @@ import "./workspace-console.css";
 import "./investigation.css";
 import "./answer.css";
 import "./community.css";
+import "./workflow.css";
 import { AuthProvider } from "../lib/auth";
 
 

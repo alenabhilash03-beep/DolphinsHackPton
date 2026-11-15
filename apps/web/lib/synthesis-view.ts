@@ -43,12 +43,14 @@ export function answerState(turn: Turn | null, shown: SimulationResult | null): 
     && shown.client_revision === synthesis.client_revision ? "current" : "stale";
 }
 
-export function verdictLabel(synthesis: ScientificSynthesis): string {
+/** A follow-up edit is an experiment change, so its verdict is always undetermined; label it as a result instead. */
+export function verdictLabel(synthesis: ScientificSynthesis, followUp = false): string {
   const answer = synthesis.answer;
   if (!answer) return synthesis.status === "rejected" ? "Written answer not accepted" : "Written answer unavailable";
   const basis = { conditional_simulation: "by the conditional simulation", paper_evidence: "by inspected paper passages",
     paper_evidence_and_conditional_simulation: "by inspected passages and the conditional simulation", none: "" }[answer.basis];
-  const verdict = { supported: "Supported", not_supported: "Not supported", mixed: "Mixed", undetermined: "Not determined" }[answer.verdict];
+  const verdict = { supported: "Supported", not_supported: "Not supported", mixed: "Mixed",
+    undetermined: followUp ? "Follow-up experiment result" : "Not determined" }[answer.verdict];
   return answer.verdict === "undetermined" || !basis ? verdict : `${verdict} ${basis}`;
 }
 export const basisLabel = (synthesis: ScientificSynthesis): string => ({ research_and_simulation: "Inspected papers + numerical simulation",

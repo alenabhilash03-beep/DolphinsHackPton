@@ -278,12 +278,19 @@ class GeneralizedAgentService:
                     document = evidence.documents.get(kwargs['document_id'])
                     extraction = ParameterExtractionResult.model_validate(output)
                     extraction_attempts[document.document_id] = extraction_attempts.get(document.document_id,0)+1
-                    paper_reviews[document.document_id] = ResearchPaperReview(
-                        document_id=document.document_id, source=document.source,
-                        inspected_locators=kwargs.get('locators') or [s.locator for s in document.segments[:8]],
-                        extraction=extraction, use_in_simulation='not_selected')
+                    earlier = paper_reviews.get(document.document_id)
+                    # A failed later attempt never erases a validated outcome for the same paper; the ledger keeps both.
+                    kept = earlier is not None and earlier.extraction.status in {'candidates','no_values'} \
+                        and extraction.status in {'rejected','unavailable'}
+                    if not kept:
+                        paper_reviews[document.document_id] = ResearchPaperReview(
+                            document_id=document.document_id, source=document.source,
+                            inspected_locators=kwargs.get('locators') or [s.locator for s in document.segments[:8]],
+                            extraction=extraction, use_in_simulation='not_selected')
                     output = {**output,'retry_remaining':max(0,2-extraction_attempts[document.document_id])
-                        if extraction.status in {'rejected','unavailable'} else 0}
+                        if extraction.status in {'rejected','unavailable'} and not kept else 0}
+                    if kept:
+                        output['earlier_valid_extraction_kept']=True
                     if output['retry_remaining']:
                         output['next_action']='Retry extract_cited_parameters for this same document once using the validation feedback; no new search is needed.'
                 if name in {'start_experiment_preparation','read_experiment_preparation','update_experiment_preparation'}:

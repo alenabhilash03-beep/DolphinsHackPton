@@ -392,6 +392,32 @@ def test_no_values_is_recorded_honestly_without_inventing_extraction(tmp_path):
     assert event.summary.outcome=='no_values' and event.summary.candidate_count==0
 
 
+def test_failed_retry_does_not_erase_a_validated_extraction_of_the_same_paper(tmp_path):
+    # Live 5C.1 finding: a validated extraction followed by a rejected re-extraction of the same paper
+    # closed the research gate, so the reviewed question ended at needs_inputs despite valid cited values.
+    class ExtractTwice(ReviewedResearchModel):
+        def _generate(self,messages,**kwargs):
+            extractions=[m for m in messages if isinstance(m,ToolMessage) and m.name=='extract_cited_parameters']
+            if len(extractions)==1 and self._step==4:
+                document=json.loads(extractions[0].content)['document_id']
+                return ChatResult(generations=[ChatGeneration(message=AIMessage(content='',tool_calls=[{'name':'extract_cited_parameters','args':{'document_id':document},'id':'again'}]))])
+            return super()._generate(messages,**kwargs)
+    agent,_=research_service(tmp_path)
+    agent.model=ExtractTwice()
+    valid=agent.extractor
+    attempts=[]
+    def extractor(messages):
+        attempts.append(1)
+        return valid(messages) if len(attempts)==1 else {'parameters':[{'parameter':'pk.volume_L','value':12345.,'unit':'L','locator':'invented','supporting_passage':'Invented 12345 L','relation':'exact'}],'notes':[]}
+    agent.extractor=extractor
+    turn=agent.run(AgentResearchRequest(request=PRIMARY_REQUEST))
+    states=[e.state for e in turn.execution_events if e.tool_name=='extract_cited_parameters' and e.state!='started']
+    assert states==['succeeded','rejected']
+    assert turn.research_papers[0].extraction.status=='candidates' and turn.research_papers[0].extraction.parameters
+    assert turn.status=='completed' and turn.result is not None
+    assert 'simulate_current_comparison' in turn.tool_calls
+
+
 @pytest.mark.parametrize('invalid',[False,True])
 def test_unavailable_or_rejected_extraction_cannot_silently_run_preset(tmp_path,invalid):
     class StopOnRejection(ReviewedResearchModel):

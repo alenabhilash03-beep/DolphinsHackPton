@@ -1,0 +1,699 @@
+{
+  "subphase": "5C.1",
+  "provider": "NVIDIA Nemotron (live)",
+  "literature": "Europe PMC (live)",
+  "note": "Each run is one live agent execution; outcomes vary between runs because retrieval and model output vary.",
+  "unrecorded_runs": [
+    {
+      "question": "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?",
+      "code": "before fix",
+      "status": "needs_inputs",
+      "elapsed_s": 77.3,
+      "detail": "All five extraction attempts rejected (abstract-only PK range; EC50 is not KD); reviewed comparison correctly unavailable; 1N8Z inspected; grounded research-only answer. Receipt overwritten by a rerun; summary kept from the run log."
+    }
+  ],
+  "questions": [
+    {
+      "question": "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?",
+      "runs": 6,
+      "outcomes": [
+        "full",
+        "full",
+        "full",
+        "needs_inputs",
+        "full",
+        "result_without_answer"
+      ],
+      "receipts": [
+        {
+          "name": "q1-fixed-run4",
+          "question": "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?",
+          "drug": "trastuzumab",
+          "target": "HER2",
+          "route": "iv_infusion",
+          "baseline": false,
+          "status": "completed",
+          "elapsed_s": 95.5,
+          "result_id": "sim-262bc1bc1e17aefb3d6995d5",
+          "configuration_mode": "reviewed_preset",
+          "endpoint_occupancy": {
+            "baseline": 0.629,
+            "half_life_x3": 0.9982,
+            "affinity_x10": 0.9444
+          },
+          "structure": {
+            "status": "available",
+            "pdb": "1N8Z",
+            "measurements": 5
+          },
+          "synthesis_status": "grounded",
+          "verdict": "undetermined",
+          "questions": [],
+          "trace_status": "local_collected",
+          "code": "after extraction-retention fix",
+          "tool_sequence": [
+            "start_experiment_preparation:succeeded",
+            "search_hypothesis_evidence:succeeded",
+            "search_hypothesis_evidence:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "extract_cited_parameters:rejected",
+            "extract_cited_parameters:rejected",
+            "extract_cited_parameters:succeeded",
+            "extract_cited_parameters:succeeded",
+            "prepare_reviewed_comparison:succeeded",
+            "simulate_current_comparison:succeeded",
+            "interpret_current_result:succeeded",
+            "inspect_verified_structure:succeeded",
+            "synthesize_grounded_answer:succeeded"
+          ],
+          "papers": [
+            {
+              "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal antibody, in patients with a variety of solid tumors.",
+              "content_kind": "full_text",
+              "extraction_status": "candidates",
+              "candidates": [
+                "pk.clearance_L_h = 0.127 L/day",
+                "pk.volume_L = 2.62 L"
+              ]
+            },
+            {
+              "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Target Antigen.",
+              "content_kind": "full_text",
+              "extraction_status": "no_values",
+              "candidates": []
+            }
+          ]
+        },
+        {
+          "name": "q1-fixed-run5",
+          "question": "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?",
+          "drug": "trastuzumab",
+          "target": "HER2",
+          "route": "iv_infusion",
+          "baseline": false,
+          "status": "completed",
+          "elapsed_s": 83.1,
+          "result_id": "sim-262bc1bc1e17aefb3d6995d5",
+          "configuration_mode": "reviewed_preset",
+          "endpoint_occupancy": {
+            "baseline": 0.629,
+            "half_life_x3": 0.9982,
+            "affinity_x10": 0.9444
+          },
+          "structure": {
+            "status": "available",
+            "pdb": "1N8Z",
+            "measurements": 5
+          },
+          "synthesis_status": "grounded",
+          "verdict": "undetermined",
+          "questions": [],
+          "trace_status": "local_collected",
+          "code": "after extraction-retention fix",
+          "tool_sequence": [
+            "start_experiment_preparation:succeeded",
+            "search_hypothesis_evidence:succeeded",
+            "search_hypothesis_evidence:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "extract_cited_parameters:succeeded",
+            "extract_cited_parameters:rejected",
+            "extract_cited_parameters:rejected",
+            "prepare_reviewed_comparison:succeeded",
+            "simulate_current_comparison:succeeded",
+            "interpret_current_result:succeeded",
+            "inspect_verified_structure:succeeded",
+            "synthesize_grounded_answer:succeeded"
+          ],
+          "papers": [
+            {
+              "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal antibody, in patients with a variety of solid tumors.",
+              "content_kind": "full_text",
+              "extraction_status": "candidates",
+              "candidates": [
+                "pk.clearance_L_h = 0.127 L/day",
+                "pk.volume_L = 2.62 L"
+              ]
+            },
+            {
+              "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Target Antigen.",
+              "content_kind": "full_text",
+              "extraction_status": "rejected",
+              "candidates": []
+            }
+          ]
+        },
+        {
+          "name": "q1-fixed-run6",
+          "question": "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?",
+          "drug": "trastuzumab",
+          "target": "HER2",
+          "route": "iv_infusion",
+          "baseline": false,
+          "status": "completed",
+          "elapsed_s": 95.7,
+          "result_id": "sim-262bc1bc1e17aefb3d6995d5",
+          "configuration_mode": "reviewed_preset",
+          "endpoint_occupancy": {
+            "baseline": 0.629,
+            "half_life_x3": 0.9982,
+            "affinity_x10": 0.9444
+          },
+          "structure": {
+            "status": "available",
+            "pdb": "1N8Z",
+            "measurements": 5
+          },
+          "synthesis_status": "grounded",
+          "verdict": "mixed",
+          "questions": [],
+          "trace_status": "local_collected",
+          "code": "after extraction-retention fix",
+          "tool_sequence": [
+            "start_experiment_preparation:succeeded",
+            "search_hypothesis_evidence:succeeded",
+            "search_hypothesis_evidence:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "extract_cited_parameters:rejected",
+            "extract_cited_parameters:succeeded",
+            "extract_cited_parameters:succeeded",
+            "prepare_reviewed_comparison:succeeded",
+            "simulate_current_comparison:succeeded",
+            "interpret_current_result:succeeded",
+            "inspect_verified_structure:succeeded",
+            "synthesize_grounded_answer:succeeded"
+          ],
+          "papers": [
+            {
+              "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal antibody, in patients with a variety of solid tumors.",
+              "content_kind": "full_text",
+              "extraction_status": "candidates",
+              "candidates": [
+                "pk.clearance_L_h = 0.127 L/day",
+                "pk.volume_L = 2.62 L"
+              ]
+            },
+            {
+              "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Target Antigen.",
+              "content_kind": "abstract",
+              "extraction_status": "no_values",
+              "candidates": []
+            }
+          ]
+        },
+        {
+          "name": "q1-primary-run2",
+          "question": "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?",
+          "drug": "trastuzumab",
+          "target": "HER2",
+          "route": "iv_infusion",
+          "baseline": false,
+          "status": "needs_inputs",
+          "elapsed_s": 95.6,
+          "structure": {
+            "status": "available",
+            "pdb": "1N8Z",
+            "measurements": 5
+          },
+          "synthesis_status": "grounded",
+          "verdict": "undetermined",
+          "questions": [
+            "Declare molecular form, species, binding/PK regimes, competition and target compartment.",
+            "Provide the administration schedule, duration and experimental design rationale.",
+            "Provide compatible source evidence or an explicit hypothetical value with units and rationale."
+          ],
+          "trace_status": "local_collected",
+          "code": "before fix",
+          "tool_sequence": [
+            "start_experiment_preparation:succeeded",
+            "search_hypothesis_evidence:succeeded",
+            "search_hypothesis_evidence:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "extract_cited_parameters:succeeded",
+            "extract_cited_parameters:rejected",
+            "extract_cited_parameters:rejected",
+            "extract_cited_parameters:rejected",
+            "inspect_verified_structure:succeeded",
+            "inspect_verified_structure:rejected",
+            "measure_structure_residue:succeeded",
+            "measure_structure_residue:succeeded",
+            "synthesize_grounded_answer:succeeded"
+          ],
+          "papers": [
+            {
+              "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal antibody, in patients with a variety of solid tumors.",
+              "content_kind": "full_text",
+              "extraction_status": "rejected",
+              "candidates": []
+            },
+            {
+              "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Target Antigen.",
+              "content_kind": "full_text",
+              "extraction_status": "rejected",
+              "candidates": []
+            }
+          ]
+        },
+        {
+          "name": "q1-primary-run3",
+          "question": "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?",
+          "drug": "trastuzumab",
+          "target": "HER2",
+          "route": "iv_infusion",
+          "baseline": false,
+          "status": "completed",
+          "elapsed_s": 61.4,
+          "result_id": "sim-262bc1bc1e17aefb3d6995d5",
+          "configuration_mode": "reviewed_preset",
+          "endpoint_occupancy": {
+            "baseline": 0.629,
+            "half_life_x3": 0.9982,
+            "affinity_x10": 0.9444
+          },
+          "structure": {
+            "status": "available",
+            "pdb": "1N8Z",
+            "measurements": 5
+          },
+          "synthesis_status": "grounded",
+          "verdict": "mixed",
+          "questions": [],
+          "trace_status": "local_collected",
+          "code": "before fix",
+          "tool_sequence": [
+            "start_experiment_preparation:succeeded",
+            "search_hypothesis_evidence:succeeded",
+            "search_hypothesis_evidence:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "extract_cited_parameters:rejected",
+            "extract_cited_parameters:rejected",
+            "extract_cited_parameters:succeeded",
+            "extract_cited_parameters:succeeded",
+            "prepare_reviewed_comparison:succeeded",
+            "simulate_current_comparison:succeeded",
+            "interpret_current_result:succeeded",
+            "inspect_verified_structure:succeeded",
+            "synthesize_grounded_answer:succeeded"
+          ],
+          "papers": [
+            {
+              "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal antibody, in patients with a variety of solid tumors.",
+              "content_kind": "full_text",
+              "extraction_status": "candidates",
+              "candidates": [
+                "pk.clearance_L_h = 0.127 L/day",
+                "pk.volume_L = 2.62 L"
+              ]
+            },
+            {
+              "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Target Antigen.",
+              "content_kind": "full_text",
+              "extraction_status": "no_values",
+              "candidates": []
+            }
+          ]
+        },
+        {
+          "name": "q1-primary",
+          "question": "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?",
+          "drug": "trastuzumab",
+          "target": "HER2",
+          "route": "iv_infusion",
+          "baseline": false,
+          "status": "completed",
+          "elapsed_s": 161.5,
+          "result_id": "sim-262bc1bc1e17aefb3d6995d5",
+          "configuration_mode": "reviewed_preset",
+          "endpoint_occupancy": {
+            "baseline": 0.629,
+            "half_life_x3": 0.9982,
+            "affinity_x10": 0.9444
+          },
+          "structure": {
+            "status": "available",
+            "pdb": "1N8Z",
+            "measurements": 5
+          },
+          "synthesis_status": "rejected",
+          "questions": [],
+          "trace_status": "local_collected",
+          "code": "before fix",
+          "tool_sequence": [
+            "start_experiment_preparation:succeeded",
+            "search_hypothesis_evidence:succeeded",
+            "search_hypothesis_evidence:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "extract_cited_parameters:rejected",
+            "extract_cited_parameters:rejected",
+            "extract_cited_parameters:rejected",
+            "extract_cited_parameters:rejected",
+            "inspect_verified_structure:succeeded",
+            "inspect_verified_structure:rejected",
+            "measure_structure_residue:succeeded",
+            "measure_structure_residue:succeeded",
+            "synthesize_grounded_answer:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "extract_cited_parameters:succeeded",
+            "prepare_reviewed_comparison:succeeded",
+            "simulate_current_comparison:succeeded",
+            "interpret_current_result:succeeded",
+            "synthesize_grounded_answer:rejected"
+          ],
+          "papers": [
+            {
+              "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal antibody, in patients with a variety of solid tumors.",
+              "content_kind": "abstract",
+              "extraction_status": "rejected",
+              "candidates": []
+            },
+            {
+              "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Target Antigen.",
+              "content_kind": "full_text",
+              "extraction_status": "rejected",
+              "candidates": []
+            },
+            {
+              "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Target Antigen.",
+              "content_kind": "full_text",
+              "extraction_status": "candidates",
+              "candidates": [
+                "binding.affinity_nM = 0.131 nM"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "question": "After a single IV infusion, how long does trastuzumab keep HER2 target occupancy above 90%? Build the baseline from cited PK and binding measurements.",
+      "runs": 3,
+      "outcomes": [
+        "failed",
+        "failed",
+        "failed"
+      ],
+      "receipts": [
+        {
+          "name": "q2-baseline-diag",
+          "question": "After a single IV infusion, how long does trastuzumab keep HER2 target occupancy above 90%? Build the baseline from cited PK and binding measurements.",
+          "drug": "trastuzumab",
+          "status": "failed",
+          "elapsed_s": 51.6,
+          "category": "Exception",
+          "code": "after extraction-retention fix",
+          "tool_sequence": [],
+          "papers": []
+        },
+        {
+          "name": "q2-baseline-run2",
+          "question": "After a single IV infusion, how long does trastuzumab keep HER2 target occupancy above 90%? Build the baseline from cited PK and binding measurements.",
+          "drug": "trastuzumab",
+          "status": "failed",
+          "elapsed_s": 104.6,
+          "category": "Exception",
+          "code": "after extraction-retention fix",
+          "tool_sequence": [],
+          "papers": []
+        },
+        {
+          "name": "q2-baseline",
+          "question": "After a single IV infusion, how long does trastuzumab keep HER2 target occupancy above 90%? Build the baseline from cited PK and binding measurements.",
+          "drug": "trastuzumab",
+          "status": "failed",
+          "elapsed_s": 66.2,
+          "category": "Exception",
+          "code": "after extraction-retention fix",
+          "tool_sequence": [],
+          "papers": []
+        }
+      ]
+    },
+    {
+      "question": "How would hypothetical bloodstream imatinib input affect ABL1 occupancy? Research evidence and identify missing PK, binding and target-site exposure data.",
+      "runs": 2,
+      "outcomes": [
+        "needs_inputs",
+        "failed"
+      ],
+      "receipts": [
+        {
+          "name": "q2-imatinib-diag",
+          "question": "How would hypothetical bloodstream imatinib input affect ABL1 occupancy? Research evidence and identify missing PK, binding and target-site exposure data.",
+          "drug": "imatinib",
+          "target": "ABL1",
+          "route": "hypothetical_iv_bolus",
+          "baseline": false,
+          "status": "needs_inputs",
+          "elapsed_s": 104.8,
+          "structure": {
+            "status": "available",
+            "pdb": "1IEP",
+            "measurements": 5
+          },
+          "synthesis_status": "grounded",
+          "verdict": "undetermined",
+          "questions": [
+            "Declare molecular form, species, binding/PK regimes, competition and target compartment.",
+            "Provide the administration schedule, duration and experimental design rationale.",
+            "Provide compatible source evidence or an explicit hypothetical value with units and rationale."
+          ],
+          "trace_status": "local_collected",
+          "code": "after extraction-retention fix",
+          "tool_sequence": [
+            "start_experiment_preparation:succeeded",
+            "search_hypothesis_evidence:rejected",
+            "search_hypothesis_evidence:rejected",
+            "search_hypothesis_evidence:succeeded",
+            "search_hypothesis_evidence:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "extract_cited_parameters:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "retrieve_evidence_source:succeeded",
+            "inspect_verified_structure:succeeded",
+            "synthesize_grounded_answer:succeeded"
+          ],
+          "papers": [
+            {
+              "title": "Quantification of Binding of Small Molecules to Native Kinases by Flow Cytometry Reveals Divergence from Biochemical Affinities.",
+              "content_kind": "full_text",
+              "extraction_status": "candidates",
+              "candidates": [
+                "binding.affinity_nM = 1.1 nM",
+                "binding.affinity_nM = 21.0 nM"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "q2-imatinib",
+          "question": "How would hypothetical bloodstream imatinib input affect ABL1 occupancy? Research evidence and identify missing PK, binding and target-site exposure data.",
+          "drug": "imatinib",
+          "status": "failed",
+          "elapsed_s": 147.0,
+          "category": "GraphRecursionError",
+          "code": "after extraction-retention fix",
+          "tool_sequence": [],
+          "papers": []
+        }
+      ]
+    },
+    {
+      "question": "Set the occupancy threshold to 95%",
+      "runs": 2,
+      "outcomes": [
+        "full",
+        "full"
+      ],
+      "receipts": [
+        {
+          "name": "q2-threshold-run1",
+          "question": "Set the occupancy threshold to 95%",
+          "drug": "trastuzumab",
+          "baseline": false,
+          "status": "completed",
+          "elapsed_s": 25.8,
+          "result_id": "sim-423c4a7d0639364637ba6b2a",
+          "configuration_mode": "custom",
+          "endpoint_occupancy": {
+            "baseline": 0.629,
+            "half_life_x3": 0.9982,
+            "affinity_x10": 0.9444
+          },
+          "synthesis_status": "grounded",
+          "verdict": "undetermined",
+          "questions": [],
+          "trace_status": "local_collected",
+          "code": "after extraction-retention fix",
+          "tool_sequence": [
+            "read_current_experiment:succeeded",
+            "apply_requested_edit:succeeded",
+            "simulate_current_comparison:succeeded",
+            "interpret_current_result:succeeded",
+            "synthesize_grounded_answer:succeeded"
+          ],
+          "papers": []
+        },
+        {
+          "name": "q2-threshold-run2",
+          "question": "Set the occupancy threshold to 95%",
+          "drug": "trastuzumab",
+          "baseline": false,
+          "status": "completed",
+          "elapsed_s": 21.1,
+          "result_id": "sim-a8acffcc00c71106f336df78",
+          "configuration_mode": "custom",
+          "endpoint_occupancy": {
+            "baseline": 0.629,
+            "half_life_x3": 0.9982,
+            "affinity_x10": 0.9444
+          },
+          "synthesis_status": "grounded",
+          "verdict": "undetermined",
+          "questions": [],
+          "trace_status": "local_collected",
+          "code": "after extraction-retention fix",
+          "tool_sequence": [
+            "read_current_experiment:succeeded",
+            "apply_requested_edit:succeeded",
+            "simulate_current_comparison:succeeded",
+            "interpret_current_result:succeeded",
+            "synthesize_grounded_answer:succeeded"
+          ],
+          "papers": []
+        }
+      ]
+    }
+  ],
+  "performance": {
+    "base": "http://127.0.0.1:3004",
+    "machine_note": "Cloud container, headless Chromium; re-run on the demonstration laptop before rehearsal.",
+    "edits": 30,
+    "debounce_ms": 150,
+    "input_to_redraw_including_debounce": {
+      "n": 30,
+      "median_ms": 400,
+      "p95_ms": 466,
+      "max_ms": 472
+    },
+    "input_to_redraw_excluding_debounce": {
+      "n": 30,
+      "median_ms": 250,
+      "p95_ms": 316,
+      "max_ms": 322
+    },
+    "targets": {
+      "median_ms": 300,
+      "p95_ms": 700,
+      "measured_on": "input_to_redraw_excluding_debounce"
+    },
+    "playback": {
+      "fps": 60.2,
+      "worst_frame_ms": 17
+    },
+    "js_heap_mb": {
+      "before": 19.9,
+      "after_edits": 22.6
+    },
+    "meets_targets": true
+  },
+  "browser_check": {
+    "base": "http://127.0.0.1:3002",
+    "offline": "http://127.0.0.1:3003",
+    "synthetic_backend": true,
+    "passed": 10,
+    "failed": 0,
+    "results": [
+      {
+        "name": "workspace loads with simulated curves",
+        "status": "passed",
+        "ms": 2883,
+        "detail": {
+          "cards": 3
+        }
+      },
+      {
+        "name": "research job runs and records tool outcomes",
+        "status": "passed",
+        "ms": 9756,
+        "detail": {
+          "title": "Investigation complete",
+          "stages": [
+            "succeeded",
+            "succeeded",
+            "succeeded",
+            "succeeded",
+            "succeeded",
+            "succeeded",
+            "succeeded"
+          ]
+        }
+      },
+      {
+        "name": "grounded answer cites solver values and a structure measurement",
+        "status": "passed",
+        "ms": 6,
+        "detail": {
+          "verdictBadge": "Mixed by the conditional simulation"
+        }
+      },
+      {
+        "name": "Show in structure opens the viewer on the measured pair",
+        "status": "passed",
+        "ms": 5089,
+        "detail": {
+          "distance": "2.417 \u00c5"
+        }
+      },
+      {
+        "name": "follow-up proposal runs and history records two steps",
+        "status": "passed",
+        "ms": 12010,
+        "detail": {
+          "steps": 2
+        }
+      },
+      {
+        "name": "reload restores the displayed result and history",
+        "status": "passed",
+        "ms": 3057,
+        "detail": {
+          "steps": 2
+        }
+      },
+      {
+        "name": "saved demo loads and is labeled as saved",
+        "status": "passed",
+        "ms": 273,
+        "detail": {}
+      },
+      {
+        "name": "phone width has no horizontal scroll",
+        "status": "passed",
+        "ms": 1566,
+        "detail": {
+          "width": 390
+        }
+      },
+      {
+        "name": "saved demo works with the scientific API unavailable",
+        "status": "passed",
+        "ms": 2961,
+        "detail": {}
+      },
+      {
+        "name": "no uncaught page errors",
+        "status": "passed",
+        "ms": 1,
+        "detail": {
+          "ignoredNetworkErrors": 0
+        }
+      }
+    ]
+  }
+}

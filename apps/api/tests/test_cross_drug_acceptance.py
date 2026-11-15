@@ -22,6 +22,7 @@ from test_grounded_synthesis import scripted_synthesizer
 from test_structure_handoff import with_structure
 from test_preparation_workflow import scope,design,parameters
 from test_research_agent import ScriptedModel
+from numeric import assert_same_solution
 
 
 def wait_job(client,path,payload):
@@ -96,7 +97,7 @@ def test_primary_full_queue_answer_structure_proposal_history_and_reload(tmp_pat
         assert follow.structure is None
         history=client.get(f'/api/agent/investigations/{follow.result.result_id}').json()
         assert [r['origin'] for r in history['entries']]==['research','proposal']
-        assert client.get(f'/api/agent/results/{base.result_id}').json()['result']==base.model_dump(mode='json')
+        assert_same_solution(client.get(f'/api/agent/results/{base.result_id}').json()['result'], base)
     restarted=create_app(SETTINGS,preparation_service=source.preparation)
     with TestClient(restarted) as client:
         assert client.get(f'/api/agent/investigations/{base.result_id}').json()['entries']==history['entries']
@@ -138,7 +139,7 @@ def test_multiple_unregistered_names_research_continue_simulate_and_edit_without
         assert len(follow.result.scenarios)==3 and follow.result.configuration.scenarios[0]==base.configuration.scenarios[0]
         assert follow.synthesis.original_text==case['request']['original_hypothesis']
         assert follow.structure is None and not follow.synthesis.structural_context
-        assert client.get(f'/api/agent/results/{base.result_id}').json()['result']==base.model_dump(mode='json')
+        assert_same_solution(client.get(f'/api/agent/results/{base.result_id}').json()['result'], base)
         tree=client.get(f'/api/agent/investigations/{follow.result.result_id}').json()
         assert {e['drug'] for e in tree['entries']}=={case['request']['drug_name']}
 

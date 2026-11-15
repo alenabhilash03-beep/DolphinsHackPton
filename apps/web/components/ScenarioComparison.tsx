@@ -26,7 +26,7 @@ export const ScenarioComparison = memo(function ScenarioComparison({ result, bus
           <dt>Effective elimination half-life</dt><dd>{(scenario.pk.elimination_half_life_h / 24).toFixed(2)} days</dd>
           <dt>Model binding affinity KD</dt><dd>{scenario.binding.affinity_nM.toPrecision(4)} nM</dd>
           <dt>Association / dissociation</dt><dd>{scenario.binding.association_nM_inv_h_inv.toPrecision(4)} nM⁻¹ h⁻¹ / {scenario.binding.dissociation_h_inv.toPrecision(4)} h⁻¹</dd>
-          <dt>Administration</dt><dd>{scenario.administration.length} event(s) · first amount {scenario.administration[0].amount_mg.toFixed(1)} mg</dd>
+          <dt>Administration</dt><dd>{scenario.administration.length===1?"1 dose":`${scenario.administration.length} doses`} · first amount {scenario.administration[0].amount_mg.toFixed(1)} mg</dd>
         </dl>
         <details><summary>Input evidence</summary><ul>{["pk.elimination_half_life_h", "binding.affinity_nM"].map((path) => {
           const item = evidence.get(scenario.parameter_evidence[path]);

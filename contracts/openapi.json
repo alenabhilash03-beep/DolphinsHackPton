@@ -1,6 +1,63 @@
 {
   "components": {
     "schemas": {
+      "AISummary": {
+        "additionalProperties": false,
+        "properties": {
+          "headline": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Headline"
+          },
+          "headline_step_ids": {
+            "items": {
+              "pattern": "^S[1-9][0-9]?$",
+              "type": "string"
+            },
+            "maxItems": 8,
+            "title": "Headline Step Ids",
+            "type": "array"
+          },
+          "notes": {
+            "items": {
+              "maxLength": 700,
+              "type": "string"
+            },
+            "maxItems": 6,
+            "title": "Notes",
+            "type": "array"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/SummaryPoint"
+            },
+            "maxItems": 5,
+            "title": "Points",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "grounded",
+              "unavailable",
+              "rejected"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "AISummary",
+        "type": "object"
+      },
       "AgentEditRequest": {
         "additionalProperties": false,
         "properties": {
@@ -6695,6 +6752,476 @@
         "title": "ScientificSynthesis",
         "type": "object"
       },
+      "ShareList": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ShareListItem"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "ShareList",
+        "type": "object"
+      },
+      "ShareListItem": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "drug": {
+            "title": "Drug",
+            "type": "string"
+          },
+          "headline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Headline"
+          },
+          "is_owner": {
+            "default": false,
+            "title": "Is Owner",
+            "type": "boolean"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/ShareOwner"
+          },
+          "question": {
+            "maxLength": 700,
+            "title": "Question",
+            "type": "string"
+          },
+          "share_id": {
+            "pattern": "^shr-[a-f0-9]{32}$",
+            "title": "Share Id",
+            "type": "string"
+          },
+          "step_count": {
+            "title": "Step Count",
+            "type": "integer"
+          },
+          "target": {
+            "title": "Target",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verdict"
+          }
+        },
+        "required": [
+          "share_id",
+          "created_at",
+          "owner",
+          "title",
+          "question",
+          "drug",
+          "target",
+          "step_count"
+        ],
+        "title": "ShareListItem",
+        "type": "object"
+      },
+      "ShareOwner": {
+        "additionalProperties": false,
+        "properties": {
+          "avatar_url": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          },
+          "name": {
+            "maxLength": 120,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "ShareOwner",
+        "type": "object"
+      },
+      "ShareRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "maxLength": 700,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "result_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Result Id",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "maxLength": 160,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "required": [
+          "result_id"
+        ],
+        "title": "ShareRequest",
+        "type": "object"
+      },
+      "SharedAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "statement": {
+            "maxLength": 700,
+            "title": "Statement",
+            "type": "string"
+          },
+          "step_id": {
+            "pattern": "^S[1-9][0-9]?$",
+            "title": "Step Id",
+            "type": "string"
+          },
+          "verdict": {
+            "enum": [
+              "supported",
+              "not_supported",
+              "mixed",
+              "undetermined"
+            ],
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "required": [
+          "verdict",
+          "statement",
+          "step_id"
+        ],
+        "title": "SharedAnswer",
+        "type": "object"
+      },
+      "SharedExperiment": {
+        "additionalProperties": false,
+        "properties": {
+          "ai_summary": {
+            "$ref": "#/components/schemas/AISummary"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SharedAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "disclaimer": {
+            "default": "Conditional model predictions from a reduced exposure and binding model. Target occupancy does not establish efficacy, safety or an appropriate treatment regimen.",
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "drug": {
+            "maxLength": 200,
+            "title": "Drug",
+            "type": "string"
+          },
+          "is_owner": {
+            "default": false,
+            "title": "Is Owner",
+            "type": "boolean"
+          },
+          "log_summary": {
+            "items": {
+              "maxLength": 700,
+              "type": "string"
+            },
+            "maxItems": 82,
+            "title": "Log Summary",
+            "type": "array"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/ShareOwner"
+          },
+          "question": {
+            "maxLength": 700,
+            "title": "Question",
+            "type": "string"
+          },
+          "result": {
+            "$ref": "#/components/schemas/SimulationResult"
+          },
+          "share_id": {
+            "pattern": "^shr-[a-f0-9]{32}$",
+            "title": "Share Id",
+            "type": "string"
+          },
+          "shared_step_id": {
+            "pattern": "^S[1-9][0-9]?$",
+            "title": "Shared Step Id",
+            "type": "string"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/SharedStep"
+            },
+            "maxItems": 80,
+            "minItems": 1,
+            "title": "Steps",
+            "type": "array"
+          },
+          "target": {
+            "maxLength": 200,
+            "title": "Target",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "share_id",
+          "created_at",
+          "owner",
+          "title",
+          "question",
+          "drug",
+          "target",
+          "steps",
+          "shared_step_id",
+          "log_summary",
+          "ai_summary",
+          "result"
+        ],
+        "title": "SharedExperiment",
+        "type": "object"
+      },
+      "SharedStep": {
+        "additionalProperties": false,
+        "properties": {
+          "changes": {
+            "items": {
+              "maxLength": 700,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "title": "Changes",
+            "type": "array"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "duration_h": {
+            "title": "Duration H",
+            "type": "number"
+          },
+          "finding": {
+            "anyOf": [
+              {
+                "maxLength": 700,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finding"
+          },
+          "is_shared_result": {
+            "default": false,
+            "title": "Is Shared Result",
+            "type": "boolean"
+          },
+          "occupancy_threshold": {
+            "title": "Occupancy Threshold",
+            "type": "number"
+          },
+          "origin": {
+            "enum": [
+              "research",
+              "agent_edit",
+              "proposal",
+              "direct_control",
+              "direct_simulation",
+              "saved_demo"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "outcomes": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioOutcome"
+            },
+            "maxItems": 3,
+            "title": "Outcomes",
+            "type": "array"
+          },
+          "paper_count": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Paper Count",
+            "type": "integer"
+          },
+          "papers": {
+            "items": {
+              "maxLength": 700,
+              "type": "string"
+            },
+            "maxItems": 4,
+            "title": "Papers",
+            "type": "array"
+          },
+          "parent_step_id": {
+            "anyOf": [
+              {
+                "pattern": "^S[1-9][0-9]?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Step Id"
+          },
+          "step_id": {
+            "pattern": "^S[1-9][0-9]?$",
+            "title": "Step Id",
+            "type": "string"
+          },
+          "structure_pdb_id": {
+            "anyOf": [
+              {
+                "maxLength": 4,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Structure Pdb Id"
+          },
+          "title": {
+            "maxLength": 700,
+            "title": "Title",
+            "type": "string"
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "enum": [
+                  "supported",
+                  "not_supported",
+                  "mixed",
+                  "undetermined"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verdict"
+          }
+        },
+        "required": [
+          "step_id",
+          "origin",
+          "title",
+          "duration_h",
+          "occupancy_threshold",
+          "outcomes"
+        ],
+        "title": "SharedStep",
+        "type": "object"
+      },
       "SimulationDiagnostics": {
         "additionalProperties": false,
         "properties": {
@@ -7842,6 +8369,33 @@
         "title": "StructureReference",
         "type": "object"
       },
+      "SummaryPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "step_ids": {
+            "items": {
+              "pattern": "^S[1-9][0-9]?$",
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "title": "Step Ids",
+            "type": "array"
+          },
+          "text": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "step_ids"
+        ],
+        "title": "SummaryPoint",
+        "type": "object"
+      },
       "SupportAssessment": {
         "additionalProperties": false,
         "properties": {
@@ -8100,6 +8654,24 @@
     "/api/agent/edits": {
       "post": {
         "operationId": "generalized_edit_api_agent_edits_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -8151,6 +8723,22 @@
               "title": "Result Id",
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
           }
         ],
         "responses": {
@@ -8184,6 +8772,24 @@
     "/api/agent/jobs/edits": {
       "post": {
         "operationId": "queue_agent_edit_api_agent_jobs_edits_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -8225,6 +8831,24 @@
     "/api/agent/jobs/research": {
       "post": {
         "operationId": "queue_agent_research_api_agent_jobs_research_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -8275,6 +8899,22 @@
               "title": "Job Id",
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
           }
         ],
         "responses": {
@@ -8308,6 +8948,24 @@
     "/api/agent/research": {
       "post": {
         "operationId": "generalized_research_api_agent_research_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -8359,6 +9017,22 @@
               "title": "Result Id",
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
           }
         ],
         "responses": {
@@ -8402,6 +9076,22 @@
               "title": "Result Id",
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
           }
         ],
         "responses": {
@@ -8444,6 +9134,22 @@
               "title": "Turn Id",
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
           }
         ],
         "responses": {
@@ -8474,10 +9180,79 @@
         ]
       }
     },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "who_am_i_api_auth_me_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Who Am I Api Auth Me Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Who Am I",
+        "tags": [
+          "Community"
+        ]
+      }
+    },
     "/api/contracts/experiments/validate": {
       "post": {
         "description": "Validate configuration structure and provenance, without running a simulation.",
         "operationId": "validate_experiment_api_contracts_experiments_validate_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -8554,6 +9329,24 @@
       "post": {
         "description": "Resolve identity and report required structured inputs. No LLM, research search or solver call.",
         "operationId": "create_preparation_api_preparations_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -8621,6 +9414,22 @@
               ],
               "title": "Revision"
             }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
           }
         ],
         "responses": {
@@ -8663,6 +9472,22 @@
             "schema": {
               "title": "Preparation Id",
               "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
             }
           }
         ],
@@ -8716,6 +9541,22 @@
             "schema": {
               "title": "Preparation Id",
               "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
             }
           }
         ],
@@ -8896,6 +9737,24 @@
       "post": {
         "description": "Queue one guarded hypothesis; parameter controls never use this endpoint.",
         "operationId": "submit_research_api_research_jobs_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -9078,10 +9937,242 @@
         "summary": "Search Literature"
       }
     },
+    "/api/shares": {
+      "get": {
+        "operationId": "community_feed_api_shares_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShareList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Community Feed",
+        "tags": [
+          "Community"
+        ]
+      },
+      "post": {
+        "description": "Publish an immutable snapshot of your investigation, with a log summary and a grounded AI summary.",
+        "operationId": "share_experiment_api_shares_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShareRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharedExperiment"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Share Experiment",
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/shares/{share_id}": {
+      "delete": {
+        "operationId": "unshare_experiment_api_shares__share_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "share_id",
+            "required": true,
+            "schema": {
+              "title": "Share Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Unshare Experiment",
+        "tags": [
+          "Community"
+        ]
+      },
+      "get": {
+        "operationId": "shared_experiment_api_shares__share_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "share_id",
+            "required": true,
+            "schema": {
+              "title": "Share Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharedExperiment"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Shared Experiment",
+        "tags": [
+          "Community"
+        ]
+      }
+    },
     "/api/simulations": {
       "post": {
         "description": "Run the reviewed one-compartment model without an LLM call.",
         "operationId": "simulate_api_simulations_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -9121,6 +10212,24 @@
       "post": {
         "description": "Apply one linked control edit and return the new deterministic result.",
         "operationId": "adjust_and_simulate_api_simulations_adjust_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {

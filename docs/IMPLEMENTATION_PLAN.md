@@ -1,6 +1,6 @@
 # Hypothesim — implementation roadmap
 
-Status: Phases 0–4, 5A–5B and 7A–7E are complete, including generalized preparation/research/edit APIs, molecular inspection and the compact workspace console. The user has approved planning Phase 8 in priority order: visible agent execution → scientific synthesis → agent-driven structural analysis → actionable iteration/history → broader drug demonstrations. **Phase 8A–8E is complete, including the 8E.1 evidence-block audit and 8E.2 cross-drug acceptance. The next proposed implementation chunk is 5C and requires its green light.** Then complete 6A–6B. Imatinib remains an evidence-blocked simulation reference, not a second enabled profile.
+Status (2026-11-15): Phases 0–4, 5A–5B, 7A–7E and 8A–8E are complete. **5C.1 (integration, performance, live demo questions), 5C.1b (general-path agent reliability) and 5C.2 (Google sign-in, per-user workspaces, Share your experiment, community feed, one-container deployment) are complete; the app is live at https://hypothesimweb-production.up.railway.app.** 5C.2 awaits the owner's live sign-in check. Next proposed chunk: **5C.3 live agent-workflow screen**, then 6A–6B; each awaits its green light. Handoff summary: `HANDOFF.md`.
 
 Canonical repository document: `docs/IMPLEMENTATION_PLAN.md` in `alenabhilash03-beep/DolphinsHackPton`.
 
@@ -37,6 +37,9 @@ A review that concludes **Keep the plan** does not require a roadmap-only GitHub
 
 | Revision | Trigger | Decision and impact |
 | --- | --- | --- |
+| 2026-11-15 — simplest hosting | Owner declined Render; Supabase now issues publishable keys and shows the project URL under **Connect** | Replace Render + Vercel with one Docker image (web + API) on Railway, with a laptop + Cloudflare tunnel fallback; sign-in config read at runtime. Deployed live from branch `claude/fervent-planck-cvxgmf`. No scope change to 5C.3 or Phase 6; 6A–6B now rehearse the live URL plus a local fallback. |
+| 2026-11-15 — general-path reliability (5C.1b) | 5C.1 live runs: the general (non-preset) agent path failed every run (gateway 502s, repeated searches, step-limit crash) | User approved inserting 5C.1b before 5C.2. Scope: stream model responses past the 30 s gateway limit, keep model context bounded, de-duplicate and normalize searches, retry transient model failures once, and end at the deadline, step limit or a missing decision with an honest recorded outcome instead of an error. No scientific gate weakened. Order: 5C.1 → 5C.1b → 5C.2 → 5C.3. |
+| 2026-11-15 — demo-centred 5C and community sharing | User asked that 5C prove the pipeline with concrete demo questions, then publish the tool at a live URL with user accounts and shareable experiments, and show the agent's workflow live while it researches | Split 5C into 5C.1 (integration, performance, live-verified demo examples), 5C.2 (hosted deployment, accounts, share an experiment with an iteration-log summary and an AI summary) and 5C.3 (live workflow screen showing papers parsed, values chosen, PDB data and viewer handoff). Public hosting, previously outside the agreed local demo, is now in scope for 5C.2. Shared AI summaries must cite the stored log and results like the grounded answer. 6A–6B rehearse the hosted URL plus a local fallback. Order: 5C.1 → 5C.2 → 5C.3 → 6A–6B; each awaits its green light. |
 | 2026-11-14 — integrated scientific-agent experience | User prioritized visible experiment execution, stronger synthesis, agent structural tools, actionable iteration, then broader drug demonstrations | Add Phase 8A–8E in that exact order before 5C and Phase 6. Existing capabilities stay implemented; these chunks connect and extend them. Next proposed chunk is 8A.1. Preserve scientific/model gates, per-chunk reviews and green lights, local hosting, and final rehearsal time. Additional effort is outside the original 36-hour estimate. |
 | Initial planning commit | User requested the full roadmap in GitHub and a review after every subphase | Preserve the original technical roadmap and add conditional risk/opportunity reassessment, documented revisions, GitHub commits for agreed changes, and a green-light boundary between chunks. Phase 0 remained unstarted at that historical revision. |
 | 2026-11-14 — drug support expansion | User requested support for additional drug names after clarifying that Phase 5 does not provide it | Add Phase 7A–7D after the reproducible local-demo gates. Accept arbitrary names for assessment, but allow simulations only through reviewed drug/model profiles or explicit hypothetical custom inputs. Budget additional work beyond the original 36 hours; preserve existing subphase IDs and the primary demo. User also selected a local demo package, so hosted deployment is no longer a mandatory Phase 5/6 gate. This revision authorizes planning only. |
@@ -607,13 +610,16 @@ Phase 8 deliverable: a visible, cited investigation loop connecting agent tool e
 
 Hackathon cutoffs: preserve the exact priority order and complete acceptance for each chunk before starting the next. If time is constrained, stop at a verified boundary, document/defer remaining chunks with the user, and move to 5C/rehearsal. Defer extra source connectors, additional aesthetic work, extra curated drugs beyond the bounded audit and broader language forms before weakening provenance or final testing. New biological models, molecular dynamics/docking and public hosting remain outside this expansion.
 
-### Phase 5C — Final integration and performance, after Phase 8; about 2 hours.
+### Phase 5C — Integration, publication and the live demo experience, after Phase 8.
 
 | Subphase | Tasks and files | Interface, verification, and completion |
 | --- | --- | --- |
-| 5C — End-to-end and performance checks; about 2 hours | Implement focused browser/API integration tests and profile chart updates, solver latency, memory, and rendering. | Core test matrix passes on the actual demonstration machine and browser. |
+| 5C.1 — Integration, performance and demo examples; about 3 hours | Repeatable browser and API checks of the demo path; slider, solver, playback and memory profiling; repeated live runs of candidate demo questions; `docs/DEMO_EXAMPLES.md` naming the two main demo questions, backups and their measured live reliability. | Offline matrix and production build pass; performance targets measured; each chosen demo question has recorded live outcomes, and any reliability defect found is fixed or reported with its cause. |
+| 5C.1b — General-path agent reliability; about 2 hours | Streaming model calls, bounded context, search de-duplication, transient retry, graceful wrap-up and conclusions from recorded state (`apps/api/app/agent/generalized.py`, `apps/api/app/llm.py`). | General-path live runs end as *completed* or *needs inputs* with recorded tools rather than provider errors; the main demo question stays reliable. |
+| 5C.2 — Hosted deployment, accounts and experiment sharing (complete; live) | Deploy web and API to a live URL with the agent connected (one container on Railway); user sign-up/sign-in; per-user experiments; **Share your experiment** publishing an experiment to other accounts with a summary built from its stored investigation log (iterations and hypotheses) plus an AI summary grounded in that log and its results. | A second account can open a shared experiment read-only, see the log-derived summary and AI summary, and every summary statement links to stored steps or solver values. Secrets stay server-side; private experiments are not visible to other accounts. |
+| 5C.3 — Live agent-workflow screen; next, about 4–6 hours | On submit, a dedicated screen shows the agent loop as it happens: papers found and parsed, passages and values extracted, values accepted or rejected for the model, the solver run, PDB metadata and contacts, and the viewer focusing on them. | Every step shown is a recorded execution event, not an animation; both main demo questions play through it end to end. |
 
-Test the original antibody workflow, reviewed reference profiles, research-derived unregistered-drug preparation, missing-input resumption and unsupported requests, plus the Phase 8 execution ledger, synthesis/citation linkage, structural handoff, proposals and investigation history. This gate precedes the Phase 6 feature freeze; no additional drug work should start during rehearsal.
+5C.1 tests the original antibody workflow, reviewed reference profiles, research-derived unregistered-drug preparation, missing-input resumption and unsupported requests, plus the Phase 8 execution ledger, synthesis/citation linkage, structural handoff, proposals and investigation history. No additional drug work starts during rehearsal.
 
 ### Phase 6, hours 30–36, freezes and rehearses the release. No new features.
 
@@ -709,7 +715,7 @@ The primary demo should take roughly four minutes:
 9. Briefly show that an unsupported drug produces a limitation response.
 Prepare a saved experiment containing the exact configuration, reviewed evidence, structure asset, model version, and expected metrics. The fallback must remain interactive and clearly identify saved research. The live LangChain integration should also have a verified trace available for inspection.
 
-Phases 0–4, 5A–5B, Phase 7 and **Phase 8A–8E are complete**. **5C — Final integration and performance** is the next proposed implementation unit and awaits its green light.
+Phases 0–4, 5A–5B, Phase 7 and **Phase 8A–8E are complete**. 5C is split into 5C.1 (integration and demo examples), 5C.2 (hosted deployment, accounts and sharing) and 5C.3 (live workflow screen).
 
 ## Current execution order (revision 2026-11-14)
 
@@ -798,3 +804,19 @@ Cetuximab–EGFR has a versioned read-only audit with five sources and 27 candid
 ### 8E.2 outcome
 
 Nine reproducible integration cases cover the reviewed primary research/solver/synthesis/structure/proposal/history path, three unfamiliar identities, explicit hypothetical identity/inputs, missing-rate continuation, unsupported models, blocked real-drug audits and extraction outage. Live Nemotron separately retrieved two primary papers as full text, accepted two PK candidates without replacing audited preset inputs, ran the solver and structure tool, and produced a grounded answer; a traced follow-up answered the original question and an invented name honestly returned missing inputs. Browser checks verified primary structure handoff plus unfamiliar-drug continuation, affinity alternatives and reload. Fixed preserved prior-drug proposal cards under no-result answers and reload overwriting a new research context with an old result's answer. 430 backend and 66 frontend tests, types, contracts and production build pass. Fixtures and live results remain explicitly distinguished in `docs/CROSS_DRUG_ACCEPTANCE.md` and `docs/subphase-reviews/8E.2.md`. **Keep the plan. Phase 8 is complete.** Next is **5C — Final integration and performance**, awaiting its green light, then 6A local packaging and 6B rehearsal.
+
+### 5C.1 outcome
+
+Complete. Backend 431, frontend 66, offline cross-drug 9/9 and a new 10-step browser demo-path check pass; slider redraw median 250 ms / p95 316 ms. A live defect where a failed re-extraction erased a validated extraction was fixed (main demo question 3/3 complete live afterwards). Main demo: the trastuzumab half-life vs affinity question, then the 95% threshold follow-up ([DEMO_EXAMPLES.md](DEMO_EXAMPLES.md)). The general (non-preset) agent path failed live on the baseline and imatinib candidates; the [5C.1 review](subphase-reviews/5C.1.md) recommends a bounded 5C.1b reliability chunk before 5C.2, pending the user's decision.
+
+### 5C.1b outcome
+
+Complete. Streaming model calls (a non-streaming 30 s gateway limit caused 502s), bounded context, search de-duplication, transient retry, and conclusions from recorded state. General-path live runs went from 6/6 provider failures to 4/4 honest *needs inputs*; the main demo question completed in 8 of 10 live runs since 5C.1 ([review](subphase-reviews/5C.1b.md)).
+
+### 5C.2 outcome
+
+Implemented and verified locally: Google sign-in via Supabase, per-user workspaces, **Share your experiment** (immutable lineage snapshot, log summary, validated AI summary), community feed and read-only shared pages; single-container Docker image with a Railway configuration and a laptop-tunnel fallback ([deployment guide](DEPLOYMENT.md)). The live URL awaits the owner's Railway and Google sign-in steps ([review](subphase-reviews/5C.2.md)).
+
+### Deployment outcome (5C.2, final)
+
+Live at https://hypothesimweb-production.up.railway.app from branch `claude/fervent-planck-cvxgmf` (auto-deploys on push). One Docker image (`Dockerfile`, `scripts/start_container.sh`, `railway.toml`); variables `NVIDIA_API_KEY`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `PORT=3000`; volume at `/data`. Verified live: health and AI key, Supabase sign-in configuration, signed-out gating, demo and simulation in a browser. Pending owner check: Google sign-in round trip, research, sharing between two accounts. Handoff: `HANDOFF.md`.

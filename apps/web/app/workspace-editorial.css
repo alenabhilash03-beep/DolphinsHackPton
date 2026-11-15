@@ -1,13 +1,5 @@
 /* Editorial research workspace: open composition, soft working surfaces, precise copy. */
 .editorial-workspace { --ink:#322D29; --muted:#65594F; --line:#AC9C8D45; --accent:#72383D; color:var(--ink); font:14px/1.7 Arial,Helvetica,sans-serif; padding:0 48px 48px 144px; }
-.editorial-workspace .workspace-rail { position:fixed; inset:0 auto 0 0; z-index:12; width:96px; background:#322D29; color:#D1C7BD; display:flex; flex-direction:column; align-items:center; padding:32px 8px 24px; overflow-y:auto; }
-.editorial-workspace .rail-monogram { font:italic 36px Georgia,serif; text-decoration:none; color:#EFE9E1; margin-bottom:32px; }
-.rail-caption { font-size:10px; color:#AC9C8D; margin-bottom:24px; }
-.workspace-rail nav { width:100%; display:flex; flex-direction:column; gap:16px; }
-.editorial-workspace .workspace-rail nav a { display:flex; flex-direction:column; gap:8px; align-items:center; padding:12px 4px; font-size:11px; color:#D1C7BD; text-decoration:none; border-radius:16px; }
-.workspace-rail nav a span { font:18px Georgia,serif; color:#AC9C8D; }
-.editorial-workspace .workspace-rail nav a:hover { background:#72383D66; color:#EFE9E1; }
-.editorial-workspace .rail-home { color:#D1C7BD; font-size:10px; margin-top:auto; padding-top:48px; text-decoration:none; }
 .editorial-workspace .workspace-header { padding:24px 0; max-width:1440px; gap:24px; }
 .editorial-workspace .workspace-brand { color:#322D29!important; font-size:23px; font-weight:500; }
 .editorial-workspace .workspace-brand span { color:#72383D; }

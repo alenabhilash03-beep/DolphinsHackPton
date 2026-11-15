@@ -24,6 +24,15 @@ def _display(field: str, value: float | None) -> str:
     return f'{plain(value)} mg'
 
 
+def _edit_name(scenario, alternatives) -> str:
+    """The readable label when the edit parser resolves it to exactly this scenario; otherwise the stable ID."""
+    label = scenario.label.strip()
+    key = label.casefold()
+    unique = sum(key in {item.scenario_id.casefold(), item.label.casefold()} for item in alternatives) == 1
+    reserved = key in {'that alternative', 'the selected alternative', 'the affinity alternative', 'affinity alternative'}
+    return label if label and unique and not reserved and label == label.rstrip('.?!') else scenario.scenario_id
+
+
 def operations(proposal: ExperimentProposal) -> list[EditOperation]:
     return [EditOperation(field=change.field, scenario_id=change.scenario_id, value=change.to_value) for change in proposal.changes]
 
@@ -76,7 +85,7 @@ def propose(result) -> list[ExperimentProposal]:
             f'{low.label} never reaches the {plain(config.occupancy_threshold * 100)}% occupancy threshold in this window.'[:500],
             'Doubling the administered amount tests whether exposure, rather than binding, limits occupancy in this scenario.',
             'Does a doubled dose bring this scenario above the occupancy threshold?',
-            f'Double the dose in {low.scenario_id}', 'dose_mg', dose * 2, dose, low)
+            f'Double the dose in {_edit_name(low, config.scenarios[1:])}', 'dose_mg', dose * 2, dose, low)
     high = next((item for item in alternatives if status[item.scenario_id] == 'still_above_at_horizon' and single_dose(item)), None)
     if high:
         dose = single_dose(high)
@@ -84,7 +93,7 @@ def propose(result) -> list[ExperimentProposal]:
             f'{high.label} stays above the {plain(config.occupancy_threshold * 100)}% occupancy threshold for the whole window.'[:500],
             'Halving the administered amount tests how much margin this scenario has before occupancy drops below the threshold.',
             'Does this scenario still stay above the threshold at half the dose?',
-            f'Halve the dose in {high.scenario_id}', 'dose_mg', dose / 2, dose, high)
+            f'Halve the dose in {_edit_name(high, config.scenarios[1:])}', 'dose_mg', dose / 2, dose, high)
     return proposals[:4]
 
 

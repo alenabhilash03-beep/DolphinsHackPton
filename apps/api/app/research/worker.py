@@ -4,7 +4,7 @@ import os
 import sys
 from threading import Event, Thread
 from time import monotonic
-from langchain_nvidia_ai_endpoints import ChatNVIDIA
+from app.llm import StreamingChatNVIDIA as ChatNVIDIA
 from langchain_core.tracers.langchain import wait_for_all_tracers
 from pydantic import TypeAdapter
 from app.agent.workflow import ResearchOutcome, run_research, scope_request

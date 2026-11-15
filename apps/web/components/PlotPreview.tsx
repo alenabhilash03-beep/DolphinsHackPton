@@ -66,7 +66,7 @@ export function PlotPreview({ initialExperiment, initialResult = null, onResultI
             <p>{kind==="concentration"?"Central exposure · nM":"Prescribed site exposure + binding kinetics · %"}</p>
             <VisualizationBoundary label={`${kind} plot`}><ScientificPlot result={workspace.result!} kind={kind} cursorTimeHours={timeline.timeHours} revealProgress={timeline.revealCurves} onSeekTime={timeline.seekTime}/></VisualizationBoundary>
           </section>)}</div>
-          <details className="binding-disclosure"><summary>Binding population & values at {timeline.timeDays.toFixed(2)} days <span>Model-driven schematic</span></summary>
+          <details className="binding-disclosure" open><summary>Binding population & values at {timeline.timeDays.toFixed(2)} days <span>Model-driven schematic</span></summary>
             <BindingCanvas result={workspace.result} index={timeline.index} scenarioId={workspace.selectedScenarioId}/>
             <ul>{timeline.readout?.scenarios.map(s=><li key={s.scenarioId}>{s.label}: {s.centralConcentrationNM.toFixed(3)} nM central; {(s.occupancyFraction*100).toFixed(2)}% occupied</li>)}</ul>
           </details>

@@ -46,8 +46,8 @@ export function EvidencePanel({ experiment, scenarioId, resultPresent = false, s
       return <li key={source.source_id}>
         <a href={source.url} target="_blank" rel="noreferrer">{source.source_id} · {source.title}</a>
         {cached && <span> · PMID {cached.pmid} · abstract {cached.abstract_available ? "indexed" : "not indexed"}
-          · full text {cached.full_text_status === "open_access_link" ? "open-access link indexed" : "not confirmed"}
-          · cached {cached.retrieved_at.slice(0, 10)}</span>}
+          {" · "}full text {cached.full_text_status === "open_access_link" ? "open-access link indexed" : "not confirmed"}
+          {" · "}cached {cached.retrieved_at.slice(0, 10)}</span>}
       </li>;
     })}</ul>
     <details><summary>Parameter provenance · {scenario.label}</summary>

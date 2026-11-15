@@ -1,3 +1,4 @@
+import { forwardedAuth } from "./agent-proxy";
 /** Server-only research forwarding; credentials remain in FastAPI. */
 
 const BASE = process.env.API_BASE_URL ?? "http://127.0.0.1:8000";
@@ -9,7 +10,7 @@ export async function submitResearch(request: Request, path: "/api/research/jobs
   }
   try {
     const backend = await fetch(`${BASE}${path}`, {
-      method: "POST", headers: { "Content-Type": "application/json" }, body,
+      method: "POST", headers: { "Content-Type": "application/json", ...forwardedAuth(request) }, body,
       cache: "no-store", signal: AbortSignal.timeout(10_000),
     });
     return new Response(await backend.text(), { status: backend.status,

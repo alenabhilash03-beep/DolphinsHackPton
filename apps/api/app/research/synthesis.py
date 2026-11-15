@@ -113,7 +113,7 @@ class LangChainSynthesizer:
 
 
 def configured_synthesizer(settings, timeout_s: float = 45) -> LangChainSynthesizer:
-    from langchain_nvidia_ai_endpoints import ChatNVIDIA
+    from app.llm import StreamingChatNVIDIA as ChatNVIDIA
     if not settings.nvidia_api_key or not settings.nvidia_api_key.get_secret_value():
         raise RuntimeError('NVIDIA synthesis credentials are not configured')
     if settings.hypothesim_llm_model != 'nvidia/nemotron-3.5-super-vl-120b-a12b':

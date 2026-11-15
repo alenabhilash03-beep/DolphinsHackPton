@@ -69,3 +69,8 @@ export type ProposalSet = components["schemas"]["ProposalSet"];
 export type InvestigationHistory = components["schemas"]["InvestigationHistory"];
 export type HistoryEntry = components["schemas"]["HistoryEntry"];
 export type StoredResult = components["schemas"]["StoredResult"];
+// Community sharing (5C.2): immutable snapshots of an investigation.
+export type SharedExperiment = components["schemas"]["SharedExperiment"];
+export type SharedStep = components["schemas"]["SharedStep"];
+export type ShareList = components["schemas"]["ShareList"];
+export type ShareListItem = components["schemas"]["ShareListItem"];

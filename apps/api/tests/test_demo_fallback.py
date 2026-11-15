@@ -5,11 +5,12 @@ from app.main import app
 from app.research.demo import DEMO_PATH, DemoSnapshot, load_demo
 from app.schemas.contracts import SimulationRequest
 from app.simulation.service import run_simulation
+from numeric import assert_same_solution
 
 def test_saved_demo_matches_current_solver_and_public_asset():
     saved = load_demo()
     current = run_simulation(SimulationRequest(experiment=saved.experiment, client_revision=0, output_points=600))
-    assert saved.result == current
+    assert_same_solution(saved.result, current)
     root = Path(__file__).resolve().parents[3]
     assert DEMO_PATH.read_bytes() == (root / "apps/web/public/demo/trastuzumab-demo.json").read_bytes()
     assert saved.research_status == "saved_no_live_agent" and saved.retrieval_status == "cached_reviewed"

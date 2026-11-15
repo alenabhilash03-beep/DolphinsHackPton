@@ -112,7 +112,7 @@ export function buildScientificPlot(
       autosize: true,
       paper_bgcolor: "#ffffff",
       plot_bgcolor: "#ffffff",
-      font: { family: "Arial, Helvetica, sans-serif", color: "#56677c", size: 10 },
+      font: { family: "Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif", color: "#56677c", size: 10 },
       height: 355,
       margin: { l: 55, r: 10, t: 12, b: 112 },
       legend: { orientation: "h", x: 0, y: -0.28, xanchor: "left", yanchor: "top", font: { size: 9 } },

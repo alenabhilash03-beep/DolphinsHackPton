@@ -1,3 +1,4 @@
+import { forwardedAuth } from "./agent-proxy";
 /** Server-only forwarding to FastAPI; API_BASE_URL and provider credentials stay off the client. */
 
 const MAX_BODY_BYTES = 1_000_000;
@@ -10,7 +11,7 @@ export async function forwardSimulation(request: Request, path: "/api/simulation
   try {
     const backend = await fetch(`${process.env.API_BASE_URL ?? "http://127.0.0.1:8000"}${path}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...forwardedAuth(request) },
       body,
       cache: "no-store",
       signal: AbortSignal.timeout(12_000),

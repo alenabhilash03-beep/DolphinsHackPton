@@ -1,5 +1,6 @@
 /** Presentation logic for the grounded scientific answer. Pure: no fetching, no invented text or numbers. */
 import type { AgentTurn, ScientificSynthesis, SimulationResult, SolverQuantity } from "./contracts";
+import { unitLabel } from "./investigation.ts";
 
 type Turn = Pick<AgentTurn, "synthesis" | "result" | "research_papers">;
 export type AnswerState = "none" | "invalid" | "current" | "stale" | "evidence_only";
@@ -42,12 +43,14 @@ export function answerState(turn: Turn | null, shown: SimulationResult | null): 
     && shown.client_revision === synthesis.client_revision ? "current" : "stale";
 }
 
-export function verdictLabel(synthesis: ScientificSynthesis): string {
+/** A follow-up edit is an experiment change, so its verdict is always undetermined; label it as a result instead. */
+export function verdictLabel(synthesis: ScientificSynthesis, followUp = false): string {
   const answer = synthesis.answer;
   if (!answer) return synthesis.status === "rejected" ? "Written answer not accepted" : "Written answer unavailable";
   const basis = { conditional_simulation: "by the conditional simulation", paper_evidence: "by inspected paper passages",
     paper_evidence_and_conditional_simulation: "by inspected passages and the conditional simulation", none: "" }[answer.basis];
-  const verdict = { supported: "Supported", not_supported: "Not supported", mixed: "Mixed", undetermined: "Not determined" }[answer.verdict];
+  const verdict = { supported: "Supported", not_supported: "Not supported", mixed: "Mixed",
+    undetermined: followUp ? "Follow-up experiment result" : "Not determined" }[answer.verdict];
   return answer.verdict === "undetermined" || !basis ? verdict : `${verdict} ${basis}`;
 }
 export const basisLabel = (synthesis: ScientificSynthesis): string => ({ research_and_simulation: "Inspected papers + numerical simulation",
@@ -90,8 +93,8 @@ export function findingLinks(turn: Turn, finding: NonNullable<ScientificSynthesi
         : "Not a simulation input for the displayed curves.",
       // A candidate already used as a simulation input is listed once, as its parameter record.
       candidates: (paper?.extraction.parameters ?? []).filter(item => !records.some(record => record.parameter === item.parameter)).map(item => ({ parameter: item.parameter,
-        text: `${item.parameter} = ${item.original_value} ${item.original_unit}`, plots: parameterPlots(item.parameter) })),
-      records: records.map(item => ({ evidenceId: item.evidence_id, text: `${item.parameter} = ${item.original_value} ${item.original_unit} · ${item.review_status}`,
+        text: `${item.parameter} = ${item.original_value} ${unitLabel(item.original_unit)}`.trimEnd(), plots: parameterPlots(item.parameter) })),
+      records: records.map(item => ({ evidenceId: item.evidence_id, text: `${item.parameter} = ${item.original_value}${unitLabel(item.original_unit) ? ` ${unitLabel(item.original_unit)}` : ""} · ${item.review_status}`,
         plots: parameterPlots(item.parameter) })) };
   });
 }

@@ -26,8 +26,10 @@ class AcceptanceModel(DrivingModel):
     def _generate(self,messages,**kwargs):
         context=json.loads(next(m.content for m in messages if isinstance(m,HumanMessage)))
         request=context['request']
-        self.mode='edit' if context['mode']=='edit' else 'research'
-        if self.mode=='research':self.request=request['request']
+        self.mode='edit' if context['mode']=='edit' else 'resume' if request.get('preparation_id') else 'research'
+        if self.mode!='edit':
+            self.request=request['request']
+            self.resume_id=request.get('preparation_id')
         # The reviewed trastuzumab question follows the research-first reviewed flow, including structure inspection.
         if self.mode=='research' and context.get('reviewed_comparison_available'):return ReviewedResearchModel._generate(self,messages,**kwargs)
         if self.mode=='edit' and not self._injected:

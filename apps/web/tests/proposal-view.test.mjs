@@ -37,3 +37,14 @@ test('the proposals route is proxied only for a well-formed result identifier',a
     assert.equal(calls.length,1);
   } finally {globalThis.fetch=old;}
 });
+
+test('no-result research cannot offer preserved prior-drug follow-ups as its own',async()=>{
+  const {proposalResultForTurn}=await import('../lib/proposal-view.ts');
+  const result=shown();
+  assert.equal(proposalResultForTurn({result:null},result),null);
+  assert.equal(proposalResultForTurn({result:null},null),null);
+  assert.equal(proposalResultForTurn(null,result),result); // explicitly opened saved/direct result
+  assert.equal(proposalResultForTurn({result},result),result);
+  const slider=shown('sim-after-slider',4);
+  assert.equal(proposalResultForTurn({result},slider),slider); // direct edits still get their own proposals
+});

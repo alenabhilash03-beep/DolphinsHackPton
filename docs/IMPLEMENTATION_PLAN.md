@@ -1,6 +1,6 @@
 # Hypothesim — implementation roadmap
 
-Status: Phases 0–4, 5A–5B and 7A–7E are complete, including generalized preparation/research/edit APIs, molecular inspection and the compact workspace console. The user has approved planning Phase 8 in priority order: visible agent execution → scientific synthesis → agent-driven structural analysis → actionable iteration/history → broader drug demonstrations. **8A.1–8A.2, 8B.1–8B.2, 8C.1–8C.2 and 8D.1–8D.2 are complete; 8E.1 is complete with an evidence-block audit; the next proposed implementation chunk is 8E.2 and requires its green light.** Then complete Phase 8, 5C and 6A–6B. This planning approval does not authorize implementation. Imatinib remains an evidence-blocked simulation reference, not a second enabled profile.
+Status: Phases 0–4, 5A–5B and 7A–7E are complete, including generalized preparation/research/edit APIs, molecular inspection and the compact workspace console. The user has approved planning Phase 8 in priority order: visible agent execution → scientific synthesis → agent-driven structural analysis → actionable iteration/history → broader drug demonstrations. **Phase 8A–8E is complete, including the 8E.1 evidence-block audit and 8E.2 cross-drug acceptance. The next proposed implementation chunk is 5C and requires its green light.** Then complete 6A–6B. Imatinib remains an evidence-blocked simulation reference, not a second enabled profile.
 
 Canonical repository document: `docs/IMPLEMENTATION_PLAN.md` in `alenabhilash03-beep/DolphinsHackPton`.
 
@@ -552,9 +552,9 @@ Phase deliverable: arbitrary-drug research and conditional configuration in supp
 
 Scope cutoff: retain arbitrary-drug preparation as essential. Defer extra connectors, extra curated presets and cosmetic enhancements before weakening evidence/provenance checks or restricting the workflow back to a drug-name allowlist. Newly invented models, unrestricted mechanisms, clinical recommendations and universal drug support remain outside scope. Reassess estimates at each chunk; final testing must include the unregistered-drug path and original demo. Hosting remains optional.
 
-### Phase 8 — Integrated scientific-agent investigation (new planned work)
+### Phase 8 — Integrated scientific-agent investigation (complete)
 
-User-approved priority order: **8A → 8B → 8C → 8D → 8E → 5C → 6A → 6B**. This addresses the gap between the implemented scientific services and a coherent iterative investigator experience. These are planned deliverables, not existing capabilities. Retain the compact result-first workspace and the deterministic simulator independent of the agent.
+User-approved priority order: **8A → 8B → 8C → 8D → 8E → 5C → 6A → 6B**. Phase 8 is complete, with outcomes and remaining scientific limits recorded below. The following tables retain its implementation scope and acceptance criteria. Retain the compact result-first workspace and the deterministic simulator independent of the agent.
 
 Provisional additional engineering budget: **16–27 hours** for Phase 8 (8A 2–4, 8B 3–5, 8C 4–6, 8D 4–6, 8E 3–6). These are estimates, not promises or remaining hackathon clock time; the original 36-hour schedule no longer covers the agreed expansion. Reassess at every completed chunk. Preserve at least the existing 5C and 6A–6B budgets; do not consume final integration/rehearsal time silently. Work one chunk at a time and stop for its review and the next green light.
 
@@ -601,7 +601,7 @@ Depends on 8D. Generic research/preparation remains essential and independent of
 | Execution chunk | Concrete tasks / expected files | Interfaces, checks and completion |
 | --- | --- | --- |
 | **8E.1 — Additional evidence audit — complete (evidence block)** | Audit one promising additional drug/target for compatible PK, matched binding kinetics, exposure assumptions, units and model applicability; cetuximab–EGFR is a candidate, not an approved selection. Record exact sources, uncertainty and optional structure provenance. Enable a conditional runnable profile only if the audit supports it. | Existing reference-audit gates apply. If evidence is incomplete, complete an honest blocked audit, record gaps and propose a justified replacement or cutoff; never fill measurements to obtain a second runnable drug. Deliverable: an auditable support decision and, only when justified, an additional runnable conditional example. |
-| **8E.2 — Cross-drug and unfamiliar-drug acceptance** | Rehearse the reviewed primary workflow, the additional audit outcome, an unfamiliar name through generic research, explicit custom assumptions, missing-input continuation and unsupported model rejection. Show richer synthesis/structural tools only where the actual evidence supports them. | Distinguish live retrieval from cached demonstrations and synthetic software fixtures from measured values. A successful extra preset alone does not satisfy generalization. Deliverable: a reproducible multi-case demonstration with clear capability boundaries and no fallback to unrelated drug results. |
+| **8E.2 — Cross-drug and unfamiliar-drug acceptance — complete** | Rehearse the reviewed primary workflow, the additional audit outcome, an unfamiliar name through generic research, explicit custom assumptions, missing-input continuation and unsupported model rejection. Show richer synthesis/structural tools only where the actual evidence supports them. | Distinguish live retrieval from cached demonstrations and synthetic software fixtures from measured values. A successful extra preset alone does not satisfy generalization. Deliverable: a reproducible multi-case demonstration with clear capability boundaries and no fallback to unrelated drug results. |
 
 Phase 8 deliverable: a visible, cited investigation loop connecting agent tool execution, numerical results, bounded structural measurements, actionable next experiments and persistent history. Arbitrary-drug research is supported; universal automatic scientific simulation is not promised.
 
@@ -709,11 +709,11 @@ The primary demo should take roughly four minutes:
 9. Briefly show that an unsupported drug produces a limitation response.
 Prepare a saved experiment containing the exact configuration, reviewed evidence, structure asset, model version, and expected metrics. The fallback must remain interactive and clearly identify saved research. The live LangChain integration should also have a verified trace available for inspection.
 
-Phases 0–4, 5A–5B and Phase 7 are complete. Phase 8 is now agreed planned scope; **Phase 8A–8D and the 8E.1 audit are complete; 8E.2** is the next proposed implementation unit and awaits its green light.
+Phases 0–4, 5A–5B, Phase 7 and **Phase 8A–8E are complete**. **5C — Final integration and performance** is the next proposed implementation unit and awaits its green light.
 
 ## Current execution order (revision 2026-11-14)
 
-Completed: Phases 0–4, 5A–5B, 7A and 7B.1–7B.5 and 7C–7E, plus 8A.1–8A.2, 8B.1–8B.2, 8C.1–8C.2, 8D.1–8D.2 and 8E.1 (evidence block). Remaining: **8E.2 → 5C → 6A → 6B**. The revised Phase 7 planning baseline after 7A is 21–33 hours, including the now-completed 7B.1–7B.5; the original 36-hour MVP estimate does not cover this expansion. Final rehearsal follows all agreed feature work.
+Completed: Phases 0–4, 5A–5B, 7A and 7B.1–7B.5 and 7C–7E, plus 8A.1–8A.2, 8B.1–8B.2, 8C.1–8C.2, 8D.1–8D.2 and 8E.1–8E.2 (additional audit remains evidence-blocked). Remaining: **5C → 6A → 6B**. The revised Phase 7 planning baseline after 7A is 21–33 hours, including the now-completed 7B.1–7B.5; the original 36-hour MVP estimate does not cover this expansion. Final rehearsal follows all agreed feature work.
 
 ### 7B.4 reference outcome
 
@@ -794,3 +794,7 @@ Stored results now form an immutable tree. Every result records its parent, how 
 ### 8E.1 outcome
 
 Cetuximab–EGFR has a versioned read-only audit with five sources and 27 candidate facts. It remains evidence-blocked as an automatic clinical PK-to-occupancy preset: dose-dependent/BSA-normalized PK, distinct Fab/fusion-protein assays, incomplete newer SPR methods/unit verification and missing exposure/scope choices prevent silent default selection. Explicit hypothetical preparation is unchanged. No new drug profile or third verified structure is enabled. Coordinate attachments in audits are now optional with a required scope note, preserving existing asset verification. See `docs/CETUXIMAB_AUDIT.md` and `docs/subphase-reviews/8E.1.md`. **Keep the plan**; the justified cutoff is to proceed to **8E.2 — Cross-drug and unfamiliar-drug acceptance**, awaiting its green light.
+
+### 8E.2 outcome
+
+Nine reproducible integration cases cover the reviewed primary research/solver/synthesis/structure/proposal/history path, three unfamiliar identities, explicit hypothetical identity/inputs, missing-rate continuation, unsupported models, blocked real-drug audits and extraction outage. Live Nemotron separately retrieved two primary papers as full text, accepted two PK candidates without replacing audited preset inputs, ran the solver and structure tool, and produced a grounded answer; a traced follow-up answered the original question and an invented name honestly returned missing inputs. Browser checks verified primary structure handoff plus unfamiliar-drug continuation, affinity alternatives and reload. Fixed preserved prior-drug proposal cards under no-result answers and reload overwriting a new research context with an old result's answer. 430 backend and 66 frontend tests, types, contracts and production build pass. Fixtures and live results remain explicitly distinguished in `docs/CROSS_DRUG_ACCEPTANCE.md` and `docs/subphase-reviews/8E.2.md`. **Keep the plan. Phase 8 is complete.** Next is **5C — Final integration and performance**, awaiting its green light, then 6A local packaging and 6B rehearsal.

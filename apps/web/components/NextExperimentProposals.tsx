@@ -22,7 +22,7 @@ export function NextExperimentProposals({ shown, busy, onRun }: { shown: Simulat
   const proposals = (set?.proposals ?? []).filter(proposal => proposalMatches(proposal, shown));
   return <section id="next-experiments" className="proposal-panel" aria-label="Follow-up experiments">
     <div className="answer-section-heading"><div><p className="eyebrow">Next experiments</p><h2>Run a follow-up experiment</h2></div>
-      <span>Derived from this result's solver values · exact changes shown before anything runs</span></div>
+      <span>For displayed curves: {shown.configuration.drug} → {shown.configuration.target}. Derived from this result's solver values.</span></div>
     {failed ? <p className="answer-access-note">Follow-up proposals are unavailable for these curves right now. You can still change the experiment in words or with the controls.</p>
       : !set ? <p className="answer-access-note" role="status">Checking this result for follow-up experiments…</p>
       : !proposals.length ? <p className="answer-access-note">No follow-up experiment is suggested for this result. You can still change the experiment in words or with the controls.</p>

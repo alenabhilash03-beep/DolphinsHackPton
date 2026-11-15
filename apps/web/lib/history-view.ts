@@ -1,5 +1,10 @@
 /** Presentation of the investigation history. Pure: values are the server's; nothing is recomputed. */
-import type { HistoryEntry, InvestigationHistory } from "./contracts";
+import type { AgentTurn, HistoryEntry, InvestigationHistory } from "./contracts";
+
+/** Restore older curves without replacing a new question's no-result answer or missing-input form. */
+export function restorationAfterJob(savedId:string|null, turn:Pick<AgentTurn,"result">):{resultId:string;preserveResearchContext:boolean}|null {
+  return savedId && savedId!==turn.result?.result_id ? {resultId:savedId,preserveResearchContext:!turn.result} : null;
+}
 
 const ORIGIN: Record<HistoryEntry["origin"], string> = { research: "Research", agent_edit: "Change in words", proposal: "Follow-up experiment",
   direct_control: "Direct control", direct_simulation: "Simulation", saved_demo: "Saved demo" };

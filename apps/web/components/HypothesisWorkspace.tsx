@@ -13,9 +13,9 @@ import { investigationView } from "../lib/investigation";
 import { ScientificAnswer } from "./ScientificAnswer";
 import { answerState, type MeasurementCard } from "../lib/synthesis-view";
 import { NextExperimentProposals } from "./NextExperimentProposals";
-import { proposalRequest } from "../lib/proposal-view";
+import { proposalRequest, proposalResultForTurn } from "../lib/proposal-view";
 import { InvestigationHistoryPanel } from "./InvestigationHistoryPanel";
-import { branchRequired, historyFor } from "../lib/history-view";
+import { branchRequired, historyFor, restorationAfterJob } from "../lib/history-view";
 const PRIMARY="Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const STORAGE="hypothesim-agent-job-v1";
 const SCIENCE_REQUEST="hypothesim-scientific-request-v1";
@@ -106,7 +106,8 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
           acceptTurn(next.turn);
           // After a reload, return to the result that was on screen if it was a later step than this job's.
           const saved=restoreResult.current;restoreResult.current=null;
-          if(saved && saved!==next.turn.result?.result_id)void reopen(saved,true);
+          const restore=restorationAfterJob(saved,next.turn);
+          if(restore)void reopen(restore.resultId,true,restore.preserveResearchContext);
           return;
         }
         if(next.status==="failed") {
@@ -127,7 +128,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
     return ()=>{closed=true;abort.abort();clearTimeout(timer);};
   },[jobId,acceptTurn]);
   // Reopen a stored result exactly as computed, with the answer of the turn that produced it. Nothing is rerun.
-  async function reopen(resultId:string,quiet=false) {
+  async function reopen(resultId:string,quiet=false,preserveResearchContext=false) {
     const ticket=++reopenTicket.current;
     try {
       const response=await fetch(`/api/agent/results/${encodeURIComponent(resultId)}`,{cache:"no-store"});
@@ -136,8 +137,11 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
       let producing:AgentTurn|null=null;
       if(stored.turn_id){const read=await fetch(`/api/agent/turns/${stored.turn_id}`,{cache:"no-store"});if(read.ok)producing=await read.json() as AgentTurn;}
       if(ticket!==reopenTicket.current)return;   // a newer reopen request wins
-      setPrepared(stored.result);setShown(stored.result);setTurn(producing);setExplanation(producing?.interpretation ?? null);setRecord(null);setSaved(false);
-      setStructureIdentity({drug:stored.result.configuration.drug,target:stored.result.configuration.target});
+      setPrepared(stored.result);setShown(stored.result);setSaved(false);
+      if(!preserveResearchContext){
+        setTurn(producing);setExplanation(producing?.interpretation ?? null);setRecord(null);
+        setStructureIdentity({drug:stored.result.configuration.drug,target:stored.result.configuration.target});
+      }
       if(!quiet){setMessage(null);requestAnimationFrame(()=>document.getElementById(producing?.synthesis?"answer":"experiment")?.scrollIntoView({block:"start",behavior:"auto"}));}
     } catch(e){if(ticket===reopenTicket.current&&!quiet)setMessage(e instanceof Error?e.message:"Could not reopen that result.");}
   }
@@ -256,7 +260,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
     </section>
     <InvestigationPanel job={job} submitting={submitting} saved={saved} displayedResult={shown} config={visible} message={message} viewer={structure} onFocusMeasurement={focusMeasurement}/>
     <ScientificAnswer turn={turn} shown={shown} viewer={structure} onFocusMeasurement={focusMeasurement}/>
-    <NextExperimentProposals shown={shown} busy={!!busy || controlBusy} onRun={runProposal}/>
+    <NextExperimentProposals shown={proposalResultForTurn(turn,shown)} busy={!!busy || controlBusy} onRun={runProposal}/>
     <InvestigationHistoryPanel history={currentHistory} shownId={shownId} busy={!!busy || controlBusy} branch={branch} onReopen={id=>void reopen(id)}/>
     <ResearchPaperReview papers={turn?.research_papers ?? []}/>
     {(record || turn?.questions?.length || staleExplanation) ? <section className="research-panel" aria-label="Research continuation">

@@ -1,0 +1,208 @@
+{
+  "subphase": "8E.2",
+  "recorded_at": "2026-11-15T04:02:18.477836+00:00",
+  "outcome": "passed",
+  "scope": "Cross-drug software and primary live scientific acceptance; not clinical validation or universal drug support.",
+  "offline_matrix": {
+    "verification_kind": "8E.2 offline cross-drug integration acceptance",
+    "external_dependencies": "Synthetic identities/literature/extraction and scripted agent/synthesizer; no real-drug measurement claims.",
+    "actual_components": [
+      "LangChain graph",
+      "FastAPI background jobs",
+      "preparation/assumption validation",
+      "SciPy solver",
+      "citation/quantity validation",
+      "verified primary coordinates",
+      "result/history store",
+      "read-only real-drug audits"
+    ],
+    "tests": [
+      {
+        "name": "test_primary_full_queue_answer_structure_proposal_history_and_reload",
+        "status": "passed"
+      },
+      {
+        "name": "test_multiple_unregistered_names_research_continue_simulate_and_edit_without_reference_leakage[aster]",
+        "status": "passed"
+      },
+      {
+        "name": "test_multiple_unregistered_names_research_continue_simulate_and_edit_without_reference_leakage[boreal-missing-rate]",
+        "status": "passed"
+      },
+      {
+        "name": "test_multiple_unregistered_names_research_continue_simulate_and_edit_without_reference_leakage[unseen-generated]",
+        "status": "passed"
+      },
+      {
+        "name": "test_declared_hypothetical_identity_and_inputs_are_explicit_and_not_paper_evidence",
+        "status": "passed"
+      },
+      {
+        "name": "test_unsupported_model_cannot_borrow_an_existing_result[oral-None]",
+        "status": "passed"
+      },
+      {
+        "name": "test_unsupported_model_cannot_borrow_an_existing_result[iv_infusion-irreversible]",
+        "status": "passed"
+      },
+      {
+        "name": "test_blocked_real_drug_audits_and_mismatched_structures_do_not_enable_profiles",
+        "status": "passed"
+      },
+      {
+        "name": "test_extraction_outage_keeps_research_only_answer_and_never_borrows_a_solver_result",
+        "status": "passed"
+      }
+    ],
+    "passed": 9,
+    "failed": 0
+  },
+  "live_research": [
+    {
+      "case": "primary",
+      "elapsed_s": 84.45,
+      "status": "completed",
+      "trace_status": "remote_verified",
+      "trace_id": "01a1dd45-af98-7284-b32a-4db0344ce6b8",
+      "tool_calls": [
+        "start_experiment_preparation",
+        "search_hypothesis_evidence",
+        "search_hypothesis_evidence",
+        "retrieve_evidence_source",
+        "retrieve_evidence_source",
+        "extract_cited_parameters",
+        "extract_cited_parameters",
+        "extract_cited_parameters",
+        "extract_cited_parameters",
+        "prepare_reviewed_comparison",
+        "simulate_current_comparison",
+        "interpret_current_result",
+        "inspect_verified_structure",
+        "synthesize_grounded_answer"
+      ],
+      "result_id": "sim-262bc1bc1e17aefb3d6995d5",
+      "synthesis_status": "grounded",
+      "structure_status": "available",
+      "papers": [
+        {
+          "title": "Population pharmacokinetic and covariate analyses of intravenous trastuzumab (Herceptin \u00ae ), a HER2-targeted monoclonal antibody, in patients with a variety of solid tumors.",
+          "content_kind": "full_text",
+          "retrieval_status": "live",
+          "extraction_status": "candidates",
+          "candidate_count": 2
+        },
+        {
+          "title": "Pegylated Trastuzumab Fragments Acquire an Increased in Vivo Stability but Show a Largely Reduced Affinity for the Target Antigen.",
+          "content_kind": "full_text",
+          "retrieval_status": "live",
+          "extraction_status": "no_values",
+          "candidate_count": 0
+        }
+      ]
+    },
+    {
+      "case": "unfamiliar",
+      "elapsed_s": 44.58,
+      "status": "needs_inputs",
+      "trace_status": "remote_verified",
+      "trace_id": "01a1dd46-f940-7011-8c4c-6ad483b96aa4",
+      "tool_calls": [
+        "start_experiment_preparation",
+        "search_hypothesis_evidence",
+        "search_hypothesis_evidence",
+        "search_hypothesis_evidence",
+        "search_hypothesis_evidence",
+        "update_experiment_preparation",
+        "update_experiment_preparation",
+        "update_experiment_preparation",
+        "read_experiment_preparation",
+        "update_experiment_preparation",
+        "update_experiment_preparation"
+      ],
+      "result_id": null,
+      "synthesis_status": null,
+      "structure_status": null,
+      "papers": []
+    }
+  ],
+  "live_follow_up": {
+    "status": "completed",
+    "elapsed_s": 16.42,
+    "trace_status": "remote_verified",
+    "trace_id": "01a1dd4a-c76d-7033-9149-96496a7450cf",
+    "tool_calls": [
+      "read_current_experiment",
+      "apply_requested_edit",
+      "simulate_current_comparison",
+      "interpret_current_result",
+      "synthesize_grounded_answer"
+    ],
+    "synthesis_status": "grounded",
+    "verdict": "supported",
+    "answers_original_question": true,
+    "parent_result_id": "sim-262bc1bc1e17aefb3d6995d5",
+    "result_id": "sim-f4acccabf588acc2d21daa4d",
+    "history_entries": 2,
+    "threshold_statuses": {
+      "baseline": "crossed_within_window",
+      "half_life_x3": "still_above_at_horizon",
+      "affinity_x10": "crossed_within_window"
+    }
+  },
+  "browser": {
+    "data_kind": "Synthetic external identities/evidence/extraction and scripted provider/synthesis; actual agent graph, solver, stores and verified molecular coordinates.",
+    "isolated_ports": {
+      "api": 8101,
+      "web": 3003
+    },
+    "checks": {
+      "primary_answer_and_structure_focus": true,
+      "viewer_contact_distance_angstrom": 2.417,
+      "new_drug_missing_rate_no_new_curves": true,
+      "missing_input_reload_preserves_new_answer_and_form": true,
+      "prior_drug_proposals_hidden_for_no_result_turn": true,
+      "explicit_hypothetical_rate_continuation": true,
+      "generic_affinity_alternatives_keep_baseline": true,
+      "generic_answer_has_own_drug_and_target": true,
+      "generic_pair_has_no_verified_structure": true,
+      "follow_up_history_has_two_steps": true,
+      "generic_follow_up_and_history_survive_reload": true,
+      "isolated_services_stopped_after_acceptance": true
+    },
+    "proof_paths_ignored": [
+      "work/8E.2/primary-structure.jpg",
+      "work/8E.2/missing-input-reload.jpg",
+      "work/8E.2/unfamiliar-iteration.jpg"
+    ],
+    "limitations": "Unsupported-model and extraction-outage paths verified in backend integration tests, not live-provider browser rehearsals."
+  },
+  "checks": {
+    "backend_tests_passed": 430,
+    "frontend_tests_passed": 66,
+    "typecheck": "passed",
+    "contracts": "passed",
+    "production_build": "passed"
+  },
+  "production_local_http": {
+    "workspace_200": true,
+    "health_200": true,
+    "saved_demo_200": true,
+    "pdb_200": true,
+    "renderer_200": true,
+    "cetuximab_remains_evidence_blocked": true,
+    "imatinib_remains_evidence_blocked": true,
+    "direct_solver_and_proxy_200": true,
+    "saved_configuration_hash_matches": true
+  },
+  "scientific_profiles_added": 0,
+  "verified_structure_assets_added": 0,
+  "plan_assessment": "keep",
+  "next_subphase": "5C",
+  "limitations": [
+    "Trastuzumab-HER2 remains the sole reviewed preset; cetuximab and imatinib remain evidence-blocked for automatic clinical simulation.",
+    "Successful unfamiliar-name numerical paths use synthetic cited fixtures or explicitly hypothetical researcher inputs, not newly established measured drug support.",
+    "Live primary extraction candidates are separate from the reviewed simulation configuration; zero usable values in bounded text does not prove paper-wide absence.",
+    "Coordinate measurements are static experimental geometry, not affinity prediction or molecular dynamics.",
+    "Observed single-run timings do not establish performance guarantees; 5C integration/performance remains."
+  ]
+}

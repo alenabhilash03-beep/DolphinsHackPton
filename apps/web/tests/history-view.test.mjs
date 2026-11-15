@@ -47,3 +47,11 @@ test('reopen and history routes are proxied only for well-formed identifiers',as
     assert.equal(calls.length,2);
   } finally {globalThis.fetch=old;}
 });
+
+test('restoring old curves after no-result research preserves its question, answer and inputs',async()=>{
+  const {restorationAfterJob}=await import('../lib/history-view.ts');
+  assert.deepEqual(restorationAfterJob('prior-drug-result',{result:null}),{resultId:'prior-drug-result',preserveResearchContext:true});
+  assert.deepEqual(restorationAfterJob('slider-result',{result:{result_id:'research-result'}}),{resultId:'slider-result',preserveResearchContext:false});
+  assert.equal(restorationAfterJob('research-result',{result:{result_id:'research-result'}}),null);
+  assert.equal(restorationAfterJob(null,{result:null}),null);
+});

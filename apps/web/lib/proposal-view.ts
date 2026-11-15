@@ -1,5 +1,10 @@
 /** "Run this experiment": build the edit request for a server-derived proposal. Pure; no values are computed here. */
-import type { AgentEditRequest, ExperimentProposal, SimulationResult } from "./contracts";
+import type { AgentEditRequest, AgentTurn, ExperimentProposal, SimulationResult } from "./contracts";
+
+/** Preserved curves must not offer another drug's follow-ups under a no-result research answer. */
+export function proposalResultForTurn(turn: Pick<AgentTurn,"result"> | null, shown:SimulationResult|null):SimulationResult|null {
+  return turn && !turn.result ? null : shown;
+}
 
 /** A proposal can only be run against the exact result it was derived from, which must be the one displayed. */
 export function proposalMatches(proposal: ExperimentProposal, shown: SimulationResult | null): boolean {

@@ -21,6 +21,8 @@ An unknown/ambiguous/unavailable database identity is not silently resolved. An 
 
 Since 8D.2 a reload also returns to the result that was on screen (including one made by a direct control edit) and rebuilds the investigation history. Background jobs survive page reloads through a saved job ID; the stored scientific request restores the form and structure context. Preparation IDs/versions are visible. **Resume a saved preparation** and **Reload preparation & latest version** recover state after a transient provider error or a stale update. Review the latest scientific state before retrying. A failed turn may already have persisted answers; do not repeatedly invent replacement values. Source outages are availability failures, not proof that literature does not exist.
 
+8E.2 additionally verifies switching between drugs: when new research has no result, reload preserves its answer and continuation form while restoring only the explicitly labeled earlier curves. Earlier curves do not supply follow-up cards under that new no-result answer. Proposal cards identify the drug and target of the displayed result; explicitly reopening history restores that result's own answer.
+
 Loading the saved demo invalidates pending browser responses; it does not cancel the provider's in-flight work. The local queue has two slots and returns 429 when full. UI submission/polling never waits on a long proxy request, and errors preserve the existing result. A page reload while research is pending may initially show the labeled reference curves until a completed agent result is restored.
 
 ## API and UI handoff

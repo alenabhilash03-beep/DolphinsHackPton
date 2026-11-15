@@ -27,6 +27,8 @@ class DrivingModel(BaseChatModel):
     mode: str = 'research'
     request: dict = {}
     resume_id: str | None = None
+    baseline_scope: dict | None = None
+    baseline_design: dict | None = None
     _step: int = PrivateAttr(default=0)
     @property
     def _llm_type(self): return 'offline-generalized-agent-harness'
@@ -58,7 +60,7 @@ class DrivingModel(BaseChatModel):
                     'base_revision':record['preparation']['revision'] if record else 0,
                     'base_evidence_sha256':record['preparation']['evidence_sha256'] if record else '0'*64,
                     'parameters':candidates,'document_ids':[source.get('document_id','pending')],
-                    'scope':scope().model_dump(mode='json'),'design':design().model_dump(mode='json')}})]
+                    'scope':self.baseline_scope or scope().model_dump(mode='json'),'design':self.baseline_design or design().model_dump(mode='json')}})]
             if self._step >= 5 and record['preparation']['state']=='ready_for_configuration':
                 prep = record['preparation']
                 order += [('configure_prepared_experiment',{'preparation_id':record_id,'version':{'base_revision':prep['revision'],'base_evidence_sha256':prep['evidence_sha256']}}),

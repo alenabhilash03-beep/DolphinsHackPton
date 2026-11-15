@@ -1,6 +1,6 @@
 # Hypothesim — implementation roadmap
 
-Status: Phases 0–4, 5A–5B and 7A–7E are complete, including generalized preparation/research/edit APIs, molecular inspection and the compact workspace console. The user has approved planning Phase 8 in priority order: visible agent execution → scientific synthesis → agent-driven structural analysis → actionable iteration/history → broader drug demonstrations. **Phase 8A–8E is complete, including the 8E.1 evidence-block audit and 8E.2 cross-drug acceptance. The next proposed implementation chunk is 5C and requires its green light.** Then complete 6A–6B. Imatinib remains an evidence-blocked simulation reference, not a second enabled profile.
+Status: Phases 0–4, 5A–5B and 7A–7E are complete, including generalized preparation/research/edit APIs, molecular inspection and the compact workspace console. The user has approved planning Phase 8 in priority order: visible agent execution → scientific synthesis → agent-driven structural analysis → actionable iteration/history → broader drug demonstrations. **Phase 8A–8E is complete, including the 8E.1 evidence-block audit and 8E.2 cross-drug acceptance. 5C is now three parts (revision 2026-11-15): 5C.1 integration and demo examples, 5C.2 hosted deployment with accounts and experiment sharing, 5C.3 the live agent-workflow screen.** Each part requires its own green light. Then complete 6A–6B. Imatinib remains an evidence-blocked simulation reference, not a second enabled profile.
 
 Canonical repository document: `docs/IMPLEMENTATION_PLAN.md` in `alenabhilash03-beep/DolphinsHackPton`.
 
@@ -37,6 +37,7 @@ A review that concludes **Keep the plan** does not require a roadmap-only GitHub
 
 | Revision | Trigger | Decision and impact |
 | --- | --- | --- |
+| 2026-11-15 — demo-centred 5C and community sharing | User asked that 5C prove the pipeline with concrete demo questions, then publish the tool at a live URL with user accounts and shareable experiments, and show the agent's workflow live while it researches | Split 5C into 5C.1 (integration, performance, live-verified demo examples), 5C.2 (hosted deployment, accounts, share an experiment with an iteration-log summary and an AI summary) and 5C.3 (live workflow screen showing papers parsed, values chosen, PDB data and viewer handoff). Public hosting, previously outside the agreed local demo, is now in scope for 5C.2. Shared AI summaries must cite the stored log and results like the grounded answer. 6A–6B rehearse the hosted URL plus a local fallback. Order: 5C.1 → 5C.2 → 5C.3 → 6A–6B; each awaits its green light. |
 | 2026-11-14 — integrated scientific-agent experience | User prioritized visible experiment execution, stronger synthesis, agent structural tools, actionable iteration, then broader drug demonstrations | Add Phase 8A–8E in that exact order before 5C and Phase 6. Existing capabilities stay implemented; these chunks connect and extend them. Next proposed chunk is 8A.1. Preserve scientific/model gates, per-chunk reviews and green lights, local hosting, and final rehearsal time. Additional effort is outside the original 36-hour estimate. |
 | Initial planning commit | User requested the full roadmap in GitHub and a review after every subphase | Preserve the original technical roadmap and add conditional risk/opportunity reassessment, documented revisions, GitHub commits for agreed changes, and a green-light boundary between chunks. Phase 0 remained unstarted at that historical revision. |
 | 2026-11-14 — drug support expansion | User requested support for additional drug names after clarifying that Phase 5 does not provide it | Add Phase 7A–7D after the reproducible local-demo gates. Accept arbitrary names for assessment, but allow simulations only through reviewed drug/model profiles or explicit hypothetical custom inputs. Budget additional work beyond the original 36 hours; preserve existing subphase IDs and the primary demo. User also selected a local demo package, so hosted deployment is no longer a mandatory Phase 5/6 gate. This revision authorizes planning only. |
@@ -607,13 +608,15 @@ Phase 8 deliverable: a visible, cited investigation loop connecting agent tool e
 
 Hackathon cutoffs: preserve the exact priority order and complete acceptance for each chunk before starting the next. If time is constrained, stop at a verified boundary, document/defer remaining chunks with the user, and move to 5C/rehearsal. Defer extra source connectors, additional aesthetic work, extra curated drugs beyond the bounded audit and broader language forms before weakening provenance or final testing. New biological models, molecular dynamics/docking and public hosting remain outside this expansion.
 
-### Phase 5C — Final integration and performance, after Phase 8; about 2 hours.
+### Phase 5C — Integration, publication and the live demo experience, after Phase 8.
 
 | Subphase | Tasks and files | Interface, verification, and completion |
 | --- | --- | --- |
-| 5C — End-to-end and performance checks; about 2 hours | Implement focused browser/API integration tests and profile chart updates, solver latency, memory, and rendering. | Core test matrix passes on the actual demonstration machine and browser. |
+| 5C.1 — Integration, performance and demo examples; about 3 hours | Repeatable browser and API checks of the demo path; slider, solver, playback and memory profiling; repeated live runs of candidate demo questions; `docs/DEMO_EXAMPLES.md` naming the two main demo questions, backups and their measured live reliability. | Offline matrix and production build pass; performance targets measured; each chosen demo question has recorded live outcomes, and any reliability defect found is fixed or reported with its cause. |
+| 5C.2 — Hosted deployment, accounts and experiment sharing; estimate after 5C.1 | Deploy web and API to a live URL with the agent connected; user sign-up/sign-in; per-user experiments; **Share your experiment** publishing an experiment to other accounts with a summary built from its stored investigation log (iterations and hypotheses) plus an AI summary grounded in that log and its results. | A second account can open a shared experiment read-only, see the log-derived summary and AI summary, and every summary statement links to stored steps or solver values. Secrets stay server-side; private experiments are not visible to other accounts. |
+| 5C.3 — Live agent-workflow screen; estimate after 5C.2 | On submit, a dedicated screen shows the agent loop as it happens: papers found and parsed, passages and values extracted, values accepted or rejected for the model, the solver run, PDB metadata and contacts, and the viewer focusing on them. | Every step shown is a recorded execution event, not an animation; both main demo questions play through it end to end. |
 
-Test the original antibody workflow, reviewed reference profiles, research-derived unregistered-drug preparation, missing-input resumption and unsupported requests, plus the Phase 8 execution ledger, synthesis/citation linkage, structural handoff, proposals and investigation history. This gate precedes the Phase 6 feature freeze; no additional drug work should start during rehearsal.
+5C.1 tests the original antibody workflow, reviewed reference profiles, research-derived unregistered-drug preparation, missing-input resumption and unsupported requests, plus the Phase 8 execution ledger, synthesis/citation linkage, structural handoff, proposals and investigation history. No additional drug work starts during rehearsal.
 
 ### Phase 6, hours 30–36, freezes and rehearses the release. No new features.
 
@@ -709,7 +712,7 @@ The primary demo should take roughly four minutes:
 9. Briefly show that an unsupported drug produces a limitation response.
 Prepare a saved experiment containing the exact configuration, reviewed evidence, structure asset, model version, and expected metrics. The fallback must remain interactive and clearly identify saved research. The live LangChain integration should also have a verified trace available for inspection.
 
-Phases 0–4, 5A–5B, Phase 7 and **Phase 8A–8E are complete**. **5C — Final integration and performance** is the next proposed implementation unit and awaits its green light.
+Phases 0–4, 5A–5B, Phase 7 and **Phase 8A–8E are complete**. 5C is split into 5C.1 (integration and demo examples), 5C.2 (hosted deployment, accounts and sharing) and 5C.3 (live workflow screen).
 
 ## Current execution order (revision 2026-11-14)
 

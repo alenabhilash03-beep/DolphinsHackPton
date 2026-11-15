@@ -49,10 +49,16 @@ answer: one or two sentences answering the hypothesis, with verdict supported, n
 undetermined. A determined verdict must list the finding_ids and/or metric_refs it rests on. Use undetermined
 when the supplied material cannot answer. Without a result, never predict occupancy. When
 hypothesis_data.request_kind is edit, the text is a requested experiment change, not a hypothesis: state what
-the edited result shows and use verdict undetermined. A non-null result means the solver DID run.
+the edited result shows and use verdict undetermined. Obey every item in server_rules_for_this_answer; they
+are facts the server has already established about this result. Never mention rules, instructions, the
+server or this JSON in any statement; write only about the science. A non-null result means the solver DID run.
 disagreements: only where two or more of your findings genuinely conflict; reference their finding_ids.
 missing_evidence: evidence the hypothesis needs that the supplied passages do not provide.
 limitations: limits of this evidence and model. Occupancy is not clinical efficacy or safety.
+Plain language: statements are read by scientists in an interface. Refer to a scenario by its label or a
+plain description (the half-life scenario) and to metrics in words (endpoint occupancy, occupancy AUC,
+concentration AUC, time above threshold, dissociation rate). Never write identifiers or field names that
+contain an underscore, such as scenario ids or occupancy_auc_h; those belong only in metric_refs.
 Censoring: threshold_status "still above at horizon" means the time above threshold is cut off by the
 observation window. If the scenarios being compared are all still above at horizon, the simulation does NOT
 show which one stays above threshold longer; say so and do not use verdict supported or not_supported for a
@@ -235,6 +241,9 @@ class Grounding:
             for series in result.scenarios for metric in METRIC_UNITS} if result else {}
         self.design = design(result) if result else None
         self.design_numbers = _numbers(json.dumps(self.design)) if result else []
+        # Stated model conditions (e.g. an assay temperature in an assumption) may be restated as limits.
+        self.condition_numbers = claimed_numbers(' '.join([*(item.description for item in result.configuration.assumptions[:8]),
+            *result.configuration.limitations[:8]])) if result else []
         self.text_numbers = claimed_numbers(text)
         self.identity_terms = key_terms(f'{drug} {target or ""}')
 
@@ -301,6 +310,20 @@ class Grounding:
             items.append('No simulation was run in this turn; nothing here is a numerical prediction.')
         return list(dict.fromkeys(items))[:30]
 
+    def censoring_rule(self) -> str | None:
+        """A solver fact known before the model writes: censored durations cannot rank scenarios."""
+        if not self.result or not DURATION_QUESTION.search(self.text):
+            return None
+        labels = {item.scenario_id: item.label for item in self.result.configuration.scenarios}
+        censored = [labels[series.scenario_id] for series in self.result.scenarios
+            if series.metrics.threshold.status == 'still_above_at_horizon']
+        if len(censored) < 2:
+            return None
+        return ('These scenarios are all still above threshold at the horizon: ' + '; '.join(censored) + '. Their time above '
+            'threshold is cut off by the observation window, so the simulation cannot show which keeps occupancy above threshold '
+            'longer. From the simulation alone the verdict must be mixed or undetermined, and the answer must say that duration is '
+            'censored; other metrics may be reported as what they are.')
+
     def payload(self, errors: list[str]) -> dict:
         candidates = [{'parameter': item.parameter, 'value': item.original_value, 'unit': item.original_unit,
             'source_id': passage.source_id, 'locator': passage.locator, 'passage': passage.supporting_passage}
@@ -310,12 +333,15 @@ class Grounding:
             config = self.result.configuration
             result = {'result_id': self.result.result_id, 'model': 'one-compartment PK with effective reversible target binding',
                 'design': self.design,
-                'scenarios': [{'scenario_id': series.scenario_id, 'metrics': {metric: self.quantities[(series.scenario_id, metric)].display
+                'scenarios': [{'scenario_id': series.scenario_id,
+                    'label': next(item.label for item in config.scenarios if item.scenario_id == series.scenario_id)[:120], 'metrics': {metric: self.quantities[(series.scenario_id, metric)].display
                     for metric in METRIC_UNITS}} for series in self.result.scenarios],
                 'model_assumptions': [item.description[:400] for item in config.assumptions[:8]],
                 'model_limitations': [item[:400] for item in config.limitations[:8] if item != PRE_RUN_NOTE]}
         return {'hypothesis_data': {'text': self.text, 'drug': self.drug, 'target': self.target, 'request_kind': self.mode},
             'result': result, 'simulation_input_lineage': self.lineage,
+            'server_rules_for_this_answer': [rule for rule in [self.censoring_rule(),
+                'The request is an experiment change: use verdict undetermined and describe what the edited result shows.' if self.mode == 'edit' else None] if rule],
             'sources': [{'document_id': document_id, 'title': document.source.title[:300],
                 'access': document.source.content_kind,
                 'extraction_status': self.reviews[document_id].extraction.status if document_id in self.reviews else 'not_attempted',
@@ -331,7 +357,8 @@ class Grounding:
     def validate(self, proposal: SynthesisProposal) -> list[str]:
         errors = []
         expected = self.result.result_id if self.result else None
-        if proposal.result_id != expected:
+        # Only the current result is ever supplied, so an omitted ID binds to it; a different one is stale.
+        if proposal.result_id is not None and proposal.result_id != expected:
             errors.append('result_id is stale or unknown: copy result.result_id exactly (null when result is null).')
         ids = [item.finding_id for item in proposal.evidence_findings]
         if len(set(ids)) != len(ids):
@@ -383,14 +410,8 @@ class Grounding:
         allowed = finding_numbers('answer', answer.finding_ids) + metric_numbers('answer', answer.metric_refs)
         if self.mode == 'edit' and answer.verdict != 'undetermined':
             errors.append('answer: an edit request is an experiment change, not a hypothesis; use verdict undetermined.')
-        censored = [series.scenario_id for series in self.result.scenarios
-            if series.metrics.threshold.status == 'still_above_at_horizon'] if self.result else []
-        if (answer.verdict in {'supported', 'not_supported'} and len(censored) >= 2 and not answer.finding_ids
-                and DURATION_QUESTION.search(self.text)):
-            # Time above threshold is cut off by the window for these scenarios, so it cannot rank them.
-            errors.append('answer: ' + ', '.join(censored) + ' are all still above threshold at the horizon, so the simulation '
-                'cannot show which keeps occupancy above threshold longer. Use verdict mixed or undetermined and say that '
-                'duration is censored by the observation window; other metrics may be reported as what they are.')
+        if answer.verdict in {'supported', 'not_supported'} and not answer.finding_ids and self.censoring_rule():
+            errors.append('answer: ' + self.censoring_rule())
         if answer.verdict != 'undetermined' and not (answer.finding_ids or answer.metric_refs):
             errors.append('answer: a determined verdict must reference finding_ids and/or metric_refs; otherwise use undetermined.')
         self._numeric(errors, 'answer', answer.statement, allowed)
@@ -403,16 +424,20 @@ class Grounding:
             label = f'simulation_implications[{index}]'
             self._numeric(errors, label, item.statement, metric_numbers(label, item.metric_refs))
         for index, item in enumerate(proposal.missing_evidence):
-            self._numeric(errors, f'missing_evidence[{index}]', item.statement, [])
+            self._numeric(errors, f'missing_evidence[{index}]', item.statement, self.condition_numbers)
         for index, item in enumerate(proposal.limitations):
-            self._numeric(errors, f'limitations[{index}]', item, [])
+            self._numeric(errors, f'limitations[{index}]', item, self.condition_numbers)
         for index, item in enumerate(proposal.next_experiments):
-            self._numeric(errors, f'next_experiments[{index}]', item.proposal + ' ' + item.rationale, [])
+            self._numeric(errors, f'next_experiments[{index}]', item.proposal + ' ' + item.rationale, self.condition_numbers)
         return errors
 
     def _numeric(self, errors, label, statement, allowed, design=True):
         if statement.lstrip().startswith(('[', '{')) or '["' in statement or '"]' in statement:
             errors.append(f'{label}: must be one plain prose statement, not a serialized list or object.')
+        identifiers = sorted(set(re.findall(r'[A-Za-z][\w.-]*_\w+', statement)))
+        if identifiers:
+            errors.append(f'{label}: write {", ".join(identifiers[:4])} in plain words (a scenario label or description, '
+                'a metric or parameter name in words); identifiers with underscores belong only in metric_refs.')
         # Configured design values describe the simulation, so they cannot appear under a paper citation.
         extra = unsupported_numbers(statement, [*allowed, *(self.design_numbers if design else []), *self.text_numbers])
         if extra:
@@ -506,7 +531,7 @@ def _bounded(raw):
 
 
 def synthesize(grounding: Grounding, synthesizer: Callable[[list[dict]], dict] | None,
-               remaining_s: Callable[[], float] = lambda: 60.0, attempts: int = 2) -> ScientificSynthesis:
+               remaining_s: Callable[[], float] = lambda: 60.0, attempts: int = 3) -> ScientificSynthesis:
     """Return a validated grounded answer, or an honest unavailable/rejected record with no model text."""
     if grounding.basis == 'none':
         return grounding.assemble('unavailable', notes=['No retrieved passage or accepted numerical result exists to ground an answer.'])

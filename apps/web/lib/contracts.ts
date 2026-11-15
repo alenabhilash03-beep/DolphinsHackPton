@@ -51,3 +51,8 @@ export type ExecutionSummary = components["schemas"]["ExecutionSummary"];
 export type ExperimentSnapshot = components["schemas"]["ExperimentSnapshot"];
 export type ParameterSnapshot = components["schemas"]["ParameterSnapshot"];
 export type SolverReceipt = components["schemas"]["SolverReceipt"];
+
+// Grounded scientific answer (8B): model prose is validated server-side; numbers are solver fields.
+export type ScientificSynthesis = components["schemas"]["ScientificSynthesis"];
+export type SolverQuantity = components["schemas"]["SolverQuantity"];
+export type EvidenceFinding = components["schemas"]["EvidenceFinding"];

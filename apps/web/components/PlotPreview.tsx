@@ -22,11 +22,11 @@ const VIEWS: {id:View; label:string; hint:string}[] = [
   {id:"details",label:"Model details",hint:"Full metrics & assumptions"},
 ];
 
-export function PlotPreview({ initialExperiment, initialResult = null, onResultIdChange, onResultChange, editingLocked = false, structure, interpretation }: {
+export function PlotPreview({ initialExperiment, initialResult = null, onResultIdChange, onResultChange, editingLocked = false, structure, interpretation, answerShown = false }: {
   initialExperiment: ExperimentConfig; initialResult?: SimulationResult | null;
   onResultIdChange?: (resultId: string | null) => void;
   onResultChange?: (result: SimulationResult | null, scenarioId: string | null, busy: boolean) => void;
-  editingLocked?: boolean; structure?:ReactNode; interpretation?:Interpretation|null;
+  editingLocked?: boolean; structure?:ReactNode; interpretation?:Interpretation|null; answerShown?:boolean;
 }) {
   const [focusPlot,setFocusPlot]=useState(false),[view,setView]=useState<View>("simulation");
   const [structureVisited,setStructureVisited]=useState(false);
@@ -74,9 +74,10 @@ export function PlotPreview({ initialExperiment, initialResult = null, onResultI
       </div></div>
     </div>
     <div id="view-evidence" role="tabpanel" aria-labelledby="tab-evidence" hidden={view!=="evidence"}>
-      {currentInterpretation && <section className="agent-findings"><h2>Research interpretation</h2><ul>{currentInterpretation.claims.map(c=><li key={c}>{c}</li>)}</ul>
+      {/* The written answer above already states findings, limitations and next steps; keep only input lineage here. */}
+      {currentInterpretation && (!answerShown || !!currentInterpretation.paper_summaries?.length) && <section className="agent-findings">{answerShown ? <h2>Sources of the simulation inputs</h2> : <><h2>Research interpretation</h2><ul>{currentInterpretation.claims.map(c=><li key={c}>{c}</li>)}</ul></>}
         {!!currentInterpretation.paper_summaries?.length && <PaperSummaries summaries={currentInterpretation.paper_summaries} experiment={workspace.experiment}/>}
-        <details><summary>Agent assumptions, limitations & next experiments</summary><ul>{[...currentInterpretation.assumptions,...currentInterpretation.limitations,...currentInterpretation.follow_up_experiments].map((c,i)=><li key={i}>{c}</li>)}</ul></details>
+        {!answerShown && <details><summary>Agent assumptions, limitations & next experiments</summary><ul>{[...currentInterpretation.assumptions,...currentInterpretation.limitations,...currentInterpretation.follow_up_experiments].map((c,i)=><li key={i}>{c}</li>)}</ul></details>}
       </section>}
       <EvidencePanel experiment={workspace.experiment} scenarioId={workspace.selectedScenarioId} resultPresent={!!workspace.result} showSummaries={!currentInterpretation?.paper_summaries?.length}/>
     </div>

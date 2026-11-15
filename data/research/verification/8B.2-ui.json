@@ -1,0 +1,67 @@
+{
+  "verification_kind": "8B.2 browser UI acceptance",
+  "date": "2026-11-15",
+  "environment_note": "Cloud verification environment: Europe PMC is blocked and single provider requests are cut at 30 seconds, so live paper research could not be run in the browser here.",
+  "automated": {
+    "frontend_tests_passed": 51,
+    "frontend_tests_new": 6,
+    "backend_tests_passed": 366,
+    "backend_tests_failed": 1,
+    "backend_failure": "pre-existing machine-dependent saved-demo float mismatch (test_saved_demo_matches_current_solver_and_public_asset)",
+    "typecheck": "passed",
+    "contracts_check": "passed",
+    "production_build": "passed"
+  },
+  "synthetic_browser_checks": {
+    "description": "scripts/serve_investigation_ui_checks.py: actual LangChain graph and SciPy solver, scripted provider, SYNTHETIC evidence and a scripted synthetic answer passed through real server validation. Chromium at 1440 px and 390 px.",
+    "no_result_research": {
+      "verdict": "Not determined",
+      "basis": "Inspected papers only \u00b7 no simulation was run",
+      "cited_findings": 1,
+      "solver_section_shown": false,
+      "earlier_curves_note_shown": true,
+      "restored_after_reload": true
+    },
+    "completed_research_with_papers": {
+      "verdict": "Mixed by the conditional simulation",
+      "basis": "Inspected papers + numerical simulation",
+      "cited_findings": 1,
+      "solver_chip_opens_plot": "#plot-occupancy",
+      "evidence_view_repeats_interpretation": false,
+      "stale_after_slider_edit": true,
+      "mobile_horizontal_overflow": false
+    },
+    "completed_edit": {
+      "basis": "Numerical simulation only \u00b7 no papers inspected in this turn",
+      "solver_chip_opens_plot": "#plot-occupancy",
+      "stale_after_slider_edit": true,
+      "mobile_horizontal_overflow": false
+    },
+    "page_errors": []
+  },
+  "live_browser_check": {
+    "description": "Real backend with live pinned Nemotron agent and synthesizer; saved demo, then \"Run this comparison for 120 days\", then a direct infusion-amount slider change.",
+    "investigation_title": "Investigation complete",
+    "verdict": "Not determined",
+    "basis": "Numerical simulation only \u00b7 no papers inspected in this turn",
+    "answer_statement": "This is an experiment edit, not a hypothesis. The edited result shows that over 120 days all three scenarios remain above the 90% occupancy threshold at the horizon, with the threefold longer half-life scenario reaching the highest endpoint occupancy and the tenfold stronger affinity scenario reaching nearly as high endpoint occupancy while matching baseline concentration exposure.",
+    "solver_values_shown": 13,
+    "solver_chip_opens_plot": "#plot-occupancy",
+    "evidence_view_repeats_interpretation": false,
+    "stale_before_slider": false,
+    "stale_after_slider": true,
+    "mobile_horizontal_overflow": false,
+    "page_errors": [],
+    "note": "This run preceded a final prompt change that stops the model restating a server rule in its answer; the opening sentence of this statement shows that defect."
+  },
+  "user_run_real_paper_checks": {
+    "description": "Run by the user locally with Europe PMC reachable (scripts/run_generalized_agent.py --mode primary), terminal output only, before the panel existed.",
+    "first_run": "completed in 99.9 s; two live abstracts; verdict \"supported\" although both alternatives were censored; one limitation was a serialized list. Both defects fixed.",
+    "second_run": "completed in 57.5 s; one live abstract (two searches failed); verdict \"mixed\" with censoring stated; clean limitations."
+  },
+  "live_synthesizer_yield_after_refinements": "6 of 6 grounded on the reviewed result, 4 on the first attempt and 2 on the second (3.8\u20139.3 s).",
+  "not_verified": [
+    "The answer panel with live real-paper research in a browser (blocked here; the user has only run the terminal script).",
+    "Disagreement and unavailable/rejected presentations in a browser (covered by unit logic and types only)."
+  ]
+}

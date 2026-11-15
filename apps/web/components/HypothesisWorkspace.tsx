@@ -10,6 +10,8 @@ import { PreparationAnswers } from "./PreparationAnswers";
 import { InvestigationPanel } from "./InvestigationPanel";
 import { ResearchPaperReview } from "./ResearchPaperReview";
 import { investigationView } from "../lib/investigation";
+import { ScientificAnswer } from "./ScientificAnswer";
+import { answerState } from "../lib/synthesis-view";
 const PRIMARY="Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const STORAGE="hypothesim-agent-job-v1";
 const SCIENCE_REQUEST="hypothesim-scientific-request-v1";
@@ -174,10 +176,12 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
       client_revision:shown.client_revision+1,selected_scenario_id:selected,text:edit});
   }
   const currentInterpretation=explanation?.result_id===shown?.result_id ? explanation : null;
+  // The answer panel reports staleness itself; this note remains for results that have no written answer.
+  const answer=answerState(turn,shown), staleExplanation=!!explanation && !currentInterpretation && answer==="none";
   const structure=structureKind(structureIdentity.drug,structureIdentity.target);
   return <div className="hypothesim-workspace editorial-workspace">
     <aside className="workspace-rail" aria-label="Research navigation"><a href="/" className="rail-monogram" aria-label="Hypothesim home">h.</a><span className="rail-caption">Workspace</span><nav><a href="#research"><span>01</span>Question</a><a href="#experiment"><span>02</span>Simulation</a><a href="#structure"><span>03</span>Structure</a></nav><a href="/" className="rail-home">Workspace home ↗</a></aside>
-    <header className="workspace-header"><a className="workspace-brand" href="/">hypothesim<span>.</span></a><nav aria-label="Workspace sections"><a href="#research">Research</a><a href="#experiment">Results</a><a href="#paper-evidence">Evidence</a><a href="#structure">Molecule</a></nav><span className="workspace-badge">Research workspace</span></header>
+    <header className="workspace-header"><a className="workspace-brand" href="/">hypothesim<span>.</span></a><nav aria-label="Workspace sections"><a href="#research">Research</a><a href="#answer">Answer</a><a href="#experiment">Results</a><a href="#paper-evidence">Evidence</a><a href="#structure">Molecule</a></nav><span className="workspace-badge">Research workspace</span></header>
     <div className="workspace-intro"><div><p className="eyebrow">Scientific exploration console</p><h1>Experiment workspace</h1><p>Evidence → exposure → target engagement</p></div><span className="workspace-badge">{busy?"Agent researching":saved?"Saved reviewed demo":"Interactive model"}</span></div>
     <details className="workspace-assessment"><summary>Drug and model assessment <span>Identity, route, and supported endpoints</span></summary><DrugSupportPanel /></details>
     <section id="research" className="research-panel" aria-label="Hypothesis research"><details className="question-disclosure" open={researchOpen} onToggle={e=>setResearchOpen(e.currentTarget.open)}><summary><span><span className="eyebrow">Research question · {drug || "Drug unspecified"}{target?` / ${target}`:""}</span><strong>{text || "Enter your scientific hypothesis"}</strong></span><span className="disclosure-action">{researchOpen?"Close editor":"Edit hypothesis"}</span></summary>
@@ -197,11 +201,12 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
       {message && !job && <p role="alert">{message}</p>}
     </section>
     <InvestigationPanel job={job} submitting={submitting} saved={saved} displayedResult={shown} config={visible} message={message}/>
+    <ScientificAnswer turn={turn} shown={shown}/>
     <ResearchPaperReview papers={turn?.research_papers ?? []}/>
-    {(record || turn?.questions?.length || (explanation && !currentInterpretation)) ? <section className="research-panel" aria-label="Research continuation">
+    {(record || turn?.questions?.length || staleExplanation) ? <section className="research-panel" aria-label="Research continuation">
       {turn?.questions?.length ? <section aria-label="Agent questions"><h3>What is needed next</h3><ul>{turn.questions.map(q=><li key={q}>{q}</li>)}</ul></section>:null}
       {record && <PreparationAnswers key={`${record.preparation.preparation_id}:${record.preparation.revision}`} record={record} busy={!!busy} onContinue={continueResearch} onReload={()=>void reloadPreparation()}/>}
-      {explanation && !currentInterpretation && <p className="scope-note">The earlier explanation belongs to a different result. Current curves reflect your direct parameter changes.</p>}
+      {staleExplanation && <p className="scope-note">The earlier explanation belongs to a different result. Current curves reflect your direct parameter changes.</p>}
     </section> : null}
     <details id="revise" className="research-panel experiment-revision" onToggle={e=>{if(e.currentTarget.open)e.currentTarget.querySelector("input")?.focus();}}><summary>Change the experiment in words <span>Dose, affinity, schedule or duration</span></summary><p>Edits apply to the displayed result. The baseline stays protected; selected alternative: <strong>{visible.scenarios.find(s=>s.scenario_id===selected)?.label ?? "none"}</strong>.</p>
       <form onSubmit={submitEdit}><label>Experimental edit<input required disabled={!!busy} value={edit} onChange={e=>setEdit(e.target.value)} placeholder="Run this comparison for 120 days"/></label><button className="primary-button" disabled={!!busy || !shown || controlBusy}>Apply edit & simulate</button></form>
@@ -209,7 +214,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
       {turn?.applied_changes?.length ? <ul>{turn.applied_changes.map(s=><li key={s}>{s}</li>)}</ul>:null}
     </details>
     <div className="saved-demo-banner" role="status"><span className="status-dot"/><strong>Displayed experiment</strong> {visible.drug} → {visible.target}{busy && <span> · Research pending; showing the last successful curves.</span>}</div>
-    <PlotPreview key={prepared?.result_id ?? "fallback"} initialExperiment={prepared?.configuration ?? fallbackExperiment} initialResult={prepared} onResultChange={onResult} editingLocked={!!busy} interpretation={currentInterpretation}
+    <PlotPreview key={prepared?.result_id ?? "fallback"} initialExperiment={prepared?.configuration ?? fallbackExperiment} initialResult={prepared} onResultChange={onResult} editingLocked={!!busy} interpretation={currentInterpretation} answerShown={answer==="current" && turn?.synthesis?.status==="grounded"}
       structure={structure!=="unavailable" ? <VisualizationBoundary key={structure} label="Experimental structure"><StructureViewer kind={structure}/></VisualizationBoundary> : <section id="structure" className="structure-panel"><h2>Experimental structure unavailable</h2><p>No verified cached drug–target complex is available for {structureIdentity.drug} → {structureIdentity.target || "unspecified target"}. Compatible numerical models can still run without a structure.</p></section>}/>
     <footer className="workspace-footer">Hypothesim · Conditional scientific exploration · Predictions are model outputs.</footer>
   </div>;

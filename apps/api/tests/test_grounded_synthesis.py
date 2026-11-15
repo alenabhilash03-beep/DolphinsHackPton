@@ -82,7 +82,7 @@ def run(g, *responses, remaining=lambda: 60.0):
     queue = list(responses)
     def synthesizer(messages):
         seen.append(json.loads(messages[-1]['content']))
-        item = queue.pop(0)
+        item = queue.pop(0) if len(queue) > 1 else queue[0]  # the last scripted response repeats
         if isinstance(item, Exception): raise item
         return item
     return synthesize(g, synthesizer, remaining), seen
@@ -119,6 +119,7 @@ def test_grounded_answer_separates_paper_findings_predictions_and_hypotheses():
     # The model saw display strings, not raw arrays or full provenance.
     payload = seen[0]
     assert payload['result']['result_id'] == result.result_id and 'time_h' not in json.dumps(payload)
+    assert [s['label'] for s in payload['result']['scenarios']] == [s.label for s in result.configuration.scenarios]
     assert payload['sources'][0]['segments'][0]['text'] == PASSAGE_A
 
 
@@ -133,7 +134,7 @@ def test_nonexistent_or_altered_citations_are_rejected(citation):
     g = grounding()
     bad = proposal(g, evidence_findings=[{**finding(), 'citations': [citation]}])
     synthesis, seen = run(g, bad, bad)
-    assert synthesis.status == 'rejected' and len(seen) == 2
+    assert synthesis.status == 'rejected' and len(seen) == 3  # two corrective retries, then stop
     assert_no_model_content(synthesis)
     assert seen[1]['previous_validation_errors'] and 'citations[0]' in seen[1]['previous_validation_errors'][0]
     # Deterministic server content survives a rejected proposal.
@@ -220,6 +221,18 @@ def test_spelled_out_numbers_and_simulation_facts_cannot_hide_under_a_citation()
     garbled = proposal(g, limitations='["First limit."], ["Second limit."]]')
     rejected, seen = run(g, garbled, garbled)
     assert rejected.status == 'rejected' and 'plain prose' in seen[1]['previous_validation_errors'][0]
+    # Internal identifiers make an answer unreadable (observed live: occupancy_auc_h, half-life_x3).
+    for text in ('The half-life_x3 scenario ends higher.', 'occupancy_auc_h is higher for one scenario.',
+                 'No source reports binding.dissociation_h_inv.'):
+        jargon = proposal(g, limitations=[text])
+        rejected, seen = run(g, jargon, jargon)
+        assert rejected.status == 'rejected' and 'plain words' in seen[1]['previous_validation_errors'][0]
+    assert run(g, proposal(g, limitations=['The half-life scenario and HER-2 binding are well described.']))[0].status == 'grounded'
+    # A number stated in the supplied model assumptions may be restated as a limit, but not as a paper finding.
+    stated = next(n for n in g.condition_numbers if n not in g.design_numbers and n not in g.text_numbers)
+    assert run(g, proposal(g, limitations=[f'The model assumption involving {plain(stated)} may not transfer.']))[0].status == 'grounded'
+    as_finding = proposal(g, evidence_findings=[finding(statement=f'The assay reports reversible binding at {plain(stated)}.')])
+    assert run(g, as_finding, as_finding)[0].status == 'rejected'
     invalid_stance = proposal(g, evidence_findings=[{**finding(), 'stance': 'not_supported'}])
     _, seen = run(g, invalid_stance, proposal(g))
     assert "'supports', 'contradicts' or 'context'" in seen[1]['previous_validation_errors'][0]
@@ -230,8 +243,8 @@ def test_stale_or_foreign_result_references_are_rejected():
     stale = proposal(g, result_id='sim-0000000000000000')
     synthesis, seen = run(g, stale, stale)
     assert synthesis.status == 'rejected' and 'result_id is stale' in seen[1]['previous_validation_errors'][0]
-    absent = proposal(g, result_id='null')
-    assert run(g, absent, absent)[0].status == 'rejected'
+    # An omitted ID binds to the only result that was supplied; it is not a reference to another one.
+    assert run(g, proposal(g, result_id='null'))[0].result_id == g.result.result_id
     unknown = proposal(g, simulation_implications=[{'statement': 'A scenario differs.',
         'metric_refs': [{'scenario_id': 'not_a_scenario', 'metric': 'endpoint_occupancy'}]}])
     assert run(g, unknown, unknown)[0].status == 'rejected'
@@ -384,12 +397,16 @@ def test_censored_durations_cannot_decide_a_how_long_question():
         return proposal(g, evidence_findings=[], answer={'verdict': verdict, 'metric_refs': refs,
             'statement': 'One scenario ends at a higher occupancy than the other.'})
     rejected, seen = run(g, answered('supported'), answered('not_supported'))
-    assert rejected.status == 'rejected' and 'censored by the observation window' in seen[1]['previous_validation_errors'][0]
+    assert rejected.status == 'rejected' and 'cut off by the observation window' in seen[1]['previous_validation_errors'][0]
+    # The model is told this solver fact before it writes, with scenario labels rather than identifiers.
+    assert 'cut off by the observation window' in seen[0]['server_rules_for_this_answer'][0]
+    assert '_x3' not in seen[0]['server_rules_for_this_answer'][0]
     assert run(g, answered('mixed'))[0].status == 'grounded'
     assert run(g, answered('undetermined'))[0].status == 'grounded'
     # A question that is not about duration may still be decided from solver fields.
     other = grounding(text='Does tripling the half-life raise endpoint occupancy more than improving affinity tenfold?', documents=[])
-    assert run(other, answered('supported'))[0].status == 'grounded'
+    accepted, seen = run(other, answered('supported'))
+    assert accepted.status == 'grounded' and seen[0]['server_rules_for_this_answer'] == []
 
 
 def test_validation_feedback_allows_one_corrected_retry():

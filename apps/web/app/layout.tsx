@@ -4,6 +4,7 @@ import "./glass-background.css";
 import "./workspace-editorial.css";
 import "./workspace-console.css";
 import "./investigation.css";
+import "./answer.css";
 
 
 export const metadata: Metadata = {

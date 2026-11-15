@@ -44,10 +44,14 @@ class AcceptanceModel(DrivingModel):
 def main():
     import uvicorn
     with TemporaryDirectory(prefix='hypothesim-8a2-ui-') as directory:
-        source,_=research_service(Path(directory),missing=True)
+        # --complete-research serves the full synthetic parameter set, so research reaches a numerical result.
+        source,_=research_service(Path(directory),missing='--complete-research' not in sys.argv)
         api=create_app(SETTINGS,preparation_service=source.preparation)
         agent=api.state.generalized_agent
         agent.extractor=source.extractor
+        # Scripted, clearly synthetic grounded answer (8B); it still passes through real server validation.
+        from test_grounded_synthesis import scripted_synthesizer
+        agent.synthesizer=scripted_synthesizer([])
         agent._model=lambda:AcceptanceModel()
         original=simulation.run_simulation
         def held(*args,**kwargs):

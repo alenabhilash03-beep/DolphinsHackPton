@@ -4,7 +4,7 @@ export function ResearchPaperReview({ papers }: { papers: NonNullable<AgentTurn[
   if (!papers.length) return null;
   return <section className="research-panel" aria-label="Papers inspected in this run">
     <p className="eyebrow">Live literature review</p><h2>Papers read & values extracted</h2>
-    {papers.map(paper => <article key={paper.document_id}>
+    {papers.map(paper => <article key={paper.document_id} id={`paper-${paper.document_id}`} style={{scrollMarginTop:88}}>
       <h3><a href={paper.source.url} target="_blank" rel="noreferrer">{paper.source.title} ↗</a></h3>
       <p>{paper.source.content_kind === "abstract" ? "Abstract only" : "Bounded full-text passages"} · {paper.source.retrieval_status} · {(paper.extraction.parameters ?? []).length} cited candidate value(s)</p>
       {paper.use_in_simulation === "reviewed_reference_separate" && <p className="scope-note">These papers were inspected in this run. The simulation uses the separately audited reference inputs shown with the graphs; these fresh candidates did not replace them.</p>}

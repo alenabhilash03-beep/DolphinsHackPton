@@ -32,7 +32,7 @@ function Feed({onOpen,allowed}){
  return <><header className="page-heading community-heading"><div><p className="eyebrow">Community</p><h1>Shared experiments</h1><p>Investigations other researchers have published: what they asked, what the agent found, and how each follow-up changed the answer. Every AI summary cites the steps it comes from.</p></div></header>
   {error&&<p className="community-error" role="alert">{error}</p>}
   {!items&&!error&&<p className="community-loading" role="status">Loading shared experiments…</p>}
-  {items&&!items.length&&<section className="community-panel"><h2>No shared experiments yet</h2><p>Run an investigation in Experiments, then use <strong>Share your experiment</strong> below its results to publish it here.</p></section>}
+  {items&&!items.length&&<section className="community-panel"><h2>No shared experiments yet</h2><p>Run an investigation in Experiments, then use <strong>Share your experiment</strong> in its <strong>Investigation</strong> tab to publish it here.</p></section>}
   {items&&items.length>0&&<ul className="community-feed">{items.map(item=><li key={item.share_id}><button type="button" className="community-card" onClick={()=>onOpen(item.share_id)}>
    <span className="eyebrow">{item.drug} → {item.target}</span><strong>{item.title}</strong>
    {item.headline?<p>{item.headline}</p>:<p className="community-question">{item.question}</p>}

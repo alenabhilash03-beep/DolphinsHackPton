@@ -29,6 +29,12 @@ from langgraph.errors import GraphRecursionError
 import json
 from app.simulation.service import _canonical_hash
 
+# Display names for candidate parameters in user-facing summaries (the records keep their canonical keys).
+PARAMETER_NAMES = {'molecular_weight': 'molecular weight', 'molecular_weight_g_mol': 'molecular weight', 'pk.clearance_L_h': 'clearance',
+    'pk.volume_L': 'distribution volume', 'pk.elimination_half_life_h': 'half-life', 'binding.affinity_nM': 'binding affinity (KD)',
+    'binding.association_nM_inv_h_inv': 'association rate (kon)', 'binding.dissociation_h_inv': 'dissociation rate (koff)',
+    'clearance': 'clearance', 'volume': 'distribution volume', 'half_life': 'half-life', 'kd': 'binding affinity (KD)'}
+
 def transient_provider_error(exc) -> bool:
     """Interrupted streams and gateway errors: safe to retry because only model inference is repeated."""
     text = f'{type(exc).__name__} {exc}'
@@ -150,7 +156,7 @@ def interpretation(result):
         binding = any(e.parameter.startswith('binding.') for e in values)
         summaries.append(PaperSummary(source_id=source.source_id, evidence_ids=[e.evidence_id for e in values],
             locator='; '.join(e.locator or '' for e in values),
-            finding='Source-linked candidate inputs: '+ '; '.join(f'{e.parameter} = {e.original_value:g} {e.original_unit}' for e in values),
+            finding='Source-linked candidate inputs: '+ '; '.join(f'{PARAMETER_NAMES.get(e.parameter, e.parameter.replace("_", " "))} = {e.original_value:g} {e.original_unit}' for e in values),
             hypothesis_relevance='Supplies conditional model inputs for '+config.drug+' and '+config.target,
             use_in_model='Selected parameter lineage; the paper itself did not generate the simulated curves.',
             plot_ids=['concentration','occupancy'] if pk else ['occupancy'] if binding else ['concentration','occupancy'],

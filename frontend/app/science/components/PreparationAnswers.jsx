@@ -1,6 +1,8 @@
 "use client";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState } from "react";
+import { parameterLabel, unitLabel } from "../lib/investigation.js";
+import { humanize, locatorLabel } from "../lib/readable.js";
 const FIELDS = [
     [
         "pk.volume_L",
@@ -226,17 +228,17 @@ export function PreparationAnswers({ record, busy, onContinue, onReload }) {
                             children: [
                                 /*#__PURE__*/ _jsxs("strong", {
                                     children: [
-                                        p.parameter,
+                                        parameterLabel(p.parameter),
                                         ": ",
                                         p.value,
                                         " ",
-                                        p.unit
+                                        unitLabel(p.unit)
                                     ]
                                 }),
                                 " · ",
-                                p.provenance,
+                                humanize(p.provenance),
                                 " · ",
-                                p.applicability,
+                                humanize(p.applicability),
                                 /*#__PURE__*/ _jsx("p", {
                                     children: p.context.applicability_notes.join(" ")
                                 }),
@@ -247,7 +249,7 @@ export function PreparationAnswers({ record, busy, onContinue, onReload }) {
                                             /*#__PURE__*/ _jsxs("small", {
                                                 children: [
                                                     "(",
-                                                    passage.locator,
+                                                    locatorLabel(passage.locator),
                                                     ")"
                                                 ]
                                             })

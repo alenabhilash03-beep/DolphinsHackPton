@@ -1,6 +1,7 @@
 "use client";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { historyRows } from "../lib/history-view.js";
+import { changeLabel } from "../lib/readable.js";
 /** Every stored step of this investigation. Reopening shows a stored result exactly as computed; nothing is rerun. */ export function InvestigationHistoryPanel({ history, shownId, busy, branch, onReopen }) {
     const rows = historyRows(history, shownId);
     if (rows.length < 2) return null;
@@ -83,7 +84,7 @@ import { historyRows } from "../lib/history-view.js";
                                     className: "history-changes",
                                     children: [
                                         "Changed: ",
-                                        row.changes.join("; ")
+                                        row.changes.map(changeLabel).join("; ")
                                     ]
                                 }),
                                 /*#__PURE__*/ _jsx("ul", {

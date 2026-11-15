@@ -74,8 +74,8 @@ import { CONCENTRATION_SCALE_NM, schematicState, TARGET_SITES } from "../lib/bin
         }
         ctx.fillStyle = "#efe9e1";
         ctx.font = "12px sans-serif";
-        ctx.fillText("Drug population · gold", 12, 24);
-        ctx.fillText("Effective target sites · sage", 12, 245);
+        ctx.fillText("Drug molecules (free)", 12, 24);
+        ctx.fillText("Target sites", 12, 245);
     }, [
         width,
         reduced,

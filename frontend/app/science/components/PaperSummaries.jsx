@@ -1,5 +1,6 @@
 "use client";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { locatorLabel, readableText } from "../lib/readable.js";
 export function PaperSummaries({ summaries, experiment }) {
     return /*#__PURE__*/ _jsxs("div", {
         className: "paper-summaries",
@@ -41,7 +42,7 @@ export function PaperSummaries({ summaries, experiment }) {
                         }),
                         /*#__PURE__*/ _jsx("p", {
                             className: "paper-key-finding",
-                            children: summary.finding
+                            children: readableText(summary.finding)
                         }),
                         /*#__PURE__*/ _jsxs("details", {
                             children: [
@@ -53,7 +54,7 @@ export function PaperSummaries({ summaries, experiment }) {
                                 }),
                                 /*#__PURE__*/ _jsxs("p", {
                                     children: [
-                                        summary.locator,
+                                        locatorLabel(summary.locator),
                                         " · parameter records: ",
                                         summary.evidence_ids.join(", ")
                                     ]

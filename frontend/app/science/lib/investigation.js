@@ -191,7 +191,18 @@ export function parameterLabel(path) {
         exposure_factor: "Prescribed exposure factor",
         initial_amount_nmol: "Initial amount",
         initial_occupancy: "Initial occupancy",
-        dosing_interval_h: "Dosing interval"
+        dosing_interval_h: "Dosing interval",
+        // Evidence-record and candidate names (not configuration paths).
+        molecular_weight: "Molecular weight",
+        effective_half_life: "Effective half-life",
+        affinity: "Binding affinity (KD)",
+        volume: "Distribution volume",
+        clearance: "Clearance",
+        kon: "Association rate (kon)",
+        koff: "Dissociation rate (koff)",
+        kd: "Binding affinity (KD)",
+        half: "Half-life",
+        half_life: "Half-life"
     };
     return names[path] ?? path.replace(/^administration\.(\d+)\./, (_, n)=>`Dose ${Number(n) + 1} · `).replace("amount_mg", "amount").replace("start_h", "start").replace("duration_h", "infusion duration");
 }

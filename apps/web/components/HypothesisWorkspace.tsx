@@ -18,6 +18,7 @@ import { InvestigationHistoryPanel } from "./InvestigationHistoryPanel";
 import { AccountMenu, SignInPrompt } from "./AccountMenu";
 import { ShareExperiment } from "./ShareExperiment";
 import { AgentWorkflow } from "./AgentWorkflow";
+import { changeLabel } from "../lib/readable";
 import { branchRequired, historyFor, historyRows, restorationAfterJob } from "../lib/history-view";
 const PRIMARY="Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const STORAGE="hypothesim-agent-job-v1";
@@ -280,7 +281,7 @@ export function HypothesisWorkspace({ fallbackExperiment }: { fallbackExperiment
     <details id="revise" className="research-panel experiment-revision" onToggle={e=>{if(e.currentTarget.open)e.currentTarget.querySelector("input")?.focus();}}><summary>Change the experiment in words <span>Dose, affinity, schedule or duration</span></summary><p>Edits apply to the displayed result. The baseline stays protected; selected alternative: <strong>{visible.scenarios.find(s=>s.scenario_id===selected)?.label ?? "none"}</strong>.</p>
       <form onSubmit={submitEdit}><label>Experimental edit<input required disabled={!!busy} value={edit} onChange={e=>setEdit(e.target.value)} placeholder="Run this comparison for 120 days"/></label><button className="primary-button" disabled={!!busy || !shown || controlBusy}>Apply edit & simulate</button></form>
       <details><summary>Supported examples</summary><ul>{["Double the dose in the affinity alternative","Use a 21-day dosing interval in that alternative","Compare twofold and fivefold affinity improvement at fixed association rate","Run this comparison for 120 days"].map(s=><li key={s}><button type="button" disabled={!!busy} onClick={()=>setEdit(s)}>{s}</button></li>)}</ul><p>Unrecognized wording or extra instructions request clarification. Changes of drug, target or route require new research above.</p></details>
-      {turn?.applied_changes?.length ? <ul>{turn.applied_changes.map(s=><li key={s}>{s}</li>)}</ul>:null}
+      {turn?.applied_changes?.length ? <ul>{turn.applied_changes.map(s=><li key={s}>{changeLabel(s)}</li>)}</ul>:null}
     </details>
     <div className="saved-demo-banner" role="status"><span className="status-dot"/><strong>Displayed experiment</strong> {visible.drug} → {visible.target}{busy && <span> · Research pending; showing the last successful curves.</span>}</div>
     <PlotPreview key={prepared?.result_id ?? "fallback"} initialExperiment={prepared?.configuration ?? fallbackExperiment} initialResult={prepared} onResultChange={onResult} turn={turn} editingLocked={!!busy} interpretation={currentInterpretation} answerShown={answer==="current" && turn?.synthesis?.status==="grounded"}

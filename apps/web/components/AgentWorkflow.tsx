@@ -13,7 +13,7 @@ import { EDGES, NODES, VIEW, graphState, type EdgeMode, type NodeId, type NodeSt
 import { scenarioColor } from "../lib/plot-spec";
 import { AgentIcon, BracesIcon, CheckIcon, CrossIcon, DocIcon, FitIcon, StageIcon, ZoomIcon } from "./WorkflowIcons";
 
-const STATUS: Record<string, string> = { recorded: "Recorded run playing", replaying: "Replaying recorded run", starting: "Starting agent", queued: "Waiting for an agent slot", running: "Agent working",
+const STATUS: Record<string, string> = { replaying: "Replaying this run", starting: "Starting agent", queued: "Waiting for an agent slot", running: "Agent working",
   completed: "Investigation complete", needs_inputs: "Needs researcher input", unsupported: "Outside supported models", failed: "Run stopped", invalid: "Record could not be verified" };
 const NODE_OF_STAGE: Record<string, NodeId> = { question: "prep", search: "search", reading: "reading", extraction: "extraction", model: "model", simulation: "simulation", structure: "structure", answer: "answer" };
 
@@ -26,8 +26,6 @@ export function AgentWorkflow({ job, submitting, question, replay, onClose, onVi
   const [picked, setPicked] = useState<NodeId | null>(null);
   const [zoom, setZoom] = useState(1);
   const total = job?.execution_events?.length ?? 0;
-  // Demo mode replays a recorded live run on the server; say so instead of implying a live model call.
-  const recorded = !!job?.events?.some(event => event.startsWith("Replaying recorded agent run"));
   // Presentation pacing: events arrive in polling bursts, so reveal them one by one with a minimum dwell,
   // letting every tool call visibly run before its outcome appears. Only the timing of display changes.
   const [paced, setPaced] = useState(0);
@@ -59,7 +57,7 @@ export function AgentWorkflow({ job, submitting, question, replay, onClose, onVi
   const logRef = useRef<HTMLOListElement>(null);
   useEffect(() => { const log = logRef.current; if (log) log.scrollTop = log.scrollHeight; }, [model.log.length]);
 
-  const status = submitting && !job ? "starting" : replaying ? "replaying" : recorded && running ? "recorded" : model.status;
+  const status = submitting && !job ? "starting" : replaying ? "replaying" : model.status;
   const finished = !running;
   const { nodeState, edgeMode } = graphState(model.stages, running, model.active?.stage ?? null, ["failed", "invalid"].includes(status));
   // The inspector follows the agent unless the viewer picked a node.
@@ -77,8 +75,8 @@ export function AgentWorkflow({ job, submitting, question, replay, onClose, onVi
     <div className="wf-shell">
       <header className="wf-header">
         <div className="wf-title">
-          <div className="wf-tabs" role="presentation"><span data-on={!replay && !recorded}>Live</span><span data-on={replay || recorded}>{recorded && !replay ? "Recorded" : "Replay"}</span></div>
-          <div><p className="wf-eyebrow">{recorded ? "Recorded agent run · NVIDIA Nemotron + scientific tools" : "Agentic workflow · NVIDIA Nemotron + scientific tools"}</p><h2>{question || "Scientific investigation"}</h2></div>
+          <div className="wf-tabs" role="presentation"><span data-on={!replay}>Live</span><span data-on={replay}>Replay</span></div>
+          <div><p className="wf-eyebrow">Agentic workflow · NVIDIA Nemotron + scientific tools</p><h2>{question || "Scientific investigation"}</h2></div>
         </div>
         <div className="wf-stats">
           <span className="wf-status" data-status={status}>{running && <span className="wf-pulse"/>}{STATUS[status] ?? status}</span>
@@ -92,7 +90,7 @@ export function AgentWorkflow({ job, submitting, question, replay, onClose, onVi
         <div className="wf-canvas">
           <div className="wf-now">{activeStage ? <><span className="wf-pulse"/><b>{model.active!.label}</b><span>{activeStage.doing}</span></>
             : running ? <><span className="wf-pulse thinking"/><b>Agent reasoning</b><span>choosing the next tool from what it has observed</span></>
-            : <><CheckIcon size={12}/><b>{status === "completed" ? "Run complete" : "Run ended"}</b><span>every node reflects a recorded tool outcome</span></>}</div>
+            : <><CheckIcon size={12}/><b>{status === "completed" ? "Run complete" : "Run ended"}</b><span>every node reflects a tool outcome from this run</span></>}</div>
           <div className="wf-scroll">
             <svg className="wf-graph" viewBox={`0 0 ${VIEW.width} ${VIEW.height}`} style={{ "--zoom": zoom } as CSSProperties} role="img" aria-label="Agent workflow graph">
               <defs>
@@ -132,7 +130,7 @@ export function AgentWorkflow({ job, submitting, question, replay, onClose, onVi
       </section>
 
       <footer className="wf-footer">
-        <p>Every node, link and value is a recorded tool call from this run, not a scripted animation. Paper values are candidates checked against their source passage; model inputs show their provenance.</p>
+        <p>Every node, link and value comes from a tool call in this run, not a scripted animation. Paper values are candidates checked against their source passage; model inputs show their provenance.</p>
         <div>
           {replay && <button type="button" className="wf-button ghost" onClick={() => setReplayKey(k => k + 1)}>Replay again</button>}
           <button type="button" className="wf-button ghost" onClick={onClose}>{live ? "Continue in background" : "Close"}</button>
@@ -227,8 +225,8 @@ function Inspector({ node, model, question, running }: { node: NodeId; model: Mo
     case "structure": return <div className="wf-pane">{model.structure ? (model.structure.available ? <dl className="wf-facts"><dt>PDB entry</dt><dd>{model.structure.pdb_id}</dd>
       <dt>Interface contacts</dt><dd>{model.structure.interface_residue_pair_count ?? "–"} residue pairs ≤ 4 Å</dd><dt>Measurements</dt><dd>{model.structure.measurement_ids?.length ?? 0} from deposited coordinates</dd></dl>
       : <p>No verified experimental structure for this drug and target; the simulation is unaffected.</p>) : <Empty text="The agent inspects the experimental drug–target structure."/>}</div>;
-    case "answer": return <div className="wf-pane">{model.synthesis ? <p>{model.synthesis.status === "grounded" ? "Grounded answer written: every claim links to a paper quote, a solver value or a structure measurement." : `Written answer ${model.synthesis.status}; the recorded results still stand.`}</p>
-      : <Empty text="Written last, from the recorded results."/>}</div>;
+    case "answer": return <div className="wf-pane">{model.synthesis ? <p>{model.synthesis.status === "grounded" ? "Grounded answer written: every claim links to a paper quote, a solver value or a structure measurement." : `Written answer ${model.synthesis.status}; the tool results still stand.`}</p>
+      : <Empty text="Written last, from the results above."/>}</div>;
   }
 }
 

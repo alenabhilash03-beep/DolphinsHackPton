@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import type { EvidenceProfile, ExperimentConfig } from "../lib/contracts";
 import { PaperSummaries } from "./PaperSummaries";
+import { parameterLabel, scientificNumber, unitLabel } from "../lib/investigation";
+import { humanize, locatorLabel } from "../lib/readable";
 
 /** Plain evidence view for the UI team to restyle; never upgrades cache metadata to reviewed data. */
 export function EvidencePanel({ experiment, scenarioId, resultPresent = false, showSummaries = true }: {
@@ -39,21 +41,11 @@ export function EvidencePanel({ experiment, scenarioId, resultPresent = false, s
       profile ? "Europe PMC bibliographic metadata: cached, not a live search. Numerical inputs retain their separate reviewed or assumed provenance." :
       "Loading cached bibliographic metadata…"}</p>
     {cacheError && <button type="button" onClick={() => { setCacheError(false); setAttempt((value) => value + 1); }}>Retry evidence metadata</button>}
-    <h3>Sources</h3>
-    {showSummaries && primary && profile?.paper_summaries && <PaperSummaries summaries={profile.paper_summaries} experiment={experiment} />}
-    <ul>{experiment.sources.map((source) => {
-      const cached = cacheBySource.get(source.source_id);
-      return <li key={source.source_id}>
-        <a href={source.url} target="_blank" rel="noreferrer">{source.source_id} · {source.title}</a>
-        {cached && <span> · PMID {cached.pmid} · abstract {cached.abstract_available ? "indexed" : "not indexed"}
-          {" · "}full text {cached.full_text_status === "open_access_link" ? "open-access link indexed" : "not confirmed"}
-          {" · "}cached {cached.retrieved_at.slice(0, 10)}</span>}
-      </li>;
-    })}</ul>
-    <details><summary>Parameter provenance · {scenario.label}</summary>
+    {showSummaries && primary && profile?.paper_summaries && <><h3>How each source is used</h3><PaperSummaries summaries={profile.paper_summaries} experiment={experiment} /></>}
+    <details className="detail-bar"><summary>Parameter provenance · {scenario.label}</summary>
     <ul>{values.map(({ path, item }) => item && <li key={path}>
-      <strong>{path}</strong>: {item.value.toPrecision(6)} {item.unit} · {item.provenance} · {item.review_status}
-      {(item.source_ids?.length ?? 0) > 0 && <> · {item.source_ids?.join(", ")}{item.locator ? `, ${item.locator}` : ""}</>}
+      <strong>{parameterLabel(path)}</strong>: {scientificNumber(item.value)} {unitLabel(item.unit)} · {humanize(item.provenance)} · {humanize(item.review_status)}
+      {(item.source_ids?.length ?? 0) > 0 && <> · {item.source_ids?.join(", ")}{item.locator ? `, ${locatorLabel(item.locator)}` : ""}</>}
       {item.provenance === "user_supplied" && <> · unreviewed hypothetical input</>}
     </li>)}</ul>
     </details><h3>Limits</h3>

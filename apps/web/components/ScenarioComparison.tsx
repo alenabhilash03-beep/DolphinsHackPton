@@ -4,6 +4,8 @@ import { memo } from "react";
 import type { SimulationResult } from "../lib/contracts";
 import { comparisonSummary, thresholdDescription } from "../lib/comparison-summary";
 import { scenarioColor } from "../lib/plot-spec";
+import { parameterLabel } from "../lib/investigation";
+import { humanize } from "../lib/readable";
 
 /** Current solver result only; all scientific numbers come from backend metrics. */
 export const ScenarioComparison = memo(function ScenarioComparison({ result, busy }: { result: SimulationResult; busy: boolean }) {
@@ -14,7 +16,8 @@ export const ScenarioComparison = memo(function ScenarioComparison({ result, bus
     const item = evidence.get(id);
     return [...new Set([...(item?.source_ids ?? []), ...(item?.parent_ids ?? []).flatMap(sourcesFor)])];
   };
-  return <section aria-label="Scenario comparison">
+  return <section aria-label="Scenario comparison" className="detail-stack">
+    <div className="detail-block">
     <h2>Scenario register</h2>
     <p>{config.mode === "research_derived" ? "Conditional research-derived / researcher-specified experiment" : config.mode === "custom" ? "Custom hypothetical comparison" : "Reviewed preset with hypothetical alternatives"} · {config.support.status} model scope.</p>
     <p role="status">{busy ? "Recalculating. The comparison below shows the last completed result." : `Showing completed result ${result.result_id}.`}</p>
@@ -30,9 +33,9 @@ export const ScenarioComparison = memo(function ScenarioComparison({ result, bus
         </dl>
         <details><summary>Input evidence</summary><ul>{["pk.elimination_half_life_h", "binding.affinity_nM"].map((path) => {
           const item = evidence.get(scenario.parameter_evidence[path]);
-          return item && <li key={path}>{item.parameter}: <strong>{item.provenance}</strong> · {item.applicability} · {item.review_status}
+          return item && <li key={path}>{parameterLabel(item.parameter)}: <strong>{humanize(item.provenance)}</strong> · {humanize(item.applicability)} · {humanize(item.review_status)}
             {item.source_ids?.length ? ` · ${item.source_ids.join(", ")}` : ""}
-            {item.parent_ids?.length ? ` · derived from ${item.parent_ids.join(", ")}` : ""}</li>;
+            {item.parent_ids?.length ? ` · derived from ${item.parent_ids.map(id => parameterLabel(id).toLowerCase()).join(", ")}` : ""}</li>;
         })}</ul></details>
         <p>Evidence sources: {[...new Set(Object.values(scenario.parameter_evidence).flatMap(sourcesFor))].map((id) => {
           const source = config.sources.find((item) => item.source_id === id);
@@ -40,6 +43,8 @@ export const ScenarioComparison = memo(function ScenarioComparison({ result, bus
         })}</p>
       </article>)}
     </div>
+    </div>
+    <div className="detail-block">
     <h3>Numerical comparison over {(config.duration_h / 24).toFixed(1)} days</h3>
     <p>Occupancy AUC integrates the occupied fraction over time; its day unit is not a measured duration of biological benefit. The {(config.occupancy_threshold * 100).toFixed(1)}% threshold is analytical.</p>
     <div style={{ overflowX: "auto" }}><table style={{ width: "100%", textAlign: "left", borderCollapse: "collapse" }}>
@@ -48,17 +53,18 @@ export const ScenarioComparison = memo(function ScenarioComparison({ result, bus
       <tbody>{result.scenarios.map((series) => <tr key={series.scenario_id}>
         <th scope="row" style={{ padding: 8 }}>{config.scenarios.find((scenario) => scenario.scenario_id === series.scenario_id)?.label}</th>
         <td>{(series.metrics.endpoint_occupancy * 100).toFixed(2)}%</td>
-        <td>{(series.metrics.occupancy_auc_h / 24).toFixed(3)}</td>
-        <td>{series.metrics.concentration_auc_nM_h.toPrecision(5)}</td>
-        <td>{(series.metrics.threshold.total_time_above_h / 24).toFixed(3)}</td>
+        <td>{(series.metrics.occupancy_auc_h / 24).toFixed(1)}</td>
+        <td>{Math.round(series.metrics.concentration_auc_nM_h).toLocaleString("en-US")}</td>
+        <td>{(series.metrics.threshold.total_time_above_h / 24).toFixed(1)}</td>
         <td>{thresholdDescription(series.metrics.threshold)}</td>
       </tr>)}</tbody>
     </table></div>
-    <h3>What the current model predicts</h3>
-    <ul>{summary.claims.map((claim) => <li key={claim}>{claim}</li>)}</ul>
-    <h3>Experiments that could test these assumptions</h3>
-    <ul>{summary.followUps.map((item) => <li key={item}>{item}</li>)}</ul>
-    <details><summary>Model assumptions and warnings</summary>
+    </div>
+    <div className="detail-block"><h3>What the current model predicts</h3>
+    <ul>{summary.claims.map((claim) => <li key={claim}>{claim}</li>)}</ul></div>
+    <div className="detail-block"><h3>Experiments that could test these assumptions</h3>
+    <ul>{summary.followUps.map((item) => <li key={item}>{item}</li>)}</ul></div>
+    <details className="detail-bar"><summary>Model assumptions and warnings</summary>
       <ul>{config.assumptions.map((item) => <li key={item.assumption_id}>{item.description}</li>)}</ul>
       <ul>{result.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul>
     </details>

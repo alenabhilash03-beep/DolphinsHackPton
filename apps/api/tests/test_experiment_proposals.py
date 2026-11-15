@@ -107,7 +107,7 @@ def test_rules_follow_solver_outcomes_and_control_limits():
     double = next(p for p in propose(weak) if p.kind == 'double_dose')
     assert (double.changes[0].scenario_id, double.changes[0].from_value, double.changes[0].to_value) == ('affinity_x10', 0.01, 0.02)
     label = next(s for s in weak.configuration.scenarios if s.scenario_id == 'affinity_x10').label
-    assert double.edit_text == f'Double the dose in {label}'
+    assert double.edit_text == f'Double the dose in {label[:1].lower() + label[1:]}'
     # The readable label is still parsed back to exactly the proposed scenario.
     assert parse_edit(weak.configuration, double.edit_text)[1][0].scenario_id == 'affinity_x10'
     # One censored scenario is enough to extend the window, but not to raise the threshold.

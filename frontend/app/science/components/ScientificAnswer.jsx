@@ -1,6 +1,7 @@
 "use client";
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { accessSummary, answerState, basisLabel, canFocus, findingLinks, keyQuantities, measurementCards, structuralObservations, verdictLabel } from "../lib/synthesis-view.js";
+import { locatorLabel, readableText } from "../lib/readable.js";
 const STANCE = {
     supports: "Supports the hypothesis",
     contradicts: "Contradicts the hypothesis",
@@ -84,7 +85,7 @@ function Chips({ chips }) {
             }, card.id))
     });
 }
-/** One answer above its supporting detail. Prose is server-validated; every number shown is a solver field. */ export function ScientificAnswer({ turn, shown, viewer = "unavailable", onFocusMeasurement }) {
+/** One answer above its supporting detail. Prose is server-validated; every number shown is a solver field. */ export function ScientificAnswer({ turn, shown, viewer = "unavailable", onFocusMeasurement, questionShown = false }) {
     const state = answerState(turn, shown);
     if (state === "none" || !turn?.synthesis) return null;
     if (state === "invalid") return /*#__PURE__*/ _jsx("section", {
@@ -112,97 +113,107 @@ function Chips({ chips }) {
         "aria-label": "Scientific answer",
         children: [
             /*#__PURE__*/ _jsxs("div", {
-                className: "answer-heading",
+                className: "answer-summary",
                 children: [
                     /*#__PURE__*/ _jsxs("div", {
+                        className: "answer-heading",
                         children: [
-                            /*#__PURE__*/ _jsx("p", {
-                                className: "eyebrow",
-                                children: "Scientific answer"
+                            /*#__PURE__*/ _jsx("div", {
+                                children: questionShown ? /*#__PURE__*/ _jsx("h2", {
+                                    className: "answer-title",
+                                    children: "Answer"
+                                }) : /*#__PURE__*/ _jsxs(_Fragment, {
+                                    children: [
+                                        /*#__PURE__*/ _jsx("p", {
+                                            className: "eyebrow",
+                                            children: "Scientific answer"
+                                        }),
+                                        /*#__PURE__*/ _jsx("h2", {
+                                            children: synthesis.original_text
+                                        })
+                                    ]
+                                })
                             }),
-                            /*#__PURE__*/ _jsx("h2", {
-                                children: synthesis.original_text
+                            /*#__PURE__*/ _jsxs("div", {
+                                className: "answer-badges",
+                                children: [
+                                    /*#__PURE__*/ _jsx("span", {
+                                        className: "answer-verdict",
+                                        "data-verdict": synthesis.answer?.verdict ?? synthesis.status,
+                                        children: verdictLabel(synthesis, !!turn?.parent_result_id)
+                                    }),
+                                    /*#__PURE__*/ _jsx("span", {
+                                        className: "answer-basis",
+                                        children: basisLabel(synthesis)
+                                    })
+                                ]
                             })
                         ]
                     }),
-                    /*#__PURE__*/ _jsxs("div", {
-                        className: "answer-badges",
+                    turn.applied_proposal && /*#__PURE__*/ _jsxs("p", {
+                        className: "answer-origin",
                         children: [
-                            /*#__PURE__*/ _jsx("span", {
-                                className: "answer-verdict",
-                                "data-verdict": synthesis.answer?.verdict ?? synthesis.status,
-                                children: verdictLabel(synthesis, !!turn?.parent_result_id)
+                            "Follow-up experiment run from a proposal: ",
+                            /*#__PURE__*/ _jsx("strong", {
+                                children: turn.applied_proposal.title
                             }),
-                            /*#__PURE__*/ _jsx("span", {
-                                className: "answer-basis",
-                                children: basisLabel(synthesis)
-                            })
+                            ". ",
+                            turn.applied_proposal.changes.map((change)=>`${change.parameter}${change.scenario_label ? ` (${change.scenario_label})` : ""}: ${change.from_display} → ${change.to_display}`).join("; "),
+                            ". Run from result ",
+                            turn.applied_proposal.base_result_id,
+                            "."
                         ]
-                    })
-                ]
-            }),
-            turn.applied_proposal && /*#__PURE__*/ _jsxs("p", {
-                className: "answer-origin",
-                children: [
-                    "Follow-up experiment run from a proposal: ",
-                    /*#__PURE__*/ _jsx("strong", {
-                        children: turn.applied_proposal.title
                     }),
-                    ". ",
-                    turn.applied_proposal.changes.map((change)=>`${change.parameter}${change.scenario_label ? ` (${change.scenario_label})` : ""}: ${change.from_display} → ${change.to_display}`).join("; "),
-                    ". Run from result ",
-                    turn.applied_proposal.base_result_id,
-                    "."
-                ]
-            }),
-            !turn.applied_proposal && turn.original_text !== synthesis.original_text && /*#__PURE__*/ _jsxs("p", {
-                className: "answer-origin",
-                children: [
-                    "Change applied to reach this result: ",
-                    /*#__PURE__*/ _jsx("strong", {
-                        children: turn.original_text
+                    !turn.applied_proposal && turn.original_text !== synthesis.original_text && /*#__PURE__*/ _jsxs("p", {
+                        className: "answer-origin",
+                        children: [
+                            "Change applied to reach this result: ",
+                            /*#__PURE__*/ _jsx("strong", {
+                                children: turn.original_text
+                            }),
+                            ". The answer addresses the investigation's original question with this result."
+                        ]
                     }),
-                    ". The answer addresses the investigation's original question with this result."
-                ]
-            }),
-            stale && /*#__PURE__*/ _jsxs("p", {
-                className: "answer-stale",
-                role: "status",
-                children: [
-                    /*#__PURE__*/ _jsx("strong", {
-                        children: "This answer describes an earlier result."
+                    stale && /*#__PURE__*/ _jsxs("p", {
+                        className: "answer-stale",
+                        role: "status",
+                        children: [
+                            /*#__PURE__*/ _jsx("strong", {
+                                children: "This answer describes an earlier result."
+                            }),
+                            " The curves below now reflect ",
+                            shown ? "your direct parameter changes" : "a different experiment",
+                            ", so its solver values and simulation statements no longer apply.",
+                            findings.length ? " Paper findings are unchanged." : "",
+                            " Use ",
+                            /*#__PURE__*/ _jsx("a", {
+                                href: "#revise",
+                                children: "Change the experiment in words"
+                            }),
+                            " or new research to get an answer for the current curves."
+                        ]
                     }),
-                    " The curves below now reflect ",
-                    shown ? "your direct parameter changes" : "a different experiment",
-                    ", so its solver values and simulation statements no longer apply.",
-                    findings.length ? " Paper findings are unchanged." : "",
-                    " Use ",
-                    /*#__PURE__*/ _jsx("a", {
-                        href: "#revise",
-                        children: "Change the experiment in words"
+                    state === "evidence_only" && shown && /*#__PURE__*/ _jsx("p", {
+                        className: "scope-note",
+                        children: "No simulation was run for this question. The curves below belong to an earlier experiment and are not part of this answer."
                     }),
-                    " or new research to get an answer for the current curves."
+                    synthesis.answer ? /*#__PURE__*/ _jsx("p", {
+                        className: "answer-statement",
+                        children: synthesis.answer.statement
+                    }) : /*#__PURE__*/ _jsxs("p", {
+                        className: "answer-unavailable",
+                        children: [
+                            synthesis.notes?.[0] ?? "No written answer was accepted for this run.",
+                            " ",
+                            turn.result ? "The numerical result, plots and evidence below are unaffected." : "Evidence gathered in this run is listed below."
+                        ]
+                    }),
+                    synthesis.answer && (synthesis.notes ?? []).map((note, index)=>/*#__PURE__*/ _jsx("p", {
+                            className: "answer-access-note",
+                            children: note
+                        }, index))
                 ]
             }),
-            state === "evidence_only" && shown && /*#__PURE__*/ _jsx("p", {
-                className: "scope-note",
-                children: "No simulation was run for this question. The curves below belong to an earlier experiment and are not part of this answer."
-            }),
-            synthesis.answer ? /*#__PURE__*/ _jsx("p", {
-                className: "answer-statement",
-                children: synthesis.answer.statement
-            }) : /*#__PURE__*/ _jsxs("p", {
-                className: "answer-unavailable",
-                children: [
-                    synthesis.notes?.[0] ?? "No written answer was accepted for this run.",
-                    " ",
-                    turn.result ? "The numerical result, plots and evidence below are unaffected." : "Evidence gathered in this run is listed below."
-                ]
-            }),
-            synthesis.answer && (synthesis.notes ?? []).map((note, index)=>/*#__PURE__*/ _jsx("p", {
-                    className: "answer-access-note",
-                    children: note
-                }, index)),
             chips.length > 0 && /*#__PURE__*/ _jsxs("section", {
                 className: "answer-solver",
                 "aria-label": "Key solver findings",
@@ -280,12 +291,8 @@ function Chips({ chips }) {
                                             "“",
                                             citation.quote,
                                             "”",
-                                            /*#__PURE__*/ _jsxs("small", {
-                                                children: [
-                                                    citation.content_kind === "abstract" ? "Abstract" : "Full text",
-                                                    " · ",
-                                                    citation.locator
-                                                ]
+                                            /*#__PURE__*/ _jsx("small", {
+                                                children: citation.content_kind === "abstract" ? "Abstract" : locatorLabel(citation.locator)
                                             })
                                         ]
                                     }, index)),
@@ -340,7 +347,7 @@ function Chips({ chips }) {
                                                         children: link.records.map((record)=>/*#__PURE__*/ _jsxs("li", {
                                                                 title: `Parameter record ${record.evidenceId}`,
                                                                 children: [
-                                                                    record.text,
+                                                                    readableText(record.text),
                                                                     " · ",
                                                                     record.plots.map((id)=>/*#__PURE__*/ _jsxs("a", {
                                                                             href: `#plot-${id}`,
@@ -358,7 +365,7 @@ function Chips({ chips }) {
                                                 children: link.candidates.map((candidate, index)=>/*#__PURE__*/ _jsxs("li", {
                                                         children: [
                                                             "Extracted candidate: ",
-                                                            candidate.text,
+                                                            readableText(candidate.text),
                                                             " · ",
                                                             turn.result ? /*#__PURE__*/ _jsxs(_Fragment, {
                                                                 children: [

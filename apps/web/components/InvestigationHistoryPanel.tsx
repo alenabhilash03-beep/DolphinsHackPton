@@ -2,6 +2,7 @@
 
 import type { InvestigationHistory } from "../lib/contracts";
 import { historyRows } from "../lib/history-view";
+import { changeLabel } from "../lib/readable";
 
 /** Every stored step of this investigation. Reopening shows a stored result exactly as computed; nothing is rerun. */
 export function InvestigationHistoryPanel({ history, shownId, busy, branch, onReopen }: {
@@ -15,7 +16,7 @@ export function InvestigationHistoryPanel({ history, shownId, busy, branch, onRe
         <div className="history-head"><span className="history-kind">{row.step} · {row.kind}</span><strong>{row.title}</strong>
           {row.displayed ? <span className="history-current">Displayed</span> : <button type="button" disabled={busy} onClick={() => onReopen(row.resultId)}>Reopen</button>}</div>
         <p className="history-design">{row.design}{row.evidence ? ` · ${row.evidence}` : ""}{row.branches > 1 ? ` · ${row.branches} branches from here` : ""}</p>
-        {row.changes.length > 0 && <p className="history-changes">Changed: {row.changes.join("; ")}</p>}
+        {row.changes.length > 0 && <p className="history-changes">Changed: {row.changes.map(changeLabel).join("; ")}</p>}
         <ul>{row.outcomes.map((outcome, index) => <li key={index}>{outcome}</li>)}</ul>
         {row.finding && <p className="history-finding"><span>{row.verdict}</span> {row.finding}</p>}
       </li>)}</ol>

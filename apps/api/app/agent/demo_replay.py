@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from uuid import uuid4
 
+from app.research.europe_pmc import tidy_spacing
 from app.schemas.execution import CandidatePreview, ExecutionSummary
 from app.schemas.generalized_agent import AgentEditRequest, AgentResearchRequest, AgentTurn
 
@@ -40,12 +41,22 @@ class Replay:
     turn: AgentTurn
 
 
+def _tidy_titles(turn: AgentTurn) -> AgentTurn:
+    """Recordings predate title cleanup; tidy paper titles ("Herceptin ® )" → "Herceptin®)") when loading."""
+    for paper in turn.research_papers:
+        paper.source.title = tidy_spacing(paper.source.title)
+    if turn.synthesis:
+        for item in turn.synthesis.source_access or []:
+            item.title = tidy_spacing(item.title)
+    return turn
+
+
 def load(directory: Path = REPLAY_DIR) -> list[Replay]:
     replays = []
     for path in sorted(directory.glob('*.json')) if directory.exists() else []:
         raw = json.loads(path.read_text())
         replays.append(Replay(name=raw['name'], kind=raw['kind'], match=raw['match'], recorded_run_id=raw['recorded_run_id'],
-            duration_s=float(raw['duration_s']), steps=raw['steps'], turn=AgentTurn.model_validate(raw['turn'])))
+            duration_s=float(raw['duration_s']), steps=raw['steps'], turn=_tidy_titles(AgentTurn.model_validate(raw['turn']))))
     return replays
 
 

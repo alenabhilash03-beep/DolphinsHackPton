@@ -46,7 +46,7 @@ export function PlotPreview({ initialExperiment, initialResult = null, onResultI
       if(hash==="#structure"){setView("structure");setStructureVisited(true);}
       else if(hash==="#paper-evidence")setView("evidence");
       else if(hash==="#model-details")setView("details");
-      else if(hash==="#investigation")setView("investigation");
+      else if(hash==="#investigation"||hash==="#answer"||hash==="#history")setView("investigation");
       else if(hash==="#experiment"||hash.startsWith("#plot-"))setView("simulation");
       else return;
       // Reveal the target before native anchor scrolling completes.

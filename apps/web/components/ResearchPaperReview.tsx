@@ -1,5 +1,6 @@
 import type { AgentTurn } from "../lib/contracts";
-import { plural, unitLabel } from "../lib/investigation";
+import { parameterLabel, plural, unitLabel } from "../lib/investigation";
+import { locatorList, locatorLabel } from "../lib/readable";
 
 export function ResearchPaperReview({ papers }: { papers: NonNullable<AgentTurn["research_papers"]> }) {
   if (!papers.length) return null;
@@ -14,10 +15,10 @@ export function ResearchPaperReview({ papers }: { papers: NonNullable<AgentTurn[
       {paper.extraction.status === "rejected" && <p>The extraction produced no accepted candidates after source checks.</p>}
       <details><summary>Inspect extracted values & source passages</summary>
         {(paper.extraction.parameters ?? []).map(value => <div key={value.parameter_id}>
-          <p><strong>{value.parameter}: {value.original_value} {unitLabel(value.original_unit)}</strong> · reported candidate · applicability not yet approved</p>
-          {value.passages?.map((passage, index) => <blockquote key={index}>{passage.supporting_passage}<br/><small>{passage.locator}</small></blockquote>)}
+          <p><strong>{parameterLabel(value.parameter)}: {value.original_value} {unitLabel(value.original_unit)}</strong> · reported candidate · applicability not yet approved</p>
+          {value.passages?.map((passage, index) => <blockquote key={index}>{passage.supporting_passage}<br/><small>{locatorLabel(passage.locator)}</small></blockquote>)}
         </div>)}
-        <p>Inspected locators: {paper.inspected_locators.join(", ")}</p>
+        <p>Passages inspected: {locatorList(paper.inspected_locators)}</p>
         {(paper.extraction.rejected_candidates ?? []).map((reason,index) => <p key={index}>{reason}</p>)}
         {(paper.extraction.notes ?? []).map((note,index) => <p key={index}>{note}</p>)}
       </details>

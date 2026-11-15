@@ -1,5 +1,6 @@
 /* Which article summaries to show beside the graphs. Pure: values come from the agent turn and interpretation. */
 import {findingLinks} from './science/lib/synthesis-view.js';
+import {locatorLabel, readableText} from './science/lib/readable.js';
 
 const STANCE = {supports: 'Supports the hypothesis', contradicts: 'Contradicts the hypothesis', context: 'Context'};
 const unique = items => [...new Set(items)];
@@ -17,7 +18,7 @@ export function articleSummaries({turn = null, interpretation = null, experiment
       const links = findingLinks(turn, finding);
       return {key: finding.finding_id, kind: 'ai', title: paper?.source.title ?? source?.title ?? citation.source_id,
         url: paper?.source.url ?? null, access: finding.abstract_only ? 'Abstract only' : 'Full text', stance: STANCE[finding.stance],
-        summary: finding.statement, quote: citation.quote, locator: citation.locator,
+        summary: readableText(finding.statement), quote: citation.quote, locator: locatorLabel(citation.locator),
         plots: unique(links.flatMap(link => [...link.records, ...link.candidates].flatMap(item => item.plots))),
         note: links[0]?.simulationUse ?? null};
     })};
@@ -28,7 +29,7 @@ export function articleSummaries({turn = null, interpretation = null, experiment
     return {kind: 'source', cards: summaries.map(summary => {
       const source = sources.get(summary.source_id);
       return {key: summary.source_id, kind: 'source', title: source?.title ?? summary.source_id, url: source?.url ?? null,
-        access: null, stance: null, summary: summary.finding, quote: null, locator: summary.locator,
+        access: null, stance: null, summary: readableText(summary.finding), quote: null, locator: locatorLabel(summary.locator),
         plots: unique(summary.plot_ids ?? []), note: summary.use_in_model, limitation: summary.limitation};
     })};
   }

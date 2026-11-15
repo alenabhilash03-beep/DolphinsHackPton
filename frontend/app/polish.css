@@ -1,0 +1,71 @@
+/* Section boxes and text polish. Loaded last. Every distinct section reads as its own glass box; collapsible
+   extras are slimmer bars. Also limits tabular figures to numbers (Inter widens "-" under tnum: "half - life"). */
+.experience-root :is(th, td:first-child, .proposal-changes, .history-steps ul, .execution-totals, .history-changes, .answer-chips span){font-variant-numeric:normal;font-feature-settings:normal}
+
+/* Shared box and bar */
+.workspace-stage .instrument-app .backend-workspace :is(.investigation-question,.investigation-view .answer-summary,.investigation-view .answer-solver,.investigation-view .answer-structure,.investigation-view .answer-next,.investigation-view .answer-disagreements,.investigation-view .proposal-panel,.investigation-view .history-panel,.investigation-view .share-panel,#paper-evidence,#view-evidence .agent-findings,.detail-block){
+  margin:0;padding:22px 24px;border:1px solid #eee7df20;border-radius:20px;background:linear-gradient(130deg,#38332e40,#161515cc);box-shadow:inset 0 1px #fff8f408}
+.workspace-stage .instrument-app .backend-workspace :is(.investigation-view .answer-detail,.investigation-view .science-records,.investigation-view .result-record,.detail-bar){
+  margin:0;padding:14px 20px;border:1px solid #eee7df1c;border-radius:14px;background:#16151480;font-size:12.5px}
+.workspace-stage .instrument-app .backend-workspace :is(.investigation-view .answer-detail,.investigation-view .science-records,.investigation-view .result-record,.detail-bar)>summary{cursor:pointer;color:#ece6de;font-size:13px;font-weight:500;list-style-position:outside}
+.workspace-stage .instrument-app .backend-workspace :is(.investigation-view .answer-detail,.investigation-view .science-records,.investigation-view .result-record,.detail-bar)[open]>summary{margin-bottom:10px}
+.workspace-stage .instrument-app .backend-workspace :is(.investigation-view .answer-detail,.investigation-view .science-records,.investigation-view .result-record,.detail-bar) summary span{margin-left:8px;color:#9d958c;font-size:11px;font-weight:400}
+
+/* Investigation tab: question → answer → follow-ups → history → share → records */
+.workspace-stage .instrument-app .backend-workspace .investigation-view{display:grid;gap:16px}
+.workspace-stage .instrument-app .backend-workspace .investigation-question{border-color:#e2b1b833;background:linear-gradient(130deg,#4a3a3a40,#161515d9)}
+.workspace-stage .instrument-app .backend-workspace .investigation-question .eyebrow{margin:0 0 8px;font-size:11px;letter-spacing:.04em;color:#e2b1b8}
+.workspace-stage .instrument-app .backend-workspace .investigation-question h2{margin:0;font-size:22px;font-weight:400;line-height:1.4;letter-spacing:-.01em;color:#f5efe9}
+.workspace-stage .instrument-app .backend-workspace .investigation-question dl{display:flex;flex-wrap:wrap;gap:10px 32px;margin:16px 0 0;padding-top:14px;border-top:1px solid #eee7df17}
+.workspace-stage .instrument-app .backend-workspace .investigation-question dl>div{display:grid;gap:2px}
+.workspace-stage .instrument-app .backend-workspace .investigation-question dt{font-size:10.5px;color:#9d958c;letter-spacing:.03em}
+.workspace-stage .instrument-app .backend-workspace .investigation-question dd{margin:0;font-size:13px;color:#ece6de}
+.workspace-stage .instrument-app .backend-workspace .investigation-view .answer-panel{display:grid;gap:16px;margin:0;padding:0;border:0;background:none;box-shadow:none}
+.workspace-stage .instrument-app .backend-workspace .investigation-view .answer-panel>.answer-access-note{margin:-6px 4px 0;font-size:11.5px;color:#9d958c}
+.workspace-stage .instrument-app .backend-workspace .investigation-view .answer-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin:0 0 12px;padding:0;border:0}
+.workspace-stage .instrument-app .backend-workspace .investigation-view .answer-title{margin:0;font-size:20px;font-weight:400;color:#f5efe9}
+.workspace-stage .instrument-app .backend-workspace .investigation-view .answer-statement{margin:0;font-size:15px;line-height:1.7;color:#ece6de}
+.workspace-stage .instrument-app .backend-workspace .investigation-view .answer-origin{margin:0 0 12px;font-size:12.5px;line-height:1.6;color:#cec8c0}
+.workspace-stage .instrument-app .backend-workspace .investigation-view :is(.answer-solver,.answer-structure,.answer-next,.answer-disagreements){border-top:1px solid #eee7df20}
+.workspace-stage .instrument-app .backend-workspace .investigation-view .answer-section-heading{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.workspace-stage .instrument-app .backend-workspace .investigation-view .answer-section-heading h3,.workspace-stage .instrument-app .backend-workspace .investigation-view .answer-disagreements h3{margin:0;font-size:16px;font-weight:500;color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace .investigation-view .answer-section-heading span{font-size:11px;color:#9d958c}
+.workspace-stage .instrument-app .backend-workspace .investigation-view .proposal-panel>header,.workspace-stage .instrument-app .backend-workspace .investigation-view .proposal-panel .proposal-heading{margin-top:0}
+.workspace-stage .instrument-app .backend-workspace .investigation-view .share-panel{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+
+/* Evidence and model details */
+.workspace-stage .instrument-app .backend-workspace #view-evidence{display:grid;gap:16px}
+.workspace-stage .instrument-app .backend-workspace #view-evidence>*{margin:0}
+.workspace-stage .instrument-app .backend-workspace #paper-evidence>h2,.workspace-stage .instrument-app .backend-workspace .detail-block>h2{margin:0 0 10px;font-size:20px;font-weight:400;color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace :is(#paper-evidence,.detail-block)>h3{margin:0 0 10px;font-size:16px;font-weight:500;color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace #paper-evidence>.detail-bar{margin-top:14px}
+.workspace-stage .instrument-app .backend-workspace .detail-stack{display:grid;gap:16px}
+.workspace-stage .instrument-app .backend-workspace .detail-block>p:last-child,.workspace-stage .instrument-app .backend-workspace .detail-block>ul:last-child{margin-bottom:0}
+.workspace-stage .instrument-app .backend-workspace .detail-block .scenario-register{margin-top:14px}
+.workspace-stage .instrument-app .backend-workspace .scenario-register dd{margin-left:0}
+.workspace-stage .instrument-app .backend-workspace .proposal-changes li{overflow-wrap:normal}
+@media(max-width:700px){.workspace-stage .instrument-app .backend-workspace :is(.investigation-question,.investigation-view .answer-summary,.investigation-view .answer-solver,.investigation-view .answer-structure,.investigation-view .answer-next,.investigation-view .proposal-panel,.investigation-view .history-panel,.investigation-view .share-panel,#paper-evidence,.detail-block){padding:18px 16px}}
+
+/* Sticky tab bar: opaque so content never shows through the tab labels. */
+.workspace-stage .instrument-app .backend-workspace .workspace-viewbar{background:#1c1a18f5;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.workspace-stage .instrument-app .backend-workspace #paper-evidence>.detail-bar{margin:14px 0 18px}
+.workspace-stage .instrument-app .backend-workspace .proposal-changes li{text-wrap:pretty}
+
+/* Molecular structure tab: tools, inspection and notes as distinct boxes and bars; pill buttons like the rest of the site. */
+.workspace-stage .instrument-app .backend-workspace .structure-panel{display:grid;gap:16px}
+.workspace-stage .instrument-app .backend-workspace .structure-panel>*{margin-top:0;margin-bottom:0}
+.workspace-stage .instrument-app .backend-workspace .structure-panel :is(.molecular-tour,.structure-tools,.residue-sidebar){padding:18px 20px;border:1px solid #eee7df20;border-radius:18px;background:linear-gradient(130deg,#38332e40,#161515cc)}
+.workspace-stage .instrument-app .backend-workspace .structure-panel .structure-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.workspace-stage .instrument-app .backend-workspace .structure-panel>details{padding:14px 20px;border:1px solid #eee7df1c;border-radius:14px;background:#16151480}
+.workspace-stage .instrument-app .backend-workspace .structure-panel>details>summary{cursor:pointer;color:#ece6de;font-size:13px;font-weight:500}
+.workspace-stage .instrument-app .backend-workspace .structure-panel .residue-sidebar>h3{margin-top:0;font-size:16px;font-weight:500;color:#f1ede7}
+.workspace-stage .instrument-app .backend-workspace .structure-panel .residue-sidebar details{border:0;padding:0;background:none}
+.workspace-stage .instrument-app .backend-workspace .structure-panel button:not(.primary-button){min-height:34px;padding:7px 14px;border-radius:999px;border:1px solid #eee7df2e;background:#eee7df0a;color:#ece6de;font:500 11.5px/1.2 'Inter',sans-serif;cursor:pointer;transition:border-color .2s,background .2s}
+.workspace-stage .instrument-app .backend-workspace .structure-panel button:not(.primary-button):hover:not(:disabled){border-color:#eee7df66;background:#eee7df14}
+.workspace-stage .instrument-app .backend-workspace .structure-panel button:disabled{opacity:.45;cursor:default}
+
+/* Paper library counter: readable, not a near-invisible italic mono caption. */
+body .workspace-stage .collection-toolbar>span:last-child{font:400 12px/1.4 'Inter','Helvetica Neue',Arial,sans-serif;font-style:normal;letter-spacing:0;text-transform:none;color:#b9b2a9}
+
+/* "What the papers say": the list scrolls inside the panel; fade its lower edge so a cut-off card reads as "more below". */
+.workspace-stage .instrument-app .backend-workspace .article-list{padding-bottom:28px;-webkit-mask-image:linear-gradient(#000 calc(100% - 32px),transparent);mask-image:linear-gradient(#000 calc(100% - 32px),transparent)}

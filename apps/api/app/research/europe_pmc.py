@@ -51,8 +51,13 @@ class LiteratureSearch(BaseModel):
     retrieved_at: datetime
 
 
+def tidy_spacing(text: str) -> str:
+    """Remove spaces that markup stripping leaves before closing punctuation and after opening brackets."""
+    return re.sub(r"([(\[])\s+", r"\1", re.sub(r"\s+([)\],.;:®™])", r"\1", text))
+
+
 def _clean_text(value: str | None) -> str:
-    return " ".join(unescape(re.sub(r"<[^>]+>", " ", value or "")).split())
+    return tidy_spacing(" ".join(unescape(re.sub(r"<[^>]+>", " ", value or "")).split()))
 
 
 def parse_core_record(raw: dict, retrieved_at: datetime) -> LiteratureRecord:

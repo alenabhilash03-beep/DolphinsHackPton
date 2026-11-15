@@ -1,5 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { plural, unitLabel } from "../lib/investigation.js";
+import { parameterLabel, plural, unitLabel } from "../lib/investigation.js";
+import { locatorList, locatorLabel } from "../lib/readable.js";
 export function ResearchPaperReview({ papers }) {
     if (!papers.length) return null;
     return /*#__PURE__*/ _jsxs("section", {
@@ -63,7 +64,7 @@ export function ResearchPaperReview({ papers }) {
                                                 children: [
                                                     /*#__PURE__*/ _jsxs("strong", {
                                                         children: [
-                                                            value.parameter,
+                                                            parameterLabel(value.parameter),
                                                             ": ",
                                                             value.original_value,
                                                             " ",
@@ -78,7 +79,7 @@ export function ResearchPaperReview({ papers }) {
                                                         passage.supporting_passage,
                                                         /*#__PURE__*/ _jsx("br", {}),
                                                         /*#__PURE__*/ _jsx("small", {
-                                                            children: passage.locator
+                                                            children: locatorLabel(passage.locator)
                                                         })
                                                     ]
                                                 }, index))
@@ -86,8 +87,8 @@ export function ResearchPaperReview({ papers }) {
                                     }, value.parameter_id)),
                                 /*#__PURE__*/ _jsxs("p", {
                                     children: [
-                                        "Inspected locators: ",
-                                        paper.inspected_locators.join(", ")
+                                        "Passages inspected: ",
+                                        locatorList(paper.inspected_locators)
                                     ]
                                 }),
                                 (paper.extraction.rejected_candidates ?? []).map((reason, index)=>/*#__PURE__*/ _jsx("p", {

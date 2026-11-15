@@ -1,6 +1,8 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import type { PreparationRecord, PreparationUpdate } from "../lib/contracts";
+import { parameterLabel, unitLabel } from "../lib/investigation";
+import { humanize, locatorLabel } from "../lib/readable";
 const FIELDS = [
   ["pk.volume_L","Effective distribution volume","L"], ["pk.clearance_L_h","Effective clearance","L/hour"],
   ["binding.association_nM_inv_h_inv","Association rate","nM^-1 hour^-1"], ["binding.dissociation_h_inv","Dissociation rate","hour^-1"],
@@ -71,8 +73,8 @@ export function PreparationAnswers({ record, busy, onContinue, onReload }: {
     <ul>{prep.reasons.map(r=><li key={r}>{r}</li>)}</ul>
     <ul>{(prep.missing_inputs ?? []).map(q=><li key={q.input_id}><strong>{q.parameter}</strong>: {q.question} {q.expected_unit && `(${q.expected_unit})`}</li>)}</ul>
     <details><summary>Extracted values, assumptions & source access ({(prep.parameters ?? []).length} values)</summary>
-      {(prep.parameters ?? []).map(p=><article key={p.parameter_id}><strong>{p.parameter}: {p.value} {p.unit}</strong> · {p.provenance} · {p.applicability}
-        <p>{p.context.applicability_notes.join(" ")}</p>{(p.passages ?? []).map((passage,i)=><blockquote key={i}>{passage.supporting_passage} <small>({passage.locator})</small></blockquote>)}</article>)}
+      {(prep.parameters ?? []).map(p=><article key={p.parameter_id}><strong>{parameterLabel(p.parameter)}: {p.value} {unitLabel(p.unit)}</strong> · {humanize(p.provenance)} · {humanize(p.applicability)}
+        <p>{p.context.applicability_notes.join(" ")}</p>{(p.passages ?? []).map((passage,i)=><blockquote key={i}>{passage.supporting_passage} <small>({locatorLabel(passage.locator)})</small></blockquote>)}</article>)}
       {(prep.sources ?? []).map(s=><article key={s.source_id}><a href={s.url} target="_blank" rel="noreferrer">{s.title}</a><p>{s.content_kind} · {s.retrieval_status} · {s.retrieved_at}</p></article>)}
     </details>
     <button type="button" disabled={busy} onClick={onReload}>Reload preparation & latest version</button>

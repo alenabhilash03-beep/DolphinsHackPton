@@ -18,6 +18,7 @@ import { InvestigationHistoryPanel } from "./InvestigationHistoryPanel.jsx";
 import { SignInPrompt } from "./AccountMenu.jsx";
 import { ShareExperiment } from "./ShareExperiment.jsx";
 import { AgentWorkflow } from "./AgentWorkflow.jsx";
+import { changeLabel } from "../lib/readable.js";
 import { branchRequired, historyFor, restorationAfterJob } from "../lib/history-view.js";
 const PRIMARY = "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const STORAGE = "hypothesim-agent-job-v1";
@@ -584,102 +585,152 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                             /*#__PURE__*/ _jsx("i", {})
                         ]
                     }),
-                    /*#__PURE__*/ _jsxs("div", {
+                    /*#__PURE__*/ _jsx("div", {
                         className: "visual-stage",
                         hidden: !prepared && !busy && !record && !turn && !message,
-                        children: [
-                            prepared ? /*#__PURE__*/ _jsx(PlotPreview, {
-                                initialExperiment: prepared?.configuration ?? fallbackExperiment,
-                                initialResult: prepared,
-                                onResultChange: onResult,
-                                editingLocked: !!busy || !backendAvailable,
-                                interpretation: currentInterpretation,
-                                answerShown: answer === 'current',
-                                turn: turn,
-                                investigation: /*#__PURE__*/ _jsxs(_Fragment, {
-                                    children: [
-                                        shown && /*#__PURE__*/ _jsx(NextExperimentProposals, {
-                                            shown: proposalResultForTurn(turn, shown),
-                                            busy: !!busy || controlBusy || !researchAvailable || !backendAvailable,
-                                            onRun: runProposal
-                                        }),
-                                        /*#__PURE__*/ _jsx(InvestigationHistoryPanel, {
-                                            history: currentHistory,
-                                            shownId: shownId,
-                                            busy: !!busy || controlBusy,
-                                            branch: branch,
-                                            onReopen: (id)=>void reopen(id)
-                                        }),
-                                        shown && /*#__PURE__*/ _jsx(ShareExperiment, {
-                                            resultId: shownId,
-                                            defaultTitle: history?.question ?? text,
-                                            busy: !!busy || controlBusy
-                                        }),
-                                        /*#__PURE__*/ _jsxs("details", {
-                                            className: "science-records",
-                                            children: [
-                                                /*#__PURE__*/ _jsx("summary", {
-                                                    children: "Agent paper review"
-                                                }),
-                                                /*#__PURE__*/ _jsx(ResearchPaperReview, {
-                                                    papers: turn?.research_papers ?? []
-                                                })
-                                            ]
-                                        })
-                                    ]
-                                }),
-                                structure: structure !== "unavailable" ? /*#__PURE__*/ _jsx(VisualizationBoundary, {
-                                    label: "Experimental structure",
-                                    children: /*#__PURE__*/ _jsx(StructureViewer, {
-                                        kind: structure,
-                                        focusRequest: structureFocus
-                                    })
-                                }, structure) : /*#__PURE__*/ _jsxs("section", {
-                                    id: "structure",
-                                    className: "structure-panel",
-                                    children: [
-                                        /*#__PURE__*/ _jsx("h2", {
-                                            children: "Structure unavailable"
-                                        }),
-                                        /*#__PURE__*/ _jsxs("p", {
-                                            children: [
-                                                "No verified deposited complex is available for ",
-                                                structureIdentity.drug,
-                                                " → ",
-                                                structureIdentity.target || 'unspecified target',
-                                                ". A compatible numerical experiment can still run without one."
-                                            ]
-                                        })
-                                    ]
-                                })
-                            }) : /*#__PURE__*/ _jsxs("section", {
-                                className: "research-waiting",
-                                "aria-live": "polite",
+                        children: prepared ? /*#__PURE__*/ _jsx(PlotPreview, {
+                            initialExperiment: prepared?.configuration ?? fallbackExperiment,
+                            initialResult: prepared,
+                            onResultChange: onResult,
+                            editingLocked: !!busy || !backendAvailable,
+                            interpretation: currentInterpretation,
+                            answerShown: answer === 'current',
+                            turn: turn,
+                            investigation: /*#__PURE__*/ _jsxs(_Fragment, {
                                 children: [
-                                    /*#__PURE__*/ _jsxs("div", {
-                                        className: busy ? "research-orbit is-running" : "research-orbit",
-                                        "aria-hidden": "true",
+                                    (history?.question || turn?.synthesis?.original_text) && /*#__PURE__*/ _jsxs("section", {
+                                        className: "investigation-question",
+                                        "aria-label": "Question",
                                         children: [
-                                            /*#__PURE__*/ _jsx("i", {}),
-                                            /*#__PURE__*/ _jsx("i", {}),
-                                            /*#__PURE__*/ _jsx("i", {})
+                                            /*#__PURE__*/ _jsx("p", {
+                                                className: "eyebrow",
+                                                children: "Question"
+                                            }),
+                                            /*#__PURE__*/ _jsx("h2", {
+                                                children: history?.question ?? turn?.synthesis?.original_text
+                                            }),
+                                            /*#__PURE__*/ _jsxs("dl", {
+                                                children: [
+                                                    /*#__PURE__*/ _jsxs("div", {
+                                                        children: [
+                                                            /*#__PURE__*/ _jsx("dt", {
+                                                                children: "System"
+                                                            }),
+                                                            /*#__PURE__*/ _jsxs("dd", {
+                                                                children: [
+                                                                    visible.drug,
+                                                                    " → ",
+                                                                    visible.target
+                                                                ]
+                                                            })
+                                                        ]
+                                                    }),
+                                                    turn?.original_text && turn.original_text !== (history?.question ?? turn?.synthesis?.original_text) && /*#__PURE__*/ _jsxs("div", {
+                                                        children: [
+                                                            /*#__PURE__*/ _jsx("dt", {
+                                                                children: "Latest change"
+                                                            }),
+                                                            /*#__PURE__*/ _jsx("dd", {
+                                                                children: turn.original_text
+                                                            })
+                                                        ]
+                                                    }),
+                                                    currentHistory?.entries?.length ? /*#__PURE__*/ _jsxs("div", {
+                                                        children: [
+                                                            /*#__PURE__*/ _jsx("dt", {
+                                                                children: "Steps"
+                                                            }),
+                                                            /*#__PURE__*/ _jsx("dd", {
+                                                                children: currentHistory.entries.length
+                                                            })
+                                                        ]
+                                                    }) : null
+                                                ]
+                                            })
                                         ]
                                     }),
-                                    /*#__PURE__*/ _jsx("h2", {
-                                        children: busy ? "Research in progress" : record ? "Review the missing inputs" : message ? "The experiment needs attention" : "Research prepared"
+                                    /*#__PURE__*/ _jsx(ScientificAnswer, {
+                                        turn: turn,
+                                        shown: shown,
+                                        viewer: structure,
+                                        onFocusMeasurement: focusMeasurement,
+                                        questionShown: !!(history?.question || turn?.synthesis?.original_text)
                                     }),
-                                    /*#__PURE__*/ _jsx("p", {
-                                        children: busy ? "The agent is working from your hypothesis." : record ? "Complete the requested inputs to continue." : "Results will appear here when a simulation is accepted."
+                                    shown && /*#__PURE__*/ _jsx(NextExperimentProposals, {
+                                        shown: proposalResultForTurn(turn, shown),
+                                        busy: !!busy || controlBusy || !researchAvailable || !backendAvailable,
+                                        onRun: runProposal
+                                    }),
+                                    /*#__PURE__*/ _jsx(InvestigationHistoryPanel, {
+                                        history: currentHistory,
+                                        shownId: shownId,
+                                        busy: !!busy || controlBusy,
+                                        branch: branch,
+                                        onReopen: (id)=>void reopen(id)
+                                    }),
+                                    shown && /*#__PURE__*/ _jsx(ShareExperiment, {
+                                        resultId: shownId,
+                                        defaultTitle: history?.question ?? text,
+                                        busy: !!busy || controlBusy
+                                    }),
+                                    /*#__PURE__*/ _jsxs("details", {
+                                        className: "science-records",
+                                        children: [
+                                            /*#__PURE__*/ _jsx("summary", {
+                                                children: "Agent paper review"
+                                            }),
+                                            /*#__PURE__*/ _jsx(ResearchPaperReview, {
+                                                papers: turn?.research_papers ?? []
+                                            })
+                                        ]
                                     })
                                 ]
                             }),
-                            /*#__PURE__*/ _jsx(ScientificAnswer, {
-                                turn: turn,
-                                shown: shown,
-                                viewer: structure,
-                                onFocusMeasurement: focusMeasurement
+                            structure: structure !== "unavailable" ? /*#__PURE__*/ _jsx(VisualizationBoundary, {
+                                label: "Experimental structure",
+                                children: /*#__PURE__*/ _jsx(StructureViewer, {
+                                    kind: structure,
+                                    focusRequest: structureFocus
+                                })
+                            }, structure) : /*#__PURE__*/ _jsxs("section", {
+                                id: "structure",
+                                className: "structure-panel",
+                                children: [
+                                    /*#__PURE__*/ _jsx("h2", {
+                                        children: "Structure unavailable"
+                                    }),
+                                    /*#__PURE__*/ _jsxs("p", {
+                                        children: [
+                                            "No verified deposited complex is available for ",
+                                            structureIdentity.drug,
+                                            " → ",
+                                            structureIdentity.target || 'unspecified target',
+                                            ". A compatible numerical experiment can still run without one."
+                                        ]
+                                    })
+                                ]
                             })
-                        ]
+                        }) : /*#__PURE__*/ _jsxs("section", {
+                            className: "research-waiting",
+                            "aria-live": "polite",
+                            children: [
+                                /*#__PURE__*/ _jsxs("div", {
+                                    className: busy ? "research-orbit is-running" : "research-orbit",
+                                    "aria-hidden": "true",
+                                    children: [
+                                        /*#__PURE__*/ _jsx("i", {}),
+                                        /*#__PURE__*/ _jsx("i", {}),
+                                        /*#__PURE__*/ _jsx("i", {})
+                                    ]
+                                }),
+                                /*#__PURE__*/ _jsx("h2", {
+                                    children: busy ? "Research in progress" : record ? "Review the missing inputs" : message ? "The experiment needs attention" : "Research prepared"
+                                }),
+                                /*#__PURE__*/ _jsx("p", {
+                                    children: busy ? "The agent is working from your hypothesis." : record ? "Complete the requested inputs to continue." : "Results will appear here when a simulation is accepted."
+                                })
+                            ]
+                        })
                     }),
                     /*#__PURE__*/ _jsxs("aside", {
                         className: prepared ? "agent-desk" : "agent-desk hypothesis-desk",
@@ -851,7 +902,7 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                                             }),
                                             /*#__PURE__*/ _jsx("ul", {
                                                 children: turn.applied_changes.map((change)=>/*#__PURE__*/ _jsx("li", {
-                                                        children: change
+                                                        children: changeLabel(change)
                                                     }, change))
                                             })
                                         ]
@@ -1081,10 +1132,10 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                                 onClose: ()=>setWorkflow(null),
                                 onViewResults: ()=>{
                                     setWorkflow(null);
-                                    requestAnimationFrame(()=>document.getElementById(document.getElementById("answer") ? "answer" : "experiment")?.scrollIntoView({
-                                            block: "start",
-                                            behavior: "smooth"
-                                        }));
+                                    requestAnimationFrame(()=>{
+                                        window.history.replaceState(null, "", "#answer");
+                                        window.dispatchEvent(new HashChangeEvent("hashchange"));
+                                    });
                                 }
                             }),
                             requestHistory.length > 0 && /*#__PURE__*/ _jsxs("details", {

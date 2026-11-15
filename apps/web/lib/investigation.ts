@@ -87,7 +87,10 @@ export function parameterLabel(path:string) {
     "pk.volume_L":"Distribution volume","pk.clearance_L_h":"Clearance","pk.elimination_half_life_h":"Effective half-life",
     "binding.association_nM_inv_h_inv":"Association rate (kon)","binding.dissociation_h_inv":"Dissociation rate (koff)",
     "binding.affinity_nM":"Binding affinity (KD)",molecular_weight_g_mol:"Molecular weight",body_mass_kg:"Body mass",
-    exposure_factor:"Prescribed exposure factor",initial_amount_nmol:"Initial amount",initial_occupancy:"Initial occupancy",dosing_interval_h:"Dosing interval"};
+    exposure_factor:"Prescribed exposure factor",initial_amount_nmol:"Initial amount",initial_occupancy:"Initial occupancy",dosing_interval_h:"Dosing interval",
+    // Evidence-record and candidate names (not configuration paths).
+    molecular_weight:"Molecular weight",effective_half_life:"Effective half-life",affinity:"Binding affinity (KD)",volume:"Distribution volume",
+    clearance:"Clearance",kon:"Association rate (kon)",koff:"Dissociation rate (koff)",kd:"Binding affinity (KD)",half:"Half-life",half_life:"Half-life"};
   return names[path] ?? path.replace(/^administration\.(\d+)\./,(_,n)=>`Dose ${Number(n)+1} · `).replace("amount_mg","amount").replace("start_h","start").replace("duration_h","infusion duration");
 }
 /** "1 tool invocation", "3 tool invocations". */

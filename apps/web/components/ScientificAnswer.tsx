@@ -2,6 +2,7 @@
 
 import type { AgentTurn, SimulationResult } from "../lib/contracts";
 import { accessSummary, answerState, basisLabel, canFocus, findingLinks, keyQuantities, measurementCards, structuralObservations, verdictLabel, VIEWER_PDB, type MeasurementCard, type PlotId, type QuantityChip } from "../lib/synthesis-view";
+import { locatorLabel, readableText } from "../lib/readable";
 
 const STANCE = { supports: "Supports the hypothesis", contradicts: "Contradicts the hypothesis", context: "Context" } as const;
 const KIND = { measurement: "Measurement", simulation_change: "Simulation change", literature_review: "Literature review" } as const;
@@ -24,8 +25,8 @@ export function MeasurementCards({ cards, viewer, onFocus }: { cards: Measuremen
 }
 
 /** One answer above its supporting detail. Prose is server-validated; every number shown is a solver field. */
-export function ScientificAnswer({ turn, shown, viewer = "unavailable", onFocusMeasurement }: { turn: AgentTurn | null; shown: SimulationResult | null;
-  viewer?: keyof typeof VIEWER_PDB; onFocusMeasurement?: (card: MeasurementCard) => void }) {
+export function ScientificAnswer({ turn, shown, viewer = "unavailable", onFocusMeasurement, questionShown = false }: { turn: AgentTurn | null; shown: SimulationResult | null;
+  viewer?: keyof typeof VIEWER_PDB; onFocusMeasurement?: (card: MeasurementCard) => void; questionShown?: boolean }) {
   const state = answerState(turn, shown);
   if (state === "none" || !turn?.synthesis) return null;
   if (state === "invalid") return <section id="answer" className="answer-panel" aria-label="Scientific answer">
@@ -38,7 +39,8 @@ export function ScientificAnswer({ turn, shown, viewer = "unavailable", onFocusM
   const cards = measurementCards(turn), observations = structuralObservations(turn), cited = new Set(observations.flatMap(item => item.cards.map(card => card.id)));
   const uncited = cards.filter(card => !cited.has(card.id)), notMeasured = turn.structure?.not_measured ?? [];
   return <section id="answer" className={`answer-panel${stale ? " is-stale" : ""}`} aria-label="Scientific answer">
-    <div className="answer-heading"><div><p className="eyebrow">Scientific answer</p><h2>{synthesis.original_text}</h2></div>
+    <div className="answer-summary">
+    <div className="answer-heading"><div>{questionShown ? <h2 className="answer-title">Answer</h2> : <><p className="eyebrow">Scientific answer</p><h2>{synthesis.original_text}</h2></>}</div>
       <div className="answer-badges"><span className="answer-verdict" data-verdict={synthesis.answer?.verdict ?? synthesis.status}>{verdictLabel(synthesis,!!turn?.parent_result_id)}</span><span className="answer-basis">{basisLabel(synthesis)}</span></div></div>
     {turn.applied_proposal && <p className="answer-origin">Follow-up experiment run from a proposal: <strong>{turn.applied_proposal.title}</strong>. {turn.applied_proposal.changes.map(change => `${change.parameter}${change.scenario_label ? ` (${change.scenario_label})` : ""}: ${change.from_display} → ${change.to_display}`).join("; ")}. Run from result {turn.applied_proposal.base_result_id}.</p>}
     {!turn.applied_proposal && turn.original_text !== synthesis.original_text && <p className="answer-origin">Change applied to reach this result: <strong>{turn.original_text}</strong>. The answer addresses the investigation's original question with this result.</p>}
@@ -47,6 +49,7 @@ export function ScientificAnswer({ turn, shown, viewer = "unavailable", onFocusM
     {synthesis.answer ? <p className="answer-statement">{synthesis.answer.statement}</p>
       : <p className="answer-unavailable">{synthesis.notes?.[0] ?? "No written answer was accepted for this run."} {turn.result ? "The numerical result, plots and evidence below are unaffected." : "Evidence gathered in this run is listed below."}</p>}
     {synthesis.answer && (synthesis.notes ?? []).map((note, index) => <p className="answer-access-note" key={index}>{note}</p>)}
+    </div>
     {chips.length > 0 && <section className="answer-solver" aria-label="Key solver findings">
       <div className="answer-section-heading"><h3>Key solver findings</h3><span>{stale ? "From the earlier result · not the displayed curves" : "Conditional model predictions · values copied from the solver"}</span></div>
       {implications.length ? <ul className="answer-implications">{implications.map((item, index) => <li key={index}><p>{item.statement}</p>
@@ -55,13 +58,13 @@ export function ScientificAnswer({ turn, shown, viewer = "unavailable", onFocusM
     {findings.length > 0 && <details className="answer-detail" open><summary>What the inspected papers report <span>{findings.length} finding{findings.length === 1 ? "" : "s"}{access ? ` · ${access}` : ""}</span></summary>
       {findings.map(finding => <article className="answer-finding" key={finding.finding_id} data-stance={finding.stance}>
         <p><span className="answer-stance">{STANCE[finding.stance]}</span>{finding.abstract_only && <span className="answer-access">Abstract only</span>} {finding.statement}</p>
-        {finding.citations.map((citation, index) => <blockquote key={index}>“{citation.quote}”<small>{citation.content_kind === "abstract" ? "Abstract" : "Full text"} · {citation.locator}</small></blockquote>)}
+        {finding.citations.map((citation, index) => <blockquote key={index}>“{citation.quote}”<small>{citation.content_kind === "abstract" ? "Abstract" : locatorLabel(citation.locator)}</small></blockquote>)}
         {findingLinks(turn, finding).map(link => <div className="answer-links" key={link.documentId}>
           <p>{link.url ? <a href={link.url} target="_blank" rel="noreferrer">{link.title} ↗</a> : link.title} · <a href={`#${link.anchor}`}>extraction record ↓</a></p>
           <p>{link.simulationUse}{!link.records.length && turn.result ? <> <a href="#paper-evidence">Simulation input sources →</a></> : null}</p>
           {link.records.length > 0 && <details className="answer-inputs" open={link.records.length <= 3}><summary>{link.records.length} simulation input{link.records.length === 1 ? "" : "s"} from this source</summary>
-            <ul>{link.records.map(record => <li key={record.evidenceId} title={`Parameter record ${record.evidenceId}`}>{record.text} · {record.plots.map(id => <a key={id} href={`#plot-${id}`}>{plotName(id)} →</a>)}</li>)}</ul></details>}
-          {link.candidates.length > 0 && <ul>{link.candidates.map((candidate, index) => <li key={index}>Extracted candidate: {candidate.text} · {turn.result
+            <ul>{link.records.map(record => <li key={record.evidenceId} title={`Parameter record ${record.evidenceId}`}>{readableText(record.text)} · {record.plots.map(id => <a key={id} href={`#plot-${id}`}>{plotName(id)} →</a>)}</li>)}</ul></details>}
+          {link.candidates.length > 0 && <ul>{link.candidates.map((candidate, index) => <li key={index}>Extracted candidate: {readableText(candidate.text)} · {turn.result
             ? <>informs the {candidate.plots.map(id => <a key={id} href={`#plot-${id}`}>{plotName(id)} →</a>)}</>
             // Without a simulation there are no curves of this question to link to.
             : `would inform the ${candidate.plots.map(plotName).join(" and ")} once a simulation can run`}</li>)}</ul>}

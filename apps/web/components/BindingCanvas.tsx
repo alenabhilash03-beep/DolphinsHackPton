@@ -48,8 +48,8 @@ export function BindingCanvas({ result, index, scenarioId }: { result: Simulatio
       if (occupied) { ctx.fillStyle = "#f0be7a"; ctx.beginPath(); ctx.arc(x, 191, 4, 0, Math.PI * 2); ctx.fill(); }
     }
     ctx.fillStyle = "#dfede7"; ctx.font = "12px sans-serif";
-    ctx.fillText("Drug population · gold", 12, 24);
-    ctx.fillText("Effective target sites · teal", 12, 245);
+    ctx.fillText("Drug molecules (free)", 12, 24);
+    ctx.fillText("Target sites", 12, 245);
   }, [width, reduced, result.configuration.duration_h, state.timeHours, state.freeParticles, state.occupiedSites]);
   return <section aria-label="Model-driven binding schematic" className="binding-panel">
     <p className="eyebrow">MODEL-DRIVEN SCHEMATIC</p><h2>Watch the binding population</h2>

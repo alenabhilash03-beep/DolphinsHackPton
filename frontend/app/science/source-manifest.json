@@ -1,6 +1,6 @@
 {
   "repository": "alenabhilash03-beep/DolphinsHackPton",
-  "revision": "2c4b62648421b9509c92b3193edcbe16ded97779",
+  "revision": "f684547d28f939b9c8394619ae585fb165d48b9c",
   "files": [
     {
       "path": "lib/example.generated.ts",
@@ -12,11 +12,11 @@
     },
     {
       "path": "components/AgentWorkflow.tsx",
-      "source_sha256": "c4dad50535ca9dfdb8e5e8c980a784a80fbc4c561fb3a03b9b716d60ea5a76ac"
+      "source_sha256": "52e7fff4bbbde9a9cc886e35ceeb1a62230e89b83ad3789080c390c448a9c3f2"
     },
     {
       "path": "components/BindingCanvas.tsx",
-      "source_sha256": "a5575d1164052c8bc736155fa1c26f853bab12b2aada5547f3118bb9da93bc3c"
+      "source_sha256": "e967b07cb1d0a778aee8a3ae6163816385fae8c82139688a9aca3eeeb70359d5"
     },
     {
       "path": "components/DrugSupportPanel.tsx",
@@ -24,19 +24,19 @@
     },
     {
       "path": "components/EvidencePanel.tsx",
-      "source_sha256": "825c2c07a58ad504a6f378c4c9f24e22af0242cae5b12d8b3080fd409ab21429"
+      "source_sha256": "1ec93b97cc6dba9f499f144669cba6b73dbafdffc274772501071a4840f157ab"
     },
     {
       "path": "components/HypothesisWorkspace.tsx",
-      "source_sha256": "623d9c9658f06345d4e0f33acccca8849de04907a061682e2bee57a713127c8e"
+      "source_sha256": "e354ebcb3ae0c4551f5884aa1b49bff57cd1d7280dcc6c62b1171c3cfc84c651"
     },
     {
       "path": "components/InvestigationHistoryPanel.tsx",
-      "source_sha256": "adf7eb55c95e83b80f6ca22d21f6deac0a5a70baf830e41df9f8239b056119b7"
+      "source_sha256": "281145460179d39ff55e7c1bfcfcf48b4535382e010d4a2c350d9529bd61de1e"
     },
     {
       "path": "components/InvestigationPanel.tsx",
-      "source_sha256": "7f03e4f348e81606e3ead17e1a1eb884224ad1a255cc61dfe4f7982000764c17"
+      "source_sha256": "ac33feff57a49c5038d1d177456061279b1ce80d312646dd90980825c92f6fc2"
     },
     {
       "path": "components/NextExperimentProposals.tsx",
@@ -48,15 +48,15 @@
     },
     {
       "path": "components/PaperSummaries.tsx",
-      "source_sha256": "2441815f941c113b1a3dac16f2ae7c87fcdcafe5bfcddaaf64d1c6d3729f3542"
+      "source_sha256": "e856d12e1574ab25de87e2cd1a1064529900f8b9ac617ef829999ce0b1365423"
     },
     {
       "path": "components/PlotPreview.tsx",
-      "source_sha256": "eab53fd2ef35576f6d5c9e5ea0ffcb3920361e458852bf19093ce347954a2899"
+      "source_sha256": "6a9b6b49682c07d62b8ab92436a6a58083e5be2921cf3e315365d6cff8c58159"
     },
     {
       "path": "components/PreparationAnswers.tsx",
-      "source_sha256": "4f3c8462fd694c7868017badfa4ea10e7895cbf0ec5b4b4a0beab2a545b9f7fd"
+      "source_sha256": "0863fa90e75b86629a6fa5ca5e0764e986e8abdd5c8637969e9449c6d243c9a3"
     },
     {
       "path": "components/PreviewControls.tsx",
@@ -64,7 +64,7 @@
     },
     {
       "path": "components/ResearchPaperReview.tsx",
-      "source_sha256": "0ecda0c3fbd5a73991417e55881c3e942d5fa29727d742da0c04bcf3ba5183e2"
+      "source_sha256": "dbfa2f5ea5a9a03a64d97f90cd4e13225e3e204c482f489f42026165e45e8782"
     },
     {
       "path": "components/ResultOverview.tsx",
@@ -72,11 +72,11 @@
     },
     {
       "path": "components/ScenarioComparison.tsx",
-      "source_sha256": "d2ae76b611b4b7c2f4978e622b6c6afbbc6c8b34c4189e7c20f3c6bc402c4ea5"
+      "source_sha256": "f556eff64db9ae506d5e58d90add20898b055ba7497ea162a7288ea74bde8721"
     },
     {
       "path": "components/ScientificAnswer.tsx",
-      "source_sha256": "265a6da7b87645a9fb8a050d1fe48f41da3f20d509b09c1ae46877759698a55f"
+      "source_sha256": "b696163c56797de2498be3d42dff424280f6d249201631f683f50970ce76624c"
     },
     {
       "path": "components/ScientificPlot.tsx",
@@ -148,7 +148,7 @@
     },
     {
       "path": "lib/investigation.ts",
-      "source_sha256": "77d75f034a0609d5a1c0ea2984494fc70ff13052e1e6143bf779485e162d56bb"
+      "source_sha256": "d9ccfa9eddda91f408b03a202b397cdf20ace4547ed66594893f37178f566e6d"
     },
     {
       "path": "lib/log-control.ts",
@@ -165,6 +165,10 @@
     {
       "path": "lib/proposal-view.ts",
       "source_sha256": "0a905df56d3707743836ab23d38c0fc602864ac7dd29d30d418a4ebc43e6a9cc"
+    },
+    {
+      "path": "lib/readable.ts",
+      "source_sha256": "a4c425214cbc3712b0e8e5b48d28b14df33b33031251106203c9a7008232fd0f"
     },
     {
       "path": "lib/simulation-client.ts",

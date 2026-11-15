@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { changedParameters, investigationView, parameterLabel, plural, scientificNumber, stageSummary, stateLabel, toolLabel, unitLabel } from "../lib/investigation.js";
 import { measurementCards } from "../lib/synthesis-view.js";
 import { MeasurementCards } from "./ScientificAnswer.jsx";
+import { traceLabel } from "../lib/readable.js";
 function ParameterTable({ rows, config, experimentId }) {
     return /*#__PURE__*/ _jsx("div", {
         className: "investigation-table-scroll",
@@ -252,7 +253,7 @@ export function InvestigationPanel({ job, submitting, saved, displayedResult, co
                             }),
                             /*#__PURE__*/ _jsx("span", {
                                 className: "execution-mode",
-                                children: saved && !job ? "Saved · no live execution" : job?.status === "completed" || job?.status === "failed" ? "Recorded execution" : busy ? "Live tool activity" : "Nemotron + scientific tools"
+                                children: saved && !job ? "Saved · no live execution" : job?.status === "completed" || job?.status === "failed" ? "Execution log" : busy ? "Live tool activity" : "Nemotron + scientific tools"
                             })
                         ]
                     }),
@@ -472,7 +473,7 @@ export function InvestigationPanel({ job, submitting, saved, displayedResult, co
                                     /*#__PURE__*/ _jsxs("p", {
                                         children: [
                                             "Trace: ",
-                                            job.turn?.trace_status ?? "Not available yet",
+                                            traceLabel(job.turn?.trace_status),
                                             " · ",
                                             job.turn?.trace_id ?? "—"
                                         ]

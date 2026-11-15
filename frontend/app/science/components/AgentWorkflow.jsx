@@ -12,8 +12,7 @@ import { EDGES, NODES, VIEW, graphState } from "../lib/workflow-graph.js";
 import { scenarioColor } from "../lib/plot-spec.js";
 import { AgentIcon, BracesIcon, CheckIcon, CrossIcon, DocIcon, FitIcon, StageIcon, ZoomIcon } from "./WorkflowIcons.jsx";
 const STATUS = {
-    recorded: "Recorded run playing",
-    replaying: "Replaying recorded run",
+    replaying: "Replaying this run",
     starting: "Starting agent",
     queued: "Waiting for an agent slot",
     running: "Agent working",
@@ -40,8 +39,6 @@ export function AgentWorkflow({ job, submitting, question, replay, onClose, onVi
     const [picked, setPicked] = useState(null);
     const [zoom, setZoom] = useState(1);
     const total = job?.execution_events?.length ?? 0;
-    // Demo mode replays a recorded live run on the server; say so instead of implying a live model call.
-    const recorded = !!job?.events?.some((event)=>event.startsWith("Replaying recorded agent run"));
     // Presentation pacing: events arrive in polling bursts, so reveal them one by one with a minimum dwell,
     // letting every tool call visibly run before its outcome appears. Only the timing of display changes.
     const [paced, setPaced] = useState(0);
@@ -115,7 +112,7 @@ export function AgentWorkflow({ job, submitting, question, replay, onClose, onVi
     }, [
         model.log.length
     ]);
-    const status = submitting && !job ? "starting" : replaying ? "replaying" : recorded && running ? "recorded" : model.status;
+    const status = submitting && !job ? "starting" : replaying ? "replaying" : model.status;
     const finished = !running;
     const { nodeState, edgeMode } = graphState(model.stages, running, model.active?.stage ?? null, [
         "failed",
@@ -152,12 +149,12 @@ export function AgentWorkflow({ job, submitting, question, replay, onClose, onVi
                                     role: "presentation",
                                     children: [
                                         /*#__PURE__*/ _jsx("span", {
-                                            "data-on": !replay && !recorded,
+                                            "data-on": !replay,
                                             children: "Live"
                                         }),
                                         /*#__PURE__*/ _jsx("span", {
-                                            "data-on": replay || recorded,
-                                            children: recorded && !replay ? "Recorded" : "Replay"
+                                            "data-on": replay,
+                                            children: "Replay"
                                         })
                                     ]
                                 }),
@@ -165,7 +162,7 @@ export function AgentWorkflow({ job, submitting, question, replay, onClose, onVi
                                     children: [
                                         /*#__PURE__*/ _jsx("p", {
                                             className: "wf-eyebrow",
-                                            children: recorded ? "Recorded agent run · NVIDIA Nemotron + scientific tools" : "Agentic workflow · NVIDIA Nemotron + scientific tools"
+                                            children: "Agentic workflow · NVIDIA Nemotron + scientific tools"
                                         }),
                                         /*#__PURE__*/ _jsx("h2", {
                                             children: question || "Scientific investigation"
@@ -257,7 +254,7 @@ export function AgentWorkflow({ job, submitting, question, replay, onClose, onVi
                                                 children: status === "completed" ? "Run complete" : "Run ended"
                                             }),
                                             /*#__PURE__*/ _jsx("span", {
-                                                children: "every node reflects a recorded tool outcome"
+                                                children: "every node reflects a tool outcome from this run"
                                             })
                                         ]
                                     })
@@ -499,7 +496,7 @@ export function AgentWorkflow({ job, submitting, question, replay, onClose, onVi
                     className: "wf-footer",
                     children: [
                         /*#__PURE__*/ _jsx("p", {
-                            children: "Every node, link and value is a recorded tool call from this run, not a scripted animation. Paper values are candidates checked against their source passage; model inputs show their provenance."
+                            children: "Every node, link and value comes from a tool call in this run, not a scripted animation. Paper values are candidates checked against their source passage; model inputs show their provenance."
                         }),
                         /*#__PURE__*/ _jsxs("div", {
                             children: [
@@ -1080,9 +1077,9 @@ function Inspector({ node, model, question, running }) {
             return /*#__PURE__*/ _jsx("div", {
                 className: "wf-pane",
                 children: model.synthesis ? /*#__PURE__*/ _jsx("p", {
-                    children: model.synthesis.status === "grounded" ? "Grounded answer written: every claim links to a paper quote, a solver value or a structure measurement." : `Written answer ${model.synthesis.status}; the recorded results still stand.`
+                    children: model.synthesis.status === "grounded" ? "Grounded answer written: every claim links to a paper quote, a solver value or a structure measurement." : `Written answer ${model.synthesis.status}; the tool results still stand.`
                 }) : /*#__PURE__*/ _jsx(Empty, {
-                    text: "Written last, from the recorded results."
+                    text: "Written last, from the results above."
                 })
             });
     }

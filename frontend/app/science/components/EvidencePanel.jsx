@@ -2,6 +2,8 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { useEffect, useMemo, useState } from "react";
 import { PaperSummaries } from "./PaperSummaries.jsx";
+import { parameterLabel, scientificNumber, unitLabel } from "../lib/investigation.js";
+import { humanize, locatorLabel } from "../lib/readable.js";
 /** Plain evidence view for the UI team to restyle; never upgrades cache metadata to reviewed data. */ export function EvidencePanel({ experiment, scenarioId, resultPresent = false, showSummaries = true }) {
     const [profile, setProfile] = useState(null);
     const [cacheError, setCacheError] = useState(false);
@@ -78,47 +80,19 @@ import { PaperSummaries } from "./PaperSummaries.jsx";
                 },
                 children: "Retry evidence metadata"
             }),
-            /*#__PURE__*/ _jsx("h3", {
-                children: "Sources"
-            }),
-            showSummaries && primary && profile?.paper_summaries && /*#__PURE__*/ _jsx(PaperSummaries, {
-                summaries: profile.paper_summaries,
-                experiment: experiment
-            }),
-            /*#__PURE__*/ _jsx("ul", {
-                children: experiment.sources.map((source)=>{
-                    const cached = cacheBySource.get(source.source_id);
-                    return /*#__PURE__*/ _jsxs("li", {
-                        children: [
-                            /*#__PURE__*/ _jsxs("a", {
-                                href: source.url,
-                                target: "_blank",
-                                rel: "noreferrer",
-                                children: [
-                                    source.source_id,
-                                    " · ",
-                                    source.title
-                                ]
-                            }),
-                            cached && /*#__PURE__*/ _jsxs("span", {
-                                children: [
-                                    " · PMID ",
-                                    cached.pmid,
-                                    " · abstract ",
-                                    cached.abstract_available ? "indexed" : "not indexed",
-                                    " · ",
-                                    "full text ",
-                                    cached.full_text_status === "open_access_link" ? "open-access link indexed" : "not confirmed",
-                                    " · ",
-                                    "cached ",
-                                    cached.retrieved_at.slice(0, 10)
-                                ]
-                            })
-                        ]
-                    }, source.source_id);
-                })
+            showSummaries && primary && profile?.paper_summaries && /*#__PURE__*/ _jsxs(_Fragment, {
+                children: [
+                    /*#__PURE__*/ _jsx("h3", {
+                        children: "How each source is used"
+                    }),
+                    /*#__PURE__*/ _jsx(PaperSummaries, {
+                        summaries: profile.paper_summaries,
+                        experiment: experiment
+                    })
+                ]
             }),
             /*#__PURE__*/ _jsxs("details", {
+                className: "detail-bar",
                 children: [
                     /*#__PURE__*/ _jsxs("summary", {
                         children: [
@@ -130,21 +104,21 @@ import { PaperSummaries } from "./PaperSummaries.jsx";
                         children: values.map(({ path, item })=>item && /*#__PURE__*/ _jsxs("li", {
                                 children: [
                                     /*#__PURE__*/ _jsx("strong", {
-                                        children: path
+                                        children: parameterLabel(path)
                                     }),
                                     ": ",
-                                    item.value.toPrecision(6),
+                                    scientificNumber(item.value),
                                     " ",
-                                    item.unit,
+                                    unitLabel(item.unit),
                                     " · ",
-                                    item.provenance,
+                                    humanize(item.provenance),
                                     " · ",
-                                    item.review_status,
+                                    humanize(item.review_status),
                                     (item.source_ids?.length ?? 0) > 0 && /*#__PURE__*/ _jsxs(_Fragment, {
                                         children: [
                                             " · ",
                                             item.source_ids?.join(", "),
-                                            item.locator ? `, ${item.locator}` : ""
+                                            item.locator ? `, ${locatorLabel(item.locator)}` : ""
                                         ]
                                     }),
                                     item.provenance === "user_supplied" && /*#__PURE__*/ _jsx(_Fragment, {

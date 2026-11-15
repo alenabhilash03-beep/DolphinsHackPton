@@ -1,6 +1,6 @@
 {
   "repository": "alenabhilash03-beep/DolphinsHackPton",
-  "revision": "c91e770a87187b71545bd8f10df01627aad9dacc",
+  "revision": "8c876acfdb7abdf5b83d0d6c714289ff95eaa788",
   "files": [
     {
       "path": "lib/example.generated.ts",
@@ -9,6 +9,10 @@
     {
       "path": "components/AccountMenu.tsx",
       "source_sha256": "b24414239a8cf1bbf187498bbac33a460197f8186cdb5565640fcffd1e86776f"
+    },
+    {
+      "path": "components/AgentWorkflow.tsx",
+      "source_sha256": "c4dad50535ca9dfdb8e5e8c980a784a80fbc4c561fb3a03b9b716d60ea5a76ac"
     },
     {
       "path": "components/BindingCanvas.tsx",
@@ -24,7 +28,7 @@
     },
     {
       "path": "components/HypothesisWorkspace.tsx",
-      "source_sha256": "7355f038134370ddd104778d46ec9a4e32ff900bd2d18d40fe15207d0be15c98"
+      "source_sha256": "65c01c02426cab6d87a1baab826d3f439b7b194d03953b12b40f33d6e91c6062"
     },
     {
       "path": "components/InvestigationHistoryPanel.tsx",
@@ -32,7 +36,7 @@
     },
     {
       "path": "components/InvestigationPanel.tsx",
-      "source_sha256": "fb10a622f137e6b36839586972a8fb1b7c3d0e1e458e95efbc66d8407ff825a0"
+      "source_sha256": "7f03e4f348e81606e3ead17e1a1eb884224ad1a255cc61dfe4f7982000764c17"
     },
     {
       "path": "components/NextExperimentProposals.tsx",
@@ -91,6 +95,10 @@
       "source_sha256": "f0024883f39d65c8ed7532a06ffdeb6d408b1c20b8d8e0dc309ad012db8a5b86"
     },
     {
+      "path": "components/WorkflowIcons.tsx",
+      "source_sha256": "27ba0fb37bea09b0526ab173bb988e1c72f99e39f51c68fd495216cc9d9aefe1"
+    },
+    {
       "path": "hooks/useExperimentWorkspace.ts",
       "source_sha256": "a5190a08490a02d20f3631ad48b787c945af0d110f0f7b9bb75c1d42377c6806"
     },
@@ -101,6 +109,10 @@
     {
       "path": "lib/agent-proxy.ts",
       "source_sha256": "380e058a8ff313170254efe0c256d469943d7abd16944b3a589b619d6dba1240"
+    },
+    {
+      "path": "lib/agent-workflow.ts",
+      "source_sha256": "93e5d8244316f8cfa809a9892e1e715268fd19b0d4c6c02259fef14e2d170507"
     },
     {
       "path": "lib/agent-workspace.ts",
@@ -120,7 +132,7 @@
     },
     {
       "path": "lib/contracts.generated.ts",
-      "source_sha256": "982703d9b70dece6fa2a2a2d8d8888aceda91449657992e05bf5f0859ab48a45"
+      "source_sha256": "5a98dcc10f052d01bb38e11e468708770238c78385ed0ea8661396ece878ac94"
     },
     {
       "path": "lib/contracts.ts",
@@ -161,6 +173,10 @@
     {
       "path": "lib/timeline.ts",
       "source_sha256": "bf8044c3b92327f7ebbb27a37fc8d65af037589527205699a46d5847cdb1fa3f"
+    },
+    {
+      "path": "lib/workflow-graph.ts",
+      "source_sha256": "03a3fba487dde6e97f700012d03e4025b5a204ae4b53a3d7d591c73233f01488"
     },
     {
       "path": "lib/workspace-controller.ts",

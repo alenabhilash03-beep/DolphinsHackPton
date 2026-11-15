@@ -66,6 +66,13 @@ class SourceReference(Contract):
     snapshot_sha256: Digest | None = None
     content_kind: Literal['full_text','abstract','database_record','product_label'] | None = None
     retrieval_status: Literal['live','cached','unavailable'] | None = None
+    title: Annotated[str, Field(max_length=200)] | None = None   # shown in the live workflow view
+
+class CandidatePreview(Contract):
+    """One extracted value as reported by its source; a candidate, not an approved model input."""
+    parameter: Annotated[str, Field(max_length=80)]
+    value: float
+    unit: Annotated[str, Field(max_length=40)]
 
 class StructureEventSummary(Contract):
     """Which verified structure an agent tool inspected and which measurements it returned."""
@@ -82,6 +89,7 @@ class ExecutionSummary(Contract):
     missing_input_count: Annotated[int, Field(ge=0)] | None = None
     source_count: Annotated[int, Field(ge=0)] | None = None
     candidate_count: Annotated[int, Field(ge=0)] | None = None
+    candidates: Annotated[list[CandidatePreview], Field(max_length=8)] = Field(default_factory=list)
     sources: Annotated[list[SourceReference], Field(max_length=20)] = Field(default_factory=list)
     sources_truncated: bool = False
     experiment: ExperimentSnapshot | None = None

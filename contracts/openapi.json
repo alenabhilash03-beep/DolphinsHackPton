@@ -1002,6 +1002,33 @@
         "title": "CandidateConflict",
         "type": "object"
       },
+      "CandidatePreview": {
+        "additionalProperties": false,
+        "description": "One extracted value as reported by its source; a candidate, not an approved model input.",
+        "properties": {
+          "parameter": {
+            "maxLength": 80,
+            "title": "Parameter",
+            "type": "string"
+          },
+          "unit": {
+            "maxLength": 40,
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "parameter",
+          "value",
+          "unit"
+        ],
+        "title": "CandidatePreview",
+        "type": "object"
+      },
       "ConfiguredPreparation": {
         "additionalProperties": false,
         "properties": {
@@ -2298,6 +2325,14 @@
               }
             ],
             "title": "Candidate Count"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/CandidatePreview"
+            },
+            "maxItems": 8,
+            "title": "Candidates",
+            "type": "array"
           },
           "error_code": {
             "anyOf": [
@@ -7737,6 +7772,18 @@
               }
             ],
             "title": "Source Id"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
           }
         },
         "title": "SourceReference",

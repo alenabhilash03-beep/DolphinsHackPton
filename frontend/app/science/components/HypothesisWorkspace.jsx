@@ -17,6 +17,7 @@ import { proposalRequest, proposalResultForTurn } from "../lib/proposal-view.js"
 import { InvestigationHistoryPanel } from "./InvestigationHistoryPanel.jsx";
 import { SignInPrompt } from "./AccountMenu.jsx";
 import { ShareExperiment } from "./ShareExperiment.jsx";
+import { AgentWorkflow } from "./AgentWorkflow.jsx";
 import { branchRequired, historyFor, restorationAfterJob } from "../lib/history-view.js";
 const PRIMARY = "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
 const STORAGE = "hypothesim-agent-job-v1";
@@ -71,6 +72,8 @@ export function HypothesisWorkspace({ fallbackExperiment = {
     const [resumeId, setResumeId] = useState("");
     const [structureFocus, setStructureFocus] = useState(null);
     const [history, setHistory] = useState(null);
+    // Live agent-workflow screen (5C.3): opens when a run starts; replays a finished run on request.
+    const [workflow, setWorkflow] = useState(null);
     const reopenTicket = useRef(0), restoreResult = useRef(null);
     const [edit, setEdit] = useState("");
     const epoch = useRef(new RequestEpoch()), activeTicket = useRef(0), activeJob = useRef(null);
@@ -299,6 +302,7 @@ export function HypothesisWorkspace({ fallbackExperiment = {
         setMessage(null);
         setJob(null);
         setSaved(false);
+        setWorkflow("live");
         try {
             const response = await fetch(`/api/agent/jobs/${mode}`, {
                 method: "POST",
@@ -323,7 +327,10 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                 localStorage.setItem(STORAGE, next.job_id);
             } catch  {}
         } catch (e) {
-            if (epoch.current.current(ticket)) setMessage(e instanceof Error ? e.message : "Research unavailable; previous curves remain visible.");
+            if (epoch.current.current(ticket)) {
+                setWorkflow(null);
+                setMessage(e instanceof Error ? e.message : "Research unavailable; previous curves remain visible.");
+            }
         } finally{
             if (epoch.current.current(ticket)) setSubmitting(false);
         }
@@ -1065,9 +1072,24 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                                         config: visible,
                                         message: message,
                                         viewer: structure,
-                                        onFocusMeasurement: focusMeasurement
+                                        onFocusMeasurement: focusMeasurement,
+                                        onWatchWorkflow: job?.execution_events?.length || busy ? ()=>setWorkflow(busy ? "live" : "replay") : undefined
                                     })
                                 ]
+                            }),
+                            workflow && /*#__PURE__*/ _jsx(AgentWorkflow, {
+                                job: job,
+                                submitting: submitting,
+                                replay: workflow === "replay",
+                                question: job?.research_request?.request.original_hypothesis ?? job?.edit_text ?? text,
+                                onClose: ()=>setWorkflow(null),
+                                onViewResults: ()=>{
+                                    setWorkflow(null);
+                                    requestAnimationFrame(()=>document.getElementById(document.getElementById("answer") ? "answer" : "experiment")?.scrollIntoView({
+                                            block: "start",
+                                            behavior: "smooth"
+                                        }));
+                                }
                             }),
                             requestHistory.length > 0 && /*#__PURE__*/ _jsxs("details", {
                                 className: "agent-request-history",

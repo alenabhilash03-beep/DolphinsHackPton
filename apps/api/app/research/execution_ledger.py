@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from time import monotonic
 from uuid import uuid4
 from requests.exceptions import Timeout as ProviderTimeout
-from app.schemas.execution import (ExecutionEvent, ExecutionSummary, ExperimentSnapshot,
+from app.schemas.execution import (CandidatePreview, ExecutionEvent, ExecutionSummary, ExperimentSnapshot,
     ParameterSnapshot, ScheduleSnapshot, SolverReceipt, MetricSnapshot, SourceReference, StructureEventSummary)
 from app.simulation.service import _canonical_hash
 
@@ -160,10 +160,14 @@ class ExecutionLedger:
                 src=doc['source']
                 summary.source_count=1
                 summary.sources=[SourceReference(source_id=src['source_id'],document_id=doc['document_id'],
-                    snapshot_sha256=src.get('snapshot_sha256'),content_kind=src['content_kind'],retrieval_status=src['retrieval_status'])]
+                    snapshot_sha256=src.get('snapshot_sha256'),content_kind=src['content_kind'],retrieval_status=src['retrieval_status'],
+                    title=(src.get('title') or '')[:200] or None)]
                 self.documents[doc['document_id']]=summary.sources[0]
         elif name=='extract_cited_parameters':
             summary.candidate_count=len(output.get('parameters',[]))
+            summary.candidates=[CandidatePreview(parameter=str(item['parameter'])[:80],value=float(item['original_value']),
+                unit=str(item.get('original_unit') or '')[:40]) for item in output.get('parameters',[])[:8]
+                if isinstance(item.get('original_value'),(int,float))]
             ref=self.documents.get(output['document_id'])
             summary.sources=[ref] if ref else []
         if name in {'prepare_reviewed_comparison','configure_prepared_experiment','apply_requested_edit'} and scientific['config']:

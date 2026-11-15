@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from uuid import uuid4
 
-from app.schemas.execution import ExecutionSummary
+from app.schemas.execution import CandidatePreview, ExecutionSummary
 from app.schemas.generalized_agent import AgentEditRequest, AgentResearchRequest, AgentTurn
 
 REPLAY_DIR = Path(__file__).resolve().parents[4] / 'data/demo/replay'
@@ -47,6 +47,24 @@ def load(directory: Path = REPLAY_DIR) -> list[Replay]:
         replays.append(Replay(name=raw['name'], kind=raw['kind'], match=raw['match'], recorded_run_id=raw['recorded_run_id'],
             duration_s=float(raw['duration_s']), steps=raw['steps'], turn=AgentTurn.model_validate(raw['turn'])))
     return replays
+
+
+def enrich(step: dict, turn: AgentTurn) -> ExecutionSummary:
+    """Add the paper title and extracted values that live runs now record on each event.
+
+    Recordings predate those optional fields; both come from the same recorded run's papers, matched by document ID.
+    """
+    summary = ExecutionSummary.model_validate(step['summary'])
+    papers = {paper.document_id: paper for paper in turn.research_papers}
+    sources = [source.model_copy(update={'title': source.title or (papers[source.document_id].source.title[:200]
+               if source.document_id in papers else None)}) for source in summary.sources]
+    update = {'sources': sources}
+    if step['tool'] == 'extract_cited_parameters' and step['state'] == 'succeeded' and not summary.candidates and sources:
+        paper = papers.get(sources[0].document_id)
+        if paper:
+            update['candidates'] = [CandidatePreview(parameter=item.parameter[:80], value=float(item.original_value), unit=str(item.original_unit)[:40])
+                                    for item in paper.extraction.parameters[:summary.candidate_count or 8]]
+    return summary.model_copy(update=update)
 
 
 class DemoReplay:
@@ -85,7 +103,7 @@ class DemoReplay:
             if on_progress: on_progress('Tool requested: ' + step['tool'])
             call_id = execution.start(step['tool'])
             wait_until(step['end_s'])
-            summary = ExecutionSummary.model_validate(step['summary']) if step.get('summary') else None
+            summary = enrich(step, replay.turn) if step.get('summary') else None
             execution.finish(call_id, step['state'], summary)
         wait_until(replay.duration_s)
         return replay.turn.model_copy(deep=True, update={

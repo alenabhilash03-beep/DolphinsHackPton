@@ -107,3 +107,14 @@ def test_replay_runs_through_the_job_queue_like_a_live_run(tmp_path):
     assert job.status == 'completed' and job.turn.result and job.turn.synthesis.status == 'grounded'
     assert any('Replaying recorded agent run' in message for message in job.events)
     assert json.loads(job.model_dump_json())['execution_events'][-1]['state'] == 'succeeded'
+
+
+def test_replayed_events_carry_the_recorded_paper_titles_and_values():
+    from app.agent.demo_replay import enrich, load
+    replay = next(r for r in load() if r.kind == 'research')
+    retrieved = [enrich(s, replay.turn) for s in replay.steps if s['tool'] == 'retrieve_evidence_source']
+    assert all(s.sources[0].title for s in retrieved)
+    extracted = [enrich(s, replay.turn) for s in replay.steps if s['tool'] == 'extract_cited_parameters' and s['state'] == 'succeeded']
+    values = {(c.parameter, c.value, c.unit) for s in extracted for c in s.candidates}
+    assert ('pk.clearance_L_h', 0.127, 'L/day') in values and ('pk.volume_L', 2.62, 'L') in values
+    assert all(len(s.candidates) == s.candidate_count for s in extracted)

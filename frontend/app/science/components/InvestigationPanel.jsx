@@ -187,7 +187,7 @@ function ConfigurationDetails({ snapshot, config }) {
         ]
     });
 }
-export function InvestigationPanel({ job, submitting, saved, displayedResult, config, message, viewer = "unavailable", onFocusMeasurement }) {
+export function InvestigationPanel({ job, submitting, saved, displayedResult, config, message, viewer = "unavailable", onFocusMeasurement, onWatchWorkflow }) {
     const view = useMemo(()=>investigationView(job), [
         job
     ]);
@@ -239,6 +239,16 @@ export function InvestigationPanel({ job, submitting, saved, displayedResult, co
                                         children: title
                                     })
                                 ]
+                            }),
+                            onWatchWorkflow && /*#__PURE__*/ _jsx("button", {
+                                type: "button",
+                                className: "workflow-launch",
+                                onClick: (e)=>{
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    onWatchWorkflow();
+                                },
+                                children: busy ? "Watch the agent live" : "Replay workflow"
                             }),
                             /*#__PURE__*/ _jsx("span", {
                                 className: "execution-mode",

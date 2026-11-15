@@ -61,8 +61,9 @@ class DemoReplay:
         for replay in self.replays:
             m = replay.match
             if edit and replay.kind == 'edit' and isinstance(request, AgentEditRequest):
+                # A replay recorded from a proposal card answers that card or the same typed text; others answer typed text only.
                 if (normalize(request.text) == normalize(m['text']) and request.base_result_id == m['base_result_id']
-                        and request.proposal_id is None):
+                        and request.proposal_id in {None, m.get('proposal_id')}):
                     return replay
             if not edit and replay.kind == 'research' and isinstance(request, AgentResearchRequest):
                 r = request.request

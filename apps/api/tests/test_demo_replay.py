@@ -33,7 +33,7 @@ def follow_up(base, text='Run this comparison for 120 days', **extra):
 
 def test_replay_files_are_complete_recorded_runs():
     replays = {r.name: r for r in load()}
-    assert set(replays) == {'q1-trastuzumab', 'q2-120-days'}
+    assert {'q1-trastuzumab', 'q2-120-days', 'q2b-threshold-95'} <= set(replays)
     q1, q2 = replays['q1-trastuzumab'], replays['q2-120-days']
     for r in (q1, q2):
         assert r.turn.status == 'completed' and r.turn.result and r.turn.synthesis.status == 'grounded'
@@ -88,6 +88,21 @@ def test_follow_up_replays_after_research_or_reference_and_can_be_rehearsed(tmp_
         assert turn.result.configuration.duration_h == 2880
     history = agent.turns.history(first.result.result_id)
     assert len(history.entries) >= 2 and (history.question == Q1 or start == "load_reference")
+
+
+@pytest.mark.parametrize('via_card', [True, False])
+def test_threshold_95_follow_up_replays_from_its_card_or_typed_text(tmp_path, via_card):
+    agent = service(tmp_path)
+    base = load_demo().result
+    q2b = next(r for r in load() if r.name == 'q2b-threshold-95')
+    extra = {'proposal_id': q2b.match['proposal_id']} if via_card else {}
+    turn = agent.run(follow_up(base, 'Set the occupancy threshold to 95%', **extra), edit=True)
+    assert turn.status == 'completed' and turn.trace_status == 'recorded_replay'
+    assert turn.synthesis.status == 'grounded' and turn.synthesis.answer.verdict == 'supported'
+    status = {s.scenario_id: s.metrics.threshold.status for s in turn.result.scenarios}
+    assert status == {'baseline': 'crossed_within_window', 'half_life_x3': 'still_above_at_horizon', 'affinity_x10': 'crossed_within_window'}
+    other = DemoReplay().match(follow_up(base, 'Set the occupancy threshold to 95%', proposal_id='prop-' + '0' * 16), edit=True)
+    assert other is None   # a different card never borrows this recording
 
 
 def test_other_requests_still_use_the_live_agent(tmp_path):

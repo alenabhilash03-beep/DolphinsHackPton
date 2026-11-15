@@ -46,6 +46,8 @@ def main():
     if job['mode'] == 'edit':
         if not args.edit_text: raise SystemExit('--edit-text is required for a follow-up replay')
         kind, match = 'edit', {'text': args.edit_text, 'base_result_id': turn['parent_result_id']}
+        if turn.get('applied_proposal'):
+            match['proposal_id'] = turn['applied_proposal']['proposal_id']  # a proposal card's run; typed text also matches
     else:
         r = job['research_request']['request']
         kind, match = 'research', {k: r[k] for k in ('original_hypothesis', 'drug_name', 'target')} | {'route': r['route'] or 'iv_infusion'}

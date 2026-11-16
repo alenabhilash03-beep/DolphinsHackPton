@@ -18,6 +18,7 @@ import { InvestigationHistoryPanel } from "./InvestigationHistoryPanel.jsx";
 import { SignInPrompt } from "./AccountMenu.jsx";
 import { ShareExperiment } from "./ShareExperiment.jsx";
 import { AgentWorkflow } from "./AgentWorkflow.jsx";
+import { EvidenceReport } from "./EvidenceReport.jsx";
 import { changeLabel } from "../lib/readable.js";
 import { branchRequired, historyFor, restorationAfterJob } from "../lib/history-view.js";
 const PRIMARY = "Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";
@@ -710,6 +711,24 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                                     })
                                 ]
                             })
+                        }) : turn && !busy && !turn.result ? /*#__PURE__*/ _jsx(EvidenceReport, {
+                            turn: turn,
+                            question: turn.synthesis?.original_text ?? history?.question ?? turn.original_text ?? text,
+                            system: `${structureIdentity.drug}${structureIdentity.target ? ` → ${structureIdentity.target}` : ""}`,
+                            viewer: structure,
+                            onFocusMeasurement: focusMeasurement,
+                            structure: structure !== "unavailable" ? /*#__PURE__*/ _jsx(VisualizationBoundary, {
+                                label: "Experimental structure",
+                                children: /*#__PURE__*/ _jsx(StructureViewer, {
+                                    kind: structure,
+                                    focusRequest: structureFocus
+                                })
+                            }, structure) : null,
+                            needs: turn.questions?.length ? /*#__PURE__*/ _jsx("ul", {
+                                children: turn.questions.map((question)=>/*#__PURE__*/ _jsx("li", {
+                                        children: question
+                                    }, question))
+                            }) : null
                         }) : /*#__PURE__*/ _jsxs("section", {
                             className: "research-waiting",
                             "aria-live": "polite",
@@ -1070,34 +1089,66 @@ export function HypothesisWorkspace({ fallbackExperiment = {
                                     })
                                 ]
                             }),
-                            record || turn?.questions?.length || staleExplanation ? /*#__PURE__*/ _jsxs("section", {
+                            record || turn?.questions?.length || staleExplanation ? /*#__PURE__*/ _jsx("section", {
                                 className: "agent-continuation",
                                 "aria-label": "Research continuation",
-                                children: [
-                                    turn?.questions?.length ? /*#__PURE__*/ _jsxs(_Fragment, {
-                                        children: [
-                                            /*#__PURE__*/ _jsx("h3", {
-                                                children: "What is needed next"
-                                            }),
-                                            /*#__PURE__*/ _jsx("ul", {
-                                                children: turn.questions.map((question)=>/*#__PURE__*/ _jsx("li", {
-                                                        children: question
-                                                    }, question))
-                                            })
-                                        ]
-                                    }) : null,
-                                    record && /*#__PURE__*/ _jsx(PreparationAnswers, {
-                                        record: record,
-                                        busy: !!busy || !researchAvailable,
-                                        onContinue: continueResearch,
-                                        onReload: ()=>void reloadPreparation()
-                                    }, `${record.preparation.preparation_id}:${record.preparation.revision}`),
-                                    " ",
-                                    staleExplanation && /*#__PURE__*/ _jsx("p", {
-                                        className: "scope-note",
-                                        children: "The previous explanation describes an earlier result. Ask the agent to interpret the updated comparison."
-                                    })
-                                ]
+                                children: turn && !turn.result && !busy ? /*#__PURE__*/ _jsxs("details", {
+                                    className: "optional-inputs",
+                                    children: [
+                                        /*#__PURE__*/ _jsx("summary", {
+                                            children: "Optional: add inputs to run a simulation"
+                                        }),
+                                        turn?.questions?.length ? /*#__PURE__*/ _jsxs(_Fragment, {
+                                            children: [
+                                                /*#__PURE__*/ _jsx("h3", {
+                                                    children: turn.result ? "What is needed next" : "What the model still needs"
+                                                }),
+                                                /*#__PURE__*/ _jsx("ul", {
+                                                    children: turn.questions.map((question)=>/*#__PURE__*/ _jsx("li", {
+                                                            children: question
+                                                        }, question))
+                                                })
+                                            ]
+                                        }) : null,
+                                        record && /*#__PURE__*/ _jsx(PreparationAnswers, {
+                                            record: record,
+                                            busy: !!busy || !researchAvailable,
+                                            onContinue: continueResearch,
+                                            onReload: ()=>void reloadPreparation()
+                                        }, `${record.preparation.preparation_id}:${record.preparation.revision}`),
+                                        " ",
+                                        staleExplanation && /*#__PURE__*/ _jsx("p", {
+                                            className: "scope-note",
+                                            children: "The previous explanation describes an earlier result. Ask the agent to interpret the updated comparison."
+                                        })
+                                    ]
+                                }) : /*#__PURE__*/ _jsxs(_Fragment, {
+                                    children: [
+                                        turn?.questions?.length ? /*#__PURE__*/ _jsxs(_Fragment, {
+                                            children: [
+                                                /*#__PURE__*/ _jsx("h3", {
+                                                    children: turn.result ? "What is needed next" : "Optional: add inputs to run a simulation"
+                                                }),
+                                                /*#__PURE__*/ _jsx("ul", {
+                                                    children: turn.questions.map((question)=>/*#__PURE__*/ _jsx("li", {
+                                                            children: question
+                                                        }, question))
+                                                })
+                                            ]
+                                        }) : null,
+                                        record && /*#__PURE__*/ _jsx(PreparationAnswers, {
+                                            record: record,
+                                            busy: !!busy || !researchAvailable,
+                                            onContinue: continueResearch,
+                                            onReload: ()=>void reloadPreparation()
+                                        }, `${record.preparation.preparation_id}:${record.preparation.revision}`),
+                                        " ",
+                                        staleExplanation && /*#__PURE__*/ _jsx("p", {
+                                            className: "scope-note",
+                                            children: "The previous explanation describes an earlier result. Ask the agent to interpret the updated comparison."
+                                        })
+                                    ]
+                                })
                             }) : null,
                             (busy || job || message) && /*#__PURE__*/ _jsxs("details", {
                                 className: "agent-activity",

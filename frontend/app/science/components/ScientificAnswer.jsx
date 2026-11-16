@@ -475,7 +475,7 @@ function Chips({ chips }) {
                     /*#__PURE__*/ _jsx("ul", {
                         children: disagreements.map((item, index)=>/*#__PURE__*/ _jsxs("li", {
                                 children: [
-                                    item.statement,
+                                    readableText(item.statement),
                                     item.finding_ids?.length ? /*#__PURE__*/ _jsxs("small", {
                                         children: [
                                             " Findings ",
@@ -512,10 +512,10 @@ function Chips({ chips }) {
                                         children: KIND[item.kind]
                                     }),
                                     /*#__PURE__*/ _jsx("p", {
-                                        children: item.proposal
+                                        children: readableText(item.proposal)
                                     }),
                                     /*#__PURE__*/ _jsx("small", {
-                                        children: item.rationale
+                                        children: readableText(item.rationale)
                                     })
                                 ]
                             }, index))
@@ -535,7 +535,7 @@ function Chips({ chips }) {
                     }),
                     /*#__PURE__*/ _jsx("ul", {
                         children: missing.map((item, index)=>/*#__PURE__*/ _jsx("li", {
-                                children: item.statement
+                                children: readableText(item.statement)
                             }, index))
                     })
                 ]
@@ -553,7 +553,7 @@ function Chips({ chips }) {
                     }),
                     /*#__PURE__*/ _jsx("ul", {
                         children: limitations.map((item, index)=>/*#__PURE__*/ _jsx("li", {
-                                children: item
+                                children: readableText(item)
                             }, index))
                     })
                 ]

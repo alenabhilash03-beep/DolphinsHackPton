@@ -206,12 +206,12 @@ export function PreparationAnswers({ record, busy, onContinue, onReload }) {
                 children: (prep.missing_inputs ?? []).map((q)=>/*#__PURE__*/ _jsxs("li", {
                         children: [
                             /*#__PURE__*/ _jsx("strong", {
-                                children: q.parameter
+                                children: q.parameter ? parameterLabel(q.parameter) : humanize(q.input_id)
                             }),
                             ": ",
                             q.question,
                             " ",
-                            q.expected_unit && `(${q.expected_unit})`
+                            q.expected_unit && `(${unitLabel(q.expected_unit)})`
                         ]
                     }, q.input_id))
             }),

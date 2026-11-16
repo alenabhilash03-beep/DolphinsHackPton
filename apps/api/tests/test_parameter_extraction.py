@@ -213,11 +213,17 @@ def test_extraction_failure_is_sanitized(document_service, request_data):
     assert 'secret-value' not in result.model_dump_json()
 
 
-def test_locator_limits(document_service, request_data):
-    with pytest.raises(ValueError):
-        extraction(document_service, request_data, locators=['not-inspected'])
-    with pytest.raises(ValueError):
-        extraction(document_service, request_data, locators=['full_text:block-1:0']*13)
+def test_locator_selection_keeps_valid_ones_and_never_sends_text_outside_the_snapshot(document_service, request_data):
+    document = retrieve(document_service).document
+    real = {segment.locator for segment in document.segments}
+    for locators in (['not-inspected'], ['full_text:block-1:0'] * 13, None, ['not-inspected', sorted(real)[0]]):
+        seen = []
+        researcher = ParameterResearchService(document_service, extractor=lambda messages: (seen.append(messages), ExtractionProposalBatch(parameters=[], notes=[]))[1])
+        researcher.extract(document.document_id, request_data, 'fixture:X', 'fixture:Y', locators=locators)
+        sent = [item['locator'] for item in json.loads(seen[0][1]['content'])['untrusted_source_segments']]
+        assert sent and set(sent) <= real and len(sent) == len(set(sent)) <= 12
+        if locators and locators[-1] in real:
+            assert sent == [locators[-1]]  # valid agent choices are kept; invented ones are dropped
 
 
 def test_search_focus_and_real_langchain_tools(request_data):
@@ -516,3 +522,29 @@ def test_ec50_is_not_accepted_as_equilibrium_binding_affinity(request_data):
     result=ParameterResearchService(docs,lambda messages:{'parameters':[item],'notes':[]}).extract(doc.document_id,request_data,'fixture:X','fixture:Y')
     assert result.status=='rejected' and not result.parameters
     assert 'EC50/IC50' in result.rejected_candidates[0]
+
+
+def test_parameter_passages_rank_ahead_of_exposure_summaries():
+    from app.research.source_documents import relevance
+    estimates = 'Table 2 Population PK parameter estimates | CL (L/day) | 0.229 | Vc (L) | 3.63'
+    exposure = 'Table 3 Summary of exposure | Cmaxss (µg/mL) | 187 | Cminss (µg/mL) | 75.6'
+    prose = 'Patients were enrolled at 12 centres in Europe.'
+    assert relevance(estimates, True) > relevance(exposure, True) > relevance(prose)
+
+
+def test_table_row_quotes_may_take_unit_and_context_from_their_own_header_only():
+    from app.research.parameter_extraction import _in_table_header, _table_header_unit
+    segment = 'Table 2 Binding affinity of anti-PD-1 antibodies measured by SPR, KD (nM) Nivolumab 0.54 ( 104 )*, 1.16 ( 131 )'
+    row = 'Nivolumab 0.54 ( 104 )*, 1.16 ( 131 )'
+    assert _table_header_unit(segment, row, 'nM') and _in_table_header(segment, row, 'SPR')
+    assert not _table_header_unit(segment, row, 'pM') and not _in_table_header(segment, row, 'BLI')
+    # A prose quote that is the whole segment has no header to borrow from.
+    assert not _table_header_unit(row, row, 'nM')
+
+
+def test_over_long_quotes_are_cut_to_a_verbatim_window_around_the_value():
+    from app.research.parameter_extraction import _trim_quote
+    long = 'Background text. ' * 40 + 'Typical clearance was 0.229 L/day in the final model. ' + 'More text. ' * 40
+    trimmed = _trim_quote({'value': 0.229, 'supporting_passage': long})['supporting_passage']
+    assert len(trimmed) <= 600 and '0.229 L/day' in trimmed and trimmed in long
+    assert _trim_quote({'value': 9.9, 'supporting_passage': long})['supporting_passage'] == long  # no number, no change

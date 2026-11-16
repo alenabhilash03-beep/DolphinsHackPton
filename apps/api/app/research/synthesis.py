@@ -554,7 +554,7 @@ class Grounding:
 
     # --- assembly ---------------------------------------------------------------------------
 
-    def assemble(self, status, proposal=None, notes=()) -> ScientificSynthesis:
+    def assemble(self, status, proposal=None, notes=(), drop_answer=False) -> ScientificSynthesis:
         result = self.result
         linkage = dict(result_id=result.result_id, experiment_id=result.configuration.experiment_id,
             configuration_sha256=result.configuration_hash, client_revision=result.client_revision) if result else {}
@@ -574,7 +574,7 @@ class Grounding:
                 citations=citations, abstract_only=all(c.content_kind == 'abstract' for c in citations)))
         answer_quantities = refs(proposal.answer.metric_refs)
         answer_findings = list(dict.fromkeys(proposal.answer.finding_ids))
-        answer = SynthesisAnswer(verdict=proposal.answer.verdict, statement=proposal.answer.statement,
+        answer = None if drop_answer else SynthesisAnswer(verdict=proposal.answer.verdict, statement=proposal.answer.statement,
             finding_ids=answer_findings, quantities=answer_quantities,
             basis='paper_evidence_and_conditional_simulation' if answer_findings and answer_quantities else
                 'paper_evidence' if answer_findings else 'conditional_simulation' if answer_quantities else 'none')
@@ -691,24 +691,36 @@ ITEM_ERROR = re.compile(r'^(' + '|'.join(LIST_LIMITS) + r')\[([^\]]+)\]')
 
 
 def _salvage(grounding: Grounding, data):
-    """The valid remainder of a proposal: invalid list items are dropped whole, the answer must itself be valid.
+    """The valid remainder of a proposal: invalid list items are dropped whole; an invalid answer sentence is dropped
+    while the validated findings, implications and structure notes around it are kept.
 
-    Returns (proposal, omitted_count) or None. Nothing is reworded and nothing that failed a check survives.
+    Returns (proposal, omitted_count, answer_dropped) or None. Nothing is reworded and nothing that failed a check survives.
     """
     proposal, _, omitted = _parsed(data, prune=True)
     if proposal is None:
         return None
-    for _ in range(3):
+    answer_dropped = False
+    for _ in range(4):
         errors = grounding.validate(proposal)
+        if answer_dropped:
+            errors = [error for error in errors if not error.startswith('answer')]
         if not errors:
-            return proposal, omitted
+            return proposal, omitted, answer_dropped
         flagged = [ITEM_ERROR.match(error) for error in errors]
-        if not all(flagged):
-            return None  # the answer or the result reference is wrong; there is nothing safe to keep
+        unflagged = [error for error, match in zip(errors, flagged) if not match]
+        if unflagged:
+            # With a simulation the answer must stand as validated (or nothing is kept). Without one, the run is an
+            # evidence report: keep the verified findings and omit only the answer sentence.
+            if grounding.result is not None or not all(error.startswith('answer') for error in unflagged):
+                return None  # the result reference is wrong; there is nothing safe to keep
+            answer_dropped = True  # keep the verified parts; the overall sentence is omitted
+            continue
         bad = {(match[1], match[2]) for match in flagged}
         gone = {key for section, key in bad if section == 'evidence_findings'}
         if gone & set(proposal.answer.finding_ids):
-            return None
+            if grounding.result is not None:
+                return None
+            answer_dropped = True
         update = {}
         for section in LIST_LIMITS:
             items = getattr(proposal, section)
@@ -753,13 +765,19 @@ def synthesize(grounding: Grounding, synthesizer: Callable[[list[dict]], dict] |
                 return grounding.assemble('grounded', proposal)
         # Not clean. Remember the valid part of this attempt, then ask once more with the exact errors.
         partial = _salvage(grounding, data)
-        if partial and (salvaged is None or partial[1] < salvaged[1]):
+        # Prefer a remainder that keeps the answer sentence, then the one that omits the fewest statements.
+        if partial and (salvaged is None or (partial[2], partial[1]) < (salvaged[2], salvaged[1])):
             salvaged = partial
         if salvaged and attempt >= 1:
             break  # one corrective retry was given; keep the validated remainder rather than spend more time
     if salvaged:
-        proposal, omitted = salvaged
-        return grounding.assemble('grounded', proposal, notes=[f'{omitted} proposed statement{"" if omitted == 1 else "s"} '
-            'failed grounding validation and ' + ('was' if omitted == 1 else 'were') + ' omitted; everything shown passed every check.'])
+        proposal, omitted, answer_dropped = salvaged
+        notes = [f'{omitted} proposed statement{"" if omitted == 1 else "s"} failed grounding validation and '
+            + ('was' if omitted == 1 else 'were') + ' omitted; everything shown passed every check.'] if omitted else []
+        if answer_dropped:
+            notes.insert(0, 'The one-sentence answer failed grounding validation and was omitted; the verified findings are shown on their own.')
+        has_content = any(getattr(proposal, section) for section in LIST_LIMITS)
+        if not answer_dropped or has_content:
+            return grounding.assemble('grounded', proposal, notes=notes, drop_answer=answer_dropped)
     return grounding.assemble('rejected', notes=[
         'The proposed synthesis failed grounding validation and was not accepted.', *errors[:8]])

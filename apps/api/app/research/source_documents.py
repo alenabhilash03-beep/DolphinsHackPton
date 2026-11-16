@@ -27,7 +27,7 @@ class _NoRedirect(HTTPRedirectHandler):
 def fetch_full_text(url: str) -> bytes:
     if not re.fullmatch(re.escape(FULL_TEXT_ROOT) + r"PMC[0-9]{1,12}/fullTextXML", url):
         raise RetrievalError("Only the fixed Europe PMC full-text endpoint is permitted")
-    with build_opener(_NoRedirect).open(Request(url, headers={"Accept": "application/xml", "User-Agent": "Hypothesim/0.1 evidence-client"}), timeout=7) as response:
+    with build_opener(_NoRedirect).open(Request(url, headers={"Accept": "application/xml", "User-Agent": "Hypothesim/0.1 evidence-client"}), timeout=15) as response:
         data = response.read(MAX_XML_BYTES + 1)
     if len(data) > MAX_XML_BYTES:
         raise RetrievalError("Source response exceeds the XML byte limit")
@@ -36,6 +36,20 @@ def fetch_full_text(url: str) -> bytes:
 
 def _text(element) -> str:
     return " ".join(" ".join(element.itertext()).split())
+
+
+PARAMETER_TERMS = re.compile(r'\b(?:clearance|CL|volume|Vc|V1|V_?ss|half[- ]?life|t1/2|t½|elimination|K_?D|dissociation constant|affinity|'
+    r'k_?on|k_?off|association rate|dissociation rate|binding kinetic|surface plasmon|SPR|BLI|Biacore|population pharmacokinetic|'
+    r'two-compartment|one-compartment|parameter estimate)', re.I)
+UNIT_TERMS = re.compile(r'(?:\bL/(?:h|day|d)\b|\bmL/(?:h|min|day|d)\b|\bL\b|\bdays?\b|\bh(?:ours?)?\b|[nmpµμ]M\b|M[-−]1\s*s[-−]1|s[-−]1|1/Ms|1/s)')
+
+
+def relevance(text: str, table: bool = False) -> int:
+    """How strongly a text block reports model inputs: parameter terms with numbers and units score highest."""
+    terms = len(PARAMETER_TERMS.findall(text))
+    if not terms:
+        return 1 if table else 0
+    return 2 + min(terms, 4) * 2 + (3 if re.search(r'\d', text) and UNIT_TERMS.search(text) else 0) + (2 if table else 0)
 
 
 def snapshot_digest(document: EvidenceSnapshot) -> str:
@@ -139,8 +153,10 @@ class SourceDocumentService:
                                 blocks.append((locator, text))
                                 if element.tag == 'tr':
                                     table_locators.add(locator)
-                # Prioritize numerical tables while keeping stable source-block locators.
-                blocks = [item for item in blocks if item[0] in table_locators] + [item for item in blocks if item[0] not in table_locators]
+                # Most relevant first while keeping stable source-block locators: passages naming model inputs
+                # (clearance, volume, half-life, KD, kon/koff) with values and units lead; then other tables; then prose.
+                order = {locator: index for index, (locator, _) in enumerate(blocks)}
+                blocks = sorted(blocks, key=lambda item: (-relevance(item[1], item[0] in table_locators), order[item[0]]))
                 if not blocks:
                     raise RetrievalError('No supported text blocks in full-text response')
                 if start_block >= len(blocks):

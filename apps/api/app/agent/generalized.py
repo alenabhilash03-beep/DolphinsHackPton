@@ -281,7 +281,7 @@ class GeneralizedAgentService:
         deadline = monotonic() + self.settings.research_timeout_s
         # Live finding (2026-11-15): with slow model turns the deadline arrived after the simulation but before the
         # cited answer, losing the answer (or the whole run). An accepted result earns a bounded closing grace.
-        limit = lambda: deadline + (CLOSING_GRACE_S if ledger['result'] is not None else 0)
+        limit = lambda: deadline + (CLOSING_GRACE_S if ledger['result'] is not None or ledger.get('closing') else 0)
         base = None
         if edit:
             base, child = self.turns.result(request.base_result_id)
@@ -714,6 +714,15 @@ class GeneralizedAgentService:
             # Live finding: near the deadline the model can declare "unsupported" for a supported request.
             # Only the deterministic assessment may make that call; otherwise report the recorded state.
             decision = AgentDecision.model_validate(step_limit_decision(tools))
+        if (not edit and decision.status == 'needs_inputs' and ledger['result'] is None
+                and not (ledger['record'] and ledger['record'].preparation.state == 'identity_clarification')):
+            # Present whatever was gathered instead of only asking for more: close every research run that has no
+            # simulation with the structure check and an evidence-only answer over the inspected papers.
+            ledger['closing'] = True
+            budget['extra'] = max(budget['extra'], 2)
+            for name in (['inspect_verified_structure'] if ledger['structure'] is None else []) + (['synthesize_grounded_answer'] if synthesis_due() else []):
+                try: next(t for t in tools if t.name == name).invoke({})
+                except Exception: pass  # an unavailable answer is recorded as such; it never blocks the honest state
         result = ledger['result']
         record = ledger['record']
         if not edit and record is None and ledger['config'] is None: raise ValueError('An unregistered research turn must resolve/create its preparation')

@@ -82,11 +82,11 @@ export function ScientificAnswer({ turn, shown, viewer = "unavailable", onFocusM
       {cards.length > 0 && <p className="answer-access-note">Distances are between heavy atoms in deposited coordinates. They do not establish hydrogen bonds, binding energy, affinity or kinetic rates.</p>}
     </section>}
     {disagreements.length > 0 && <section className="answer-disagreements" aria-label="Disagreements in the evidence"><h3>Where the evidence disagrees</h3>
-      <ul>{disagreements.map((item, index) => <li key={index}>{item.statement}{item.finding_ids?.length ? <small> Findings {item.finding_ids.join(", ")}</small> : <small> Competing extracted candidates</small>}</li>)}</ul></section>}
+      <ul>{disagreements.map((item, index) => <li key={index}>{readableText(item.statement)}{item.finding_ids?.length ? <small> Findings {item.finding_ids.join(", ")}</small> : <small> Competing extracted candidates</small>}</li>)}</ul></section>}
     {next.length > 0 && <section className="answer-next" aria-label="Hypotheses needing validation"><div className="answer-section-heading"><h3>What to test next</h3><span>Hypotheses needing experimental validation</span></div>
-      <ul>{next.map((item, index) => <li key={index}><span className="answer-kind">{KIND[item.kind]}</span><p>{item.proposal}</p><small>{item.rationale}</small></li>)}</ul></section>}
-    {missing.length > 0 && <details className="answer-detail"><summary>Missing evidence <span>{missing.length}</span></summary><ul>{missing.map((item, index) => <li key={index}>{item.statement}</li>)}</ul></details>}
-    {limitations.length > 0 && <details className="answer-detail"><summary>Limitations of this answer <span>{limitations.length}</span></summary><ul>{limitations.map((item, index) => <li key={index}>{item}</li>)}</ul></details>}
+      <ul>{next.map((item, index) => <li key={index}><span className="answer-kind">{KIND[item.kind]}</span><p>{readableText(item.proposal)}</p><small>{readableText(item.rationale)}</small></li>)}</ul></section>}
+    {missing.length > 0 && <details className="answer-detail"><summary>Missing evidence <span>{missing.length}</span></summary><ul>{missing.map((item, index) => <li key={index}>{readableText(item.statement)}</li>)}</ul></details>}
+    {limitations.length > 0 && <details className="answer-detail"><summary>Limitations of this answer <span>{limitations.length}</span></summary><ul>{limitations.map((item, index) => <li key={index}>{readableText(item)}</li>)}</ul></details>}
     {(synthesis.source_access ?? []).some(item => item.limitation) && <details className="answer-detail"><summary>Source access <span>{access}</span></summary>
       <ul>{(synthesis.source_access ?? []).map(item => <li key={item.document_id}><a href={`#paper-${item.document_id}`}>{item.title}</a> · extraction {item.extraction_status.replaceAll("_", " ")}{item.limitation ? ` · ${item.limitation}` : ""}</li>)}</ul></details>}
   </section>;

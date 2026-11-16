@@ -71,7 +71,7 @@ export function PreparationAnswers({ record, busy, onContinue, onReload }: {
     <h2>Review evidence & complete the experiment</h2><p>Preparation: <code>{prep.preparation_id}</code> · version {prep.revision}</p>
     <p><strong>{prep.state}</strong> · identity {record.identity_status} · lookup {record.identity_retrieval_status}. Inputs remain conditional candidates.</p>
     <ul>{prep.reasons.map(r=><li key={r}>{r}</li>)}</ul>
-    <ul>{(prep.missing_inputs ?? []).map(q=><li key={q.input_id}><strong>{q.parameter}</strong>: {q.question} {q.expected_unit && `(${q.expected_unit})`}</li>)}</ul>
+    <ul>{(prep.missing_inputs ?? []).map(q=><li key={q.input_id}><strong>{q.parameter ? parameterLabel(q.parameter) : humanize(q.input_id)}</strong>: {q.question} {q.expected_unit && `(${unitLabel(q.expected_unit)})`}</li>)}</ul>
     <details><summary>Extracted values, assumptions & source access ({(prep.parameters ?? []).length} values)</summary>
       {(prep.parameters ?? []).map(p=><article key={p.parameter_id}><strong>{parameterLabel(p.parameter)}: {p.value} {unitLabel(p.unit)}</strong> · {humanize(p.provenance)} · {humanize(p.applicability)}
         <p>{p.context.applicability_notes.join(" ")}</p>{(p.passages ?? []).map((passage,i)=><blockquote key={i}>{passage.supporting_passage} <small>({locatorLabel(passage.locator)})</small></blockquote>)}</article>)}

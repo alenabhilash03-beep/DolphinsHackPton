@@ -18,6 +18,7 @@ import { InvestigationHistoryPanel } from "./InvestigationHistoryPanel";
 import { AccountMenu, SignInPrompt } from "./AccountMenu";
 import { ShareExperiment } from "./ShareExperiment";
 import { AgentWorkflow } from "./AgentWorkflow";
+import { EvidenceReport } from "./EvidenceReport";
 import { changeLabel } from "../lib/readable";
 import { branchRequired, historyFor, historyRows, restorationAfterJob } from "../lib/history-view";
 const PRIMARY="Would tripling trastuzumab's half-life maintain HER2 occupancy longer than improving its binding affinity tenfold?";

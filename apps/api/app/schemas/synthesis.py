@@ -252,8 +252,8 @@ class ScientificSynthesis(Contract):
                 if source is None or source.source_id != citation.source_id or source.content_kind != citation.content_kind:
                     raise ValueError('A citation references a source that was not inspected')
         if self.status == 'grounded':
-            if self.answer is None or self.basis == 'none':
-                raise ValueError('A grounded synthesis requires an answer and a basis')
+            if self.basis == 'none' or (self.answer is None and not (self.evidence_findings or self.simulation_implications or self.structural_context)):
+                raise ValueError('A grounded synthesis requires a basis and an answer or verified findings')
         elif (self.answer or self.evidence_findings or self.simulation_implications or self.next_experiments or self.structural_context
                 or any(item.origin == 'synthesis' for item in [*self.disagreements, *self.missing_evidence])):
             raise ValueError('An unavailable or rejected synthesis cannot carry model-authored content')

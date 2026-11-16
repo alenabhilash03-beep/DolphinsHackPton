@@ -336,7 +336,11 @@ def test_no_result_research_gives_a_cited_answer_without_predictions():
     rejected, again = run(g, predicted, predicted)
     assert withheld(rejected, 'Occupancy would persist.') and 'no numerical result exists' in again[1]['previous_validation_errors'][0]
     unreferenced = proposal(g, answer={'verdict': 'supported', 'statement': 'The hypothesis holds.'})
-    assert run(g, unreferenced, unreferenced)[0].status == 'rejected'
+    # Without a simulation the run is an evidence report: an unsupported answer sentence is omitted, the verified
+    # finding is still presented, and the omission is noted.
+    report = run(g, unreferenced, unreferenced)[0]
+    assert report.status == 'grounded' and report.answer is None and [f.finding_id for f in report.evidence_findings] == ['F1']
+    assert withheld(report, 'The hypothesis holds.')
     assert run(g, proposal(g, result_id='null'))[0].status == 'grounded'
     invented_result = proposal(g, result_id=load_demo().result.result_id)
     assert run(g, invented_result, invented_result)[0].status == 'rejected'

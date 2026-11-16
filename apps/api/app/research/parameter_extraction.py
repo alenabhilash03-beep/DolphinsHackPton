@@ -7,7 +7,7 @@ import unicodedata
 from typing import Callable
 
 from app.research.europe_pmc import RetrievalError
-from app.research.source_documents import SourceDocumentService
+from app.research.source_documents import relevance, SourceDocumentService
 from app.schemas.evidence_extraction import (
     CandidateConflict, EvidenceSearchResult, ExtractionProposalBatch, ParameterExtractionResult, ParameterProposal,
 )
@@ -28,7 +28,9 @@ drug_name_in_source or experimental_system from the title or another sentence ou
 Do not classify distribution clearance Q as elimination clearance or peripheral volume as central volume.
 Field-name unit suffixes identify destination quantities, NOT a conversion instruction: if clearance is
 reported in L/day, return that original value in L/day even for the field pk.clearance_L_h.
-Return original units and values without conversions. Do not derive kon/koff from KD, use IC50 as KD,
+Return original units and values without conversions: copy the number exactly as it is written in the quote.
+For example, "a half-life of 25 days" is value 25, unit "days" (never 600 h); "koff 1.2 x 10^-4 s^-1" is
+value 1.2e-4, unit "s^-1" (never a reciprocal, a half-time or a per-hour rate). Do not derive kon/koff from KD, use IC50 as KD,
 or convert a range, inequality or uncertainty interval into an exact value. Mark uncertain relations honestly.
 Keep competing values separately. If no explicit relevant values are present return an empty parameters list.
 Omit unreported parameters completely; never emit placeholder entries with null value or null unit.
@@ -69,6 +71,37 @@ def _contains_unit(passage: str, unit: str) -> bool:
     return bool(re.search(r'(?<![A-Za-z])' + pattern + r'(?![A-Za-z])', normalized))
 
 
+def _table_header_unit(segment: str, passage: str, unit: str) -> bool:
+    """A table-row quote often omits the unit, which sits in the caption/header stored with the row. Accept a unit
+    that appears in that same segment's context before the quoted row (still source text, never inferred)."""
+    start = segment.find(passage)
+    return start > 0 and _contains_unit(segment[:start], unit)
+
+
+def _in_table_header(segment: str, passage: str, text: str) -> bool:
+    """Literal context (assay, species, drug name) stated in the caption/header stored with the quoted table row."""
+    start = segment.find(passage)
+    return start > 0 and text in segment[:start]
+
+
+def _trim_quote(proposal, limit: int = 600):
+    """An over-long quote is cut to the verbatim window around its reported number (still an exact excerpt of the
+    model's own quote, so every later passage, number and unit check applies unchanged)."""
+    if not isinstance(proposal, dict):
+        return proposal
+    passage, value = proposal.get('supporting_passage'), proposal.get('value')
+    if not isinstance(passage, str) or len(passage) <= limit or not isinstance(value, (int, float)):
+        return proposal
+    hits = [match.start() for match in re.finditer(r'(?<![\w.])[+-]?(?:\d+(?:\.\d*)?|\.\d+)', passage)
+            if any(candidate == value for candidate in _numbers(match.group(0)))]
+    if not hits:
+        return proposal
+    start = max(0, hits[0] - limit // 2)
+    end = min(len(passage), start + limit)
+    start = max(0, end - limit)
+    return {**proposal, 'supporting_passage': passage[start:end]}
+
+
 def _scalar_passage(passage: str) -> bool:
     return not re.search(r'[<>≤≥]|\bbetween\b|\d,\d|\d\s*(?:[-–—]|to)\s*\d', passage, re.I)
 
@@ -101,9 +134,9 @@ class LangChainParameterExtractor:
             # Explicitly unknown placeholders contain no measurement. Omit them instead of
             # letting one null item invalidate independent real measurements in the same batch.
             # Never fill, convert or coerce a scientific value, unit or source passage.
-            parameters = [p for p in data['parameters'] if not (isinstance(p,dict)
-                and p.get('relation')=='uncertain' and 'value' in p and p['value'] is None
-                and 'unit' in p and p['unit'] is None)]
+            # A null value is "not reported in this text" (common when values sit in a supplement), whatever relation
+            # the model attached; it is not a failed measurement.
+            parameters = [p for p in data['parameters'] if not (isinstance(p,dict) and p.get('value') is None)]
             if len(parameters)!=len(data['parameters']):
                 data = {**data,'parameters':parameters}
         # Validate the envelope and every independent proposal strictly. A malformed
@@ -113,6 +146,7 @@ class LangChainParameterExtractor:
         batch = ExtractionProposalBatch.model_validate({**data,'parameters':[]})
         from pydantic import ValidationError
         for index,proposal in enumerate(data['parameters']):
+            proposal = _trim_quote(proposal)
             try: batch.parameters.append(ParameterProposal.model_validate(proposal))
             except ValidationError as exc:
                 fields = ', '.join('.'.join(map(str,e['loc']))+': '+e['type'] for e in exc.errors(include_input=False))
@@ -184,9 +218,12 @@ class ParameterResearchService:
             raise ValueError('Evidence session extraction limit reached')
         self.extraction_calls += 1
         by_locator = {segment.locator: segment.text for segment in document.segments}
-        chosen = locators if locators is not None else list(by_locator)[:8]
-        if not chosen or len(chosen) > 12 or len(set(chosen)) != len(chosen) or not set(chosen) <= by_locator.keys():
-            raise ValueError('Select 1–12 unique locators from this retrieved snapshot')
+        # Keep the agent's valid locators (models often mix locators across pages); when none are valid or none
+        # were given, read the most parameter-relevant passages of this snapshot instead of the first ones.
+        chosen = list(dict.fromkeys(locator for locator in (locators or []) if locator in by_locator))[:12]
+        if not chosen:
+            ranked = sorted(by_locator, key=lambda locator: -relevance(by_locator[locator], ' | ' in by_locator[locator]))
+            chosen = ranked[:10]
         # Reject recognized instruction-bearing passages before they reach the extractor.
         unsafe = [locator for locator in chosen if INSTRUCTION_PATTERN.search(by_locator[locator])]
         safe = [locator for locator in chosen if locator not in unsafe]
@@ -227,8 +264,10 @@ class ParameterResearchService:
                 reason = 'Supporting passage or locator does not match the inspected snapshot.'
             elif proposal.relation not in {'exact', 'approximate'} or not _scalar_passage(passage):
                 reason = 'A bound, range or uncertain relation is not a scalar model input.'
-            elif not _contains_number(passage, proposal.value) or not _contains_unit(passage, proposal.unit):
-                reason = 'Original number or unit is not present in the cited passage.'
+            elif not _contains_number(passage, proposal.value) or not (_contains_unit(passage, proposal.unit)
+                    or _table_header_unit(by_locator[proposal.locator], passage, proposal.unit)):
+                reason = ('Original number or unit is not present in the cited passage. Copy the value and unit exactly as written '
+                    'in the quote; do not convert units, take reciprocals or compute derived values.')
             elif (proposal.parameter=='pk.clearance_L_h' and re.search(r'\bdistribution clearance\b',passage,re.I)
                     or proposal.parameter=='pk.volume_L' and re.search(r'\bperipheral compartment\b',passage,re.I)):
                 reason = 'A distribution-only clearance or peripheral compartment volume is not an elimination clearance or central/effective one-compartment volume.'
@@ -237,7 +276,8 @@ class ParameterResearchService:
             else:
                 unsupported_context = [field for field in ('molecular_form','species','formulation','route','exposure_compartment',
                     'drug_name_in_source','target_in_source','experimental_system','assay_conditions')
-                    if getattr(proposal,field) and getattr(proposal,field) not in passage]
+                    if getattr(proposal,field) and getattr(proposal,field) not in passage
+                    and not _in_table_header(by_locator[proposal.locator], passage, getattr(proposal,field))]
                 if unsupported_context:
                     reason = 'Proposed experimental context is not supported by the quoted passage: ' + ', '.join(unsupported_context) + '. Copy literal context from inside the quote, or use null; never invent context.'
             if reason:
@@ -254,7 +294,8 @@ class ParameterResearchService:
                     molecular_form=proposal.molecular_form, species=proposal.species,
                     formulation=proposal.formulation, route=proposal.route, exposure_compartment=proposal.exposure_compartment,
                     experimental_system=proposal.experimental_system, assay_conditions=proposal.assay_conditions,
-                    applicability_notes=[f'Reported relation: {proposal.relation}.',
+                    applicability_notes=[*(['Unit taken from the table caption/header of the cited row; confirm the column it applies to.']
+                        if not _contains_unit(passage, proposal.unit) else []), f'Reported relation: {proposal.relation}.',
                         f'Source drug mention: {proposal.drug_name_in_source or "unknown"}; source target mention: {proposal.target_in_source or "unknown"}.',
                         'Identity association, parameter meaning and assay compatibility require applicability checks.']))
             self.candidates[parameter.parameter_id] = parameter.model_copy(deep=True)
